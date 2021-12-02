@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.portable.server.mapper.ProblemMapper">
+    <resultMap id="Problem" type="com.portable.server.model.problem.Problem">
+        <id column="id" jdbcType="BIGINT" property="id"/>
+        <result column="_id" jdbcType="VARCHAR" property="dataId"/>
+        <result column="title" jdbcType="VARCHAR" property="title"/>
+        <result column="status_type" jdbcType="VARCHAR" property="statusType"/>
+        <result column="access_type" jdbcType="VARCHAR" property="accessType"/>
+        <result column="submission_count" jdbcType="INTEGER" property="submissionCount"/>
+        <result column="accept_count" jdbcType="INTEGER" property="acceptCount"/>
+    </resultMap>
+
+    <parameterMap id="Problem" type="com.portable.server.model.problem.Problem">
+        <parameter property="id" javaType="java.lang.Long" jdbcType="BIGINT"/>
+        <parameter property="dataId" javaType="java.lang.String" jdbcType="VARCHAR"/>
+        <parameter property="title" javaType="java.lang.String" jdbcType="VARCHAR"/>
+        <parameter property="statusType" javaType="java.lang.Enum" jdbcType="VARCHAR"/>
+        <parameter property="accessType" javaType="java.lang.Enum" jdbcType="VARCHAR"/>
+        <parameter property="submissionCount" javaType="java.lang.Integer" jdbcType="INTEGER"/>
+        <parameter property="acceptCount" javaType="java.lang.Integer" jdbcType="INTEGER"/>
+    </parameterMap>
+
+    <sql id="selectAll">
+        SELECT id,
+               data_id,
+               title,
+               status_type,
+               access_type,
+               submission_count,
+               accept_count,
+               owner
+        FROM problem
+    </sql>
+
+    <select id="countProblemListByTypeAndOwnerId" resultType="java.lang.Integer">
+        SELECT count(*)
+        FROM problem
+        WHERE access_type IN
+        <foreach collection="accessTypeList" item="type" open="(" separator="," close=")">
+            #{type}
+        </foreach>
+        OR owner = #{userId}
+    </select>
+
+    <select id="selectProblemListByPageAndTypeAndOwnerId" resultMap="Problem">
+        <include refid="selectAll"/>
+        WHERE access_type IN
+        <foreach collection="accessTypeList" item="type" open="(" separator="," close=")">
+            #{type}
+        </foreach>
+        OR owner = #{userId}
+        LIMIT #{pageSize}
+        OFFSET #{offset}
+    </select>
+
+    <select id="countAllProblemList" resultType="java.lang.Integer">
+        SELECT count(*)
+        FROM problem
+    </select>
+
+    <select id="selectAllProblemListByPage" resultMap="Problem">
+        <include refid="selectAll"/>
+        LIMIT #{pageSize}
+        OFFSET #{offset}
+    </select>
+
+    <select id="selectProblemById" resultMap="Problem" parameterType="java.lang.Long">
+        <include refid="selectAll"/>
+        WHERE id = #{id}
+    </select>
+
+    <select id="selectProblemByTitle" resultMap="Problem" parameterType="java.lang.String">
+        <include refid="selectAll"/>
+        WHERE title = #{title}
+    </select>
+
+    <insert id="insertProblem" useGeneratedKeys="true" keyProperty="id"  parameterMap="Problem">
+        INSERT INTO problem
+        (data_id, title, status_type, submission_count, accept_count)
+        VALUES
+        (#{dataId}, #{title}, #{status}, #{submission_count}, #{accept_count})
+    </insert>
+
+    <update id="linkProblem">
+        UPDATE problem SET data_id = #{dataId}
+        WHERE id = #{id}
+    </update>
+
+    <update id="updateProblemTitle">
+        UPDATE problem SET
+        title = #{title}
+        WHERE id = #{id}
+    </update>
+
+    <update id="updateProblemStatus">
+        UPDATE problem SET
+            status_type = #{status}
+        WHERE id = #{id}
+    </update>
+
+    <update id="updateProblemCount">
+        UPDATE problem SET
+            submission_count = submission_count + #{submitCount},
+            accept_count = accept_count + #{acceptCount}
+        WHERE id = #{id}
+    </update>
+
+    <update id="updateProblemOwner">
+        UPDATE problem SET
+            owner = #{newOwner}
+        WHERE id = #{id}
+    </update>
+</mapper>
