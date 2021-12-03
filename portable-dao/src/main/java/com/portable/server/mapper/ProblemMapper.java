@@ -41,9 +41,9 @@ public interface ProblemMapper {
      * @param id 问题 ID
      * @return 问题内容
      */
-    Problem selectProblemById(Long id);
+    Problem selectProblemById(@Param("id") Long id);
 
-    Problem selectProblemByTitle(String title);
+//    Problem selectProblemByTitle(String title);
 
     /**
      * 新增题目
