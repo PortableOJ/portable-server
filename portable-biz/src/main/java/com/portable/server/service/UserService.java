@@ -16,19 +16,47 @@ import com.portable.server.type.PermissionType;
 public interface UserService {
 
     /**
-     * 注册普通用户
+     * 登陆用户
      *
-     * @param loginRequest 注册信息
-     * @return 注册成功的用户信息
-     * @throws PortableException 账号不存在、密码错误，数据出错、用户类型错误
+     * @param loginRequest 登陆信息
+     * @return 用户的信息
+     * @throws PortableException 遇到意外情况抛出错误
      */
     UserBasicInfoResponse login(LoginRequest loginRequest) throws PortableException;
 
+    /**
+     * 注册普通用户
+     *
+     * @param registerRequest 注册信息
+     * @return 注册成功的用户信息
+     * @throws PortableException 遇到意外情况抛出错误
+     */
     NormalUserInfoResponse register(RegisterRequest registerRequest) throws PortableException;
 
+    /**
+     * 修改用户所在组织
+     *
+     * @param targetId        被修改的用户
+     * @param newOrganization 被修改至的组织
+     * @throws PortableException 遇到意外情况抛出错误
+     */
     void changeOrganization(Long targetId, OrganizationType newOrganization) throws PortableException;
 
+    /**
+     * 添加权限
+     *
+     * @param targetId      目标用户
+     * @param newPermission 新增加的权限
+     * @throws PortableException 遇到意外情况抛出错误
+     */
     void addPermission(Long targetId, PermissionType newPermission) throws PortableException;
 
+    /**
+     * 移除权限
+     *
+     * @param targetId   目标用户
+     * @param permission 移除的权限
+     * @throws PortableException 遇到意外情况抛出错误
+     */
     void removePermission(Long targetId, PermissionType permission) throws PortableException;
 }

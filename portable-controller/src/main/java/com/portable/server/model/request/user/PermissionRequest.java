@@ -1,8 +1,11 @@
-package com.portable.server.model.request.problem;
+package com.portable.server.model.request.user;
 
 import com.portable.server.type.PermissionType;
 import lombok.Data;
 
+/**
+ * @author shiroha
+ */
 @Data
 public class PermissionRequest {
 
