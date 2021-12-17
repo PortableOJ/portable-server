@@ -8,6 +8,9 @@ import lombok.Data;
 
 import java.util.Date;
 
+/**
+ * @author shiroha
+ */
 @Data
 @Builder
 public class Solution {
@@ -16,6 +19,11 @@ public class Solution {
      * 提交的 id
      */
     private Long id;
+
+    /**
+     * 数据 ID
+     */
+    private String dataId;
 
     /**
      * 提交时间

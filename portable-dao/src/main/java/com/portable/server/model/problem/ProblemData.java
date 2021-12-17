@@ -157,22 +157,12 @@ public class ProblemData {
         private LanguageType languageType;
 
         /**
-         * 最终结果
+         * 最终的测试 ID
          */
-        private SolutionStatusType solutionStatusType;
-
-        /**
-         * 最终耗时
-         */
-        private Integer timeCost;
-
-        /**
-         * 最终内存消耗
-         */
-        private Integer memoryCost;
+        private Long solutionId;
 
         public void reset() {
-            this.solutionStatusType = SolutionStatusType.PENDING;
+            this.solutionId = null;
         }
     }
 
@@ -191,43 +181,6 @@ public class ProblemData {
             throw PortableException.of("A-04-006");
         }
         return showStdCode;
-    }
-
-    /**
-     * 检查新的时间和内存限制是否导致了某个代码无法通过了
-     *
-     * @param stdCode 需要检查的代码
-     * @return 导致不通过则返回 true
-     */
-    private Boolean checkStdCodeNotPass(StdCode stdCode) {
-        if (!stdCode.getSolutionStatusType().getEndingResult()) {
-            return false;
-        }
-        Integer timeLimit = specialTimeLimit.getOrDefault(stdCode.getLanguageType(), defaultTimeLimit);
-        Integer memoryLimit = specialMemoryLimit.getOrDefault(stdCode.getLanguageType(), defaultMemoryLimit);
-        if (!SolutionStatusType.TIME_LIMIT_EXCEEDED.equals(stdCode.getSolutionStatusType())) {
-            if (timeLimit <= stdCode.getTimeCost()) {
-                return true;
-            }
-        }
-        return memoryLimit <= stdCode.getMemoryCost();
-    }
-
-    /**
-     * 检查新的时间和内存限制是否导致了部分原来通过的代码无法通过了
-     *
-     * @return 导致不通过则返回 true
-     */
-    public Boolean checkAnyStdCodeNotPass() {
-        if (checkStdCodeNotPass(this.stdCode)) {
-            return true;
-        }
-        for (StdCode stdCode : this.testCodeList) {
-            if (checkStdCodeNotPass(stdCode)) {
-                return true;
-            }
-        }
-        return false;
     }
 
     public void nextVersion() {

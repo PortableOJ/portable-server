@@ -223,7 +223,8 @@ public class ProblemServiceImpl implements ProblemService {
             throw PortableException.of("A-04-007");
         }
 
-        if (problemSettingRequest.toProblemData(problemPackage.getProblemData())) {
+        if (problemSettingRequest.toProblemData(problemPackage.getProblemData())
+                || checkAnyStdCodeNotPass(problemPackage.getProblemData())) {
             problemPackage.getProblem().toUncheck();
         }
 
@@ -338,9 +339,7 @@ public class ProblemServiceImpl implements ProblemService {
                     .code(problemStdCodeRequest.getCode())
                     .expectResultType(problemStdCodeRequest.getResultType())
                     .languageType(problemStdCodeRequest.getLanguageType())
-                    .solutionStatusType(SolutionStatusType.PENDING)
-                    .timeCost(0)
-                    .memoryCost(0)
+                    .solutionId(null)
                     .build();
             problemPackage.getProblemData().getTestCodeList().add(stdCode);
         }
@@ -434,4 +433,44 @@ public class ProblemServiceImpl implements ProblemService {
         User user = accountManager.getAccountById(problem.getOwner());
         throw PortableException.of("A-02-005", id, user.getHandle());
     }
+
+    /**
+     * 检查新的时间和内存限制是否导致了部分原来通过的代码无法通过了
+     *
+     * @return 导致不通过则返回 true
+     */
+    public Boolean checkAnyStdCodeNotPass(ProblemData problemData) {
+        if (checkStdCodeNotPass(problemData.getStdCode())) {
+            return true;
+        }
+        for (ProblemData.StdCode stdCode : problemData.getTestCodeList()) {
+            if (checkStdCodeNotPass(stdCode)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * 检查新的时间和内存限制是否导致了某个代码无法通过了
+     *
+     * @param stdCode 需要检查的代码
+     * @return 导致不通过则返回 true
+     */
+    private Boolean checkStdCodeNotPass(ProblemData.StdCode stdCode) {
+        /// TODO: 完成提交系统后实现
+        return false;
+//        if (stdCode.getSolutionId() == null || !stdCode.getSolutionStatusType().getEndingResult()) {
+//            return false;
+//        }
+//        Integer timeLimit = specialTimeLimit.getOrDefault(stdCode.getLanguageType(), defaultTimeLimit);
+//        Integer memoryLimit = specialMemoryLimit.getOrDefault(stdCode.getLanguageType(), defaultMemoryLimit);
+//        if (!SolutionStatusType.TIME_LIMIT_EXCEEDED.equals(stdCode.getSolutionStatusType())) {
+//            if (timeLimit <= stdCode.getTimeCost()) {
+//                return true;
+//            }
+//        }
+//        return memoryLimit <= stdCode.getMemoryCost();
+    }
+
 }

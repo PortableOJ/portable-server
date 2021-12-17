@@ -20,6 +20,9 @@ import java.io.InputStream;
 import java.util.List;
 import java.util.stream.Collectors;
 
+/**
+ * @author shiroha
+ */
 @Component
 public class SolutionServiceImpl implements SolutionService {
 

@@ -79,9 +79,6 @@ public class ProblemSettingRequest {
         problemData.setDefaultMemoryLimit(this.defaultMemoryLimit);
         problemData.setSpecialTimeLimit(this.specialTimeLimit);
         problemData.setSpecialMemoryLimit(this.specialMemoryLimit);
-        if (problemData.checkAnyStdCodeNotPass()) {
-            result = true;
-        }
 
         problemData.setShareTest(this.shareTest);
 
