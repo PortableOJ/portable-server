@@ -23,6 +23,7 @@
         <lombok.version>1.18.20</lombok.version>
         <commons.version>2.5</commons.version>
         <guava.version>30.1.1-jre</guava.version>
+        <fastjson.version>1.2.79</fastjson.version>
         <mongo.version>2.5.4</mongo.version>
         <mybatis.version>2.2.0</mybatis.version>
         <mysql.version>8.0.25</mysql.version>
@@ -109,6 +110,11 @@
                 <groupId>com.google.guava</groupId>
                 <artifactId>guava</artifactId>
                 <version>${guava.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.alibaba</groupId>
+                <artifactId>fastjson</artifactId>
+                <version>${fastjson.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.springframework.boot</groupId>

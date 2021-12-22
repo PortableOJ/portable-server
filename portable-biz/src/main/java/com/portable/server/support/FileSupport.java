@@ -5,6 +5,9 @@ import com.portable.server.type.LanguageType;
 
 import java.io.InputStream;
 
+/**
+ * @author shiroha
+ */
 public interface FileSupport {
 
     /// region problem

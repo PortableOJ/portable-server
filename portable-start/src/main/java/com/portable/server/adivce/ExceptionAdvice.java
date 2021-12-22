@@ -1,8 +1,8 @@
 package com.portable.server.adivce;
 
 import com.portable.server.exception.ExceptionTextType;
-import com.portable.server.model.response.Response;
 import com.portable.server.exception.PortableException;
+import com.portable.server.model.response.Response;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.MessageSource;
 import org.springframework.context.i18n.LocaleContextHolder;
@@ -13,9 +13,11 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
-import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 
+/**
+ * @author shiroha
+ */
 @Slf4j
 @RestControllerAdvice
 public class ExceptionAdvice {
@@ -36,10 +38,6 @@ public class ExceptionAdvice {
 
     private Response<Void> getResponse(PortableException e) {
         return Response.ofFail(e.getCode(), getMessage(e.getCode(), e.getObjects()));
-    }
-
-    private void Logger() {
-        // TODO
     }
 
     @Order(1)
