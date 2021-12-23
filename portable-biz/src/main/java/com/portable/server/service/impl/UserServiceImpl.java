@@ -2,7 +2,7 @@ package com.portable.server.service.impl;
 
 import com.portable.server.encryption.BCryptEncoder;
 import com.portable.server.exception.PortableException;
-import com.portable.server.manager.AccountManager;
+import com.portable.server.manager.UserManager;
 import com.portable.server.manager.NormalUserManager;
 import com.portable.server.model.request.user.LoginRequest;
 import com.portable.server.model.request.user.RegisterRequest;
@@ -23,7 +23,7 @@ import javax.annotation.Resource;
 public class UserServiceImpl implements UserService {
 
     @Resource
-    private AccountManager accountManager;
+    private UserManager userManager;
 
     @Resource
     private NormalUserManager normalUserManager;
@@ -33,7 +33,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserBasicInfoResponse login(LoginRequest loginRequest) throws PortableException {
-        User user = accountManager.getAccountByHandle(loginRequest.getHandle());
+        User user = userManager.getAccountByHandle(loginRequest.getHandle());
         if (user == null) {
             throw PortableException.of("A-01-001");
         }
@@ -57,7 +57,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public synchronized NormalUserInfoResponse register(RegisterRequest registerRequest) throws PortableException {
-        User user = accountManager.getAccountByHandle(registerRequest.getHandle());
+        User user = userManager.getAccountByHandle(registerRequest.getHandle());
         if (user != null) {
             throw PortableException.of("A-01-003");
         }
@@ -65,11 +65,11 @@ public class UserServiceImpl implements UserService {
         NormalUserData normalUserData = normalUserManager.newUserData();
         normalUserManager.insertNormalUserData(normalUserData);
 
-        user = accountManager.newNormalAccount();
+        user = userManager.newNormalAccount();
         user.setHandle(registerRequest.getHandle());
         user.setPassword(bCryptEncoder.encoder(registerRequest.getPassword()));
         user.setDataId(normalUserData.get_id());
-        accountManager.insertAccount(user);
+        userManager.insertAccount(user);
 
         UserContext.set(user);
         UserContext.set(normalUserData);
@@ -108,7 +108,7 @@ public class UserServiceImpl implements UserService {
     }
 
     private NormalUserData organizationCheck(Long target) throws PortableException {
-        User user = accountManager.getAccountById(target);
+        User user = userManager.getAccountById(target);
         if (user == null) {
             throw PortableException.of("A-01-001");
         }

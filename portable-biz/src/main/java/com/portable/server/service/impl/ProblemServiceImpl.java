@@ -1,7 +1,7 @@
 package com.portable.server.service.impl;
 
 import com.portable.server.exception.PortableException;
-import com.portable.server.manager.AccountManager;
+import com.portable.server.manager.UserManager;
 import com.portable.server.manager.ProblemDataManager;
 import com.portable.server.manager.ProblemManager;
 import com.portable.server.manager.SolutionManager;
@@ -19,7 +19,6 @@ import com.portable.server.service.ProblemService;
 import com.portable.server.type.PermissionType;
 import com.portable.server.type.ProblemAccessType;
 import com.portable.server.type.ProblemStatusType;
-import com.portable.server.type.SolutionStatusType;
 import com.portable.server.util.StreamUtils;
 import com.portable.server.util.UserContext;
 import lombok.Builder;
@@ -117,7 +116,7 @@ public class ProblemServiceImpl implements ProblemService {
     private ProblemManager problemManager;
 
     @Resource
-    private AccountManager accountManager;
+    private UserManager userManager;
 
     @Resource
     private ProblemDataManager problemDataManager;
@@ -430,7 +429,7 @@ public class ProblemServiceImpl implements ProblemService {
                     .problemData(problemData)
                     .build();
         }
-        User user = accountManager.getAccountById(problem.getOwner());
+        User user = userManager.getAccountById(problem.getOwner());
         throw PortableException.of("A-02-005", id, user.getHandle());
     }
 

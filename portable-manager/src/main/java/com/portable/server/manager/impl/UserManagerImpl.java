@@ -1,18 +1,21 @@
 package com.portable.server.manager.impl;
 
-import com.portable.server.manager.AccountManager;
-import com.portable.server.mapper.AccountMapper;
+import com.portable.server.manager.UserManager;
+import com.portable.server.mapper.UserMapper;
 import com.portable.server.model.user.User;
 import com.portable.server.type.AccountType;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
 
+/**
+ * @author shiroha
+ */
 @Component
-public class AccountManagerImpl implements AccountManager {
+public class UserManagerImpl implements UserManager {
 
     @Resource
-    private AccountMapper accountMapper;
+    private UserMapper accountMapper;
 
     @Override
     public User newNormalAccount() {

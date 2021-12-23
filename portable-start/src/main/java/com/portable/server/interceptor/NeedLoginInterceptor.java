@@ -2,7 +2,7 @@ package com.portable.server.interceptor;
 
 import com.portable.server.annotation.NeedLogin;
 import com.portable.server.exception.PortableException;
-import com.portable.server.manager.AccountManager;
+import com.portable.server.manager.UserManager;
 import com.portable.server.manager.NormalUserManager;
 import com.portable.server.model.user.User;
 import com.portable.server.model.user.NormalUserData;
@@ -26,7 +26,7 @@ import java.util.Objects;
 public class NeedLoginInterceptor implements HandlerInterceptor {
 
     @Resource
-    private AccountManager accountManager;
+    private UserManager userManager;
 
     @Resource
     private NormalUserManager normalUserManager;
@@ -67,7 +67,7 @@ public class NeedLoginInterceptor implements HandlerInterceptor {
         UserContext.set(id);
 
         if (Objects.isNull(UserContext.ctx().getId())) {
-            User user = accountManager.getAccountById(id);
+            User user = userManager.getAccountById(id);
             UserContext.set(user);
             NormalUserData userData = normalUserManager.getUserDataById(UserContext.ctx().getDataId());
             UserContext.set(userData);

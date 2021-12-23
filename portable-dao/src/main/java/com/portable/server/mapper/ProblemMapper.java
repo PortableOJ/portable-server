@@ -43,8 +43,6 @@ public interface ProblemMapper {
      */
     Problem selectProblemById(@Param("id") Long id);
 
-//    Problem selectProblemByTitle(String title);
-
     /**
      * 新增题目
      *

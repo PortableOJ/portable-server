@@ -2,7 +2,7 @@ package com.portable.server.manager;
 
 import com.portable.server.model.user.User;
 
-public interface AccountManager {
+public interface UserManager {
 
     User newNormalAccount();
 

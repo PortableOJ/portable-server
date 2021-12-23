@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
-<mapper namespace="com.portable.server.mapper.AccountMapper">
-    <resultMap id="Account" type="com.portable.server.model.user.User">
+<mapper namespace="com.portable.server.mapper.UserMapper">
+    <resultMap id="User" type="com.portable.server.model.user.User">
         <id column="id" jdbcType="BIGINT" property="id"/>
         <result column="data_id" jdbcType="VARCHAR" property="dataId"/>
         <result column="handle" jdbcType="VARCHAR" property="handle"/>
@@ -9,7 +9,7 @@
         <result column="type" jdbcType="VARCHAR" property="type"/>
     </resultMap>
 
-    <parameterMap id="Account" type="com.portable.server.model.user.User">
+    <parameterMap id="User" type="com.portable.server.model.user.User">
         <parameter property="id" javaType="java.lang.Long" jdbcType="BIGINT"/>
         <parameter property="dataId" javaType="java.lang.String" jdbcType="VARCHAR"/>
         <parameter property="handle" javaType="java.lang.String" jdbcType="VARCHAR"/>
@@ -26,17 +26,17 @@
         FROM user
     </sql>
 
-    <select id="selectAccountById" resultMap="Account" parameterType="java.lang.Long">
+    <select id="selectAccountById" resultMap="User" parameterType="java.lang.Long">
         <include refid="selectAll" />
         WHERE id = #{id}
     </select>
 
-    <select id="selectAccountByHandle" resultMap="Account" parameterType="java.lang.String">
+    <select id="selectAccountByHandle" resultMap="User" parameterType="java.lang.String">
         <include refid="selectAll" />
         WHERE handle = #{handle}
     </select>
 
-    <insert id="insertAccount" useGeneratedKeys="true" keyProperty="id" parameterMap="Account">
+    <insert id="insertAccount" useGeneratedKeys="true" keyProperty="id" parameterMap="User">
         INSERT INTO user
         (handle, password, type, data_id)
         VALUES
@@ -55,10 +55,4 @@
         WHERE id = #{id}
     </update>
 
-    <update id="linkAccount">
-        UPDATE user
-        SET data_id = #{dataId}
-        WHERE id = #{id}
-        AND data_id is null
-    </update>
 </mapper>

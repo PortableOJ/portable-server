@@ -2,7 +2,7 @@ package com.portable.server.service.impl;
 
 import com.portable.server.encryption.BCryptEncoder;
 import com.portable.server.exception.PortableException;
-import com.portable.server.manager.impl.AccountManagerImpl;
+import com.portable.server.manager.impl.UserManagerImpl;
 import com.portable.server.manager.impl.NormalUserManagerImpl;
 import com.portable.server.model.request.user.LoginRequest;
 import com.portable.server.model.request.user.RegisterRequest;
@@ -32,7 +32,7 @@ public class UserServiceImplTest {
     private UserServiceImpl userService;
 
     @Mock
-    private AccountManagerImpl accountManager;
+    private UserManagerImpl accountManager;
 
     @Mock
     private NormalUserManagerImpl normalUserManager;
