@@ -158,7 +158,7 @@ public class UserServiceImplTest {
         Mockito.doAnswer(invocationOnMock -> {
             User user = invocationOnMock.getArgument(0, User.class);
             user.setId(1L);
-            return user;
+            return 1;
         }).when(accountManager).insertAccount(Mockito.any());
 
         RegisterRequest registerRequest = new RegisterRequest();
@@ -225,7 +225,7 @@ public class UserServiceImplTest {
         Mockito.when(normalUserManager.getUserDataById(Mockito.any())).thenReturn(normalUserData);
 
         try {
-            userService.addPermission(1L, PermissionType.CREATE_EDIT_PROBLEM);
+            userService.addPermission(1L, PermissionType.CREATE_AND_EDIT_PROBLEM);
             assert false;
         } catch (PortableException e) {
             assert Objects.equals("A-02-007", e.getCode());
@@ -237,13 +237,13 @@ public class UserServiceImplTest {
         UserContext.ctx().setOrganization(OrganizationType.ACMER);
         UserContext.ctx().setPermissionTypeSet(new HashSet<PermissionType>() {{
             add(PermissionType.GRANT);
-            add(PermissionType.CREATE_EDIT_PROBLEM);
+            add(PermissionType.CREATE_AND_EDIT_PROBLEM);
         }});
         Mockito.when(accountManager.getAccountById(Mockito.any())).thenReturn(user);
         Mockito.when(normalUserManager.getUserDataById(Mockito.any())).thenReturn(normalUserData);
 
         try {
-            userService.addPermission(1L, PermissionType.CREATE_EDIT_PROBLEM);
+            userService.addPermission(1L, PermissionType.CREATE_AND_EDIT_PROBLEM);
         } catch (PortableException e) {
             assert false;
         }
@@ -257,7 +257,7 @@ public class UserServiceImplTest {
         Mockito.when(normalUserManager.getUserDataById(Mockito.any())).thenReturn(normalUserData);
 
         try {
-            userService.removePermission(1L, PermissionType.CREATE_EDIT_PROBLEM);
+            userService.removePermission(1L, PermissionType.CREATE_AND_EDIT_PROBLEM);
             assert false;
         } catch (PortableException e) {
             assert Objects.equals("A-02-007", e.getCode());
@@ -269,13 +269,13 @@ public class UserServiceImplTest {
         UserContext.ctx().setOrganization(OrganizationType.ACMER);
         UserContext.ctx().setPermissionTypeSet(new HashSet<PermissionType>() {{
             add(PermissionType.GRANT);
-            add(PermissionType.CREATE_EDIT_PROBLEM);
+            add(PermissionType.CREATE_AND_EDIT_PROBLEM);
         }});
         Mockito.when(accountManager.getAccountById(Mockito.any())).thenReturn(user);
         Mockito.when(normalUserManager.getUserDataById(Mockito.any())).thenReturn(normalUserData);
 
         try {
-            userService.removePermission(1L, PermissionType.CREATE_EDIT_PROBLEM);
+            userService.removePermission(1L, PermissionType.CREATE_AND_EDIT_PROBLEM);
         } catch (PortableException e) {
             assert false;
         }
