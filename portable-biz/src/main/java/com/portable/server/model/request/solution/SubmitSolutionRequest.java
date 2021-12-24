@@ -1,6 +1,7 @@
 package com.portable.server.model.request.solution;
 
 import com.portable.server.model.solution.Solution;
+import com.portable.server.model.solution.SolutionData;
 import com.portable.server.type.LanguageType;
 import lombok.Data;
 
@@ -34,5 +35,9 @@ public class SubmitSolutionRequest {
         solution.setProblemId(problemId);
         solution.setContestId(contestId);
         solution.setLanguageType(languageType);
+    }
+
+    public void toSolutionData(SolutionData solutionData) {
+        solutionData.setCode(code);
     }
 }

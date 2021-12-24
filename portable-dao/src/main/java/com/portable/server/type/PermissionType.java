@@ -41,6 +41,11 @@ public enum PermissionType implements ExceptionTextType {
      * 编辑所有可访问的题目
      */
     EDIT_NOT_OWNER_PROBLEM("编辑所有可访问的题目"),
+
+    /**
+     * 查看所有公开提交的提交详情
+     */
+    VIEW_PUBLIC_SOLUTION("查看所有公开提交的提交详情"),
     ;
 
     private final String text;

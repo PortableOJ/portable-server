@@ -1,6 +1,7 @@
 package com.portable.server.model.response.solution;
 
 import com.portable.server.model.solution.Solution;
+import com.portable.server.model.solution.SolutionData;
 import com.portable.server.type.LanguageType;
 import com.portable.server.type.SolutionStatusType;
 import com.portable.server.type.SolutionType;
@@ -66,7 +67,12 @@ public class SolutionDetailResponse {
      */
     private String code;
 
-    private SolutionDetailResponse(Solution solution, String code) {
+    /**
+     * 编译信息
+     */
+    private String compileMsg;
+
+    private SolutionDetailResponse(Solution solution, SolutionData solutionData) {
         this.id = solution.getId();
         this.submitTime = solution.getSubmitTime();
         this.userId = solution.getUserId();
@@ -77,10 +83,11 @@ public class SolutionDetailResponse {
         this.solutionType = solution.getSolutionType();
         this.timeCost = solution.getTimeCost();
         this.memoryCost = solution.getMemoryCost();
-        this.code = code;
+        this.code = solutionData.getCode();
+        this.compileMsg = solutionData.getCompileMsg();
     }
 
-    public static SolutionDetailResponse of(Solution solution, String code) {
-        return new SolutionDetailResponse(solution, code);
+    public static SolutionDetailResponse of(Solution solution, SolutionData solutionData) {
+        return new SolutionDetailResponse(solution, solutionData);
     }
 }
