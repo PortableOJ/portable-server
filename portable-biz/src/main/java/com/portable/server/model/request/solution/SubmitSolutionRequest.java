@@ -4,6 +4,9 @@ import com.portable.server.model.solution.Solution;
 import com.portable.server.type.LanguageType;
 import lombok.Data;
 
+/**
+ * @author shiroha
+ */
 @Data
 public class SubmitSolutionRequest {
 

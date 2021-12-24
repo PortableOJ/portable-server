@@ -2,6 +2,9 @@ package com.portable.server.manager;
 
 import com.portable.server.model.problem.ProblemData;
 
+/**
+ * @author shiroha
+ */
 public interface ProblemDataManager {
 
     ProblemData newProblemData();

@@ -22,10 +22,6 @@ public class PageRequest<T> {
 
     private T queryData;
 
-    public Integer offset() {
-        return pageSize * (pageNum - 1);
-    }
-
     public void verify() {
         if (null == pageNum || pageNum < DEFAULT_PAGE_NUM) {
             pageNum = DEFAULT_PAGE_NUM;

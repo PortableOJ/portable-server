@@ -10,9 +10,9 @@ public interface UserManager {
 
     User getAccountById(Long id);
 
-    Integer insertAccount(User user);
+    void insertAccount(User user);
 
-    Integer updateHandle(Long id, String handle);
+    void updateHandle(Long id, String handle);
 
-    Integer updatePassword(Long id, String password);
+    void updatePassword(Long id, String password);
 }

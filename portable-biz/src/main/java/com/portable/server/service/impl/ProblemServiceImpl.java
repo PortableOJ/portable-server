@@ -136,7 +136,7 @@ public class ProblemServiceImpl implements ProblemService {
 
         Integer problemCount = problemManager.countProblemByTypeAndOwnerId(problemAccessTypeList, userId);
         PageResponse<ProblemListResponse> problemPageResponse = PageResponse.of(pageRequest, problemCount);
-        List<Problem> problemList = problemManager.getProblemListByTypeAndOwnerIdAndPaged(problemAccessTypeList, userId, pageRequest.getPageSize(), pageRequest.offset());
+        List<Problem> problemList = problemManager.getProblemListByTypeAndOwnerIdAndPaged(problemAccessTypeList, userId, problemPageResponse.getPageSize(), problemPageResponse.offset());
         List<ProblemListResponse> problemDataResponseList = isLogin
                 ? problemList.stream()
                 .parallel()

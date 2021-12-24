@@ -8,6 +8,9 @@ import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
+/**
+ * @author shiroha
+ */
 @Repository
 public interface SolutionMapper {
 

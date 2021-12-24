@@ -27,25 +27,11 @@
         <parameter property="memoryCost" javaType="java.lang.Integer" jdbcType="INTEGER"/>
    </parameterMap>
 
-    <sql id="selectAll">
-        SELECT id,
-               submit_time,
-               user_id,
-               problem_id,
-               contest_id,
-               language_type,
-               status,
-               solution_type,
-               time_cost,
-               memory_cost
-        FROM solution
-    </sql>
     <select id="countSolutionByType" resultType="java.lang.Integer">
         SELECT count(*)
         FROM solution
         WHERE solution_type = #{solutionType}
     </select>
-
 
     <select id="countSolutionByContest" resultType="java.lang.Integer">
         SELECT count(*)
@@ -54,25 +40,25 @@
     </select>
 
     <select id="selectSolutionByTypeAndPage" resultMap="Solution">
-        <include refid="selectAll"/>
+        SELECT * FROM solution
         WHERE solution_type = #{solutionType}
         LIMIT #{pageSize}
         OFFSET #{offset}
     </select>
     <select id="selectSolutionByContestAndPage" resultType="com.portable.server.model.solution.Solution">
-        <include refid="selectAll"/>
+        SELECT * FROM solution
         WHERE contest_id = #{contestId}
         LIMIT #{pageSize}
         OFFSET #{offset}
     </select>
 
     <select id="selectSolutionById" resultMap="Solution">
-        <include refid="selectAll"/>
+        SELECT * FROM solution
         WHERE id = #{id}
     </select>
 
     <select id="selectLastSolutionByUserIdAndProblemId" resultMap="Solution">
-        <include refid="selectAll"/>
+        SELECT * FROM solution
         WHERE user_id = #{userId}
         AND problem_id = #{problemId}
         LIMIT 1
@@ -90,6 +76,7 @@
         SET status = #{statusType}
         WHERE id = #{id}
     </update>
+
     <update id="updateCostAndStatus">
         UPDATE solution
         SET status = #{statusType},

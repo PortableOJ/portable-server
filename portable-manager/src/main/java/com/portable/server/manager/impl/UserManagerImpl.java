@@ -15,7 +15,7 @@ import javax.annotation.Resource;
 public class UserManagerImpl implements UserManager {
 
     @Resource
-    private UserMapper accountMapper;
+    private UserMapper userMapper;
 
     @Override
     public User newNormalAccount() {
@@ -30,26 +30,26 @@ public class UserManagerImpl implements UserManager {
 
     @Override
     public User getAccountByHandle(String handle) {
-        return accountMapper.selectAccountByHandle(handle);
+        return userMapper.selectAccountByHandle(handle);
     }
 
     @Override
     public User getAccountById(Long id) {
-        return accountMapper.selectAccountById(id);
+        return userMapper.selectAccountById(id);
     }
 
     @Override
-    public Integer insertAccount(User user) {
-        return accountMapper.insertAccount(user);
+    public void insertAccount(User user) {
+        userMapper.insertAccount(user);
     }
 
     @Override
-    public Integer updateHandle(Long id, String handle) {
-        return accountMapper.updateHandle(id, handle);
+    public void updateHandle(Long id, String handle) {
+        userMapper.updateHandle(id, handle);
     }
 
     @Override
-    public Integer updatePassword(Long id, String password) {
-        return accountMapper.updatePassword(id, password);
+    public void updatePassword(Long id, String password) {
+        userMapper.updatePassword(id, password);
     }
 }

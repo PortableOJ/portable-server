@@ -38,13 +38,14 @@ public class SolutionController {
     @NeedLogin(false)
     @GetMapping("/getContestStatus")
     public Response<PageResponse<SolutionListResponse>> getContestSolutionList(Integer pageNum, Integer pageSize, Long contestId) {
-        return Response.ofOk(solutionService.getContestStatus(
-                PageRequest.<Long>builder()
-                        .pageNum(pageNum)
-                        .pageSize(pageSize)
-                        .queryData(contestId)
-                        .build()
-        ));
+//        return Response.ofOk(solutionService.getContestStatus(
+//                PageRequest.<Long>builder()
+//                        .pageNum(pageNum)
+//                        .pageSize(pageSize)
+//                        .queryData(contestId)
+//                        .build()
+//        ));
+        return null;
     }
 
     @NeedLogin

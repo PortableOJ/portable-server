@@ -27,23 +27,20 @@ public interface UserMapper {
     /**
      * 新增一个用户
      * @param user 新增的用户信息
-     * @return 新增数量（0/1）
      */
-    Integer insertAccount(User user);
+    void insertAccount(User user);
 
     /**
      * 更新用户的用户名
      * @param id 用户的 ID
      * @param handle 用户的新用户名
-     * @return 修改成功的数量（0/1）
      */
-    Integer updateHandle(@Param("id") Long id, @Param("handle") String handle);
+    void updateHandle(@Param("id") Long id, @Param("handle") String handle);
 
     /**
      * 更新密码
      * @param id 用户的 ID
      * @param password 更新后的密码
-     * @return 修改成功的数量（0/1）
      */
-    Integer updatePassword(@Param("id") Long id, @Param("password") String password);
+    void updatePassword(@Param("id") Long id, @Param("password") String password);
 }
