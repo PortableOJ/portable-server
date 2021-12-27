@@ -26,12 +26,4 @@ public interface SolutionService {
      * @throws PortableException 出现非法访问或不存在此提交则抛出错误
      */
     SolutionDetailResponse getSolution(Long id) throws PortableException;
-
-    /**
-     * 提交代码
-     * @param submitSolutionRequest 提交的代码信息
-     * @return 提交的内容
-     * @throws PortableException 出现非法提交或不存在对应题目则抛出错误
-     */
-    SolutionDetailResponse submit(SubmitSolutionRequest submitSolutionRequest) throws PortableException;
 }

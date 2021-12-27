@@ -17,6 +17,9 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
 
+/**
+ * @author shiroha
+ */
 @RestController
 @RequestMapping("/api/solution")
 public class SolutionController {
@@ -33,25 +36,6 @@ public class SolutionController {
                         .pageSize(pageSize)
                         .build()
         ));
-    }
-
-    @NeedLogin(false)
-    @GetMapping("/getContestStatus")
-    public Response<PageResponse<SolutionListResponse>> getContestSolutionList(Integer pageNum, Integer pageSize, Long contestId) {
-//        return Response.ofOk(solutionService.getContestStatus(
-//                PageRequest.<Long>builder()
-//                        .pageNum(pageNum)
-//                        .pageSize(pageSize)
-//                        .queryData(contestId)
-//                        .build()
-//        ));
-        return null;
-    }
-
-    @NeedLogin
-    @PostMapping("/submit")
-    public Response<SolutionDetailResponse> submit(@RequestBody SubmitSolutionRequest submitSolutionRequest) throws PortableException {
-        return Response.ofOk(solutionService.submit(submitSolutionRequest));
     }
 
     @NeedLogin(false)

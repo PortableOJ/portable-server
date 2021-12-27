@@ -1,18 +1,19 @@
 package com.portable.server.service.impl;
 
 import com.portable.server.exception.PortableException;
-import com.portable.server.manager.UserManager;
-import com.portable.server.manager.ProblemDataManager;
-import com.portable.server.manager.ProblemManager;
-import com.portable.server.manager.SolutionManager;
+import com.portable.server.manager.*;
 import com.portable.server.model.problem.Problem;
 import com.portable.server.model.problem.ProblemData;
 import com.portable.server.model.request.PageRequest;
 import com.portable.server.model.request.problem.*;
+import com.portable.server.model.request.solution.SubmitSolutionRequest;
 import com.portable.server.model.response.PageResponse;
 import com.portable.server.model.response.problem.ProblemDataResponse;
 import com.portable.server.model.response.problem.ProblemListResponse;
 import com.portable.server.model.response.problem.ProblemStdTestCodeResponse;
+import com.portable.server.model.response.solution.SolutionDetailResponse;
+import com.portable.server.model.solution.Solution;
+import com.portable.server.model.solution.SolutionData;
 import com.portable.server.model.user.User;
 import com.portable.server.support.FileSupport;
 import com.portable.server.service.ProblemService;
@@ -116,13 +117,16 @@ public class ProblemServiceImpl implements ProblemService {
     private ProblemManager problemManager;
 
     @Resource
-    private UserManager userManager;
-
-    @Resource
     private ProblemDataManager problemDataManager;
 
     @Resource
+    private UserManager userManager;
+
+    @Resource
     private SolutionManager solutionManager;
+
+    @Resource
+    private SolutionDataManager solutionDataManager;
 
     @Resource
     private FileSupport fileSupport;
@@ -388,6 +392,22 @@ public class ProblemServiceImpl implements ProblemService {
     @Override
     public void treatAndCheckProblem(Long id) throws PortableException {
         // TODO treat it!
+    }
+
+    @Override
+    public SolutionDetailResponse submit(SubmitSolutionRequest submitSolutionRequest) throws PortableException {
+        ProblemPackage problemPackage = getForViewProblem(submitSolutionRequest.getProblemId());
+        if (!ProblemStatusType.NORMAL.equals(problemPackage.getProblem().getStatusType())) {
+            throw PortableException.of("A-05-004");
+        }
+        Solution solution = solutionManager.newSolution();
+        SolutionData solutionData = solutionDataManager.newSolutionData(problemPackage.getProblemData());
+        submitSolutionRequest.toSolution(solution);
+        submitSolutionRequest.toSolutionData(solutionData);
+        solutionDataManager.insertSolutionData(solutionData);
+        solution.setDataId(solutionData.get_id());
+        solutionManager.insertSolution(solution);
+        return SolutionDetailResponse.of(solution, solutionData);
     }
 
     private ProblemPackage getForViewProblem(Long id) throws PortableException {
