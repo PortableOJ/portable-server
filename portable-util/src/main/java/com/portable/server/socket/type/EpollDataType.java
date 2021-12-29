@@ -19,9 +19,4 @@ public enum EpollDataType {
      * 复杂数据
      */
     COMPLEX,
-
-    /**
-     * IP 与端口地址
-     */
-    ADDRESS,
 }

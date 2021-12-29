@@ -1,5 +1,6 @@
 package com.portable.server.service;
 
+import com.portable.server.exception.PortableException;
 import com.portable.server.model.response.judge.HeartbeatResponse;
 import com.portable.server.model.response.judge.SolutionInfoResponse;
 import com.portable.server.type.SolutionStatusType;
@@ -16,8 +17,16 @@ public interface JudgeService {
      * 提交一个 judge 任务
      *
      * @param solutionId 目标 solution 的 ID
+     * @throws PortableException 提供到 solution ID 是不存在时抛出
      */
-    void addJudgeTask(Long solutionId);
+    void addJudgeTask(Long solutionId) throws PortableException;
+
+    /**
+     * 提交一个 test 任务
+     *
+     * @param problemId 目标 solution 的 ID
+     */
+    void addTestTask(Long problemId);
 
     /**
      * 主动打断一个 judge 任务
