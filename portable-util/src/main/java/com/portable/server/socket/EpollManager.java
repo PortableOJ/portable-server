@@ -3,7 +3,6 @@ package com.portable.server.socket;
 import com.portable.server.socket.annotation.EpollMethod;
 import com.portable.server.socket.annotation.EpollParam;
 import com.portable.server.socket.model.MethodDescribe;
-import com.portable.server.socket.type.EpollDataType;
 import com.portable.server.util.Constant;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.ApplicationContext;
@@ -29,6 +28,7 @@ public class EpollManager {
 
     private Map<String, MethodDescribe> registerMethod;
     private static final Set<Class<?>> CLASS_SET;
+    private static final ThreadLocal<String> ADDRESS_THREAD_LOCAL;
 
     private static Thread runner;
 
@@ -37,6 +37,11 @@ public class EpollManager {
 
     static {
         CLASS_SET = new HashSet<>();
+        ADDRESS_THREAD_LOCAL = new ThreadLocal<>();
+    }
+
+    public static String getAddress() {
+        return ADDRESS_THREAD_LOCAL.get();
     }
 
     @PostConstruct
@@ -130,7 +135,6 @@ public class EpollManager {
                 case COMPLEX:
                     pos = readComplexValue(buffer, pos, valueBuilder);
                     break;
-                case ADDRESS:
                 case DEFAULT:
                 default:
                     log.error("Illegal key type, key: {}, type: {}", key, paramType.getDataType());
@@ -159,18 +163,17 @@ public class EpollManager {
                     params[paramType.getPosition()] = null;
                 }
             } else {
-                if (EpollDataType.ADDRESS.equals(paramType.getDataType())) {
-                    params[paramType.getPosition()] = address;
-                } else {
-                    log.error("Empty param: {}, type: {}", paramType.getName(), paramType.getType());
-                    params[paramType.getPosition()] = null;
-                }
+                log.error("Empty param: {}, type: {}", paramType.getName(), paramType.getType());
+                params[paramType.getPosition()] = null;
             }
         });
         try {
+            ADDRESS_THREAD_LOCAL.set(address);
             return methodDescribe.getMethod().invoke(methodDescribe.getBean(), params);
         } catch (IllegalAccessException | InvocationTargetException e) {
             log.error("Fail invoke, method: {}, data: {}", method, data);
+        } finally {
+            ADDRESS_THREAD_LOCAL.remove();
         }
         return null;
     }

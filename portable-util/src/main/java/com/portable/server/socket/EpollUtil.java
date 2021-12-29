@@ -17,21 +17,41 @@ import java.nio.channels.SocketChannel;
 import java.nio.charset.StandardCharsets;
 import java.util.Iterator;
 import java.util.Set;
+import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 
 /**
  * @author shiroha
  */
 public class EpollUtil {
 
-    private static final Integer BUFFER_LEN = 4096;
+    /**
+     * 回车符号的字节流
+     */
     private static final ByteBuffer RETURN_BUFFER = ByteBuffer.allocate(1);
 
+    /**
+     * Epoll 的选择器
+     */
     private static Selector selector;
 
+    /**
+     * 管理器
+     */
     private static EpollManager epollManager;
+
+    /**
+     * 执行的线程池
+     */
+    private static final ThreadPoolExecutor THREAD_POOL_EXECUTOR;
 
     static {
         RETURN_BUFFER.put(Constant.RETURN_BYTE);
+        THREAD_POOL_EXECUTOR = new ThreadPoolExecutor(Constant.DEFAULT_JUDGE_NUM, Constant.DEFAULT_JUDGE_NUM * 2,
+                60, TimeUnit.SECONDS, new ArrayBlockingQueue<>(Constant.QUEUE_WAIT_NUM),
+                Executors.defaultThreadFactory(), new ThreadPoolExecutor.CallerRunsPolicy());
     }
 
     public static void initEpollSocket(Integer port, EpollManager epollManager) throws Exception {
@@ -53,7 +73,7 @@ public class EpollUtil {
                 if (selectionKey.isAcceptable()) {
                     acceptHandler(selectionKey);
                 } else if (selectionKey.isReadable()) {
-                    readHandler(selectionKey);
+                    THREAD_POOL_EXECUTOR.execute(() -> readHandler(selectionKey));
                 }
             }
         }
@@ -97,7 +117,6 @@ public class EpollUtil {
     private static void acceptHandler(SelectionKey selectionKey) throws IOException {
         ServerSocketChannel serverSocketChannel = (ServerSocketChannel) selectionKey.channel();
         SocketChannel accept = serverSocketChannel.accept();
-        System.out.println(accept.getRemoteAddress());
         accept.configureBlocking(false);
         BufferReader bufferReader = new BufferReader(accept);
         accept.register(selector, SelectionKey.OP_READ, bufferReader);
@@ -138,7 +157,7 @@ public class EpollUtil {
     private static void writeFile(SocketChannel channel, File file) throws IOException {
         InputStream inputStream = new FileInputStream(file);
         int bytesRead;
-        for (byte[] buffer = new byte[BUFFER_LEN]; (bytesRead = inputStream.read(buffer)) > 0; ) {
+        for (byte[] buffer = new byte[Constant.BUFFER_LEN]; (bytesRead = inputStream.read(buffer)) > 0; ) {
             write(channel, buffer, bytesRead);
         }
     }
