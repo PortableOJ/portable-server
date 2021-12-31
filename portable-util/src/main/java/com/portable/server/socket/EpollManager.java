@@ -1,5 +1,6 @@
 package com.portable.server.socket;
 
+import com.portable.server.exception.PortableException;
 import com.portable.server.socket.annotation.EpollMethod;
 import com.portable.server.socket.annotation.EpollParam;
 import com.portable.server.socket.model.MethodDescribe;
@@ -170,8 +171,8 @@ public class EpollManager {
         try {
             ADDRESS_THREAD_LOCAL.set(address);
             return methodDescribe.getMethod().invoke(methodDescribe.getBean(), params);
-        } catch (IllegalAccessException | InvocationTargetException e) {
-            log.error("Fail invoke, method: {}, data: {}", method, data);
+        } catch (Exception e) {
+            log.error("Fail invoke, method: {}, data: {}, exception: {}", method, data, e.getMessage());
         } finally {
             ADDRESS_THREAD_LOCAL.remove();
         }

@@ -1,12 +1,14 @@
 package com.portable.server.exception;
 
 import lombok.Getter;
+import lombok.ToString;
 
 /**
  * Portable 异常
  *
  * @author shiroha
  */
+@ToString
 public class PortableException extends Exception {
 
     @Getter
@@ -22,6 +24,11 @@ public class PortableException extends Exception {
     public PortableException(String code, Object... objects) {
         this.code = code;
         this.objects = objects;
+    }
+
+    @Override
+    public String getMessage() {
+        return toString();
     }
 
     public static PortableException systemDefaultException() {

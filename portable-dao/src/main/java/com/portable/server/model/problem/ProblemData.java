@@ -186,4 +186,18 @@ public class ProblemData {
     public void nextVersion() {
         this.version++;
     }
+
+    public Integer getTimeLimit(LanguageType languageType) {
+        if (specialTimeLimit.containsKey(languageType)) {
+            return specialTimeLimit.get(languageType);
+        }
+        return defaultTimeLimit;
+    }
+
+    public Integer getMemoryLimit(LanguageType languageType) {
+        if (specialMemoryLimit.containsKey(languageType)) {
+            return specialMemoryLimit.get(languageType);
+        }
+        return defaultMemoryLimit;
+    }
 }

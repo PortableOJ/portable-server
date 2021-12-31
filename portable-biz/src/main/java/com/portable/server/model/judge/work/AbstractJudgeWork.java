@@ -2,6 +2,7 @@ package com.portable.server.model.judge.work;
 
 import com.portable.server.type.JudgeWorkType;
 import lombok.Getter;
+import lombok.Setter;
 
 /**
  * @author shiroha
@@ -17,6 +18,7 @@ public abstract class AbstractJudgeWork implements Comparable<AbstractJudgeWork>
     /**
      * 被分配到的 judge 容器
      */
+    @Setter
     private String judgeContainer;
 
     public AbstractJudgeWork(JudgeWorkType judgeWorkType) {

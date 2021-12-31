@@ -1,6 +1,7 @@
 package com.portable.server.service;
 
 import com.portable.server.exception.PortableException;
+import com.portable.server.model.ServiceVerifyCode;
 import com.portable.server.model.response.judge.HeartbeatResponse;
 import com.portable.server.model.response.judge.SolutionInfoResponse;
 import com.portable.server.type.SolutionStatusType;
@@ -45,7 +46,7 @@ public interface JudgeService {
      *
      * @return 设备码
      */
-    String serviceCode();
+    ServiceVerifyCode getServiceCode();
 
     /**
      * 注册设备
@@ -56,14 +57,14 @@ public interface JudgeService {
      * @param languageVersion 所有的语言版本信息
      * @return 返回注册成功后为其分配的编号
      */
-    String registerJudge(String serverCode, Integer maxThreadCore, Integer maxSocketCore, Map<String, String> languageVersion);
+    String registerJudge(String serverCode, Integer maxThreadCore, Integer maxSocketCore, Map<String, String> languageVersion) throws PortableException;
 
     /**
      * 新增加一个 TCP 连接
      *
      * @param judgeCode 被分配的编号
      */
-    void append(String judgeCode);
+    void append(String judgeCode) throws PortableException;
 
     /**
      * 心跳包
@@ -72,7 +73,7 @@ public interface JudgeService {
      * @param threadAccumulation 当前线程池堆积任务数量
      * @return 拉取的任务
      */
-    HeartbeatResponse heartBeat(Integer socketAccumulation, Integer threadAccumulation);
+    HeartbeatResponse heartBeat(Integer socketAccumulation, Integer threadAccumulation) throws PortableException;
 
     /**
      * 获取提交的信息
@@ -80,7 +81,7 @@ public interface JudgeService {
      * @param solutionId 提交的 ID
      * @return 提交的信息
      */
-    SolutionInfoResponse getSolutionInfo(Long solutionId);
+    SolutionInfoResponse getSolutionInfo(Long solutionId) throws PortableException;
 
     /**
      * 获取提交的代码
