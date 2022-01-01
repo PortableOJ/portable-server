@@ -47,11 +47,6 @@ public class JudgeContainer {
     private Date lastHeartbeat;
 
     /**
-     * 所有的 socket
-     */
-    private Set<String> sockets;
-
-    /**
      * 正在进行中的 judge 任务
      */
     private Map<Long, SolutionJudgeWork> judgeWorkMap;
