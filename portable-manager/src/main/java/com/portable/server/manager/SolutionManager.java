@@ -39,6 +39,11 @@ public interface SolutionManager {
 
     List<Solution> selectSolutionByContestAndPage(Integer pageSize, Integer offset, Long contestId);
 
+    /**
+     * 根据 ID 获取 solution
+     * @param id solution 的 ID
+     * @return 对应的 solution
+     */
     Solution selectSolutionById(Long id);
 
     /**
@@ -49,9 +54,25 @@ public interface SolutionManager {
      */
     Solution selectLastSolutionByUserIdAndProblemId(Long userId, Long problemId);
 
+    /**
+     * 新增一个 solution
+     * @param solution 需要新增的 solution
+     */
     void insertSolution(Solution solution);
 
+    /**
+     * 更新 solution 的状态
+     * @param id solution 的 ID
+     * @param statusType 新的 solution 的状态
+     */
     void updateStatus(Long id, SolutionStatusType statusType);
 
+    /**
+     * 更新提交的时间和内存消耗以及状态，内存和时间的消耗取较大值
+     * @param id solution 的 ID
+     * @param statusType 新的 solution 的状态
+     * @param timeCost 耗时
+     * @param memoryCost 内存消耗
+     */
     void updateCostAndStatus(Long id, SolutionStatusType statusType, Integer timeCost, Integer memoryCost);
 }

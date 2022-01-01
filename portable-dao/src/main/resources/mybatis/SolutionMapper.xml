@@ -80,8 +80,8 @@
     <update id="updateCostAndStatus">
         UPDATE solution
         SET status = #{statusType},
-            time_cost = #{timeCost},
-            memory_cost = #{memory_cost}
+            time_cost = GREATEST(time_cost, #{timeCost}),
+            memory_cost = GREATEST(memory_cost, #{memoryCost})
         WHERE id = #{id}
     </update>
 </mapper>
