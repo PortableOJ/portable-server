@@ -142,7 +142,7 @@ public interface JudgeService {
     String getStandardJudgeCode(String name);
 
     /**
-     * 获取题目的标准输入名称
+     * 获取题目的标准输入文件
      *
      * @param name 输入名称
      * @return 输入的文件
@@ -150,7 +150,7 @@ public interface JudgeService {
     File getProblemInputTest(String name);
 
     /**
-     * 获取题目的标准输出名称
+     * 获取题目的标准输出文件
      *
      * @param name 输出名称
      * @return 输出的文件
