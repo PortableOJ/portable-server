@@ -56,6 +56,7 @@ public interface JudgeService {
      * @param maxSocketCore   最大网络连接池数量
      * @param languageVersion 所有的语言版本信息
      * @return 返回注册成功后为其分配的编号
+     * @throws PortableException serverCode 错误则抛出
      */
     String registerJudge(String serverCode, Integer maxThreadCore, Integer maxSocketCore, Map<String, String> languageVersion) throws PortableException;
 
@@ -63,6 +64,7 @@ public interface JudgeService {
      * 新增加一个 TCP 连接
      *
      * @param judgeCode 被分配的编号
+     * @throws PortableException judgeCode 错误则抛出
      */
     void append(String judgeCode) throws PortableException;
 
@@ -72,6 +74,7 @@ public interface JudgeService {
      * @param socketAccumulation 当前的 socket 堆积任务数量
      * @param threadAccumulation 当前线程池堆积任务数量
      * @return 拉取的任务
+     * @throws PortableException 当前未记录此连接则抛出
      */
     HeartbeatResponse heartBeat(Integer socketAccumulation, Integer threadAccumulation) throws PortableException;
 
@@ -80,6 +83,7 @@ public interface JudgeService {
      *
      * @param solutionId 提交的 ID
      * @return 提交的信息
+     * @throws PortableException 遇到意料之外的情况则抛出错误
      */
     SolutionInfoResponse getSolutionInfo(Long solutionId) throws PortableException;
 
@@ -88,16 +92,18 @@ public interface JudgeService {
      *
      * @param solutionId 提交的 ID
      * @return 提交的代码内容
+     * @throws PortableException 遇到意料之外的情况则抛出错误
      */
-    String getSolutionCode(Long solutionId);
+    String getSolutionCode(Long solutionId) throws PortableException;
 
     /**
      * 获取题目的 DIY Judge 代码
      *
      * @param problemId 题目的 ID
      * @return 题目的 DIY judge 代码
+     * @throws PortableException 遇到意料之外的情况则抛出错误
      */
-    String getProblemJudgeCode(Long problemId);
+    String getProblemJudgeCode(Long problemId) throws PortableException;
 
     /**
      * 提交编译结果
@@ -105,8 +111,9 @@ public interface JudgeService {
      * @param solutionId    对应的提交 ID
      * @param compileResult 编译结果（true -> 通过）
      * @param compileMsg    编译信息
+     * @throws PortableException 遇到意料之外的情况则抛出错误
      */
-    void reportCompileResult(Long solutionId, Boolean compileResult, String compileMsg);
+    void reportCompileResult(Long solutionId, Boolean compileResult, String compileMsg) throws PortableException;
 
     /**
      * 获取运行结果
@@ -115,8 +122,9 @@ public interface JudgeService {
      * @param statusType 状态
      * @param timeCost   耗时
      * @param memoryCost 内存消耗
+     * @throws PortableException 遇到意料之外的情况则抛出错误
      */
-    void reportRunningResult(Long solutionId, SolutionStatusType statusType, Long timeCost, Long memoryCost);
+    void reportRunningResult(Long solutionId, SolutionStatusType statusType, Integer timeCost, Integer memoryCost) throws PortableException;
 
     /**
      * 获取默认的标准 judge 列表
