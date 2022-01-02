@@ -29,4 +29,9 @@ public enum JudgeCodeType implements ExceptionTextType {
         this.text = text;
         this.path = path;
     }
+
+    public String getCode() {
+        // TODO
+        return null;
+    }
 }

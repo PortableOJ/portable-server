@@ -15,6 +15,7 @@ import com.portable.server.model.response.solution.SolutionDetailResponse;
 import com.portable.server.model.solution.Solution;
 import com.portable.server.model.solution.SolutionData;
 import com.portable.server.model.user.User;
+import com.portable.server.service.JudgeService;
 import com.portable.server.support.FileSupport;
 import com.portable.server.service.ProblemService;
 import com.portable.server.type.PermissionType;
@@ -130,6 +131,9 @@ public class ProblemServiceImpl implements ProblemService {
 
     @Resource
     private FileSupport fileSupport;
+
+    @Resource
+    private JudgeService judgeService;
 
     @Override
     public PageResponse<ProblemListResponse> getProblemList(PageRequest<Void> pageRequest) {
@@ -407,6 +411,8 @@ public class ProblemServiceImpl implements ProblemService {
         solutionDataManager.insertSolutionData(solutionData);
         solution.setDataId(solutionData.get_id());
         solutionManager.insertSolution(solution);
+        judgeService.addJudgeTask(solution.getId());
+
         return SolutionDetailResponse.of(solution, solutionData);
     }
 

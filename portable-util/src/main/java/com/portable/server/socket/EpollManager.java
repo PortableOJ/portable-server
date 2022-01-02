@@ -15,10 +15,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
 import java.nio.charset.StandardCharsets;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 /**
  * @author shiroha
@@ -28,6 +25,7 @@ import java.util.Set;
 public class EpollManager {
 
     private Map<String, MethodDescribe> registerMethod;
+    private List<MethodDescribe> closeMethod;
     private static final Set<Class<?>> CLASS_SET;
     private static final ThreadLocal<String> ADDRESS_THREAD_LOCAL;
 
@@ -47,7 +45,8 @@ public class EpollManager {
 
     @PostConstruct
     public void init() {
-        registerMethod = new HashMap<>(1);
+        registerMethod = new HashMap<>(0);
+        closeMethod = new ArrayList<>();
         if (runner == null) {
             //noinspection AlibabaAvoidManuallyCreateThread
             runner = new Thread(() -> {
@@ -87,10 +86,15 @@ public class EpollManager {
             }
             MethodDescribe methodDescribe = new MethodDescribe();
 
-            registerMethod.put(method.getName(), methodDescribe);
-
             methodDescribe.setBean(target);
             methodDescribe.setMethod(method);
+
+            if (epollMethod.close()) {
+                closeMethod.add(methodDescribe);
+                continue;
+            } else {
+                registerMethod.put(epollMethod.value().isEmpty() ? method.getName() : epollMethod.value(), methodDescribe);
+            }
 
             Map<String, MethodDescribe.ParamType> paramsTypeList = new HashMap<>(method.getParameterCount());
             methodDescribe.setParams(paramsTypeList);
@@ -177,6 +181,18 @@ public class EpollManager {
             ADDRESS_THREAD_LOCAL.remove();
         }
         return null;
+    }
+
+    public void close(String address) {
+        ADDRESS_THREAD_LOCAL.set(address);
+        for (MethodDescribe methodDescribe : closeMethod) {
+            try {
+                methodDescribe.getMethod().invoke(methodDescribe.getBean());
+            } catch (InvocationTargetException | IllegalAccessException e) {
+                e.printStackTrace();
+            }
+        }
+        ADDRESS_THREAD_LOCAL.remove();
     }
 
     private Integer readKey(byte[] buffer, Integer pos, StringBuilder key) {

@@ -18,17 +18,28 @@ public class SolutionJudgeWork extends AbstractJudgeWork {
     private Long solutionId;
 
     /**
+     * 对应的题目 ID
+     */
+    private Long problemId;
+
+    /**
      * 当前正在测试的 ID
      */
-    private Long curTestId;
+    private Integer curTestId;
+
+    /**
+     * 总共需要进行的 test 数量
+     */
+    private Integer maxTest;
 
     /**
      * 当前任务是否被终止
      */
     private Boolean killed;
 
-    public SolutionJudgeWork(JudgeWorkType judgeWorkType) {
-        super(judgeWorkType);
+    public Boolean nextTest() {
+        curTestId++;
+        return curTestId.equals(maxTest);
     }
 
     public SolutionJudgeWork(SolutionType solutionType) {

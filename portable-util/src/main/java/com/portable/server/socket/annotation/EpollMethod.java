@@ -12,4 +12,6 @@ import java.lang.annotation.Target;
 @Target(ElementType.METHOD)
 public @interface EpollMethod {
     String value() default "";
+
+    boolean close() default false;
 }

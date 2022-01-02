@@ -108,6 +108,7 @@ public class EpollUtil {
             if (buffer.hasClosed()) {
                 client.close();
                 key.cancel();
+                epollManager.close(client.getRemoteAddress().toString());
             }
         } catch (IOException e) {
             e.printStackTrace();
@@ -155,11 +156,20 @@ public class EpollUtil {
     }
 
     private static void writeFile(SocketChannel channel, File file) throws IOException {
-        InputStream inputStream = new FileInputStream(file);
+        try (InputStream inputStream = new FileInputStream(file)) {
+            int bytesRead;
+            for (byte[] buffer = new byte[Constant.BUFFER_LEN]; (bytesRead = inputStream.read(buffer)) > 0; ) {
+                write(channel, buffer, bytesRead);
+            }
+        }
+    }
+
+    private static void writeInputStream(SocketChannel channel, InputStream inputStream) throws IOException {
         int bytesRead;
         for (byte[] buffer = new byte[Constant.BUFFER_LEN]; (bytesRead = inputStream.read(buffer)) > 0; ) {
             write(channel, buffer, bytesRead);
         }
+        inputStream.close();
     }
 
     private synchronized static void writeReturn(SocketChannel channel) throws IOException {

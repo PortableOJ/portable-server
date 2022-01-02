@@ -7,6 +7,7 @@ import com.portable.server.repo.SolutionDataRepo;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
+import java.util.ArrayList;
 import java.util.HashMap;
 
 /**
@@ -24,7 +25,7 @@ public class SolutionDataManagerImpl implements SolutionDataManager {
                 ._id(null)
                 .code(null)
                 .compileMsg(null)
-                .runningMsg(new HashMap<>())
+                .runningMsg(new ArrayList<>())
                 .runOnVersion(problemData.getVersion())
                 .build();
     }

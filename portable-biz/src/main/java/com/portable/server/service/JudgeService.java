@@ -7,6 +7,7 @@ import com.portable.server.model.response.judge.SolutionInfoResponse;
 import com.portable.server.type.SolutionStatusType;
 
 import java.io.File;
+import java.io.InputStream;
 import java.util.Map;
 
 /**
@@ -67,6 +68,11 @@ public interface JudgeService {
      * @throws PortableException judgeCode 错误则抛出
      */
     void append(String judgeCode) throws PortableException;
+
+    /**
+     * 关闭连接
+     */
+    void close();
 
     /**
      * 心跳包
@@ -139,29 +145,34 @@ public interface JudgeService {
      * @param name 需要的 judge 代码名称
      * @return 标准代码任务
      */
-    String getStandardJudgeCode(String name);
+    String getStandardJudgeCode(String name) throws PortableException;
 
     /**
      * 获取题目的标准输入文件
      *
+     * @param problemId 题目的 ID
      * @param name 输入名称
      * @return 输入的文件
+     * @throws PortableException 非法获取则抛出错误
      */
-    File getProblemInputTest(String name);
+    InputStream getProblemInputTest(Long problemId, String name) throws PortableException;
 
     /**
      * 获取题目的标准输出文件
      *
+     * @param problemId 题目的 ID
      * @param name 输出名称
      * @return 输出的文件
+     * @throws PortableException 非法获取则抛出错误
      */
-    File getProblemOutputTest(String name);
+    InputStream getProblemOutputTest(Long problemId, String name) throws PortableException;
 
     /**
      * 获取下一组测试数据的名称
      *
      * @param solutionId 提交的 ID
      * @return 测试数据的名称
+     * @throws PortableException 非法获取则抛出错误
      */
-    String getSolutionNextTestName(Long solutionId);
+    String getSolutionNextTestName(Long solutionId) throws PortableException;
 }
