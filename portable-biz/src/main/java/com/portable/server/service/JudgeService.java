@@ -30,11 +30,14 @@ public interface JudgeService {
     void addTestTask(Long problemId);
 
     /**
-     * 主动打断一个 judge 任务
+     * 结束一个 judge 任务
      *
      * @param solutionId 目标 solution 的 ID
+     * @param endType 最终的判题结果
+     * @param timeCost 耗时
+     * @param memoryCost 内存消耗
      */
-    void killJudgeTask(Long solutionId);
+    void killJudgeTask(Long solutionId, SolutionStatusType endType, Integer timeCost, Integer memoryCost);
 
     /**
      * 获取当前的设备码

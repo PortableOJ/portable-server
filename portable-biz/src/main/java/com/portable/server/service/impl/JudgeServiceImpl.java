@@ -118,6 +118,7 @@ public class JudgeServiceImpl implements JudgeService {
         solutionJudgeWork.setProblemId(solution.getProblemId());
         solutionJudgeWork.setCurTestId(null);
         solutionJudgeWork.setMaxTest(problemData.getTestName().size());
+        solutionJudgeWorkMap.put(solutionId, solutionJudgeWork);
         judgeWorkPriorityQueue.add(solutionJudgeWork);
     }
 
@@ -130,10 +131,11 @@ public class JudgeServiceImpl implements JudgeService {
     }
 
     @Override
-    public void killJudgeTask(Long solutionId) {
+    public void killJudgeTask(Long solutionId, SolutionStatusType endType, Integer timeCost, Integer memoryCost) {
         SolutionJudgeWork solutionJudgeWork = solutionJudgeWorkMap.get(solutionId);
-        solutionJudgeWork.setKilled(true);
-        solutionManager.updateStatus(solutionId, SolutionStatusType.SYSTEM_ERROR);
+        solutionJudgeWork.getJudgeContainer().getJudgeWorkMap().remove(solutionId);
+        solutionJudgeWorkMap.remove(solutionId);
+        solutionManager.updateCostAndStatus(solutionId, endType, timeCost, memoryCost);
     }
 
     @Override
@@ -195,8 +197,17 @@ public class JudgeServiceImpl implements JudgeService {
         int newWork = judgeContainer.getMaxWorkNum() - judgeContainer.getJudgeWorkMap().size() - judgeContainer.getTestWorkMap().size();
         for (int i = 0; i < newWork; i++) {
             AbstractJudgeWork judgeWork = judgeWorkPriorityQueue.poll();
+            if (judgeWork == null) {
+                break;
+            }
+            judgeWork.setJudgeContainer(judgeContainer);
             if (judgeWork instanceof SolutionJudgeWork) {
                 SolutionJudgeWork solutionJudgeWork = (SolutionJudgeWork) judgeWork;
+
+                // 虽然还在队列中，但是已经被删除 judge 了
+                if (!solutionJudgeWorkMap.containsKey(solutionJudgeWork.getSolutionId())) {
+                    continue;
+                }
                 judgeContainer.getJudgeWorkMap().put(solutionJudgeWork.getSolutionId(), solutionJudgeWork);
                 heartbeatResponse.addJudgeTask(solutionJudgeWork.getSolutionId());
             } else if (judgeWork instanceof TestJudgeWork) {
@@ -250,20 +261,16 @@ public class JudgeServiceImpl implements JudgeService {
         solutionDataManager.saveSolutionData(solutionData);
         solutionJudgeWorkMap.get(solutionId).setCurTestId(0);
         if (!compileResult || !judgeCompileResult) {
-            solutionManager.updateStatus(solutionId, compileResult ? SolutionStatusType.COMPILE_ERROR : SolutionStatusType.JUDGE_COMPILE_ERROR);
-            solutionJudgeWorkMap.remove(solutionId);
-            getCurContainer().getJudgeWorkMap().remove(solutionId);
+            killJudgeTask(solutionId, compileResult ? SolutionStatusType.JUDGE_COMPILE_ERROR : SolutionStatusType.COMPILE_ERROR, 0, 0);
         }
     }
 
     @Override
     public void reportRunningResult(Long solutionId, SolutionStatusType statusType, Integer timeCost, Integer memoryCost) throws PortableException {
-        JudgeContainer judgeContainer = getCurContainer();
+        getCurContainer();
         if (!SolutionStatusType.ACCEPT.equals(statusType)) {
-            solutionJudgeWorkMap.remove(solutionId);
-            judgeContainer.getJudgeWorkMap().remove(solutionId);
-            solutionManager.updateCostAndStatus(solutionId, statusType, timeCost, memoryCost);
-            throw PortableException.of("S-06-008");
+            killJudgeTask(solutionId, statusType, timeCost, memoryCost);
+            throw PortableException.of("S-06-008", solutionId);
         } else {
             if (solutionJudgeWorkMap.get(solutionId).nextTest()) {
                 solutionManager.updateCostAndStatus(solutionId, statusType, timeCost, memoryCost);
@@ -309,6 +316,9 @@ public class JudgeServiceImpl implements JudgeService {
     public String getSolutionNextTestName(Long solutionId) throws PortableException {
         getCurContainer();
         SolutionJudgeWork solutionJudgeWork = solutionJudgeWorkMap.get(solutionId);
+        if (solutionJudgeWork == null) {
+            throw PortableException.of("S-06-008", solutionId);
+        }
         ProblemData problemData = getProblemData(solutionJudgeWork.getProblemId());
         return problemData.getTestName().get(solutionJudgeWork.getCurTestId());
     }
@@ -334,8 +344,7 @@ public class JudgeServiceImpl implements JudgeService {
             // 处理正在执行中的任务，将其转为失败
             JudgeContainer judgeContainer = entry.getValue();
             for (SolutionJudgeWork solutionJudgeWork : judgeContainer.getJudgeWorkMap().values()) {
-                solutionManager.updateStatus(solutionJudgeWork.getSolutionId(), SolutionStatusType.SYSTEM_ERROR);
-                solutionJudgeWorkMap.remove(solutionJudgeWork.getSolutionId());
+                killJudgeTask(solutionJudgeWork.getSolutionId(), SolutionStatusType.SYSTEM_ERROR, 0, 0);
             }
             for (TestJudgeWork testJudgeWork : judgeContainer.getTestWorkMap().values()) {
                 problemManager.updateProblemStatus(testJudgeWork.getProblemId(), ProblemStatusType.TREAT_FAILED);

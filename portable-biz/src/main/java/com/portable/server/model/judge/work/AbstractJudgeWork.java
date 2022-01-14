@@ -1,5 +1,6 @@
 package com.portable.server.model.judge.work;
 
+import com.portable.server.model.judge.entity.JudgeContainer;
 import com.portable.server.type.JudgeWorkType;
 import lombok.Getter;
 import lombok.Setter;
@@ -19,7 +20,7 @@ public abstract class AbstractJudgeWork implements Comparable<AbstractJudgeWork>
      * 被分配到的 judge 容器
      */
     @Setter
-    private String judgeContainer;
+    private JudgeContainer judgeContainer;
 
     public AbstractJudgeWork(JudgeWorkType judgeWorkType) {
         this.judgeWorkType = judgeWorkType;
