@@ -10,6 +10,7 @@ public class HeartbeatResponse extends AbstractEpollResponse {
     private static final String JUDGE_TASK = "judgeTask";
     private static final String TEST_TASK = "testTask";
     private static final String THREAD_CORE = "threadCore";
+    private static final String WORK_CORE = "workCore";
     private static final String SOCKET_CORE = "socketCore";
 
     public void addJudgeTask(Long solutionId) {
@@ -22,6 +23,10 @@ public class HeartbeatResponse extends AbstractEpollResponse {
 
     public void setNewThreadCore(Integer threadCore) {
         super.add(THREAD_CORE, threadCore);
+    }
+
+    public void setNewWorkCore(Integer workCore) {
+        super.add(WORK_CORE, workCore);
     }
 
     public void setNewSocketCore(Integer socketCore) {

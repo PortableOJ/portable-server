@@ -48,4 +48,13 @@ public enum JudgeCodeType implements ExceptionTextType {
             throw PortableException.of("S-01-005", name());
         }
     }
+
+    public static File getTestLib() throws PortableException {
+        ClassPathResource resource = new ClassPathResource(String.format("judge%stestlib.h", File.separator));
+        try {
+            return resource.getFile();
+        } catch (IOException e) {
+            throw PortableException.of("S-01-005", "testlib");
+        }
+    }
 }

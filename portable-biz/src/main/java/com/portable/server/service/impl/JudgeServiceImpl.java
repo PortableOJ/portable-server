@@ -28,6 +28,7 @@ import java.io.File;
 import java.io.InputStream;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentSkipListSet;
 import java.util.concurrent.PriorityBlockingQueue;
 import java.util.stream.Collectors;
 
@@ -99,11 +100,7 @@ public class JudgeServiceImpl implements JudgeService {
         judgeWorkPriorityQueue = new PriorityBlockingQueue<>();
 
         if (serviceCode != null) {
-            serviceVerifyCode = ServiceVerifyCode.builder()
-                    .code(serviceCode)
-                    .temporary(false)
-                    .endTime(null)
-                    .build();
+            serviceVerifyCode = ServiceVerifyCode.builder().code(serviceCode).temporary(false).endTime(null).build();
         } else {
             serviceVerifyCode = null;
         }
@@ -145,24 +142,18 @@ public class JudgeServiceImpl implements JudgeService {
     }
 
     @Override
-    public String registerJudge(String serverCode, Integer maxThreadCore, Integer maxSocketCore, Map<String, String> languageVersion) throws PortableException {
+    public String registerJudge(String serverCode, Integer maxThreadCore, Integer maxWorkCore, Integer maxSocketCore) throws PortableException {
         cleanJudgeContainer();
         if (!Objects.equals(serverCode, getServiceCode().getCode())) {
             throw PortableException.of("S-06-002", serverCode);
         }
         String judgeCode = UUID.randomUUID().toString();
         String address = EpollManager.getAddress();
-        JudgeContainer judgeContainer = JudgeContainer.builder()
-                .judgeCode(judgeCode)
-                .maxThreadCore(maxThreadCore)
-                .maxSocketCore(maxSocketCore)
-                .maxWorkNum(0)
-                .lastHeartbeat(new Date())
-                .judgeWorkMap(new ConcurrentHashMap<>(1))
-                .testWorkMap(new ConcurrentHashMap<>(1))
-                .build();
+        Set<String> tcpAddressSet = Collections.synchronizedSet(new HashSet<>());
+        JudgeContainer judgeContainer = JudgeContainer.builder().judgeCode(judgeCode).maxThreadCore(maxThreadCore).maxWorkCore(maxWorkCore).maxSocketCore(maxSocketCore).maxWorkNum(0).lastHeartbeat(new Date()).judgeWorkMap(new ConcurrentHashMap<>(1)).testWorkMap(new ConcurrentHashMap<>(1)).tcpAddressSet(tcpAddressSet).build();
 
         tcpJudgeMap.put(address, judgeContainer);
+        judgeContainer.getTcpAddressSet().add(address);
         judgeCodeJudgeMap.put(judgeCode, judgeContainer);
 
         return judgeCode;
@@ -176,20 +167,29 @@ public class JudgeServiceImpl implements JudgeService {
         JudgeContainer judgeContainer = judgeCodeJudgeMap.get(judgeCode);
         String address = EpollManager.getAddress();
         tcpJudgeMap.put(address, judgeContainer);
+        judgeContainer.getTcpAddressSet().add(address);
     }
 
     @Override
     public void close() {
-        tcpJudgeMap.remove(EpollManager.getAddress());
+        String address = EpollManager.getAddress();
+        JudgeContainer judgeContainer = tcpJudgeMap.get(address);
+        judgeContainer.getTcpAddressSet().remove(address);
+        tcpJudgeMap.remove(address);
     }
 
     @Override
-    public HeartbeatResponse heartBeat(Integer socketAccumulation, Integer threadAccumulation) throws PortableException {
+    public HeartbeatResponse heartbeat(Integer threadAccumulation, Integer workAccumulation, Integer socketAccumulation) throws PortableException {
         JudgeContainer judgeContainer = getCurContainer();
+        judgeContainer.setThreadAccumulation(threadAccumulation);
+        judgeContainer.setWorkAccumulation(workAccumulation);
+        judgeContainer.setSocketAccumulation(socketAccumulation);
+
         HeartbeatResponse heartbeatResponse = new HeartbeatResponse();
         if (judgeContainer.getIsNewCore()) {
             judgeContainer.setIsNewCore(false);
             heartbeatResponse.setNewThreadCore(judgeContainer.getMaxThreadCore());
+            heartbeatResponse.setNewWorkCore(judgeContainer.getMaxWorkCore());
             heartbeatResponse.setNewSocketCore(judgeContainer.getMaxSocketCore());
         }
         int newWork = judgeContainer.getMaxWorkNum() - judgeContainer.getJudgeWorkMap().size() - judgeContainer.getTestWorkMap().size();
@@ -198,9 +198,11 @@ public class JudgeServiceImpl implements JudgeService {
             if (judgeWork instanceof SolutionJudgeWork) {
                 SolutionJudgeWork solutionJudgeWork = (SolutionJudgeWork) judgeWork;
                 judgeContainer.getJudgeWorkMap().put(solutionJudgeWork.getSolutionId(), solutionJudgeWork);
+                heartbeatResponse.addJudgeTask(solutionJudgeWork.getSolutionId());
             } else if (judgeWork instanceof TestJudgeWork) {
                 TestJudgeWork testJudgeWork = (TestJudgeWork) judgeWork;
                 judgeContainer.getTestWorkMap().put(testJudgeWork.getProblemId(), testJudgeWork);
+                heartbeatResponse.addTestTask(testJudgeWork.getProblemId());
             }
         }
         return heartbeatResponse;
@@ -241,14 +243,14 @@ public class JudgeServiceImpl implements JudgeService {
     }
 
     @Override
-    public void reportCompileResult(Long solutionId, Boolean compileResult, String compileMsg) throws PortableException {
+    public void reportCompileResult(Long solutionId, Boolean compileResult, Boolean judgeCompileResult, String compileMsg) throws PortableException {
         getCurContainer();
         SolutionData solutionData = getSolutionData(solutionId);
         solutionData.setCompileMsg(compileMsg);
         solutionDataManager.saveSolutionData(solutionData);
         solutionJudgeWorkMap.get(solutionId).setCurTestId(0);
-        if (!compileResult) {
-            solutionManager.updateStatus(solutionId, SolutionStatusType.COMPILE_ERROR);
+        if (!compileResult || !judgeCompileResult) {
+            solutionManager.updateStatus(solutionId, compileResult ? SolutionStatusType.COMPILE_ERROR : SolutionStatusType.JUDGE_COMPILE_ERROR);
             solutionJudgeWorkMap.remove(solutionId);
             getCurContainer().getJudgeWorkMap().remove(solutionId);
         }
@@ -273,10 +275,7 @@ public class JudgeServiceImpl implements JudgeService {
 
     @Override
     public String getStandardJudgeList() {
-        return Arrays.stream(JudgeCodeType.values())
-                .filter(judgeCodeType -> !JudgeCodeType.DIY.equals(judgeCodeType))
-                .map(JudgeCodeType::toString)
-                .collect(Collectors.joining(" "));
+        return Arrays.stream(JudgeCodeType.values()).filter(judgeCodeType -> !JudgeCodeType.DIY.equals(judgeCodeType)).map(JudgeCodeType::toString).collect(Collectors.joining(" "));
     }
 
     @Override
@@ -287,6 +286,11 @@ public class JudgeServiceImpl implements JudgeService {
         } catch (IllegalArgumentException e) {
             throw PortableException.of("S-06-007", name);
         }
+    }
+
+    @Override
+    public File getTestLibCode() throws PortableException {
+        return JudgeCodeType.getTestLib();
     }
 
     @Override
@@ -335,6 +339,9 @@ public class JudgeServiceImpl implements JudgeService {
             }
             for (TestJudgeWork testJudgeWork : judgeContainer.getTestWorkMap().values()) {
                 problemManager.updateProblemStatus(testJudgeWork.getProblemId(), ProblemStatusType.TREAT_FAILED);
+            }
+            for (String tcpAddress : judgeContainer.getTcpAddressSet()) {
+                tcpJudgeMap.remove(tcpAddress);
             }
         }
     }

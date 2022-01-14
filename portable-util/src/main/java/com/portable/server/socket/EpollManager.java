@@ -133,6 +133,10 @@ public class EpollManager {
                 log.error("Unknown key: {}", key);
             }
             MethodDescribe.ParamType paramType = methodDescribe.getParams().get(key);
+            if (paramType == null) {
+                log.error("Illegal key key: {}", key);
+                continue;
+            }
             switch (paramType.getDataType()) {
                 case SIMPLE:
                     pos = readSimpleValue(buffer, pos, valueBuilder);
@@ -174,7 +178,12 @@ public class EpollManager {
         });
         try {
             ADDRESS_THREAD_LOCAL.set(address);
-            return methodDescribe.getMethod().invoke(methodDescribe.getBean(), params);
+            if (methodDescribe.getMethod().getReturnType().equals(Void.TYPE)) {
+                methodDescribe.getMethod().invoke(methodDescribe.getBean(), params);
+                return "";
+            } else {
+                return methodDescribe.getMethod().invoke(methodDescribe.getBean(), params);
+            }
         } catch (Exception e) {
             log.error("Fail invoke, method: {}, data: {}, exception: {}", method, data, e.getMessage());
         } finally {
@@ -203,7 +212,7 @@ public class EpollManager {
     }
 
     private Integer readSimpleValue(byte[] buffer, Integer pos, StringBuilder value) {
-        while (buffer[pos] != Constant.RETURN_BYTE) {
+        while (pos < buffer.length && buffer[pos] != Constant.RETURN_BYTE) {
             value.append((char) buffer[pos++]);
         }
         return ++pos;

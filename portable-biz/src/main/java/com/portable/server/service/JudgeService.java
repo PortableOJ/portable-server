@@ -8,7 +8,6 @@ import com.portable.server.type.SolutionStatusType;
 
 import java.io.File;
 import java.io.InputStream;
-import java.util.Map;
 
 /**
  * @author shiroha
@@ -52,14 +51,14 @@ public interface JudgeService {
     /**
      * 注册设备
      *
-     * @param serverCode      注册的设备码，用于校验是否是合法的 Judge
-     * @param maxThreadCore   最大线程池数量
-     * @param maxSocketCore   最大网络连接池数量
-     * @param languageVersion 所有的语言版本信息
+     * @param serverCode    注册的设备码，用于校验是否是合法的 Judge
+     * @param maxThreadCore 最大线程池数量
+     * @param maxWorkCore   最大任务池数量
+     * @param maxSocketCore 最大网络连接池数量
      * @return 返回注册成功后为其分配的编号
      * @throws PortableException serverCode 错误则抛出
      */
-    String registerJudge(String serverCode, Integer maxThreadCore, Integer maxSocketCore, Map<String, String> languageVersion) throws PortableException;
+    String registerJudge(String serverCode, Integer maxThreadCore, Integer maxWorkCore, Integer maxSocketCore) throws PortableException;
 
     /**
      * 新增加一个 TCP 连接
@@ -78,11 +77,12 @@ public interface JudgeService {
      * 心跳包
      *
      * @param socketAccumulation 当前的 socket 堆积任务数量
+     * @param workAccumulation 当前任务池堆积任务数量
      * @param threadAccumulation 当前线程池堆积任务数量
      * @return 拉取的任务
      * @throws PortableException 当前未记录此连接则抛出
      */
-    HeartbeatResponse heartBeat(Integer socketAccumulation, Integer threadAccumulation) throws PortableException;
+    HeartbeatResponse heartbeat(Integer socketAccumulation, Integer workAccumulation, Integer threadAccumulation) throws PortableException;
 
     /**
      * 获取提交的信息
@@ -114,12 +114,13 @@ public interface JudgeService {
     /**
      * 提交编译结果
      *
-     * @param solutionId    对应的提交 ID
-     * @param compileResult 编译结果（true -> 通过）
-     * @param compileMsg    编译信息
+     * @param solutionId         对应的提交 ID
+     * @param compileResult      编译结果（true -> 通过）
+     * @param judgeCompileResult Judge 的编译结果（true -> 通过）
+     * @param compileMsg         编译信息
      * @throws PortableException 遇到意料之外的情况则抛出错误
      */
-    void reportCompileResult(Long solutionId, Boolean compileResult, String compileMsg) throws PortableException;
+    void reportCompileResult(Long solutionId, Boolean compileResult, Boolean judgeCompileResult, String compileMsg) throws PortableException;
 
     /**
      * 获取运行结果
@@ -149,10 +150,18 @@ public interface JudgeService {
     File getStandardJudgeCode(String name) throws PortableException;
 
     /**
+     * 获取默认的标准 testlib 代码
+     *
+     * @return testlib 代码
+     * @throws PortableException 找不到时抛出错误
+     */
+    File getTestLibCode() throws PortableException;
+
+    /**
      * 获取题目的标准输入文件
      *
      * @param problemId 题目的 ID
-     * @param name 输入名称
+     * @param name      输入名称
      * @return 输入的文件
      * @throws PortableException 非法获取则抛出错误
      */
@@ -162,7 +171,7 @@ public interface JudgeService {
      * 获取题目的标准输出文件
      *
      * @param problemId 题目的 ID
-     * @param name 输出名称
+     * @param name      输出名称
      * @return 输出的文件
      * @throws PortableException 非法获取则抛出错误
      */

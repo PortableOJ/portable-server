@@ -15,12 +15,15 @@ import java.nio.channels.Selector;
 import java.nio.channels.ServerSocketChannel;
 import java.nio.channels.SocketChannel;
 import java.nio.charset.StandardCharsets;
+import java.util.Collections;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
 /**
  * @author shiroha
@@ -47,11 +50,14 @@ public class EpollUtil {
      */
     private static final ThreadPoolExecutor THREAD_POOL_EXECUTOR;
 
+    private static final Set<SelectionKey> ON_RUNNING_SELECTION_KEY_SET;
+
     static {
         RETURN_BUFFER.put(Constant.RETURN_BYTE);
         THREAD_POOL_EXECUTOR = new ThreadPoolExecutor(Constant.DEFAULT_JUDGE_NUM, Constant.DEFAULT_JUDGE_NUM * 2,
                 60, TimeUnit.SECONDS, new ArrayBlockingQueue<>(Constant.QUEUE_WAIT_NUM),
                 Executors.defaultThreadFactory(), new ThreadPoolExecutor.CallerRunsPolicy());
+        ON_RUNNING_SELECTION_KEY_SET = Collections.synchronizedSet(new HashSet<>());
     }
 
     public static void initEpollSocket(Integer port, EpollManager epollManager) throws Exception {
@@ -70,9 +76,13 @@ public class EpollUtil {
             while (iterator.hasNext()) {
                 SelectionKey selectionKey = iterator.next();
                 iterator.remove();
+                if (ON_RUNNING_SELECTION_KEY_SET.contains(selectionKey)) {
+                    continue;
+                }
                 if (selectionKey.isAcceptable()) {
                     acceptHandler(selectionKey);
                 } else if (selectionKey.isReadable()) {
+                    ON_RUNNING_SELECTION_KEY_SET.add(selectionKey);
                     THREAD_POOL_EXECUTOR.execute(() -> readHandler(selectionKey));
                 }
             }
@@ -106,13 +116,14 @@ public class EpollUtil {
                 buffer.init();
             }
             if (buffer.hasClosed()) {
+                epollManager.close(client.getRemoteAddress().toString());
                 client.close();
                 key.cancel();
-                epollManager.close(client.getRemoteAddress().toString());
             }
         } catch (IOException e) {
             e.printStackTrace();
         }
+        ON_RUNNING_SELECTION_KEY_SET.remove(key);
     }
 
     private static void acceptHandler(SelectionKey selectionKey) throws IOException {

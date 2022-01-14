@@ -11,6 +11,9 @@ import javax.annotation.Resource;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+/**
+ * @author shiroha
+ */
 @Component
 public class ProblemDataManagerImpl implements ProblemDataManager {
 
