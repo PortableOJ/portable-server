@@ -144,8 +144,9 @@ public interface JudgeService {
      *
      * @param name 需要的 judge 代码名称
      * @return 标准代码任务
+     * @throws PortableException 找不到时抛出错误
      */
-    String getStandardJudgeCode(String name) throws PortableException;
+    File getStandardJudgeCode(String name) throws PortableException;
 
     /**
      * 获取题目的标准输入文件

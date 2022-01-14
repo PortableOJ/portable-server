@@ -274,12 +274,13 @@ public class JudgeServiceImpl implements JudgeService {
     @Override
     public String getStandardJudgeList() {
         return Arrays.stream(JudgeCodeType.values())
+                .filter(judgeCodeType -> !JudgeCodeType.DIY.equals(judgeCodeType))
                 .map(JudgeCodeType::toString)
                 .collect(Collectors.joining(" "));
     }
 
     @Override
-    public String getStandardJudgeCode(String name) throws PortableException {
+    public File getStandardJudgeCode(String name) throws PortableException {
         try {
             JudgeCodeType judgeCodeType = JudgeCodeType.valueOf(name);
             return judgeCodeType.getCode();

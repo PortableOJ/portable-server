@@ -31,7 +31,7 @@ public class ProblemDataManagerImpl implements ProblemDataManager {
                 .output(null)
                 .example(new ArrayList<>())
                 .type(ProblemType.STANDARD)
-                .judgeCodeType(JudgeCodeType.IGNORE_END_OF_LINE_AND_FILE)
+                .judgeCodeType(JudgeCodeType.IGNORE_END_OF_FILE)
                 .testName(new ArrayList<>())
                 .shareTest(false)
                 .testCodeList(new ArrayList<>())
