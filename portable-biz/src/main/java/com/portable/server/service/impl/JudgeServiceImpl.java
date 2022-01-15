@@ -20,6 +20,7 @@ import com.portable.server.type.JudgeCodeType;
 import com.portable.server.type.ProblemStatusType;
 import com.portable.server.type.SolutionStatusType;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
@@ -64,15 +65,12 @@ public class JudgeServiceImpl implements JudgeService {
     private Queue<AbstractJudgeWork> judgeWorkPriorityQueue;
 
     /**
-     * 是否写死 service code，为 null 则为随机
-     */
-    @Value("${SERVICE_CODE}")
-    private String serviceCode;
-
-    /**
      * 若 service Code 非 null，则生成一个此 code
      */
     private ServiceVerifyCode serviceVerifyCode;
+
+    @Resource
+    private Environment env;
 
     @Resource
     private SolutionManager solutionManager;
@@ -99,6 +97,7 @@ public class JudgeServiceImpl implements JudgeService {
         solutionJudgeWorkMap = new ConcurrentHashMap<>(64);
         judgeWorkPriorityQueue = new PriorityBlockingQueue<>();
 
+        String serviceCode = env.getProperty("SERVICE_CODE");
         if (serviceCode != null) {
             serviceVerifyCode = ServiceVerifyCode.builder().code(serviceCode).temporary(false).endTime(null).build();
         } else {
