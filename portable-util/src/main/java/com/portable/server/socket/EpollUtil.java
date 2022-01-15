@@ -97,22 +97,19 @@ public class EpollUtil {
                 Object response = epollManager.call(client.getRemoteAddress().toString(), buffer.getMethod(), buffer.getData());
                 if (response == null) {
                     writeFail(client);
-                    writeEnd(client);
                 } else if (response instanceof AbstractEpollResponse) {
                     writeSuccess(client);
                     write(client, ((AbstractEpollResponse) response).toResponse());
-                    writeEnd(client);
                 } else if (response instanceof File) {
                     writeSuccess(client);
                     writeFile(client, (File) response);
                 } else if (response instanceof String) {
                     writeSuccess(client);
                     write(client, ((String) response).getBytes(StandardCharsets.UTF_8));
-                    writeEnd(client);
                 } else {
                     writeFail(client);
-                    writeEnd(client);
                 }
+                writeEnd(client);
                 buffer.init();
             }
             if (buffer.hasClosed()) {
@@ -151,7 +148,7 @@ public class EpollUtil {
         }
         channel.write(ByteBuffer.wrap(Integer.valueOf(bytesLen).toString().getBytes(StandardCharsets.UTF_8)));
         writeReturn(channel);
-        channel.write(ByteBuffer.wrap(data));
+        channel.write(ByteBuffer.wrap(data, 0, bytesLen));
     }
 
     private static void writeEnd(SocketChannel channel) throws IOException {

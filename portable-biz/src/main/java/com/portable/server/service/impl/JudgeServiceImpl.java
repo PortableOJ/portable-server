@@ -152,7 +152,21 @@ public class JudgeServiceImpl implements JudgeService {
         String judgeCode = UUID.randomUUID().toString();
         String address = EpollManager.getAddress();
         Set<String> tcpAddressSet = Collections.synchronizedSet(new HashSet<>());
-        JudgeContainer judgeContainer = JudgeContainer.builder().judgeCode(judgeCode).maxThreadCore(maxThreadCore).maxWorkCore(maxWorkCore).maxSocketCore(maxSocketCore).maxWorkNum(0).lastHeartbeat(new Date()).judgeWorkMap(new ConcurrentHashMap<>(1)).testWorkMap(new ConcurrentHashMap<>(1)).tcpAddressSet(tcpAddressSet).build();
+        JudgeContainer judgeContainer = JudgeContainer.builder()
+                .judgeCode(judgeCode)
+                .maxThreadCore(maxThreadCore)
+                .maxWorkCore(maxWorkCore)
+                .maxSocketCore(maxSocketCore)
+                .threadAccumulation(0)
+                .workAccumulation(0)
+                .socketAccumulation(0)
+                .isNewCore(false)
+                .maxWorkNum(0)
+                .lastHeartbeat(new Date())
+                .judgeWorkMap(new ConcurrentHashMap<>(1))
+                .testWorkMap(new ConcurrentHashMap<>(1))
+                .tcpAddressSet(tcpAddressSet)
+                .build();
 
         tcpJudgeMap.put(address, judgeContainer);
         judgeContainer.getTcpAddressSet().add(address);

@@ -43,32 +43,32 @@ public class JudgeApiController {
     }
 
     @EpollMethod("Heartbeat")
-    public HeartbeatResponse heartbeat(Integer socketAccumulation, Integer workAccumulation, Integer threadAccumulation) throws PortableException {
+    public HeartbeatResponse heartbeat(@EpollParam Integer socketAccumulation, @EpollParam Integer workAccumulation, @EpollParam Integer threadAccumulation) throws PortableException {
         return judgeService.heartbeat(socketAccumulation, workAccumulation, threadAccumulation);
     }
 
     @EpollMethod("SolutionInfo")
-    public SolutionInfoResponse getSolutionInfo(Long solutionId) throws PortableException {
+    public SolutionInfoResponse getSolutionInfo(@EpollParam Long solutionId) throws PortableException {
         return judgeService.getSolutionInfo(solutionId);
     }
 
     @EpollMethod("SolutionTest")
-    public String getSolutionNextTestName(Long solutionId) throws PortableException {
+    public String getSolutionNextTestName(@EpollParam Long solutionId) throws PortableException {
         return judgeService.getSolutionNextTestName(solutionId);
     }
 
     @EpollMethod("SolutionTestReport")
-    public void reportRunningResult(Long solutionId, SolutionStatusType statusType, Integer timeCost, Integer memoryCost) throws PortableException {
+    public void reportRunningResult(@EpollParam Long solutionId, @EpollParam SolutionStatusType statusType, @EpollParam Integer timeCost, @EpollParam Integer memoryCost) throws PortableException {
         judgeService.reportRunningResult(solutionId, statusType, timeCost, memoryCost);
     }
 
     @EpollMethod("SolutionCompileMsgReport")
-    public void reportCompileResult(Long solutionId, Boolean compileResult, Boolean judgeCompileResult, String compileMsg) throws PortableException {
+    public void reportCompileResult(@EpollParam Long solutionId, @EpollParam Boolean compileResult, @EpollParam Boolean judgeCompileResult, @EpollParam String compileMsg) throws PortableException {
         judgeService.reportCompileResult(solutionId, compileResult, judgeCompileResult, compileMsg);
     }
 
     @EpollMethod("SolutionCode")
-    public String getSolutionCode(Long solutionId) throws PortableException {
+    public String getSolutionCode(@EpollParam Long solutionId) throws PortableException {
         return judgeService.getSolutionCode(solutionId);
     }
 
@@ -78,27 +78,27 @@ public class JudgeApiController {
     }
 
     @EpollMethod("StandardJudgeCode")
-    public File getStandardJudgeCode(String name) throws PortableException {
+    public File getStandardJudgeCode(@EpollParam String name) throws PortableException {
         return judgeService.getStandardJudgeCode(name);
     }
 
     @EpollMethod("ProblemJudgeCode")
-    public String getProblemJudgeCode(Long problemId) throws PortableException {
+    public String getProblemJudgeCode(@EpollParam Long problemId) throws PortableException {
         return judgeService.getProblemJudgeCode(problemId);
     }
 
     @EpollMethod("ProblemDataIn")
-    InputStream getProblemInputTest(Long problemId, String name) throws PortableException {
+    public InputStream getProblemInputTest(@EpollParam Long problemId, @EpollParam String name) throws PortableException {
         return judgeService.getProblemInputTest(problemId, name);
     }
 
     @EpollMethod("ProblemDataOut")
-    InputStream getProblemOutputTest(Long problemId, String name) throws PortableException {
+    public InputStream getProblemOutputTest(@EpollParam Long problemId, @EpollParam String name) throws PortableException {
         return judgeService.getProblemOutputTest(problemId, name);
     }
 
     @EpollMethod("TestLibRequest")
-    File getTestLibCode() throws PortableException {
+    public File getTestLibCode() throws PortableException {
         return judgeService.getTestLibCode();
     }
 }
