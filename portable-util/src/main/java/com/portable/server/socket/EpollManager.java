@@ -1,6 +1,5 @@
 package com.portable.server.socket;
 
-import com.portable.server.exception.PortableException;
 import com.portable.server.socket.annotation.EpollMethod;
 import com.portable.server.socket.annotation.EpollParam;
 import com.portable.server.socket.model.MethodDescribe;
@@ -120,13 +119,11 @@ public class EpollManager {
         clearClass();
         MethodDescribe methodDescribe = registerMethod.get(method);
         StringBuilder keyBuilder = new StringBuilder();
-        StringBuilder valueBuilder = new StringBuilder();
-        Map<String, String> paramMap = new HashMap<>(methodDescribe.getParams().size());
+        Map<String, List<Byte>> paramMap = new HashMap<>(methodDescribe.getParams().size());
         byte[] buffer = data.getBytes(StandardCharsets.UTF_8);
         int pos = 0;
         while (pos < buffer.length) {
             keyBuilder.setLength(0);
-            valueBuilder.setLength(0);
             pos = readKey(buffer, pos, keyBuilder);
             String key = keyBuilder.toString();
             if (!methodDescribe.getParams().containsKey(key)) {
@@ -139,29 +136,48 @@ public class EpollManager {
             }
             switch (paramType.getDataType()) {
                 case SIMPLE:
-                    pos = readSimpleValue(buffer, pos, valueBuilder);
+                    pos = readSimpleValue(buffer, pos, key, paramMap);
                     break;
                 case COMPLEX:
-                    pos = readComplexValue(buffer, pos, valueBuilder);
+                    pos = readComplexValue(buffer, pos, key, paramMap);
                     break;
                 case DEFAULT:
                 default:
                     log.error("Illegal key type, key: {}, type: {}", key, paramType.getDataType());
                     break;
             }
-            paramMap.put(key, valueBuilder.toString());
         }
         Object[] params = new Object[methodDescribe.getParams().size()];
         methodDescribe.getParams().forEach((key, paramType) -> {
             if (paramMap.containsKey(key)) {
-                if (Integer.class.equals(paramType.getType())) {
-                    params[paramType.getPosition()] = Integer.valueOf(paramMap.get(key));
+                List<Byte> byteList = paramMap.get(key);
+                if (byte[].class.equals(paramType.getType())) {
+                    byte[] param = new byte[byteList.size()];
+                    for (int i = 0, byteListSize = byteList.size(); i < byteListSize; i++) {
+                        param[i] = byteList.get(i);
+                    }
+                    params[paramType.getPosition()] = param;
+                } else if (Integer.class.equals(paramType.getType())) {
+                    int res = 0;
+                    for (Byte aByte : byteList) {
+                        res *= 10;
+                        res += aByte - '0';
+                    }
+                    params[paramType.getPosition()] = res;
                 } else if (String.class.equals(paramType.getType())) {
-                    params[paramType.getPosition()] = paramMap.get(key);
+                    StringBuilder stringBuilder = new StringBuilder();
+                    for (Byte aByte : byteList) {
+                        stringBuilder.append((char) aByte.byteValue());
+                    }
+                    params[paramType.getPosition()] = stringBuilder.toString();
                 } else if (paramType.getType().isEnum()) {
+                    StringBuilder stringBuilder = new StringBuilder();
+                    for (Byte aByte : byteList) {
+                        stringBuilder.append((char) aByte.byteValue());
+                    }
                     try {
                         Method valueOf = paramType.getType().getMethod("valueOf", String.class);
-                        params[paramType.getPosition()] = valueOf.invoke(null, paramMap.get(key));
+                        params[paramType.getPosition()] = valueOf.invoke(null, stringBuilder.toString());
                     } catch (NoSuchMethodException e) {
                         log.error("Error Enum: {}", paramType.getType());
                     } catch (InvocationTargetException | IllegalAccessException e) {
@@ -211,22 +227,26 @@ public class EpollManager {
         return ++pos;
     }
 
-    private Integer readSimpleValue(byte[] buffer, Integer pos, StringBuilder value) {
+    private Integer readSimpleValue(byte[] buffer, Integer pos, String key, Map<String, List<Byte>> paramMap) {
+        List<Byte> value = new ArrayList<>();
         while (pos < buffer.length && buffer[pos] != Constant.RETURN_BYTE) {
-            value.append((char) buffer[pos++]);
+            value.add(buffer[pos++]);
         }
+        paramMap.put(key, value);
         return ++pos;
     }
 
-    private Integer readComplexValue(byte[] buffer, Integer pos, StringBuilder value) {
+    private Integer readComplexValue(byte[] buffer, Integer pos, String key, Map<String, List<Byte>> paramMap) {
         int len = 0;
         while (buffer[pos] != Constant.RETURN_BYTE) {
             len *= 10;
             len += buffer[pos++] - '0';
         }
+        List<Byte> value = new ArrayList<>();
         for (int i = 0; i < len; i++) {
-            value.append((char) buffer[pos++]);
+            value.add(buffer[pos++]);
         }
+        paramMap.put(key, value);
         return ++pos;
     }
 }

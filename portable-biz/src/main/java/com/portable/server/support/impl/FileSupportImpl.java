@@ -57,6 +57,16 @@ public class FileSupportImpl implements FileSupport {
     }
 
     @Override
+    public void createTestOutput(Long problemId, String testName, String value) throws PortableException {
+
+    }
+
+    @Override
+    public void appendTestOutput(Long problemId, String testName, String value) throws PortableException {
+
+    }
+
+    @Override
     public void removeTest(Long problemId, String testName) throws PortableException {
 
     }
