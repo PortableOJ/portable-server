@@ -12,6 +12,9 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
+/**
+ * @author shiroha
+ */
 @Component
 public class FileManagerImpl implements FileManager {
 
@@ -32,6 +35,34 @@ public class FileManagerImpl implements FileManager {
             }
             FileOutputStream fileOutputStream = new FileOutputStream(filePath);
             StreamUtils.copy(inputStream, fileOutputStream);
+        } catch (IOException e) {
+            throw PortableException.of("S-04-003", filePath);
+        }
+    }
+
+    @Override
+    public void saveFileOrOverwrite(String filePath, byte[] inputStream) throws PortableException {
+        try {
+            File file = new File(filePath);
+            if (!file.exists() && !file.createNewFile()) {
+                throw PortableException.of("S-04-003", filePath);
+            }
+            FileOutputStream fileOutputStream = new FileOutputStream(filePath);
+            StreamUtils.write(inputStream, fileOutputStream);
+        } catch (IOException e) {
+            throw PortableException.of("S-04-003", filePath);
+        }
+    }
+
+    @Override
+    public void appendFile(String filePath, byte[] inputStream) throws PortableException {
+        try {
+            File file = new File(filePath);
+            if (!file.exists()) {
+                throw PortableException.of("S-04-005", filePath);
+            }
+            FileOutputStream fileOutputStream = new FileOutputStream(filePath, true);
+            StreamUtils.write(inputStream, fileOutputStream);
         } catch (IOException e) {
             throw PortableException.of("S-04-003", filePath);
         }

@@ -62,16 +62,16 @@ public interface FileSupport {
      * @param value 开头的字符串
      * @throws PortableException 出现问题则抛出错误
      */
-    void createTestOutput(Long problemId, String testName, String value) throws PortableException;
+    void createTestOutput(Long problemId, String testName, byte[] value) throws PortableException;
 
     /**
      * 创建一个新的测试输出文件
      * @param problemId 题目 ID
      * @param testName 测试数据名称
-     * @param value 开头的字符串
+     * @param value 新增加的字符串
      * @throws PortableException 出现问题则抛出错误
      */
-    void appendTestOutput(Long problemId, String testName, String value) throws PortableException;
+    void appendTestOutput(Long problemId, String testName, byte[] value) throws PortableException;
 
     /**
      * 删除测试文件，包括输入输出

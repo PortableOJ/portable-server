@@ -37,6 +37,14 @@ public class StreamUtils {
         }
     }
 
+    public static void write(byte[] value, OutputStream outputStream) throws PortableException {
+        try {
+            outputStream.write(value);
+        } catch (IOException e) {
+            throw PortableException.of("S-01-003");
+        }
+    }
+
     public static String read(InputStream inputStream) throws PortableException {
         ByteArrayOutputStream result = new ByteArrayOutputStream();
         int bytesRead;
