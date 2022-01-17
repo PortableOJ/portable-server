@@ -147,6 +147,18 @@ public class EpollManager {
                     break;
             }
         }
+        try {
+            ADDRESS_THREAD_LOCAL.set(address);
+            return invoke(methodDescribe, paramMap);
+        } catch (Exception e) {
+            log.error("Fail invoke, method: {}, data: {}, exception: {}", method, data, e.getMessage());
+        } finally {
+            ADDRESS_THREAD_LOCAL.remove();
+        }
+        return null;
+    }
+
+    private Object invoke(MethodDescribe methodDescribe, Map<String, List<Byte>> paramMap) throws InvocationTargetException, IllegalAccessException {
         Object[] params = new Object[methodDescribe.getParams().size()];
         methodDescribe.getParams().forEach((key, paramType) -> {
             if (paramMap.containsKey(key)) {
@@ -192,20 +204,12 @@ public class EpollManager {
                 params[paramType.getPosition()] = null;
             }
         });
-        try {
-            ADDRESS_THREAD_LOCAL.set(address);
-            if (methodDescribe.getMethod().getReturnType().equals(Void.TYPE)) {
-                methodDescribe.getMethod().invoke(methodDescribe.getBean(), params);
-                return "";
-            } else {
-                return methodDescribe.getMethod().invoke(methodDescribe.getBean(), params);
-            }
-        } catch (Exception e) {
-            log.error("Fail invoke, method: {}, data: {}, exception: {}", method, data, e.getMessage());
-        } finally {
-            ADDRESS_THREAD_LOCAL.remove();
+        if (methodDescribe.getMethod().getReturnType().equals(Void.TYPE)) {
+            methodDescribe.getMethod().invoke(methodDescribe.getBean(), params);
+            return "";
+        } else {
+            return methodDescribe.getMethod().invoke(methodDescribe.getBean(), params);
         }
-        return null;
     }
 
     public void close(String address) {
