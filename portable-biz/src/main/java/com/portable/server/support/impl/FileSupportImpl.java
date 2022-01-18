@@ -83,7 +83,6 @@ public class FileSupportImpl implements FileSupport {
         return String.format("%s%s%d%s%s.in", problemDir, File.separator, problemId, File.separator, testName);
     }
 
-
     private String getProblemOutput(Long problemId, String testName) {
         return String.format("%s%s%d%s%s.out", problemDir, File.separator, problemId, File.separator, testName);
     }
