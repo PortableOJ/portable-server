@@ -4,6 +4,7 @@ import com.portable.server.exception.PortableException;
 import com.portable.server.model.ServiceVerifyCode;
 import com.portable.server.model.response.judge.HeartbeatResponse;
 import com.portable.server.model.response.judge.SolutionInfoResponse;
+import com.portable.server.model.response.judge.TestInfoResponse;
 import com.portable.server.type.SolutionStatusType;
 
 import java.io.File;
@@ -188,4 +189,37 @@ public interface JudgeService {
      * @throws PortableException 非法获取则抛出错误
      */
     String getSolutionNextTestName(Long solutionId) throws PortableException;
+
+    /**
+     * 获取生成输出的信息
+     * @param problemId 题目的 ID
+     * @return 生成输出的信息
+     * @throws PortableException 非法获取则抛出错误
+     */
+    TestInfoResponse getTestInfo(Long problemId) throws PortableException;
+
+    /**
+     * 获取题目的标准代码
+     * @param problemId 题目的 ID
+     * @return 标准代码
+     * @throws PortableException 非法获取则抛出错误
+     */
+    String getTestStdCode(Long problemId) throws PortableException;
+
+    /**
+     * 回报题目的输出
+     * @param problemId 题目的 ID
+     * @param flag 是否成功输出
+     * @param name 测试的名称
+     * @param pos 当前的内容偏移量
+     * @param value 当前片段的内容
+     */
+    void reportTestOutput(Long problemId, Boolean flag, String name, Integer pos, byte[] value);
+
+    /**
+     * 返回生成输出的编译结果
+     * @param problemId 问题 ID
+     * @param value 编译结果
+     */
+    void reportTestCompile(Long problemId, Boolean value);
 }
