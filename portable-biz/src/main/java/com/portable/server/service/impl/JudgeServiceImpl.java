@@ -11,12 +11,14 @@ import com.portable.server.model.problem.Problem;
 import com.portable.server.model.problem.ProblemData;
 import com.portable.server.model.response.judge.HeartbeatResponse;
 import com.portable.server.model.response.judge.SolutionInfoResponse;
+import com.portable.server.model.response.judge.TestInfoResponse;
 import com.portable.server.model.solution.Solution;
 import com.portable.server.model.solution.SolutionData;
 import com.portable.server.service.JudgeService;
 import com.portable.server.socket.EpollManager;
 import com.portable.server.support.FileSupport;
 import com.portable.server.type.JudgeCodeType;
+import com.portable.server.type.LanguageType;
 import com.portable.server.type.ProblemStatusType;
 import com.portable.server.type.SolutionStatusType;
 import org.springframework.beans.factory.annotation.Value;
@@ -60,6 +62,11 @@ public class JudgeServiceImpl implements JudgeService {
     private Map<Long, SolutionJudgeWork> solutionJudgeWorkMap;
 
     /**
+     * problem ID 映射 judge 任务
+     */
+    private Map<Long, TestJudgeWork> problemTestJudgeWorkMap;
+
+    /**
      * 所有未进行的任务
      */
     private Queue<AbstractJudgeWork> judgeWorkPriorityQueue;
@@ -95,6 +102,7 @@ public class JudgeServiceImpl implements JudgeService {
         tcpJudgeMap = new ConcurrentHashMap<>(4);
         judgeCodeJudgeMap = new ConcurrentHashMap<>(2);
         solutionJudgeWorkMap = new ConcurrentHashMap<>(64);
+        problemTestJudgeWorkMap = new ConcurrentHashMap<>(4);
         judgeWorkPriorityQueue = new PriorityBlockingQueue<>();
 
         String serviceCode = env.getProperty("SERVICE_CODE");
@@ -126,6 +134,7 @@ public class JudgeServiceImpl implements JudgeService {
         TestJudgeWork testJudgeWork = new TestJudgeWork();
         testJudgeWork.setProblemId(problemId);
         testJudgeWork.setCurTestId(null);
+        problemTestJudgeWorkMap.put(problemId, testJudgeWork);
         judgeWorkPriorityQueue.add(testJudgeWork);
     }
 
@@ -135,6 +144,14 @@ public class JudgeServiceImpl implements JudgeService {
         solutionJudgeWork.getJudgeContainer().getJudgeWorkMap().remove(solutionId);
         solutionJudgeWorkMap.remove(solutionId);
         solutionManager.updateCostAndStatus(solutionId, endType, timeCost, memoryCost);
+    }
+
+    @Override
+    public void killTestTask(Long problemId, Boolean endType) {
+        TestJudgeWork testJudgeWork = problemTestJudgeWorkMap.get(problemId);
+        testJudgeWork.getJudgeContainer().getTestWorkMap().remove(problemId);
+        problemTestJudgeWorkMap.remove(problemId);
+        problemManager.updateProblemStatus(problemId, endType ? ProblemStatusType.UNCHECK : ProblemStatusType.TREAT_FAILED);
     }
 
     @Override
@@ -243,12 +260,15 @@ public class JudgeServiceImpl implements JudgeService {
         solutionManager.updateStatus(solutionId, SolutionStatusType.COMPILING);
         ProblemData problemData = getProblemData(solution.getProblemId());
 
+        LanguageType languageType = solution.getLanguageType();
+
         solutionInfoResponse.setProblemId(solution.getProblemId());
-        solutionInfoResponse.setLanguage(solution.getLanguageType());
+        solutionInfoResponse.setLanguage(languageType);
         solutionInfoResponse.setJudgeName(problemData.getJudgeCodeType());
         solutionInfoResponse.setTestNum(problemData.getTestName().size());
-        solutionInfoResponse.setTimeLimit(problemData.getTimeLimit(solution.getLanguageType()));
-        solutionInfoResponse.setMemoryLimit(problemData.getMemoryLimit(solution.getLanguageType()));
+        solutionInfoResponse.setTimeLimit(problemData.getTimeLimit(languageType));
+        solutionInfoResponse.setMemoryLimit(problemData.getMemoryLimit(languageType));
+
         return solutionInfoResponse;
     }
 
@@ -286,7 +306,7 @@ public class JudgeServiceImpl implements JudgeService {
             throw PortableException.of("S-06-008", solutionId);
         } else {
             if (solutionJudgeWorkMap.get(solutionId).nextTest()) {
-                solutionManager.updateCostAndStatus(solutionId, statusType, timeCost, memoryCost);
+                killJudgeTask(solutionId, statusType, timeCost, memoryCost);
             } else {
                 solutionManager.updateCostAndStatus(solutionId, SolutionStatusType.JUDGING, timeCost, memoryCost);
             }
@@ -334,6 +354,56 @@ public class JudgeServiceImpl implements JudgeService {
         }
         ProblemData problemData = getProblemData(solutionJudgeWork.getProblemId());
         return problemData.getTestName().get(solutionJudgeWork.getCurTestId());
+    }
+
+    @Override
+    public TestInfoResponse getTestInfo(Long problemId) throws PortableException {
+        getCurContainer();
+        TestInfoResponse testInfoResponse = new TestInfoResponse();
+        ProblemData problemData = getProblemData(problemId);
+        problemManager.updateProblemStatus(problemId, ProblemStatusType.TREATING);
+
+        LanguageType languageType = problemData.getStdCode().getLanguageType();
+        testInfoResponse.setTestNum(problemData.getTestName().size());
+        testInfoResponse.setLanguage(languageType);
+        testInfoResponse.setTimeLimit(problemData.getTimeLimit(languageType));
+        testInfoResponse.setMemoryLimit(problemData.getMemoryLimit(languageType));
+
+        return testInfoResponse;
+    }
+
+    @Override
+    public String getTestStdCode(Long problemId) throws PortableException {
+        getCurContainer();
+
+        ProblemData problemData = getProblemData(problemId);
+
+        return problemData.getStdCode().getCode();
+    }
+
+    @Override
+    public void reportTestOutput(Long problemId, Boolean flag, String name, Integer pos, byte[] value) throws PortableException {
+        if (flag) {
+            if (pos == 0) {
+                fileSupport.createTestOutput(problemId, name, value);
+            } else {
+                fileSupport.appendTestOutput(problemId, name, value);
+            }
+        } else {
+            killTestTask(problemId, false);
+            throw PortableException.of("S-06-009", problemId);
+        }
+    }
+
+    @Override
+    public void reportTestCompileFail(Long problemId) throws PortableException {
+        killTestTask(problemId, false);
+        throw PortableException.of("S-06-009", problemId);
+    }
+
+    @Override
+    public void reportTestOver(Long problemId) {
+        killTestTask(problemId, true);
     }
 
     private JudgeContainer getCurContainer() throws PortableException {

@@ -5,6 +5,7 @@ import com.portable.server.model.ServiceVerifyCode;
 import com.portable.server.model.response.judge.HeartbeatResponse;
 import com.portable.server.model.response.judge.SolutionInfoResponse;
 import com.portable.server.model.response.judge.TestInfoResponse;
+import com.portable.server.type.ProblemStatusType;
 import com.portable.server.type.SolutionStatusType;
 
 import java.io.File;
@@ -39,6 +40,13 @@ public interface JudgeService {
      * @param memoryCost 内存消耗
      */
     void killJudgeTask(Long solutionId, SolutionStatusType endType, Integer timeCost, Integer memoryCost);
+
+    /**
+     * 结束一个 test 任务
+     * @param problemId 问题的 ID
+     * @param endType 最终结果是否成功
+     */
+    void killTestTask(Long problemId, Boolean endType);
 
     /**
      * 获取当前的设备码
@@ -213,13 +221,20 @@ public interface JudgeService {
      * @param name 测试的名称
      * @param pos 当前的内容偏移量
      * @param value 当前片段的内容
+     * @throws PortableException 无法写入则抛出错误
      */
-    void reportTestOutput(Long problemId, Boolean flag, String name, Integer pos, byte[] value);
+    void reportTestOutput(Long problemId, Boolean flag, String name, Integer pos, byte[] value) throws PortableException;
 
     /**
      * 返回生成输出的编译结果
      * @param problemId 问题 ID
-     * @param value 编译结果
+     * @throws PortableException 必定抛出错误
      */
-    void reportTestCompile(Long problemId, Boolean value);
+    void reportTestCompileFail(Long problemId) throws PortableException;
+
+    /**
+     * 汇报成功执行结束
+     * @param problemId 问题的 ID
+     */
+    void reportTestOver(Long problemId);
 }
