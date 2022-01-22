@@ -130,10 +130,12 @@ public class JudgeServiceImpl implements JudgeService {
     }
 
     @Override
-    public void addTestTask(Long problemId) {
+    public void addTestTask(Long problemId) throws PortableException {
+        ProblemData problemData = getProblemData(problemId);
         TestJudgeWork testJudgeWork = new TestJudgeWork();
         testJudgeWork.setProblemId(problemId);
-        testJudgeWork.setCurTestId(null);
+        testJudgeWork.setCurTestId(0);
+        testJudgeWork.setMaxTest(problemData.getTestName().size());
         problemTestJudgeWorkMap.put(problemId, testJudgeWork);
         judgeWorkPriorityQueue.add(testJudgeWork);
     }
@@ -305,7 +307,7 @@ public class JudgeServiceImpl implements JudgeService {
             killJudgeTask(solutionId, statusType, timeCost, memoryCost);
             throw PortableException.of("S-06-008", solutionId);
         } else {
-            if (solutionJudgeWorkMap.get(solutionId).nextTest()) {
+            if (solutionJudgeWorkMap.get(solutionId).testOver()) {
                 killJudgeTask(solutionId, statusType, timeCost, memoryCost);
             } else {
                 solutionManager.updateCostAndStatus(solutionId, SolutionStatusType.JUDGING, timeCost, memoryCost);
@@ -353,7 +355,7 @@ public class JudgeServiceImpl implements JudgeService {
             throw PortableException.of("S-06-008", solutionId);
         }
         ProblemData problemData = getProblemData(solutionJudgeWork.getProblemId());
-        return problemData.getTestName().get(solutionJudgeWork.getCurTestId());
+        return problemData.getTestName().get(solutionJudgeWork.nextTest());
     }
 
     @Override
@@ -379,6 +381,17 @@ public class JudgeServiceImpl implements JudgeService {
         ProblemData problemData = getProblemData(problemId);
 
         return problemData.getStdCode().getCode();
+    }
+
+    @Override
+    public String getNextTest(Long problemId) throws PortableException {
+        getCurContainer();
+        TestJudgeWork testJudgeWork = problemTestJudgeWorkMap.get(problemId);
+        if (testJudgeWork == null) {
+            throw PortableException.of("S-06-009", problemId);
+        }
+        ProblemData problemData = getProblemData(problemId);
+        return problemData.getTestName().get(testJudgeWork.nextTest());
     }
 
     @Override

@@ -113,6 +113,11 @@ public class JudgeApiController {
         return judgeService.getTestStdCode(problemId);
     }
 
+    @EpollMethod("TestTest")
+    public String getNextTest(Long problemId) throws PortableException {
+        return judgeService.getNextTest(problemId);
+    }
+
     @EpollMethod("TestReportOutput")
     public void reportTestOutput(Long problemId, Boolean flag, String name, Integer pos, byte[] value) throws PortableException {
         judgeService.reportTestOutput(problemId, flag, name, pos, value);

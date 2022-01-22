@@ -16,11 +16,6 @@ public class TestJudgeWork extends AbstractJudgeWork {
      */
     private Long problemId;
 
-    /**
-     * 当前正在测试的 ID
-     */
-    private Long curTestId;
-
     public TestJudgeWork() {
         super(JudgeWorkType.TEST);
     }

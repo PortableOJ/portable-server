@@ -5,6 +5,8 @@ import com.portable.server.type.JudgeWorkType;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.util.Objects;
+
 /**
  * @author shiroha
  */
@@ -21,6 +23,26 @@ public abstract class AbstractJudgeWork implements Comparable<AbstractJudgeWork>
      */
     @Setter
     private JudgeContainer judgeContainer;
+
+    /**
+     * 当前正在测试的 ID
+     */
+    @Setter
+    private Integer curTestId;
+
+    /**
+     * 总共需要进行的 test 数量
+     */
+    @Setter
+    private Integer maxTest;
+
+    public Integer nextTest() {
+        return curTestId++;
+    }
+
+    public Boolean testOver() {
+        return Objects.equals(curTestId, maxTest);
+    }
 
     public AbstractJudgeWork(JudgeWorkType judgeWorkType) {
         this.judgeWorkType = judgeWorkType;

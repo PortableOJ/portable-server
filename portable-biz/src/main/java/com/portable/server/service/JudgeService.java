@@ -28,8 +28,9 @@ public interface JudgeService {
      * 提交一个 test 任务
      *
      * @param problemId 目标 solution 的 ID
+     * @throws PortableException 提交不存在的问题时抛出错误
      */
-    void addTestTask(Long problemId);
+    void addTestTask(Long problemId) throws PortableException;
 
     /**
      * 结束一个 judge 任务
@@ -213,6 +214,14 @@ public interface JudgeService {
      * @throws PortableException 非法获取则抛出错误
      */
     String getTestStdCode(Long problemId) throws PortableException;
+
+    /**
+     * 获取下一组测试名
+     * @param problemId 问题的 ID
+     * @return 下一组测试的名称
+     * @throws PortableException 非法获取则抛出错误
+     */
+    String getNextTest(Long problemId) throws PortableException;
 
     /**
      * 回报题目的输出
