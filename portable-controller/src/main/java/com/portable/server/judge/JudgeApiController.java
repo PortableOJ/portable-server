@@ -3,6 +3,7 @@ package com.portable.server.judge;
 import com.portable.server.exception.PortableException;
 import com.portable.server.model.response.judge.HeartbeatResponse;
 import com.portable.server.model.response.judge.SolutionInfoResponse;
+import com.portable.server.model.response.judge.TestInfoResponse;
 import com.portable.server.service.JudgeService;
 import com.portable.server.socket.EpollManager;
 import com.portable.server.socket.annotation.EpollMethod;
@@ -100,5 +101,30 @@ public class JudgeApiController {
     @EpollMethod("TestLibRequest")
     public File getTestLibCode() throws PortableException {
         return judgeService.getTestLibCode();
+    }
+
+    @EpollMethod("TestInfo")
+    public TestInfoResponse getTestInfo(Long problemId) throws PortableException {
+        return judgeService.getTestInfo(problemId);
+    }
+
+    @EpollMethod("TestStdCode")
+    public String getTestStdCode(Long problemId) throws PortableException {
+        return judgeService.getTestStdCode(problemId);
+    }
+
+    @EpollMethod("TestReportOutput")
+    public void reportTestOutput(Long problemId, Boolean flag, String name, Integer pos, byte[] value) throws PortableException {
+        judgeService.reportTestOutput(problemId, flag, name, pos, value);
+    }
+
+    @EpollMethod("TestResultReport")
+    public void reportTestCompileFail(Long problemId) throws PortableException {
+        judgeService.reportTestCompileFail(problemId);
+    }
+
+    @EpollMethod("TestReportOver")
+    public void reportTestOver(Long problemId) {
+        judgeService.reportTestOver(problemId);
     }
 }
