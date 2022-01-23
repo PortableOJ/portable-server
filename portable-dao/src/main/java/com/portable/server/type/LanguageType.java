@@ -3,6 +3,10 @@ package com.portable.server.type;
 import com.portable.server.exception.ExceptionTextType;
 import lombok.Getter;
 
+/**
+ * @author shiroha
+ */
+
 @Getter
 public enum LanguageType implements ExceptionTextType {
     C89("GNU GCC C89", "C", "gnu89", ".c"),

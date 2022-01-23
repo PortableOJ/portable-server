@@ -32,7 +32,11 @@ import org.springframework.stereotype.Component;
 import javax.annotation.Resource;
 import java.io.IOException;
 import java.io.OutputStream;
-import java.util.*;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Date;
+import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 /**
@@ -139,7 +143,7 @@ public class ProblemServiceImpl implements ProblemService {
     public PageResponse<ProblemListResponse> getProblemList(PageRequest<Void> pageRequest) {
         boolean isLogin = UserContext.ctx().isLogin();
         Long userId = isLogin ? UserContext.ctx().getId() : null;
-        boolean viewHiddenProblem = UserContext.ctx().getPermissionTypeSet().contains(PermissionType.VIEW_HIDDEN_PROBLEM);
+        boolean viewHiddenProblem = isLogin && UserContext.ctx().getPermissionTypeSet().contains(PermissionType.VIEW_HIDDEN_PROBLEM);
         List<ProblemAccessType> problemAccessTypeList = viewHiddenProblem ? Arrays.asList(ProblemAccessType.PUBLIC, ProblemAccessType.HIDDEN) : Collections.singletonList(ProblemAccessType.PUBLIC);
 
         Integer problemCount = problemManager.countProblemByTypeAndOwnerId(problemAccessTypeList, userId);
@@ -205,6 +209,7 @@ public class ProblemServiceImpl implements ProblemService {
         ProblemData problemData = problemDataManager.newProblemData();
         problemContentRequest.toProblem(problem);
         problemContentRequest.toProblemData(problemData);
+        problem.setOwner(UserContext.ctx().getId());
 
         problemDataManager.insertProblemData(problemData);
         problem.setDataId(problemData.get_id());

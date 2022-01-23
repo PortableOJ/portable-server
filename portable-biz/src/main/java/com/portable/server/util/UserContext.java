@@ -100,7 +100,7 @@ public class UserContext implements AutoCloseable {
     public static void set(Long userId) {
         try {
             UserContext userContext = USER_CACHE.get(userId);
-            set(userContext);
+            LOCAL.set(userContext);
         } catch (ExecutionException ignored) {
         }
     }

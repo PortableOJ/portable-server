@@ -8,6 +8,9 @@ import org.springframework.data.annotation.Id;
 
 import java.util.Set;
 
+/**
+ * @author shiroha
+ */
 @Data
 @Builder
 public class NormalUserData {
@@ -16,6 +19,7 @@ public class NormalUserData {
      * 数据库主键
      */
     @Id
+    @SuppressWarnings("AlibabaAvoidStartWithDollarAndUnderLineNaming")
     private String _id;
 
     /**

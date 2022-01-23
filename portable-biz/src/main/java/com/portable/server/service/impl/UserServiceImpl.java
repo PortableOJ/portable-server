@@ -15,10 +15,17 @@ import com.portable.server.type.AccountType;
 import com.portable.server.type.OrganizationType;
 import com.portable.server.type.PermissionType;
 import com.portable.server.util.UserContext;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
+import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
+import java.util.Arrays;
+import java.util.stream.Collectors;
 
+/**
+ * @author shiroha
+ */
 @Component
 public class UserServiceImpl implements UserService {
 
@@ -30,6 +37,30 @@ public class UserServiceImpl implements UserService {
 
     @Resource
     private BCryptEncoder bCryptEncoder;
+
+    @Value("${ROOT_NAME}")
+    private String rootName;
+
+    @Value("${ROOT_PWD}")
+    private String rootPassword;
+
+    @PostConstruct
+    public void init() {
+        // 创建 root 账户
+        User rootUser = userManager.getAccountByHandle(rootName);
+        if (rootUser == null) {
+            NormalUserData normalUserData = normalUserManager.newUserData();
+            normalUserData.setOrganization(OrganizationType.ADMIN);
+            normalUserData.setPermissionTypeSet(Arrays.stream(PermissionType.values()).collect(Collectors.toSet()));
+            normalUserManager.insertNormalUserData(normalUserData);
+
+            rootUser = userManager.newNormalAccount();
+            rootUser.setHandle(rootName);
+            rootUser.setPassword(bCryptEncoder.encoder(rootPassword));
+            rootUser.setDataId(normalUserData.get_id());
+            userManager.insertAccount(rootUser);
+        }
+    }
 
     @Override
     public UserBasicInfoResponse login(LoginRequest loginRequest) throws PortableException {

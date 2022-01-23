@@ -25,6 +25,7 @@ public class ProblemManagerImpl implements ProblemManager {
                 .id(null)
                 .dataId(null)
                 .title(null)
+                .statusType(ProblemStatusType.UNTREATED)
                 .accessType(ProblemAccessType.PRIVATE)
                 .submissionCount(0)
                 .acceptCount(0)

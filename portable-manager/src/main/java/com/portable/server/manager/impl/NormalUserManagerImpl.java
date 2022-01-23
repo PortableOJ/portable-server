@@ -9,6 +9,9 @@ import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
 
+/**
+ * @author shiroha
+ */
 @Component
 public class NormalUserManagerImpl implements NormalUserManager {
 

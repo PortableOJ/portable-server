@@ -30,12 +30,12 @@ public class SolutionController {
     @NeedLogin(false)
     @GetMapping("/getPublicStatus")
     public Response<PageResponse<SolutionListResponse>> getPublicSolutionList(Integer pageNum, Integer pageSize) {
-        return Response.ofOk(solutionService.getPublicStatus(
-                PageRequest.<Void>builder()
-                        .pageNum(pageNum)
-                        .pageSize(pageSize)
-                        .build()
-        ));
+        PageRequest<Void> pageRequest = PageRequest.<Void>builder()
+                .pageNum(pageNum)
+                .pageSize(pageSize)
+                .build();
+        pageRequest.verify();
+        return Response.ofOk(solutionService.getPublicStatus(pageRequest));
     }
 
     @NeedLogin(false)

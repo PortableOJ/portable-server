@@ -3,6 +3,9 @@ package com.portable.server.model.response;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 
+/**
+ * @author shiroha
+ */
 @Data
 @AllArgsConstructor
 public class Response<T> {
@@ -17,10 +20,6 @@ public class Response<T> {
 
     public static <T> Response<T> ofOk() {
         return new Response<>(true,null, null, null);
-    }
-
-    public static <T> Response<T> ofFail(String msg) {
-        return new Response<>(false, null, msg, null);
     }
 
     public static <T> Response<T> ofFail(String code, String msg) {

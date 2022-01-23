@@ -55,7 +55,7 @@
         WHERE problem.id = #{id}
     </select>
 
-    <insert id="insertProblem" parameterMap="Problem">
+    <insert id="insertProblem" parameterMap="Problem" useGeneratedKeys="true" keyProperty="id">
         INSERT INTO portable_oj.problem
         (problem.data_id, problem.title, problem.status_type, problem.access_type, problem.submission_count, problem.accept_count, problem.owner)
         VALUES

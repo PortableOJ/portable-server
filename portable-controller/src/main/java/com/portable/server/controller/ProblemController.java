@@ -14,6 +14,7 @@ import com.portable.server.model.response.problem.ProblemStdTestCodeResponse;
 import com.portable.server.service.ProblemService;
 import com.portable.server.type.PermissionType;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletResponse;
@@ -33,12 +34,12 @@ public class ProblemController {
     @NeedLogin(false)
     @GetMapping("/getList")
     public Response<PageResponse<ProblemListResponse>> getProblemList(Integer pageNum, Integer pageSize) {
-        return Response.ofOk(problemService.getProblemList(
-                PageRequest.<Void>builder()
+        PageRequest<Void> pageRequest = PageRequest.<Void>builder()
                         .pageNum(pageNum)
                         .pageSize(pageSize)
-                        .build()
-        ));
+                        .build();
+        pageRequest.verify();
+        return Response.ofOk(problemService.getProblemList(pageRequest));
     }
 
     @NeedLogin(false)
@@ -142,8 +143,14 @@ public class ProblemController {
     @NeedLogin
     @PostMapping("/addTest")
     @PermissionRequirement(PermissionType.CREATE_AND_EDIT_PROBLEM)
-    public Response<Void> addTest(@RequestBody ProblemTestRequest problemTestRequest) throws PortableException {
-        problemService.addProblemTest(problemTestRequest);
+    public Response<Void> addTest(Long id, String name, MultipartFile fileData) throws PortableException {
+        problemService.addProblemTest(
+                ProblemTestRequest.builder()
+                        .id(id)
+                        .fileData(fileData)
+                        .name(name)
+                        .build()
+        );
         return Response.ofOk();
     }
 

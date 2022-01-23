@@ -23,6 +23,9 @@ import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
+/**
+ * @author shiroha
+ */
 @RestController
 @RequestMapping("/api/user")
 public class UserController {
