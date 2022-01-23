@@ -5,10 +5,12 @@ import com.portable.server.model.problem.ProblemData;
 import com.portable.server.repo.ProblemDataRepo;
 import com.portable.server.type.JudgeCodeType;
 import com.portable.server.type.ProblemType;
+import com.portable.server.type.SolutionStatusType;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 
 /**
@@ -24,10 +26,11 @@ public class ProblemDataManagerImpl implements ProblemDataManager {
     public ProblemData newProblemData() {
         return ProblemData.builder()
                 ._id(null)
+                .contestId(null)
                 .defaultTimeLimit(null)
                 .defaultMemoryLimit(null)
-                .specialTimeLimit(new HashMap<>())
-                .specialMemoryLimit(new HashMap<>())
+                .specialTimeLimit(new HashMap<>(0))
+                .specialMemoryLimit(new HashMap<>(0))
                 .supportLanguage(new ArrayList<>())
                 .description(null)
                 .input(null)
@@ -35,9 +38,19 @@ public class ProblemDataManagerImpl implements ProblemDataManager {
                 .example(new ArrayList<>())
                 .type(ProblemType.STANDARD)
                 .judgeCodeType(JudgeCodeType.IGNORE_END_OF_FILE)
+                .judgeCode(null)
                 .testName(new ArrayList<>())
                 .shareTest(false)
+                .stdCode(ProblemData.StdCode.builder()
+                        .name("STD")
+                        .code(null)
+                        .expectResultType(SolutionStatusType.ACCEPT)
+                        .languageType(null)
+                        .solutionId(null)
+                        .build())
                 .testCodeList(new ArrayList<>())
+                .version(0)
+                .gmtModifyTime(new Date())
                 .build();
     }
 

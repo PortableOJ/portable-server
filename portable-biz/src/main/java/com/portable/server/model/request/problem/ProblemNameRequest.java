@@ -3,6 +3,9 @@ package com.portable.server.model.request.problem;
 import lombok.Builder;
 import lombok.Data;
 
+/**
+ * @author shiroha
+ */
 @Data
 @Builder
 public class ProblemNameRequest {

@@ -21,6 +21,7 @@ import com.portable.server.service.ProblemService;
 import com.portable.server.type.PermissionType;
 import com.portable.server.type.ProblemAccessType;
 import com.portable.server.type.ProblemStatusType;
+import com.portable.server.type.SolutionStatusType;
 import com.portable.server.util.StreamUtils;
 import com.portable.server.util.UserContext;
 import lombok.Builder;
@@ -325,6 +326,7 @@ public class ProblemServiceImpl implements ProblemService {
             throw PortableException.of("A-04-007");
         }
         problemCodeRequest.toStdCode(problemPackage.getProblemData().getStdCode());
+        problemPackage.getProblemData().getStdCode().setExpectResultType(SolutionStatusType.ACCEPT);
         if (ProblemStatusType.NORMAL.equals(problemPackage.getProblem().getStatusType())) {
             problemPackage.getProblemData().nextVersion();
         }
@@ -436,6 +438,9 @@ public class ProblemServiceImpl implements ProblemService {
 
     private ProblemPackage getForViewProblemTest(Long id) throws PortableException {
         Problem problem = problemManager.getProblemById(id);
+        if (problem == null) {
+            throw PortableException.of("A-04-001", id);
+        }
         User2ProblemAccessType accessType = User2ProblemAccessType.of(problem);
         if (!accessType.getEditProblem() && !accessType.getViewProblem()) {
             throw PortableException.of("A-02-004", id);
@@ -452,6 +457,9 @@ public class ProblemServiceImpl implements ProblemService {
 
     private ProblemPackage getForEditProblem(Long id) throws PortableException {
         Problem problem = problemManager.getProblemById(id);
+        if (problem == null) {
+            throw PortableException.of("A-04-001", id);
+        }
         User2ProblemAccessType accessType = User2ProblemAccessType.of(problem);
         if (accessType.getEditProblem()) {
             ProblemData problemData = problemDataManager.getProblemData(problem.getDataId());
