@@ -20,6 +20,7 @@ import java.util.Map;
 public class ProblemData {
 
     @Id
+    @SuppressWarnings("AlibabaAvoidStartWithDollarAndUnderLineNaming")
     private String _id;
 
     /**
@@ -188,16 +189,10 @@ public class ProblemData {
     }
 
     public Integer getTimeLimit(LanguageType languageType) {
-        if (specialTimeLimit.containsKey(languageType)) {
-            return specialTimeLimit.get(languageType);
-        }
-        return defaultTimeLimit;
+        return specialTimeLimit.getOrDefault(languageType, defaultTimeLimit);
     }
 
     public Integer getMemoryLimit(LanguageType languageType) {
-        if (specialMemoryLimit.containsKey(languageType)) {
-            return specialMemoryLimit.get(languageType);
-        }
-        return defaultMemoryLimit;
+        return specialMemoryLimit.getOrDefault(languageType, defaultMemoryLimit);
     }
 }

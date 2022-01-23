@@ -129,7 +129,7 @@ public class JudgeApiController {
     }
 
     @EpollMethod("TestReportOver")
-    public void reportTestOver(Long problemId) {
+    public void reportTestOver(Long problemId) throws PortableException {
         judgeService.reportTestOver(problemId);
     }
 }

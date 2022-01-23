@@ -244,6 +244,7 @@ public interface JudgeService {
     /**
      * 汇报成功执行结束
      * @param problemId 问题的 ID
+     * @throws PortableException 遇到错误的问题 ID 则抛出
      */
-    void reportTestOver(Long problemId);
+    void reportTestOver(Long problemId) throws PortableException;
 }

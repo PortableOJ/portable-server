@@ -236,8 +236,9 @@ public class ProblemServiceImpl implements ProblemService {
             throw PortableException.of("A-04-007");
         }
 
-        if (problemSettingRequest.toProblemData(problemPackage.getProblemData())
-                || checkAnyStdCodeNotPass(problemPackage.getProblemData())) {
+        boolean needCheck = problemSettingRequest.toProblemData(problemPackage.getProblemData());
+        if (problemPackage.getProblem().getStatusType().getChecked()
+                && (needCheck || checkAnyStdCodeNotPass(problemPackage.getProblemData()))) {
             problemPackage.getProblem().toUncheck();
         }
 
@@ -402,7 +403,17 @@ public class ProblemServiceImpl implements ProblemService {
 
     @Override
     public void treatAndCheckProblem(Long id) throws PortableException {
-        // TODO treat it!
+        ProblemPackage problemPackage = getForEditProblem(id);
+        // 已经是 normal 了
+        if (problemPackage.getProblem().getStatusType().getChecked()) {
+            return;
+        }
+        // 只需要 check 时
+        if (problemPackage.getProblem().getStatusType().getTreated()) {
+            judgeService.reportTestOver(id);
+        } else {
+            judgeService.addTestTask(id);
+        }
     }
 
     @Override
@@ -425,6 +436,9 @@ public class ProblemServiceImpl implements ProblemService {
 
     private ProblemPackage getForViewProblem(Long id) throws PortableException {
         Problem problem = problemManager.getProblemById(id);
+        if (problem == null) {
+            throw PortableException.of("A-04-001", id);
+        }
         User2ProblemAccessType accessType = User2ProblemAccessType.of(problem);
         if (accessType.getViewProblem()) {
             ProblemData problemData = problemDataManager.getProblemData(problem.getDataId());
@@ -478,11 +492,11 @@ public class ProblemServiceImpl implements ProblemService {
      * @return 导致不通过则返回 true
      */
     public Boolean checkAnyStdCodeNotPass(ProblemData problemData) {
-        if (checkStdCodeNotPass(problemData.getStdCode())) {
+        if (checkStdCodeNotPass(problemData.getStdCode(), problemData)) {
             return true;
         }
         for (ProblemData.StdCode stdCode : problemData.getTestCodeList()) {
-            if (checkStdCodeNotPass(stdCode)) {
+            if (checkStdCodeNotPass(stdCode, problemData)) {
                 return true;
             }
         }
@@ -495,19 +509,21 @@ public class ProblemServiceImpl implements ProblemService {
      * @param stdCode 需要检查的代码
      * @return 导致不通过则返回 true
      */
-    private Boolean checkStdCodeNotPass(ProblemData.StdCode stdCode) {
-        /// TODO: 完成提交系统后实现
-        return false;
-//        if (stdCode.getSolutionId() == null || !stdCode.getSolutionStatusType().getEndingResult()) {
-//            return false;
-//        }
-//        Integer timeLimit = specialTimeLimit.getOrDefault(stdCode.getLanguageType(), defaultTimeLimit);
-//        Integer memoryLimit = specialMemoryLimit.getOrDefault(stdCode.getLanguageType(), defaultMemoryLimit);
-//        if (!SolutionStatusType.TIME_LIMIT_EXCEEDED.equals(stdCode.getSolutionStatusType())) {
-//            if (timeLimit <= stdCode.getTimeCost()) {
-//                return true;
-//            }
-//        }
-//        return memoryLimit <= stdCode.getMemoryCost();
+    private Boolean checkStdCodeNotPass(ProblemData.StdCode stdCode, ProblemData problemData) {
+        if (stdCode.getSolutionId() == null) {
+            return false;
+        }
+        Solution solution = solutionManager.selectSolutionById(stdCode.getSolutionId());
+        if (!solution.getStatus().getEndingResult()) {
+            return false;
+        }
+        Integer timeLimit = problemData.getTimeLimit(stdCode.getLanguageType());
+        Integer memoryLimit = problemData.getMemoryLimit(stdCode.getLanguageType());
+        if (!SolutionStatusType.TIME_LIMIT_EXCEEDED.equals(stdCode.getExpectResultType())) {
+            if (timeLimit <= solution.getTimeCost()) {
+                return true;
+            }
+        }
+        return memoryLimit <= solution.getMemoryCost();
     }
 }

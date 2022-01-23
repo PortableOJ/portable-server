@@ -18,9 +18,11 @@ import com.portable.server.service.JudgeService;
 import com.portable.server.socket.EpollManager;
 import com.portable.server.support.FileSupport;
 import com.portable.server.type.JudgeCodeType;
+import com.portable.server.type.JudgeWorkType;
 import com.portable.server.type.LanguageType;
 import com.portable.server.type.ProblemStatusType;
 import com.portable.server.type.SolutionStatusType;
+import com.portable.server.type.SolutionType;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
@@ -127,6 +129,7 @@ public class JudgeServiceImpl implements JudgeService {
         solutionJudgeWork.setMaxTest(problemData.getTestName().size());
         solutionJudgeWorkMap.put(solutionId, solutionJudgeWork);
         judgeWorkPriorityQueue.add(solutionJudgeWork);
+        solutionManager.updateStatus(solutionId, SolutionStatusType.PENDING);
     }
 
     @Override
@@ -138,6 +141,7 @@ public class JudgeServiceImpl implements JudgeService {
         testJudgeWork.setMaxTest(problemData.getTestName().size());
         problemTestJudgeWorkMap.put(problemId, testJudgeWork);
         judgeWorkPriorityQueue.add(testJudgeWork);
+        problemManager.updateProblemStatus(problemId, ProblemStatusType.PENDING);
     }
 
     @Override
@@ -153,7 +157,7 @@ public class JudgeServiceImpl implements JudgeService {
         TestJudgeWork testJudgeWork = problemTestJudgeWorkMap.get(problemId);
         testJudgeWork.getJudgeContainer().getTestWorkMap().remove(problemId);
         problemTestJudgeWorkMap.remove(problemId);
-        problemManager.updateProblemStatus(problemId, endType ? ProblemStatusType.UNCHECK : ProblemStatusType.TREAT_FAILED);
+        problemManager.updateProblemStatus(problemId, endType ? ProblemStatusType.CHECKING : ProblemStatusType.TREAT_FAILED);
     }
 
     @Override
@@ -240,8 +244,9 @@ public class JudgeServiceImpl implements JudgeService {
                 if (!solutionJudgeWorkMap.containsKey(solutionJudgeWork.getSolutionId())) {
                     continue;
                 }
-                judgeContainer.getJudgeWorkMap().put(solutionJudgeWork.getSolutionId(), solutionJudgeWork);
-                heartbeatResponse.addJudgeTask(solutionJudgeWork.getSolutionId());
+                Long solutionId = solutionJudgeWork.getSolutionId();
+                judgeContainer.getJudgeWorkMap().put(solutionId, solutionJudgeWork);
+                heartbeatResponse.addJudgeTask(solutionId);
             } else if (judgeWork instanceof TestJudgeWork) {
                 TestJudgeWork testJudgeWork = (TestJudgeWork) judgeWork;
                 judgeContainer.getTestWorkMap().put(testJudgeWork.getProblemId(), testJudgeWork);
@@ -297,6 +302,8 @@ public class JudgeServiceImpl implements JudgeService {
         solutionJudgeWorkMap.get(solutionId).setCurTestId(0);
         if (!compileResult || !judgeCompileResult) {
             killJudgeTask(solutionId, compileResult ? SolutionStatusType.JUDGE_COMPILE_ERROR : SolutionStatusType.COMPILE_ERROR, 0, 0);
+        } else {
+            solutionManager.updateStatus(solutionId, SolutionStatusType.JUDGING);
         }
     }
 
@@ -307,8 +314,33 @@ public class JudgeServiceImpl implements JudgeService {
             killJudgeTask(solutionId, statusType, timeCost, memoryCost);
             throw PortableException.of("S-06-008", solutionId);
         } else {
-            if (solutionJudgeWorkMap.get(solutionId).testOver()) {
+            SolutionJudgeWork solutionJudgeWork = solutionJudgeWorkMap.get(solutionId);
+            if (solutionJudgeWork != null && solutionJudgeWork.testOver()) {
                 killJudgeTask(solutionId, statusType, timeCost, memoryCost);
+                if (JudgeWorkType.CHECK_PROBLEM.equals(solutionJudgeWork.getJudgeWorkType())) {
+                    synchronized (this) {
+                        ProblemData problemData = getProblemData(solutionJudgeWork.getProblemId());
+                        Set<Boolean> statusSet = problemData.getTestCodeList().stream()
+                                .map(stdCode -> {
+                                    Solution solution = solutionManager.selectSolutionById(stdCode.getSolutionId());
+                                    if (solution == null) {
+                                        return false;
+                                    }
+                                    if (!solution.getStatus().getEndingResult()) {
+                                        return null;
+                                    }
+                                    return Objects.equals(solution.getStatus(), stdCode.getExpectResultType());
+                                })
+                                .collect(Collectors.toSet());
+                        if (!statusSet.contains(null)) {
+                            if (statusSet.contains(false)) {
+                                problemManager.updateProblemStatus(solutionJudgeWork.getProblemId(), ProblemStatusType.CHECK_FAILED);
+                            } else {
+                                problemManager.updateProblemStatus(solutionJudgeWork.getProblemId(), ProblemStatusType.NORMAL);
+                            }
+                        }
+                    }
+                }
             } else {
                 solutionManager.updateCostAndStatus(solutionId, SolutionStatusType.JUDGING, timeCost, memoryCost);
             }
@@ -362,7 +394,7 @@ public class JudgeServiceImpl implements JudgeService {
     public TestInfoResponse getTestInfo(Long problemId) throws PortableException {
         getCurContainer();
         TestInfoResponse testInfoResponse = new TestInfoResponse();
-        ProblemData problemData = getProblemData(problemId);
+        ProblemData problemData = getTestProblemData(getTestProblem(problemId));
         problemManager.updateProblemStatus(problemId, ProblemStatusType.TREATING);
 
         LanguageType languageType = problemData.getStdCode().getLanguageType();
@@ -378,7 +410,7 @@ public class JudgeServiceImpl implements JudgeService {
     public String getTestStdCode(Long problemId) throws PortableException {
         getCurContainer();
 
-        ProblemData problemData = getProblemData(problemId);
+        ProblemData problemData = getTestProblemData(getTestProblem(problemId));
 
         return problemData.getStdCode().getCode();
     }
@@ -390,7 +422,7 @@ public class JudgeServiceImpl implements JudgeService {
         if (testJudgeWork == null) {
             throw PortableException.of("S-06-009", problemId);
         }
-        ProblemData problemData = getProblemData(problemId);
+        ProblemData problemData = getTestProblemData(getTestProblem(problemId));
         return problemData.getTestName().get(testJudgeWork.nextTest());
     }
 
@@ -415,8 +447,35 @@ public class JudgeServiceImpl implements JudgeService {
     }
 
     @Override
-    public void reportTestOver(Long problemId) {
+    public void reportTestOver(Long problemId) throws PortableException {
         killTestTask(problemId, true);
+        Problem problem = getTestProblem(problemId);
+        ProblemData problemData = getTestProblemData(problem);
+        // 检查是否有必要 check
+        Set<LanguageType> testCodeUsed = problemData.getTestCodeList().stream()
+                .map(ProblemData.StdCode::getLanguageType)
+                .collect(Collectors.toSet());
+        if (!problemData.getSupportLanguage().containsAll(testCodeUsed)) {
+            problemManager.updateProblemStatus(problemId, ProblemStatusType.CHECK_FAILED);
+            return;
+        }
+
+        for (ProblemData.StdCode stdCode : problemData.getTestCodeList()) {
+            SolutionData solutionData = solutionDataManager.newSolutionData(problemData);
+            solutionData.setCode(stdCode.getCode());
+            solutionDataManager.insertSolutionData(solutionData);
+
+            Solution solution = solutionManager.newSolution();
+            solution.setDataId(solutionData.get_id());
+            solution.setUserId(problem.getOwner());
+            solution.setProblemId(problemId);
+            solution.setLanguageType(stdCode.getLanguageType());
+            solution.setSolutionType(SolutionType.PROBLEM_PROCESS);
+            solutionManager.insertSolution(solution);
+            addJudgeTask(solution.getId());
+            stdCode.setSolutionId(solution.getId());
+        }
+        problemDataManager.updateProblemData(problemData);
     }
 
     private JudgeContainer getCurContainer() throws PortableException {
@@ -472,6 +531,22 @@ public class JudgeServiceImpl implements JudgeService {
         if (!ProblemStatusType.NORMAL.equals(problem.getStatusType())) {
             throw PortableException.of("S-06-006", problemId);
         }
+        ProblemData problemData = problemDataManager.getProblemData(problem.getDataId());
+        if (problemData == null) {
+            throw PortableException.of("S-03-001");
+        }
+        return problemData;
+    }
+
+    private Problem getTestProblem(Long problemId) throws PortableException {
+        Problem problem = problemManager.getProblemById(problemId);
+        if (problem == null) {
+            throw PortableException.of("S-06-005", problemId);
+        }
+        return problem;
+    }
+
+    private ProblemData getTestProblemData(Problem problem) throws PortableException {
         ProblemData problemData = problemDataManager.getProblemData(problem.getDataId());
         if (problemData == null) {
             throw PortableException.of("S-03-001");

@@ -11,6 +11,9 @@ import javax.annotation.Resource;
 import java.util.Date;
 import java.util.List;
 
+/**
+ * @author shiroha
+ */
 @Component
 public class SolutionManagerImpl implements SolutionManager {
 
@@ -21,6 +24,7 @@ public class SolutionManagerImpl implements SolutionManager {
     public Solution newSolution() {
         return Solution.builder()
                 .id(null)
+                .dataId(null)
                 .submitTime(new Date())
                 .userId(null)
                 .problemId(null)
