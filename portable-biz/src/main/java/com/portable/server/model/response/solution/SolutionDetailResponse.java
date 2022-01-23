@@ -9,6 +9,9 @@ import lombok.Data;
 
 import java.util.Date;
 
+/**
+ * @author shiroha
+ */
 @Data
 public class SolutionDetailResponse {
 

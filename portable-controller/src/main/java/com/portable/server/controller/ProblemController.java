@@ -4,13 +4,16 @@ import com.portable.server.annotation.NeedLogin;
 import com.portable.server.annotation.PermissionRequirement;
 import com.portable.server.exception.PortableException;
 import com.portable.server.model.problem.Problem;
+import com.portable.server.model.request.IdRequest;
 import com.portable.server.model.request.PageRequest;
 import com.portable.server.model.request.problem.*;
+import com.portable.server.model.request.solution.SubmitSolutionRequest;
 import com.portable.server.model.response.PageResponse;
 import com.portable.server.model.response.Response;
 import com.portable.server.model.response.problem.ProblemDataResponse;
 import com.portable.server.model.response.problem.ProblemListResponse;
 import com.portable.server.model.response.problem.ProblemStdTestCodeResponse;
+import com.portable.server.model.response.solution.SolutionDetailResponse;
 import com.portable.server.service.ProblemService;
 import com.portable.server.type.PermissionType;
 import org.springframework.web.bind.annotation.*;
@@ -237,5 +240,19 @@ public class ProblemController {
         } catch (IOException e) {
             throw PortableException.of("S-01-002");
         }
+    }
+
+    @NeedLogin
+    @PostMapping("/treatAndCheckProblem")
+    @PermissionRequirement(PermissionType.CREATE_AND_EDIT_PROBLEM)
+    public Response<Void> treatAndCheckProblem(IdRequest idRequest) throws PortableException {
+        problemService.treatAndCheckProblem(idRequest.getId());
+        return Response.ofOk();
+    }
+
+    @NeedLogin
+    @PostMapping("/submit")
+    public Response<Long> submit(SubmitSolutionRequest submitSolutionRequest) throws PortableException {
+        return Response.ofOk(problemService.submit(submitSolutionRequest).getId());
     }
 }
