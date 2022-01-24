@@ -313,37 +313,15 @@ public class JudgeServiceImpl implements JudgeService {
     @Override
     public void reportRunningResult(Long solutionId, SolutionStatusType statusType, Integer timeCost, Integer memoryCost) throws PortableException {
         getCurContainer();
+        SolutionJudgeWork solutionJudgeWork = solutionJudgeWorkMap.get(solutionId);
         if (!SolutionStatusType.ACCEPT.equals(statusType)) {
             killJudgeTask(solutionId, statusType, timeCost, memoryCost);
+            checkProblemCheckOver(solutionJudgeWork);
             throw PortableException.of("S-06-008", solutionId);
         } else {
-            SolutionJudgeWork solutionJudgeWork = solutionJudgeWorkMap.get(solutionId);
             if (solutionJudgeWork != null && solutionJudgeWork.testOver()) {
                 killJudgeTask(solutionId, statusType, timeCost, memoryCost);
-                if (JudgeWorkType.CHECK_PROBLEM.equals(solutionJudgeWork.getJudgeWorkType())) {
-                    synchronized (this) {
-                        ProblemData problemData = getProblemData(solutionJudgeWork.getProblemId());
-                        Set<Boolean> statusSet = problemData.getTestCodeList().stream()
-                                .map(stdCode -> {
-                                    Solution solution = solutionManager.selectSolutionById(stdCode.getSolutionId());
-                                    if (solution == null) {
-                                        return false;
-                                    }
-                                    if (!solution.getStatus().getEndingResult()) {
-                                        return null;
-                                    }
-                                    return Objects.equals(solution.getStatus(), stdCode.getExpectResultType());
-                                })
-                                .collect(Collectors.toSet());
-                        if (!statusSet.contains(null)) {
-                            if (statusSet.contains(false)) {
-                                problemManager.updateProblemStatus(solutionJudgeWork.getProblemId(), ProblemStatusType.CHECK_FAILED);
-                            } else {
-                                problemManager.updateProblemStatus(solutionJudgeWork.getProblemId(), ProblemStatusType.NORMAL);
-                            }
-                        }
-                    }
-                }
+                checkProblemCheckOver(solutionJudgeWork);
             } else {
                 solutionManager.updateCostAndStatus(solutionId, SolutionStatusType.JUDGING, timeCost, memoryCost);
             }
@@ -556,5 +534,32 @@ public class JudgeServiceImpl implements JudgeService {
             throw PortableException.of("S-03-001");
         }
         return problemData;
+    }
+
+    private void checkProblemCheckOver(SolutionJudgeWork solutionJudgeWork) throws PortableException {
+        if (JudgeWorkType.CHECK_PROBLEM.equals(solutionJudgeWork.getJudgeWorkType())) {
+            synchronized (this) {
+                ProblemData problemData = getProblemData(solutionJudgeWork.getProblemId());
+                Set<Boolean> statusSet = problemData.getTestCodeList().stream()
+                        .map(stdCode -> {
+                            Solution solution = solutionManager.selectSolutionById(stdCode.getSolutionId());
+                            if (solution == null) {
+                                return false;
+                            }
+                            if (!solution.getStatus().getEndingResult()) {
+                                return null;
+                            }
+                            return Objects.equals(solution.getStatus(), stdCode.getExpectResultType());
+                        })
+                        .collect(Collectors.toSet());
+                if (!statusSet.contains(null)) {
+                    if (statusSet.contains(false)) {
+                        problemManager.updateProblemStatus(solutionJudgeWork.getProblemId(), ProblemStatusType.CHECK_FAILED);
+                    } else {
+                        problemManager.updateProblemStatus(solutionJudgeWork.getProblemId(), ProblemStatusType.NORMAL);
+                    }
+                }
+            }
+        }
     }
 }

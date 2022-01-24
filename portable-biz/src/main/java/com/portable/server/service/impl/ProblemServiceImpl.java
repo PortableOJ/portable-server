@@ -22,6 +22,7 @@ import com.portable.server.type.PermissionType;
 import com.portable.server.type.ProblemAccessType;
 import com.portable.server.type.ProblemStatusType;
 import com.portable.server.type.SolutionStatusType;
+import com.portable.server.type.SolutionType;
 import com.portable.server.util.StreamUtils;
 import com.portable.server.util.UserContext;
 import lombok.Builder;
@@ -409,6 +410,9 @@ public class ProblemServiceImpl implements ProblemService {
             return;
         }
         // 只需要 check 时
+        if (problemPackage.getProblem().getStatusType().getOnTreatedOrCheck()) {
+            throw PortableException.of("A-04-008");
+        }
         if (problemPackage.getProblem().getStatusType().getTreated()) {
             judgeService.reportTestOver(id);
         } else {
@@ -420,15 +424,19 @@ public class ProblemServiceImpl implements ProblemService {
     public SolutionDetailResponse submit(SubmitSolutionRequest submitSolutionRequest) throws PortableException {
         ProblemPackage problemPackage = getForViewProblem(submitSolutionRequest.getProblemId());
         if (!ProblemStatusType.NORMAL.equals(problemPackage.getProblem().getStatusType())) {
-            throw PortableException.of("A-05-004");
+            throw PortableException.of("A-05-004", problemPackage.getProblem().getStatusType());
         }
-        Solution solution = solutionManager.newSolution();
         SolutionData solutionData = solutionDataManager.newSolutionData(problemPackage.getProblemData());
-        submitSolutionRequest.toSolution(solution);
         submitSolutionRequest.toSolutionData(solutionData);
         solutionDataManager.insertSolutionData(solutionData);
+
+        Solution solution = solutionManager.newSolution();
+        submitSolutionRequest.toSolution(solution);
         solution.setDataId(solutionData.get_id());
+        solution.setUserId(UserContext.ctx().getId());
+        solution.setSolutionType(SolutionType.PUBLIC);
         solutionManager.insertSolution(solution);
+
         judgeService.addJudgeTask(solution.getId());
 
         return SolutionDetailResponse.of(solution, solutionData);
