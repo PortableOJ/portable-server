@@ -11,7 +11,7 @@ int main(int argc, char *argv[]) {
 
     char out, ans;
     int totalByte = 0;
-    while (anf.notEof()) {
+    while (anf.notGetEof()) {
         totalByte++;
         ans = anf.getByte("A byte");
         out = ouf.getByte("A byte");

@@ -155,6 +155,9 @@ public class JudgeServiceImpl implements JudgeService {
     @Override
     public void killTestTask(Long problemId, Boolean endType) {
         TestJudgeWork testJudgeWork = problemTestJudgeWorkMap.get(problemId);
+        if (testJudgeWork == null) {
+            return;
+        }
         testJudgeWork.getJudgeContainer().getTestWorkMap().remove(problemId);
         problemTestJudgeWorkMap.remove(problemId);
         problemManager.updateProblemStatus(problemId, endType ? ProblemStatusType.CHECKING : ProblemStatusType.TREAT_FAILED);
@@ -475,6 +478,7 @@ public class JudgeServiceImpl implements JudgeService {
             addJudgeTask(solution.getId());
             stdCode.setSolutionId(solution.getId());
         }
+        problemManager.updateProblemStatus(problemId, ProblemStatusType.CHECKING);
         problemDataManager.updateProblemData(problemData);
     }
 
@@ -528,7 +532,7 @@ public class JudgeServiceImpl implements JudgeService {
         if (problem == null) {
             throw PortableException.of("S-06-005", problemId);
         }
-        if (!ProblemStatusType.NORMAL.equals(problem.getStatusType())) {
+        if (!problem.getStatusType().getTreated()) {
             throw PortableException.of("S-06-006", problemId);
         }
         ProblemData problemData = problemDataManager.getProblemData(problem.getDataId());

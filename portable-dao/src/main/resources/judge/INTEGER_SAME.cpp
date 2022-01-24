@@ -11,7 +11,7 @@ int main(int argc, char *argv[]) {
 
     long long ans, out;
     int totalNumber = 0;
-    while (anf.notEof()) {
+    while (!anf.readDelimiter()) {
         totalNumber++;
         ans = anf.readLong("Integer in answer");
         out = ouf.readLong("Integer in output");
@@ -20,7 +20,7 @@ int main(int argc, char *argv[]) {
         }
     }
 
-    ouf.getEof();
+    ouf.readEof();
 
     accept("%d integers is same", totalNumber);
 }

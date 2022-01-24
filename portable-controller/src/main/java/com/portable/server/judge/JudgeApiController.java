@@ -50,28 +50,29 @@ public class JudgeApiController {
     }
 
     @EpollMethod("SolutionInfo")
-    public SolutionInfoResponse getSolutionInfo(@EpollParam Long solutionId) throws PortableException {
-        return judgeService.getSolutionInfo(solutionId);
+    public SolutionInfoResponse getSolutionInfo(@EpollParam Long id) throws PortableException {
+        return judgeService.getSolutionInfo(id);
     }
 
     @EpollMethod("SolutionTest")
-    public String getSolutionNextTestName(@EpollParam Long solutionId) throws PortableException {
-        return judgeService.getSolutionNextTestName(solutionId);
+    public String getSolutionNextTestName(@EpollParam Long id) throws PortableException {
+        return judgeService.getSolutionNextTestName(id);
     }
 
     @EpollMethod("SolutionTestReport")
-    public void reportRunningResult(@EpollParam Long solutionId, @EpollParam SolutionStatusType statusType, @EpollParam Integer timeCost, @EpollParam Integer memoryCost) throws PortableException {
-        judgeService.reportRunningResult(solutionId, statusType, timeCost, memoryCost);
+    public void reportRunningResult(@EpollParam Long id, @EpollParam SolutionStatusType value, @EpollParam(EpollDataType.COMPLEX) String msg, @EpollParam Integer timeCost, @EpollParam Integer memoryCost) throws PortableException {
+        System.out.println(msg);
+        judgeService.reportRunningResult(id, value, timeCost, memoryCost);
     }
 
     @EpollMethod("SolutionCompileMsgReport")
-    public void reportCompileResult(@EpollParam Long solutionId, @EpollParam Boolean compileResult, @EpollParam Boolean judgeCompileResult, @EpollParam String compileMsg) throws PortableException {
-        judgeService.reportCompileResult(solutionId, compileResult, judgeCompileResult, compileMsg);
+    public void reportCompileResult(@EpollParam Long id, @EpollParam Boolean value, @EpollParam Boolean judge, @EpollParam(EpollDataType.COMPLEX) String msg) throws PortableException {
+        judgeService.reportCompileResult(id, value, judge, msg);
     }
 
     @EpollMethod("SolutionCode")
-    public String getSolutionCode(@EpollParam Long solutionId) throws PortableException {
-        return judgeService.getSolutionCode(solutionId);
+    public String getSolutionCode(@EpollParam Long id) throws PortableException {
+        return judgeService.getSolutionCode(id);
     }
 
     @EpollMethod("StandardJudge")

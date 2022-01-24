@@ -53,6 +53,7 @@ public class EpollManager {
                     log.info("create socket");
                     EpollUtil.initEpollSocket(9090, this);
                 } catch (Exception e) {
+                    e.printStackTrace();
                     log.error("Socket start fail, {}", e.getMessage());
                 }
             });
@@ -115,31 +116,30 @@ public class EpollManager {
         }
     }
 
-    public Object call(String address, String method, String data) {
+    public Object call(String address, String method, byte[] data) {
         clearClass();
         MethodDescribe methodDescribe = registerMethod.get(method);
         StringBuilder keyBuilder = new StringBuilder();
         Map<String, List<Byte>> paramMap = new HashMap<>(methodDescribe.getParams().size());
-        byte[] buffer = data.getBytes(StandardCharsets.UTF_8);
         int pos = 0;
-        while (pos < buffer.length) {
+        while (data != null && pos < data.length) {
             keyBuilder.setLength(0);
-            pos = readKey(buffer, pos, keyBuilder);
+            pos = readKey(data, pos, keyBuilder);
             String key = keyBuilder.toString();
             if (!methodDescribe.getParams().containsKey(key)) {
                 log.error("Unknown key: {}", key);
             }
             MethodDescribe.ParamType paramType = methodDescribe.getParams().get(key);
             if (paramType == null) {
-                log.error("Illegal key key: {}", key);
+                log.error("Illegal key, key: {}", key);
                 continue;
             }
             switch (paramType.getDataType()) {
                 case SIMPLE:
-                    pos = readSimpleValue(buffer, pos, key, paramMap);
+                    pos = readSimpleValue(data, pos, key, paramMap);
                     break;
                 case COMPLEX:
-                    pos = readComplexValue(buffer, pos, key, paramMap);
+                    pos = readComplexValue(data, pos, key, paramMap);
                     break;
                 case DEFAULT:
                 default:
@@ -150,8 +150,7 @@ public class EpollManager {
         try {
             ADDRESS_THREAD_LOCAL.set(address);
             return invoke(methodDescribe, paramMap);
-        } catch (Exception e) {
-            log.error("Fail invoke, method: {}, data: {}, exception: {}", method, data, e.getMessage());
+        } catch (Exception ignore) {
         } finally {
             ADDRESS_THREAD_LOCAL.remove();
         }
@@ -202,12 +201,18 @@ public class EpollManager {
                     } catch (InvocationTargetException | IllegalAccessException e) {
                         log.error("Error invoke valueOf: {}", paramType.getType());
                     }
+                } else if (Boolean.class.equals(paramType.getType())) {
+                    StringBuilder stringBuilder = new StringBuilder();
+                    for (Byte aByte : byteList) {
+                        stringBuilder.append((char) aByte.byteValue());
+                    }
+                    params[paramType.getPosition()] = Boolean.valueOf(stringBuilder.toString());
                 } else {
                     log.error("Unsupported type: {}", paramType.getType());
                     params[paramType.getPosition()] = null;
                 }
             } else {
-                log.error("Empty param: {}, type: {}", paramType.getName(), paramType.getType());
+                log.trace("Empty param: {}, type: {}", paramType.getName(), paramType.getType());
                 params[paramType.getPosition()] = null;
             }
         });
@@ -253,6 +258,7 @@ public class EpollManager {
             len *= 10;
             len += buffer[pos++] - '0';
         }
+        pos++;
         List<Byte> value = new ArrayList<>();
         for (int i = 0; i < len; i++) {
             value.add(buffer[pos++]);

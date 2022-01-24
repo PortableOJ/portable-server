@@ -42,7 +42,7 @@ int main(int argc, char *argv[]) {
     string ans, out;
     bool ansFlag, outFlag;
     int totalYesOrNo = 0;
-    while (anf.notEof()) {
+    while (!anf.readDelimiter()) {
         totalYesOrNo++;
         ans = anf.readWord(maxLen, "Yes or No in answer");
         out = ouf.readWord(maxLen, "Yes or No in output");
@@ -59,7 +59,7 @@ int main(int argc, char *argv[]) {
         }
     }
 
-    ouf.getEof();
+    ouf.readEof();
 
     accept("%d 'yes and no' word is same", totalYesOrNo);
 }

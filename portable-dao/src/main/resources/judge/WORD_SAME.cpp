@@ -15,7 +15,7 @@ int main(int argc, char *argv[]) {
 
     string ans, out;
     int totalWord = 0;
-    while (anf.notEof()) {
+    while (!anf.readDelimiter()) {
         totalWord++;
         ans = anf.readWord(maxLen, "Word in answer");
         out = ouf.readWord(maxLen, "Word in output");
@@ -28,7 +28,7 @@ int main(int argc, char *argv[]) {
         }
     }
 
-    ouf.getEof();
+    ouf.readEof();
 
     accept("%d valid strings is same", totalWord);
 }

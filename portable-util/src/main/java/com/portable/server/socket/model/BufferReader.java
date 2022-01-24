@@ -17,9 +17,11 @@ public class BufferReader {
 
     private StringBuilder method;
 
-    private StringBuilder data;
+    private byte[] data;
 
     private Integer len;
+
+    private Integer curPos;
 
     private ReadMode mode;
 
@@ -33,8 +35,8 @@ public class BufferReader {
         return method.toString();
     }
 
-    public String getData() {
-        return data.toString();
+    public byte[] getData() {
+        return data;
     }
 
     public BufferReader(SocketChannel socketChannel) {
@@ -47,8 +49,9 @@ public class BufferReader {
 
     public void init() {
         method = new StringBuilder();
-        data = new StringBuilder();
+        data = null;
         len = 0;
+        curPos = 0;
         mode = ReadMode.READ_METHOD;
     }
 
@@ -93,12 +96,15 @@ public class BufferReader {
     }
 
     private Boolean readData() throws IOException {
+        if (data == null) {
+            data = new byte[len];
+        }
         do {
             byte b = get();
             if (b == -1) {
                 return true;
             }
-            data.append((char) b);
+            data[curPos++] = b;
         } while (--len > 0);
         mode = ReadMode.READ_LEN;
         return false;

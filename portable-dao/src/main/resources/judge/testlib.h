@@ -118,8 +118,10 @@ public:
 
     /**
      * 读取分隔符，跳过接下来所有的分隔符号，若接下来第一个符号不是分隔符号或者遇到文件结束，也不会抛出错误，而是什么也不做。通常不需要使用，除非需要高度的自定义
+     *
+     * @return 是否读取到了文件结束
      */
-    void readDelimiter();
+    bool readDelimiter();
 
     /**
      * 获取一个字符
@@ -237,9 +239,14 @@ public:
 
     /**
      * 检查是否已经到达文件结束了，若为 true 则文件未结束
+     * <p color="red">
+     * 不推荐使用
+     * </p>
+     * 这是一种强制判断是否存在 EOF 的结果，若存在任何的换行符等，此函数均不返回 true
+     *
      * @return 文件是否还有字节
      */
-    bool notEof();
+    bool notGetEof();
 };
 
 class Result : public InStream {
@@ -450,11 +457,12 @@ void InStream::getTab(const string &desc) {
     }
 }
 
-void InStream::readDelimiter() {
+bool InStream::readDelimiter() {
     char tmp = peek();
     while (isspace(tmp)) {
         tmp = peekNext();
     }
+    return tmp == -1;
 }
 
 char InStream::readChar(const string &desc) {
@@ -604,7 +612,7 @@ void InStream::readEof() {
     }
 }
 
-bool InStream::notEof() {
+bool InStream::notGetEof() {
     return peek() != -1;
 }
 
@@ -713,20 +721,24 @@ template<class... Args>
 __attribute__((__format__ (__printf__, 2, 0)))
 #endif
 __attribute__((format (__printf__, 2, 0)))
-void endJudge(JudgeResult judgeResult, const char *desc, const Args &... args) {
+void endJudge(JudgeResult judgeResult, const char *desc, const Args &... args) { // NOLINT(misc-no-recursion)
     string judgeCode = to_string((int) judgeResult);
-    write(2, judgeCode.c_str(), judgeCode.length());
-    write(2, "\n", 1);
     char msgBuffer[128];
     int len = 0;
     if (curTestId > 0) {
         len = snprintf(msgBuffer, 128, "[test %d]: ", curTestId);
     }
     len += snprintf(msgBuffer + len, 128 - len, desc, args...);
-    string msgLen = to_string(len);
+    for (int i = 0; i < len; ++i) {
+        if (msgBuffer[i] == -1) endJudge(JudgeResult::FAIL, "%s", "The judge return a illegal char: -1");
+    }
+    string msgLen = to_string(len + 1);
+    write(2, judgeCode.c_str(), judgeCode.length());
+    write(2, "\n", 1);
     write(2, msgLen.c_str(), msgLen.length());
     write(2, "\n", 1);
     write(2, msgBuffer, len);
+    write(2, "\n", 1);
     exit(0);
 }
 

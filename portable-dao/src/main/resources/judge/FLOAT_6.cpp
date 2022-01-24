@@ -13,7 +13,7 @@ int main(int argc, char *argv[]) {
     const double eps = 1e-6;
     double ans, out;
     int totalFloat = 0;
-    while (anf.notEof()) {
+    while (!anf.readDelimiter()) {
         totalFloat++;
         ans = anf.readReal("Float in answer");
         out = ouf.readReal("Float in output");
@@ -25,7 +25,7 @@ int main(int argc, char *argv[]) {
         }
     }
 
-    ouf.getEof();
+    ouf.readEof();
 
     accept("%d floating point numbers are all within the error range(%lf)",
            totalFloat, eps);

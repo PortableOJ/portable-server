@@ -14,7 +14,7 @@ int main(int argc, char *argv[]) {
 
     string ans, out;
     int totalLine = 0;
-    while (anf.notEof()) {
+    while (anf.notGetEof()) {
         totalLine++;
         ans = anf.readLine(maxLen, "Line in answer");
         out = ouf.readLine(maxLen, "Line in output");

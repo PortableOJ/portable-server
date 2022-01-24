@@ -3,6 +3,7 @@
 <mapper namespace="com.portable.server.mapper.SolutionMapper">
     <resultMap id="Solution" type="com.portable.server.model.solution.Solution">
         <id column="id" jdbcType="BIGINT" property="id"/>
+        <result column="data_id" jdbcType="VARCHAR" property="dataId"/>
         <result column="submit_time" jdbcType="DATE" property="submitTime"/>
         <result column="user_id" jdbcType="BIGINT" property="userId"/>
         <result column="problem_id" jdbcType="BIGINT" property="problemId"/>
@@ -16,6 +17,7 @@
 
     <parameterMap id="Solution" type="com.portable.server.model.solution.Solution">
         <parameter property="id" javaType="java.lang.Long" jdbcType="BIGINT"/>
+        <parameter property="dataId" javaType="java.lang.String" jdbcType="VARCHAR"/>
         <parameter property="submitTime" javaType="java.util.Date" jdbcType="DATE"/>
         <parameter property="userId" javaType="java.lang.Long" jdbcType="BIGINT"/>
         <parameter property="problemId" javaType="java.lang.Long" jdbcType="BIGINT"/>
@@ -66,9 +68,9 @@
 
     <insert id="insertSolution" useGeneratedKeys="true" keyProperty="id" parameterMap="Solution">
         INSERT INTO solution
-        (submit_time, user_id, problem_id, contest_id, language_type, status, solution_type, time_cost, memory_cost)
+        (data_id, submit_time, user_id, problem_id, contest_id, language_type, status, solution_type, time_cost, memory_cost)
         VALUES
-        (#{submitTime}, #{userId}, #{problemId}, #{contestId}, #{languageType}, #{status}, #{solutionType}, #{timeCost}, #{memoryCost})
+        (#{dataId}, #{submitTime}, #{userId}, #{problemId}, #{contestId}, #{languageType}, #{status}, #{solutionType}, #{timeCost}, #{memoryCost})
     </insert>
 
     <update id="updateStatus">
@@ -80,8 +82,8 @@
     <update id="updateCostAndStatus">
         UPDATE solution
         SET status = #{statusType},
-            time_cost = GREATEST(time_cost, #{timeCost}),
-            memory_cost = GREATEST(memory_cost, #{memoryCost})
+            time_cost = IF(ISNULL(time_cost), #{timeCost}, GREATEST(time_cost, #{timeCost})),
+            memory_cost = IF(ISNULL(memory_cost), #{memoryCost}, GREATEST(memory_cost, #{memoryCost}))
         WHERE id = #{id}
     </update>
 </mapper>
