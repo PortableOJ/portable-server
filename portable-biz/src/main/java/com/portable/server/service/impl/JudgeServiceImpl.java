@@ -183,7 +183,7 @@ public class JudgeServiceImpl implements JudgeService {
                 .workAccumulation(0)
                 .socketAccumulation(0)
                 .isNewCore(false)
-                .maxWorkNum(0)
+                .maxWorkNum(maxWorkCore)
                 .lastHeartbeat(new Date())
                 .judgeWorkMap(new ConcurrentHashMap<>(1))
                 .testWorkMap(new ConcurrentHashMap<>(1))

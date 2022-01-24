@@ -8,6 +8,7 @@ import com.portable.server.service.JudgeService;
 import com.portable.server.socket.EpollManager;
 import com.portable.server.socket.annotation.EpollMethod;
 import com.portable.server.socket.annotation.EpollParam;
+import com.portable.server.socket.type.EpollDataType;
 import com.portable.server.type.SolutionStatusType;
 import org.springframework.stereotype.Component;
 
@@ -84,18 +85,18 @@ public class JudgeApiController {
     }
 
     @EpollMethod("ProblemJudgeCode")
-    public String getProblemJudgeCode(@EpollParam Long problemId) throws PortableException {
-        return judgeService.getProblemJudgeCode(problemId);
+    public String getProblemJudgeCode(@EpollParam Long id) throws PortableException {
+        return judgeService.getProblemJudgeCode(id);
     }
 
     @EpollMethod("ProblemDataIn")
-    public InputStream getProblemInputTest(@EpollParam Long problemId, @EpollParam String name) throws PortableException {
-        return judgeService.getProblemInputTest(problemId, name);
+    public InputStream getProblemInputTest(@EpollParam Long id, @EpollParam String name) throws PortableException {
+        return judgeService.getProblemInputTest(id, name);
     }
 
     @EpollMethod("ProblemDataOut")
-    public InputStream getProblemOutputTest(@EpollParam Long problemId, @EpollParam String name) throws PortableException {
-        return judgeService.getProblemOutputTest(problemId, name);
+    public InputStream getProblemOutputTest(@EpollParam Long id, @EpollParam String name) throws PortableException {
+        return judgeService.getProblemOutputTest(id, name);
     }
 
     @EpollMethod("TestLibRequest")
@@ -104,32 +105,32 @@ public class JudgeApiController {
     }
 
     @EpollMethod("TestInfo")
-    public TestInfoResponse getTestInfo(Long problemId) throws PortableException {
-        return judgeService.getTestInfo(problemId);
+    public TestInfoResponse getTestInfo(@EpollParam Long id) throws PortableException {
+        return judgeService.getTestInfo(id);
     }
 
     @EpollMethod("TestStdCode")
-    public String getTestStdCode(Long problemId) throws PortableException {
-        return judgeService.getTestStdCode(problemId);
+    public String getTestStdCode(@EpollParam Long id) throws PortableException {
+        return judgeService.getTestStdCode(id);
     }
 
     @EpollMethod("TestTest")
-    public String getNextTest(Long problemId) throws PortableException {
-        return judgeService.getNextTest(problemId);
+    public String getNextTest(@EpollParam Long id) throws PortableException {
+        return judgeService.getNextTest(id);
     }
 
     @EpollMethod("TestReportOutput")
-    public void reportTestOutput(Long problemId, Boolean flag, String name, Integer pos, byte[] value) throws PortableException {
-        judgeService.reportTestOutput(problemId, flag, name, pos, value);
+    public void reportTestOutput(@EpollParam Long id, @EpollParam Boolean flag, @EpollParam String name, @EpollParam Integer pos, @EpollParam(EpollDataType.COMPLEX) byte[] value) throws PortableException {
+        judgeService.reportTestOutput(id, flag, name, pos, value);
     }
 
     @EpollMethod("TestResultReport")
-    public void reportTestCompileFail(Long problemId) throws PortableException {
-        judgeService.reportTestCompileFail(problemId);
+    public void reportTestCompileFail(@EpollParam Long id) throws PortableException {
+        judgeService.reportTestCompileFail(id);
     }
 
     @EpollMethod("TestReportOver")
-    public void reportTestOver(Long problemId) throws PortableException {
-        judgeService.reportTestOver(problemId);
+    public void reportTestOver(@EpollParam Long id) throws PortableException {
+        judgeService.reportTestOver(id);
     }
 }

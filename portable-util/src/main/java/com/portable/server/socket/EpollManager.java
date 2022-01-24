@@ -176,6 +176,13 @@ public class EpollManager {
                         res += aByte - '0';
                     }
                     params[paramType.getPosition()] = res;
+                } else if (Long.class.equals(paramType.getType())) {
+                    long res = 0L;
+                    for (Byte aByte : byteList) {
+                        res *= 10;
+                        res += aByte - '0';
+                    }
+                    params[paramType.getPosition()] = res;
                 } else if (String.class.equals(paramType.getType())) {
                     StringBuilder stringBuilder = new StringBuilder();
                     for (Byte aByte : byteList) {
