@@ -245,14 +245,14 @@ public class ProblemController {
     @NeedLogin
     @PostMapping("/treatAndCheckProblem")
     @PermissionRequirement(PermissionType.CREATE_AND_EDIT_PROBLEM)
-    public Response<Void> treatAndCheckProblem(IdRequest idRequest) throws PortableException {
+    public Response<Void> treatAndCheckProblem(@RequestBody IdRequest idRequest) throws PortableException {
         problemService.treatAndCheckProblem(idRequest.getId());
         return Response.ofOk();
     }
 
     @NeedLogin
     @PostMapping("/submit")
-    public Response<Long> submit(SubmitSolutionRequest submitSolutionRequest) throws PortableException {
+    public Response<Long> submit(@RequestBody SubmitSolutionRequest submitSolutionRequest) throws PortableException {
         return Response.ofOk(problemService.submit(submitSolutionRequest).getId());
     }
 }

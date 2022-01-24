@@ -134,7 +134,7 @@ public class JudgeServiceImpl implements JudgeService {
 
     @Override
     public void addTestTask(Long problemId) throws PortableException {
-        ProblemData problemData = getProblemData(problemId);
+        ProblemData problemData = getTestProblemData(getTestProblem(problemId));
         TestJudgeWork testJudgeWork = new TestJudgeWork();
         testJudgeWork.setProblemId(problemId);
         testJudgeWork.setCurTestId(0);
