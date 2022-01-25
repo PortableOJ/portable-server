@@ -7,6 +7,9 @@ import lombok.Data;
 
 import java.util.Date;
 
+/**
+ * @author shiroha
+ */
 @Data
 public class SolutionListResponse {
 
@@ -36,19 +39,9 @@ public class SolutionListResponse {
     private LanguageType languageType;
 
     /**
-     * 语言文案
-     */
-    private String languageTypeText;
-
-    /**
      * 当前状态
      */
     private SolutionStatusType status;
-
-    /**
-     * 当前状态文案
-     */
-    private String statusText;
 
     /**
      * 耗时（ms）
@@ -66,9 +59,7 @@ public class SolutionListResponse {
         this.userId = solution.getUserId();
         this.problemId = solution.getProblemId();
         this.languageType = solution.getLanguageType();
-        this.languageTypeText = solution.getLanguageType().getText();
         this.status = solution.getStatus();
-        this.statusText = solution.getStatus().getText();
         this.timeCost = solution.getTimeCost();
         this.memoryCost = solution.getMemoryCost();
     }
