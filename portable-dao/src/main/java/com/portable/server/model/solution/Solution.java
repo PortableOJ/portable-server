@@ -66,7 +66,7 @@ public class Solution {
     private Integer timeCost;
 
     /**
-     * 内存消耗（mb）
+     * 内存消耗（kb）
      */
     private Integer memoryCost;
 }

@@ -140,8 +140,8 @@ public interface JudgeService {
      *
      * @param solutionId 对应的提交 ID
      * @param statusType 状态
-     * @param timeCost   耗时
-     * @param memoryCost 内存消耗
+     * @param timeCost   耗时(ms)
+     * @param memoryCost 内存消耗(KB)
      * @throws PortableException 遇到意料之外的情况则抛出错误
      */
     void reportRunningResult(Long solutionId, SolutionStatusType statusType, Integer timeCost, Integer memoryCost) throws PortableException;

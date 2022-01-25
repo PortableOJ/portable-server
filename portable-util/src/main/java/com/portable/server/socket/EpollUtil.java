@@ -106,6 +106,9 @@ public class EpollUtil {
                 } else if (response instanceof String) {
                     writeSuccess(client);
                     write(client, ((String) response).getBytes(StandardCharsets.UTF_8));
+                } else if (response instanceof InputStream) {
+                    writeSuccess(client);
+                    writeInputStream(client, (InputStream) response);
                 } else {
                     writeFail(client);
                 }

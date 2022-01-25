@@ -29,7 +29,7 @@ public class ProblemData {
     private Long contestId;
 
     /**
-     * 默认的耗时限制，单位（ms）
+     * 默认的耗时限制，单位（s）
      */
     private Integer defaultTimeLimit;
 
