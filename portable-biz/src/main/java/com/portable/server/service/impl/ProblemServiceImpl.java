@@ -15,7 +15,7 @@ import com.portable.server.model.response.solution.SolutionDetailResponse;
 import com.portable.server.model.solution.Solution;
 import com.portable.server.model.solution.SolutionData;
 import com.portable.server.model.user.User;
-import com.portable.server.service.JudgeService;
+import com.portable.server.support.JudgeSupport;
 import com.portable.server.support.FileSupport;
 import com.portable.server.service.ProblemService;
 import com.portable.server.type.PermissionType;
@@ -139,7 +139,7 @@ public class ProblemServiceImpl implements ProblemService {
     private FileSupport fileSupport;
 
     @Resource
-    private JudgeService judgeService;
+    private JudgeSupport judgeSupport;
 
     @Override
     public PageResponse<ProblemListResponse> getProblemList(PageRequest<Void> pageRequest) {
@@ -414,9 +414,9 @@ public class ProblemServiceImpl implements ProblemService {
             throw PortableException.of("A-04-008");
         }
         if (problemPackage.getProblem().getStatusType().getTreated()) {
-            judgeService.reportTestOver(id);
+            judgeSupport.reportTestOver(id);
         } else {
-            judgeService.addTestTask(id);
+            judgeSupport.addTestTask(id);
         }
     }
 
@@ -437,7 +437,7 @@ public class ProblemServiceImpl implements ProblemService {
         solution.setSolutionType(SolutionType.PUBLIC);
         solutionManager.insertSolution(solution);
 
-        judgeService.addJudgeTask(solution.getId());
+        judgeSupport.addJudgeTask(solution.getId());
 
         return SolutionDetailResponse.of(solution, solutionData);
     }

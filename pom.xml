@@ -29,6 +29,7 @@
         <mysql.version>8.0.25</mysql.version>
         <redis.version>2.5.4</redis.version>
         <tomcat.version>9.0.50</tomcat.version>
+        <swagger.version>3.0.0</swagger.version>
         <testng.version>7.4.0</testng.version>
         <spring.test.version>2.5.3</spring.test.version>
         <junit.version>4.13.2</junit.version>
@@ -166,6 +167,11 @@
                 <artifactId>mockito-inline</artifactId>
                 <version>${mockito.version}</version>
                 <scope>test</scope>
+            </dependency>
+            <dependency>
+                <groupId>io.springfox</groupId>
+                <artifactId>springfox-boot-starter</artifactId>
+                <version>${swagger.version}</version>
             </dependency>
         </dependencies>
     </dependencyManagement>

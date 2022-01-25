@@ -6,11 +6,18 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
+import springfox.documentation.builders.ApiInfoBuilder;
+import springfox.documentation.builders.RequestHandlerSelectors;
+import springfox.documentation.oas.annotations.EnableOpenApi;
+import springfox.documentation.service.Contact;
+import springfox.documentation.spi.DocumentationType;
+import springfox.documentation.spring.web.plugins.Docket;
 
 /**
  * @author shiroha
  */
 @Configuration
+@EnableOpenApi
 public class WebMvcConfig implements WebMvcConfigurer {
 
     @Override
@@ -27,5 +34,21 @@ public class WebMvcConfig implements WebMvcConfigurer {
     @Bean
     public PermissionInterceptor permissionInterceptor() {
         return new PermissionInterceptor();
+    }
+
+    @Bean
+    public Docket docket() {
+        return new Docket(DocumentationType.OAS_30)
+                .apiInfo(new ApiInfoBuilder()
+                        .title("Portable")
+                        .description("Portable 项目接口文档")
+                        .contact(new Contact("Shiroha", "https://github.com/hukeqing/", "keqing.hu@icloud.com"))
+                        .version("1.0")
+                        .build())
+                .enable(true)
+                .select()
+                .apis(RequestHandlerSelectors.basePackage("com.portable.server.controller"))
+                .paths(s -> !s.matches("^/api/error/.+$"))
+                .build();
     }
 }

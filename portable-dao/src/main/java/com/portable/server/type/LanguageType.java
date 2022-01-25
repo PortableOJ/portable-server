@@ -9,24 +9,20 @@ import lombok.Getter;
 
 @Getter
 public enum LanguageType implements ExceptionTextType {
-    C89("GNU GCC C89", "C", "gnu89", ".c"),
-    C99("GNU GCC C99", "C", "gnu99", ".c"),
-    C11("GNU GCC C11", "C", "gnu11", ".c"),
-    CPP98("GNU G++ c++98", "CPP", "c++98", ".cpp"),
-    CPP11("GNU G++ c++11", "CPP", "c++11", ".cpp"),
-    CPP14("GNU G++ c++14", "CPP", "c++14", ".cpp"),
-    CPP17("GNU G++ c++17", "CPP", "c++17", ".cpp"),
+    C89("GNU GCC C89", "C"),
+    C99("GNU GCC C99", "C"),
+    C11("GNU GCC C11", "C"),
+    CPP98("GNU G++ c++98", "CPP"),
+    CPP11("GNU G++ c++11", "CPP"),
+    CPP14("GNU G++ c++14", "CPP"),
+    CPP17("GNU G++ c++17", "CPP"),
     ;
 
     private final String text;
     private final String language;
-    private final String params;
-    private final String extension;
 
-    LanguageType(String text, String language, String params, String extension) {
+    LanguageType(String text, String language) {
         this.text = text;
         this.language = language;
-        this.params = params;
-        this.extension = extension;
     }
 }

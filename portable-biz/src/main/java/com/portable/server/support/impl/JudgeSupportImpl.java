@@ -1,4 +1,4 @@
-package com.portable.server.service.impl;
+package com.portable.server.support.impl;
 
 import com.portable.server.exception.PortableException;
 import com.portable.server.manager.*;
@@ -14,7 +14,7 @@ import com.portable.server.model.response.judge.SolutionInfoResponse;
 import com.portable.server.model.response.judge.TestInfoResponse;
 import com.portable.server.model.solution.Solution;
 import com.portable.server.model.solution.SolutionData;
-import com.portable.server.service.JudgeService;
+import com.portable.server.support.JudgeSupport;
 import com.portable.server.socket.EpollManager;
 import com.portable.server.support.FileSupport;
 import com.portable.server.type.JudgeCodeType;
@@ -23,7 +23,6 @@ import com.portable.server.type.LanguageType;
 import com.portable.server.type.ProblemStatusType;
 import com.portable.server.type.SolutionStatusType;
 import com.portable.server.type.SolutionType;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
 
@@ -33,7 +32,6 @@ import java.io.File;
 import java.io.InputStream;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentSkipListSet;
 import java.util.concurrent.PriorityBlockingQueue;
 import java.util.stream.Collectors;
 
@@ -41,7 +39,7 @@ import java.util.stream.Collectors;
  * @author shiroha
  */
 @Component
-public class JudgeServiceImpl implements JudgeService {
+public class JudgeSupportImpl implements JudgeSupport {
 
     /**
      * judge 的保持存活时间

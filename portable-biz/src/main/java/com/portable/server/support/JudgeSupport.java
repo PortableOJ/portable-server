@@ -1,11 +1,10 @@
-package com.portable.server.service;
+package com.portable.server.support;
 
 import com.portable.server.exception.PortableException;
 import com.portable.server.model.ServiceVerifyCode;
 import com.portable.server.model.response.judge.HeartbeatResponse;
 import com.portable.server.model.response.judge.SolutionInfoResponse;
 import com.portable.server.model.response.judge.TestInfoResponse;
-import com.portable.server.type.ProblemStatusType;
 import com.portable.server.type.SolutionStatusType;
 
 import java.io.File;
@@ -14,7 +13,7 @@ import java.io.InputStream;
 /**
  * @author shiroha
  */
-public interface JudgeService {
+public interface JudgeSupport {
 
     /**
      * 提交一个 judge 任务

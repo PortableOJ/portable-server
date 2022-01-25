@@ -8,6 +8,9 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletRequest;
 
+/**
+ * @author shiroha
+ */
 @RestController
 public class ExceptionController {
 
@@ -36,6 +39,6 @@ public class ExceptionController {
             RequestMethod.TRACE
     })
     public void notFound(HttpServletRequest request) throws Exception {
-        throw PortableException.of("S-01-001", request.getRequestURI());
+        throw PortableException.of("S-01-001", request);
     }
 }
