@@ -41,7 +41,7 @@ public enum ProblemAccessType implements ExceptionTextType {
      * 所有拥有浏览权限的的均可以随意查看
      * </p>
      */
-    HIDDEN("隐藏"),
+    HIDDEN("隐藏的"),
 
     /**
      * 私有的题目
@@ -55,7 +55,7 @@ public enum ProblemAccessType implements ExceptionTextType {
      * 非题目拥有者且非第一次链接比赛的主办者无法查看修改此题
      * </p>
      */
-    PRIVATE("私有的题目"),
+    PRIVATE("私有的"),
     ;
 
     private final String text;
