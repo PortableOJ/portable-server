@@ -109,6 +109,24 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public UserBasicInfoResponse getUserInfo(Long userId) throws PortableException {
+        User user = userManager.getAccountById(userId);
+        if (user == null) {
+            throw PortableException.of("A-01-001");
+        }
+        return getUserBasicInfoResponse(user);
+    }
+
+    @Override
+    public UserBasicInfoResponse getUserInfo(String handle) throws PortableException {
+        User user = userManager.getAccountByHandle(handle);
+        if (user == null) {
+            throw PortableException.of("A-01-001");
+        }
+        return getUserBasicInfoResponse(user);
+    }
+
+    @Override
     public void changeOrganization(Long targetId, OrganizationType newOrganization) throws PortableException {
         NormalUserData targetUserData = organizationCheck(targetId);
         if (!UserContext.ctx().getOrganization().isDominate(newOrganization)) {
@@ -157,4 +175,19 @@ public class UserServiceImpl implements UserService {
         }
         return targetUserData;
     }
+
+    private UserBasicInfoResponse getUserBasicInfoResponse(User user) throws PortableException {
+        switch (user.getType()) {
+            case NORMAL:
+                NormalUserData normalUserData = normalUserManager.getUserDataById(user.getDataId());
+                if (normalUserData == null) {
+                    throw PortableException.of("S-02-001");
+                }
+                return NormalUserInfoResponse.of(user, normalUserData);
+            case TEMPORARY:
+            default:
+                throw PortableException.of("S-02-002", user.getType());
+        }
+    }
+
 }

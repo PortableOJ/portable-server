@@ -4,7 +4,7 @@
     <resultMap id="Solution" type="com.portable.server.model.solution.Solution">
         <id column="id" jdbcType="BIGINT" property="id"/>
         <result column="data_id" jdbcType="VARCHAR" property="dataId"/>
-        <result column="submit_time" jdbcType="DATE" property="submitTime"/>
+        <result column="submit_time" jdbcType="TIMESTAMP" property="submitTime"/>
         <result column="user_id" jdbcType="BIGINT" property="userId"/>
         <result column="problem_id" jdbcType="BIGINT" property="problemId"/>
         <result column="contest_id" jdbcType="BIGINT" property="contestId"/>
@@ -18,7 +18,7 @@
     <parameterMap id="Solution" type="com.portable.server.model.solution.Solution">
         <parameter property="id" javaType="java.lang.Long" jdbcType="BIGINT"/>
         <parameter property="dataId" javaType="java.lang.String" jdbcType="VARCHAR"/>
-        <parameter property="submitTime" javaType="java.util.Date" jdbcType="DATE"/>
+        <parameter property="submitTime" javaType="java.util.Date" jdbcType="TIMESTAMP"/>
         <parameter property="userId" javaType="java.lang.Long" jdbcType="BIGINT"/>
         <parameter property="problemId" javaType="java.lang.Long" jdbcType="BIGINT"/>
         <parameter property="contestId" javaType="java.lang.Long" jdbcType="BIGINT"/>
@@ -44,6 +44,7 @@
     <select id="selectSolutionByTypeAndPage" resultMap="Solution">
         SELECT * FROM solution
         WHERE solution_type = #{solutionType}
+        ORDER BY id DESC
         LIMIT #{pageSize}
         OFFSET #{offset}
     </select>

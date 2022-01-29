@@ -97,7 +97,7 @@ public class UserContext implements AutoCloseable {
         return LOCAL.get();
     }
 
-    public static void set(Long userId) {
+    public static void restore(Long userId) {
         try {
             UserContext userContext = USER_CACHE.get(userId);
             LOCAL.set(userContext);

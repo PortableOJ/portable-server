@@ -34,6 +34,24 @@ public interface UserService {
     NormalUserInfoResponse register(RegisterRequest registerRequest) throws PortableException;
 
     /**
+     * 根据用户的 id 获取用户信息
+     *
+     * @param userId 用户的 id
+     * @return 用户信息
+     * @throws PortableException 不存在则抛出错误
+     */
+    UserBasicInfoResponse getUserInfo(Long userId) throws PortableException;
+
+    /**
+     * 根据用户的 handle 获取用户的信息
+     *
+     * @param handle 用户的 handle
+     * @return 用户信息
+     * @throws PortableException 不存在则抛出错误
+     */
+    UserBasicInfoResponse getUserInfo(String handle) throws PortableException;
+
+    /**
      * 修改用户所在组织
      *
      * @param targetId        被修改的用户

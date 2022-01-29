@@ -13,7 +13,9 @@ import com.portable.server.model.response.user.UserBasicInfoResponse;
 import com.portable.server.service.UserService;
 import com.portable.server.type.PermissionType;
 import com.portable.server.util.RequestSessionConstant;
+import com.portable.server.util.UserContext;
 import org.apache.logging.log4j.util.Strings;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -67,6 +69,23 @@ public class UserController {
         HttpSession httpSession = request.getSession();
         httpSession.setAttribute(RequestSessionConstant.USER_ID, normalUserInfoResponse.getId());
         return Response.ofOk(normalUserInfoResponse);
+    }
+
+    @NeedLogin
+    @PostMapping("/logout")
+    public Response<Void> logout(HttpServletRequest request) {
+        HttpSession httpSession = request.getSession();
+        httpSession.removeAttribute(RequestSessionConstant.USER_ID);
+        return Response.ofOk();
+    }
+
+    @NeedLogin(false)
+    @GetMapping("/check")
+    public Response<UserBasicInfoResponse> check(HttpServletRequest request) throws PortableException {
+        if (!UserContext.ctx().isLogin()) {
+            return Response.ofOk();
+        }
+        return Response.ofOk(userService.getUserInfo(UserContext.ctx().getId()));
     }
 
     @NeedLogin

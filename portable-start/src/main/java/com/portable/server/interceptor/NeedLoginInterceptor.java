@@ -44,7 +44,7 @@ public class NeedLoginInterceptor implements HandlerInterceptor {
         if (idObject instanceof Long) {
             // 已经登录了，就不需要关心是不是需要登录了
             Long id = (Long) idObject;
-            UserContext.set(id);
+            UserContext.restore(id);
 
             if (Objects.isNull(UserContext.ctx().getId())) {
                 User user = userManager.getAccountById(id);
