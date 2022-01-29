@@ -1,14 +1,18 @@
 package com.portable.server.service.impl;
 
 import com.portable.server.exception.PortableException;
+import com.portable.server.manager.ProblemManager;
 import com.portable.server.manager.SolutionDataManager;
 import com.portable.server.manager.SolutionManager;
+import com.portable.server.manager.UserManager;
+import com.portable.server.model.problem.Problem;
 import com.portable.server.model.request.PageRequest;
 import com.portable.server.model.response.PageResponse;
 import com.portable.server.model.response.solution.SolutionDetailResponse;
 import com.portable.server.model.response.solution.SolutionListResponse;
 import com.portable.server.model.solution.Solution;
 import com.portable.server.model.solution.SolutionData;
+import com.portable.server.model.user.User;
 import com.portable.server.service.SolutionService;
 import com.portable.server.type.PermissionType;
 import com.portable.server.type.SolutionType;
@@ -27,6 +31,12 @@ import java.util.stream.Collectors;
 public class SolutionServiceImpl implements SolutionService {
 
     @Resource
+    private UserManager userManager;
+
+    @Resource
+    private ProblemManager problemManager;
+
+    @Resource
     private SolutionManager solutionManager;
 
     @Resource
@@ -39,7 +49,11 @@ public class SolutionServiceImpl implements SolutionService {
         List<Solution> solutionList = solutionManager.selectPublicSolutionByPage(response.getPageSize(), response.offset());
         List<SolutionListResponse> solutionListResponseList = solutionList.stream()
                 .parallel()
-                .map(SolutionListResponse::of)
+                .map(solution -> {
+                    User user = userManager.getAccountById(solution.getUserId());
+                    Problem problem = problemManager.getProblemById(solution.getProblemId());
+                    return SolutionListResponse.of(solution, user, problem);
+                })
                 .collect(Collectors.toList());
         response.setData(solutionListResponseList);
         return response;
@@ -62,6 +76,8 @@ public class SolutionServiceImpl implements SolutionService {
         if (solutionData == null) {
             throw PortableException.of("S-05-001");
         }
-        return SolutionDetailResponse.of(solution, solutionData);
+        User user = userManager.getAccountById(solution.getUserId());
+        Problem problem = problemManager.getProblemById(solution.getProblemId());
+        return SolutionDetailResponse.of(solution, solutionData, user, problem);
     }
 }

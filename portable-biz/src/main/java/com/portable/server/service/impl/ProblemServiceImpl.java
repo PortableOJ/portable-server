@@ -168,7 +168,8 @@ public class ProblemServiceImpl implements ProblemService {
     @Override
     public ProblemDataResponse getProblem(Long id) throws PortableException {
         ProblemPackage problemPackage = getForViewProblem(id);
-        return ProblemDataResponse.of(problemPackage.getProblem(), problemPackage.getProblemData());
+        User user = userManager.getAccountById(problemPackage.getProblem().getOwner());
+        return ProblemDataResponse.of(problemPackage.getProblem(), problemPackage.getProblemData(), user);
     }
 
     @Override
@@ -421,7 +422,7 @@ public class ProblemServiceImpl implements ProblemService {
     }
 
     @Override
-    public SolutionDetailResponse submit(SubmitSolutionRequest submitSolutionRequest) throws PortableException {
+    public Long submit(SubmitSolutionRequest submitSolutionRequest) throws PortableException {
         ProblemPackage problemPackage = getForViewProblem(submitSolutionRequest.getProblemId());
         if (!ProblemStatusType.NORMAL.equals(problemPackage.getProblem().getStatusType())) {
             throw PortableException.of("A-05-004", problemPackage.getProblem().getStatusType());
@@ -439,7 +440,7 @@ public class ProblemServiceImpl implements ProblemService {
 
         judgeSupport.addJudgeTask(solution.getId());
 
-        return SolutionDetailResponse.of(solution, solutionData);
+        return solution.getId();
     }
 
     private ProblemPackage getForViewProblem(Long id) throws PortableException {

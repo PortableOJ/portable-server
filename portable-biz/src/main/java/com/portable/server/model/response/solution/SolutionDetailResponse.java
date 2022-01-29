@@ -1,7 +1,9 @@
 package com.portable.server.model.response.solution;
 
+import com.portable.server.model.problem.Problem;
 import com.portable.server.model.solution.Solution;
 import com.portable.server.model.solution.SolutionData;
+import com.portable.server.model.user.User;
 import com.portable.server.type.LanguageType;
 import com.portable.server.type.SolutionStatusType;
 import com.portable.server.type.SolutionType;
@@ -31,9 +33,19 @@ public class SolutionDetailResponse {
     private Long userId;
 
     /**
+     * 提交者 handle
+     */
+    private String userHandle;
+
+    /**
      * 问题的 id
      */
     private Long problemId;
+
+    /**
+     * 问题的标题
+     */
+    private String problemTitle;
 
     /**
      * 提交至比赛的 id
@@ -75,11 +87,13 @@ public class SolutionDetailResponse {
      */
     private String compileMsg;
 
-    private SolutionDetailResponse(Solution solution, SolutionData solutionData) {
+    private SolutionDetailResponse(Solution solution, SolutionData solutionData, User user, Problem problem) {
         this.id = solution.getId();
         this.submitTime = solution.getSubmitTime();
         this.userId = solution.getUserId();
+        this.userHandle = user.getHandle();
         this.problemId = solution.getProblemId();
+        this.problemTitle = problem.getTitle();
         this.contestId = solution.getContestId();
         this.languageType = solution.getLanguageType();
         this.status = solution.getStatus();
@@ -90,7 +104,7 @@ public class SolutionDetailResponse {
         this.compileMsg = solutionData.getCompileMsg();
     }
 
-    public static SolutionDetailResponse of(Solution solution, SolutionData solutionData) {
-        return new SolutionDetailResponse(solution, solutionData);
+    public static SolutionDetailResponse of(Solution solution, SolutionData solutionData, User user, Problem problem) {
+        return new SolutionDetailResponse(solution, solutionData, user, problem);
     }
 }

@@ -88,6 +88,12 @@ public class UserController {
         return Response.ofOk(userService.getUserInfo(UserContext.ctx().getId()));
     }
 
+    @NeedLogin(false)
+    @GetMapping("/getUserInfo")
+    public Response<UserBasicInfoResponse> getUserInfo(String handle) throws PortableException {
+        return Response.ofOk(userService.getUserInfo(handle));
+    }
+
     @NeedLogin
     @PostMapping("/changeOrganization")
     @PermissionRequirement(PermissionType.CHANGE_ORGANIZATION)

@@ -253,6 +253,6 @@ public class ProblemController {
     @NeedLogin
     @PostMapping("/submit")
     public Response<Long> submit(@RequestBody SubmitSolutionRequest submitSolutionRequest) throws PortableException {
-        return Response.ofOk(problemService.submit(submitSolutionRequest).getId());
+        return Response.ofOk(problemService.submit(submitSolutionRequest));
     }
 }

@@ -1,6 +1,8 @@
 package com.portable.server.model.response.solution;
 
+import com.portable.server.model.problem.Problem;
 import com.portable.server.model.solution.Solution;
+import com.portable.server.model.user.User;
 import com.portable.server.type.LanguageType;
 import com.portable.server.type.SolutionStatusType;
 import lombok.Data;
@@ -29,9 +31,19 @@ public class SolutionListResponse {
     private Long userId;
 
     /**
+     * 提交者 handle
+     */
+    private String userHandle;
+
+    /**
      * 问题的 id
      */
     private Long problemId;
+
+    /**
+     * 问题的标题
+     */
+    private String problemTitle;
 
     /**
      * 语言
@@ -53,18 +65,20 @@ public class SolutionListResponse {
      */
     private Integer memoryCost;
 
-    private SolutionListResponse(Solution solution) {
+    private SolutionListResponse(Solution solution, User user, Problem problem) {
         this.id = solution.getId();
         this.submitTime = solution.getSubmitTime();
         this.userId = solution.getUserId();
+        this.userHandle = user == null ? "" : user.getHandle();
         this.problemId = solution.getProblemId();
+        this.problemTitle = problem == null ? "" : problem.getTitle();
         this.languageType = solution.getLanguageType();
         this.status = solution.getStatus();
         this.timeCost = solution.getTimeCost();
         this.memoryCost = solution.getMemoryCost();
     }
 
-    public static SolutionListResponse of(Solution solution) {
-        return new SolutionListResponse(solution);
+    public static SolutionListResponse of(Solution solution, User user, Problem problem) {
+        return new SolutionListResponse(solution, user, problem);
     }
 }

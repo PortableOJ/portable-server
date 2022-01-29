@@ -2,6 +2,7 @@ package com.portable.server.model.response.problem;
 
 import com.portable.server.model.problem.Problem;
 import com.portable.server.model.problem.ProblemData;
+import com.portable.server.model.user.User;
 import com.portable.server.type.*;
 import lombok.Data;
 
@@ -49,6 +50,11 @@ public class ProblemDataResponse {
      * 作者
      */
     private Long owner;
+
+    /**
+     * 作者 handle
+     */
+    private String ownerHandle;
 
     /**
      * 默认的耗时限制，单位（ms）
@@ -130,7 +136,7 @@ public class ProblemDataResponse {
      */
     private Date gmtModifyTime;
 
-    public ProblemDataResponse(Problem problem, ProblemData problemData) {
+    public ProblemDataResponse(Problem problem, ProblemData problemData, User user) {
         this.id = problem.getId();
         this.title = problem.getTitle();
         this.statusType = problem.getStatusType();
@@ -138,6 +144,7 @@ public class ProblemDataResponse {
         this.submissionCount = problem.getSubmissionCount();
         this.acceptCount = problem.getAcceptCount();
         this.owner = problem.getOwner();
+        this.ownerHandle = user == null ? "" : user.getHandle();
 
         this.defaultTimeLimit = problemData.getDefaultTimeLimit();
         this.defaultMemoryLimit = problemData.getDefaultMemoryLimit();
@@ -157,7 +164,7 @@ public class ProblemDataResponse {
         this.gmtModifyTime = problemData.getGmtModifyTime();
     }
 
-    public static ProblemDataResponse of(Problem problem, ProblemData problemData) {
-        return new ProblemDataResponse(problem, problemData);
+    public static ProblemDataResponse of(Problem problem, ProblemData problemData, User user) {
+        return new ProblemDataResponse(problem, problemData, user);
     }
 }

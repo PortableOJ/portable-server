@@ -212,5 +212,5 @@ public interface ProblemService {
      * @return 提交的内容
      * @throws PortableException 出现非法提交或不存在对应题目则抛出错误
      */
-    SolutionDetailResponse submit(SubmitSolutionRequest submitSolutionRequest) throws PortableException;
+    Long submit(SubmitSolutionRequest submitSolutionRequest) throws PortableException;
 }
