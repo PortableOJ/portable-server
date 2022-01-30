@@ -14,7 +14,9 @@ import com.portable.server.model.response.problem.ProblemStdTestCodeResponse;
 import com.portable.server.model.response.solution.SolutionDetailResponse;
 import com.portable.server.model.solution.Solution;
 import com.portable.server.model.solution.SolutionData;
+import com.portable.server.model.user.NormalUserData;
 import com.portable.server.model.user.User;
+import com.portable.server.repo.NormalUserDataRepo;
 import com.portable.server.support.JudgeSupport;
 import com.portable.server.support.FileSupport;
 import com.portable.server.service.ProblemService;
@@ -128,6 +130,9 @@ public class ProblemServiceImpl implements ProblemService {
 
     @Resource
     private UserManager userManager;
+
+    @Resource
+    private NormalUserManager normalUserManager;
 
     @Resource
     private SolutionManager solutionManager;
@@ -427,14 +432,21 @@ public class ProblemServiceImpl implements ProblemService {
         if (!ProblemStatusType.NORMAL.equals(problemPackage.getProblem().getStatusType())) {
             throw PortableException.of("A-05-004", problemPackage.getProblem().getStatusType());
         }
+        UserContext userContext = UserContext.ctx();
+
+        problemManager.updateProblemCount(submitSolutionRequest.getProblemId(), 1, 0);
+        NormalUserData normalUserData = normalUserManager.getUserDataById(userContext.getDataId());
+        normalUserData.setSubmission(normalUserData.getSubmission() + 1);
+        normalUserManager.updateNormalUserData(normalUserData);
+
         SolutionData solutionData = solutionDataManager.newSolutionData(problemPackage.getProblemData());
         submitSolutionRequest.toSolutionData(solutionData);
-        solutionDataManager.insertSolutionData(solutionData);
+        solutionDataManager.saveSolutionData(solutionData);
 
         Solution solution = solutionManager.newSolution();
         submitSolutionRequest.toSolution(solution);
         solution.setDataId(solutionData.get_id());
-        solution.setUserId(UserContext.ctx().getId());
+        solution.setUserId(userContext.getId());
         solution.setSolutionType(SolutionType.PUBLIC);
         solutionManager.insertSolution(solution);
 

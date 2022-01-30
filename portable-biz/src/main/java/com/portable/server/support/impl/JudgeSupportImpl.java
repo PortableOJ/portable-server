@@ -14,9 +14,12 @@ import com.portable.server.model.response.judge.SolutionInfoResponse;
 import com.portable.server.model.response.judge.TestInfoResponse;
 import com.portable.server.model.solution.Solution;
 import com.portable.server.model.solution.SolutionData;
+import com.portable.server.model.user.NormalUserData;
+import com.portable.server.model.user.User;
 import com.portable.server.support.JudgeSupport;
 import com.portable.server.socket.EpollManager;
 import com.portable.server.support.FileSupport;
+import com.portable.server.type.AccountType;
 import com.portable.server.type.JudgeCodeType;
 import com.portable.server.type.JudgeWorkType;
 import com.portable.server.type.LanguageType;
@@ -78,6 +81,12 @@ public class JudgeSupportImpl implements JudgeSupport {
 
     @Resource
     private Environment env;
+
+    @Resource
+    private UserManager userManager;
+
+    @Resource
+    private NormalUserManager normalUserManager;
 
     @Resource
     private SolutionManager solutionManager;
@@ -148,6 +157,29 @@ public class JudgeSupportImpl implements JudgeSupport {
         solutionJudgeWork.getJudgeContainer().getJudgeWorkMap().remove(solutionId);
         solutionJudgeWorkMap.remove(solutionId);
         solutionManager.updateCostAndStatus(solutionId, endType, timeCost, memoryCost);
+        Solution solution = solutionManager.selectSolutionById(solutionId);
+
+        if (!SolutionStatusType.ACCEPT.equals(endType)) {
+            return;
+        }
+        // 更新统计数量
+        switch (solution.getSolutionType()) {
+            case CONTEST:
+                // contest 还需要单独加入到 contest 的统计列表中
+            case PUBLIC:
+                problemManager.updateProblemCount(solutionJudgeWork.getProblemId(), 0, 1);
+
+                User user = userManager.getAccountById(solution.getUserId());
+                if (user != null && AccountType.NORMAL.equals(user.getType())) {
+                    NormalUserData normalUserData = normalUserManager.getUserDataById(user.getDataId());
+                    normalUserData.setAccept(normalUserData.getAccept() + 1);
+                    normalUserManager.updateNormalUserData(normalUserData);
+                }
+                break;
+            case PROBLEM_PROCESS:
+            default:
+                break;
+        }
     }
 
     @Override
@@ -213,7 +245,9 @@ public class JudgeSupportImpl implements JudgeSupport {
     public void close() {
         String address = EpollManager.getAddress();
         JudgeContainer judgeContainer = tcpJudgeMap.get(address);
-        judgeContainer.getTcpAddressSet().remove(address);
+        if (judgeContainer != null) {
+            judgeContainer.getTcpAddressSet().remove(address);
+        }
         tcpJudgeMap.remove(address);
     }
 
