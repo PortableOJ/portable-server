@@ -68,8 +68,11 @@ public class SolutionServiceImpl implements SolutionService {
         if (!SolutionType.PUBLIC.equals(solution.getSolutionType())) {
             throw PortableException.of("A-05-002");
         }
-        if (!Objects.equals(solution.getUserId(), UserContext.ctx().getId())
-                && !UserContext.ctx().getPermissionTypeSet().contains(PermissionType.VIEW_PUBLIC_SOLUTION)) {
+        UserContext userContext = UserContext.ctx();
+        boolean isHost = Objects.equals(solution.getUserId(), userContext.getId());
+        boolean hasPermission = userContext.isLogin() &&
+                UserContext.ctx().getPermissionTypeSet().contains(PermissionType.VIEW_PUBLIC_SOLUTION);
+        if (!isHost && !hasPermission) {
             throw PortableException.of("A-05-003");
         }
         SolutionData solutionData = solutionDataManager.getSolutionData(solution.getDataId());

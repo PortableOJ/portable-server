@@ -74,7 +74,18 @@ public interface ProblemManager {
      */
     void updateProblemStatus(Long id, ProblemStatusType statusType);
 
+    /**
+     * 更新题目的提交情况
+     * @param id 题目 ID
+     * @param submitCount 新的提交量
+     * @param acceptCount 新的通过量
+     */
     void updateProblemCount(Long id, Integer submitCount, Integer acceptCount);
 
+    /**
+     * 更新题目所有者
+     * @param id 题目 ID
+     * @param newOwner 新的所有者
+     */
     void updateProblemOwner(Long id, Long newOwner);
 }

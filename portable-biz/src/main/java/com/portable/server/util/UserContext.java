@@ -134,6 +134,10 @@ public class UserContext implements AutoCloseable {
         set(userContext);
     }
 
+    public static void remove() {
+        LOCAL.remove();
+    }
+
     public Boolean isLogin() {
         return id != null;
     }
