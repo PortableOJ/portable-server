@@ -91,7 +91,7 @@ public interface ProblemService {
     Problem newProblem(ProblemContentRequest problemContentRequest) throws PortableException;
 
     /**
-     * 创建题目内容（需要权限 {@link com.portable.server.type.PermissionType#CREATE_AND_EDIT_PROBLEM}）
+     * 更新题目内容（需要权限 {@link com.portable.server.type.PermissionType#CREATE_AND_EDIT_PROBLEM}）
      *
      * @param problemContentRequest 题目内容
      * @throws PortableException 遇到意外情况抛出错误
