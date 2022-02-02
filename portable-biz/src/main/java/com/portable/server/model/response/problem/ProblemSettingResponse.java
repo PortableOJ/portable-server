@@ -32,7 +32,7 @@ public class ProblemSettingResponse {
     private Boolean shareTest;
 
     /**
-     * 默认的耗时限制，单位（ms）
+     * 默认的耗时限制，单位（s）
      */
     private Integer defaultTimeLimit;
 

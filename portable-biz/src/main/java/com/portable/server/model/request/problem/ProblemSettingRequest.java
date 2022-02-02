@@ -33,7 +33,7 @@ public class ProblemSettingRequest {
     private List<LanguageType> supportLanguage;
 
     /**
-     * 默认的耗时限制，单位（ms）
+     * 默认的耗时限制，单位（s）
      */
     private Integer defaultTimeLimit;
 

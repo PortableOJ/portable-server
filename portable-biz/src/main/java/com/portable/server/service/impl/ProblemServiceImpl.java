@@ -243,9 +243,10 @@ public class ProblemServiceImpl implements ProblemService {
             throw PortableException.of("A-04-007");
         }
 
+        boolean isChecked = problemPackage.getProblem().getStatusType().getChecked();
         boolean needCheck = problemSettingRequest.toProblemData(problemPackage.getProblemData());
-        if (problemPackage.getProblem().getStatusType().getChecked()
-                && (needCheck || checkAnyStdCodeNotPass(problemPackage.getProblemData()))) {
+        needCheck = needCheck || checkAnyStdCodeNotPass(problemPackage.getProblemData());
+        if (isChecked && needCheck) {
             problemPackage.getProblem().toUncheck();
         }
 

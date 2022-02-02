@@ -57,7 +57,7 @@ public class ProblemDataResponse {
     private String ownerHandle;
 
     /**
-     * 默认的耗时限制，单位（ms）
+     * 默认的耗时限制，单位（s）
      */
     private Integer defaultTimeLimit;
 
