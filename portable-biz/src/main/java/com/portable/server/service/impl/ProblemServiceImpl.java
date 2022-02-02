@@ -325,7 +325,18 @@ public class ProblemServiceImpl implements ProblemService {
     @Override
     public ProblemStdTestCodeResponse getProblemStdTestCode(Long id) throws PortableException {
         ProblemPackage problemPackage = getForEditProblem(id);
-        return ProblemStdTestCodeResponse.of(problemPackage.getProblemData());
+        ProblemStdTestCodeResponse problemStdTestCodeResponse = ProblemStdTestCodeResponse.of(problemPackage.getProblemData());
+        problemStdTestCodeResponse.getTestCodeList().forEach(stdCode -> {
+            if (stdCode.getSolutionId() == null) {
+                return;
+            }
+            Solution solution = solutionManager.selectSolutionById(stdCode.getSolutionId());
+            if (solution == null) {
+                return;
+            }
+            stdCode.setSolutionStatusType(solution.getStatus());
+        });
+        return problemStdTestCodeResponse;
     }
 
     @Override

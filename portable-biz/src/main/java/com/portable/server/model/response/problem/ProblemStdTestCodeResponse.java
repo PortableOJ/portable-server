@@ -49,6 +49,8 @@ public class ProblemStdTestCodeResponse {
          */
         private Long solutionId;
 
+        private SolutionStatusType solutionStatusType;
+
         public static StdCode of(ProblemData.StdCode code) {
             return StdCode.builder()
                     .name(code.getName())
