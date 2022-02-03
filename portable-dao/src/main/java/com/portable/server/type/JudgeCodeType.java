@@ -29,7 +29,8 @@ public enum JudgeCodeType implements ExceptionTextType {
     YES_NO("按顺序比较 yes 和 no，全部相同"),
     INTEGER_SAME("按顺序比较 64 位整数，全部相同"),
     FLOAT_4("按顺序比较浮点数，允许 1e-4 的精度误差"),
-    FLOAT_6("按顺序比较浮点数，允许 1e-6 的精度误差");
+    FLOAT_6("按顺序比较浮点数，允许 1e-6 的精度误差"),
+    ;
 
     private final String text;
 
