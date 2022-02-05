@@ -2,6 +2,8 @@ package com.portable.server.support;
 
 import com.portable.server.exception.PortableException;
 import com.portable.server.model.ServiceVerifyCode;
+import com.portable.server.model.judge.entity.JudgeContainer;
+import com.portable.server.model.judge.entity.UpdateJudgeContainer;
 import com.portable.server.model.response.judge.HeartbeatResponse;
 import com.portable.server.model.response.judge.SolutionInfoResponse;
 import com.portable.server.model.response.judge.TestInfoResponse;
@@ -9,11 +11,25 @@ import com.portable.server.type.SolutionStatusType;
 
 import java.io.File;
 import java.io.InputStream;
+import java.util.List;
 
 /**
  * @author shiroha
  */
 public interface JudgeSupport {
+
+    /**
+     * 获取所有 Judge 列表
+     * @return 所有 Judge 列表
+     */
+    List<JudgeContainer> getJudgeContainerList();
+
+    /**
+     * 更新 Judge 配置
+     * @param updateJudgeContainer 更新信息
+     * @throws PortableException 不存在对应容器时抛出
+     */
+    void updateJudgeContainer(UpdateJudgeContainer updateJudgeContainer) throws PortableException;
 
     /**
      * 提交一个 judge 任务

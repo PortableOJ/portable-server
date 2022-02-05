@@ -4,6 +4,7 @@ import com.portable.server.exception.PortableException;
 import com.portable.server.manager.*;
 import com.portable.server.model.ServiceVerifyCode;
 import com.portable.server.model.judge.entity.JudgeContainer;
+import com.portable.server.model.judge.entity.UpdateJudgeContainer;
 import com.portable.server.model.judge.work.AbstractJudgeWork;
 import com.portable.server.model.judge.work.SolutionJudgeWork;
 import com.portable.server.model.judge.work.TestJudgeWork;
@@ -120,6 +121,20 @@ public class JudgeSupportImpl implements JudgeSupport {
         } else {
             serviceVerifyCode = null;
         }
+    }
+
+    @Override
+    public List<JudgeContainer> getJudgeContainerList() {
+        return new ArrayList<>(judgeCodeJudgeMap.values());
+    }
+
+    @Override
+    public void updateJudgeContainer(UpdateJudgeContainer updateJudgeContainer) throws PortableException {
+        JudgeContainer judgeContainer = judgeCodeJudgeMap.get(updateJudgeContainer.getJudgeCode());
+        if (judgeContainer == null) {
+            throw PortableException.of("A-07-001");
+        }
+        updateJudgeContainer.toJudgeContainer(judgeContainer);
     }
 
     @Override

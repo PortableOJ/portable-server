@@ -46,6 +46,11 @@ public enum PermissionType implements ExceptionTextType {
      * 查看所有公开提交的提交详情
      */
     VIEW_PUBLIC_SOLUTION("查看所有公开提交的提交详情"),
+
+    /**
+     * 管理 Judge 系统的权利
+     */
+    MANAGER_JUDGE("管理 Judge 系统的权利"),
     ;
 
     private final String text;
