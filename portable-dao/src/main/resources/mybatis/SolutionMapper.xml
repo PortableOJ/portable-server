@@ -64,6 +64,7 @@
         SELECT * FROM solution
         WHERE user_id = #{userId}
         AND problem_id = #{problemId}
+        ORDER BY id DESC
         LIMIT 1
     </select>
 
