@@ -278,6 +278,7 @@ public class JudgeSupportImpl implements JudgeSupport {
         judgeContainer.setThreadAccumulation(threadAccumulation);
         judgeContainer.setWorkAccumulation(workAccumulation);
         judgeContainer.setSocketAccumulation(socketAccumulation);
+        judgeContainer.setLastHeartbeat(new Date());
 
         HeartbeatResponse heartbeatResponse = new HeartbeatResponse();
         if (judgeContainer.getIsNewCore()) {
