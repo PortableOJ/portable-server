@@ -289,6 +289,7 @@ public class ProblemServiceImpl implements ProblemService {
         }
 
         problemPackage.getProblem().toUntreated();
+        judgeSupport.removeProblemCache(problemTestRequest.getId());
 
         if (ProblemStatusType.NORMAL.equals(problemPackage.getProblem().getStatusType())) {
             problemPackage.getProblemData().nextVersion();
@@ -352,6 +353,7 @@ public class ProblemServiceImpl implements ProblemService {
         }
 
         problemPackage.getProblem().toUntreated();
+        judgeSupport.removeProblemCache(problemCodeRequest.getId());
 
         problemManager.updateProblemStatus(problemPackage.getProblem().getId(), problemPackage.getProblem().getStatusType());
         problemDataManager.updateProblemData(problemPackage.getProblemData());

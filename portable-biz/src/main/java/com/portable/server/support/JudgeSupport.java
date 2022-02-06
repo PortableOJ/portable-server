@@ -65,6 +65,12 @@ public interface JudgeSupport {
     void killTestTask(Long problemId, Boolean endType);
 
     /**
+     * 删除所有判题容器中的问题的缓存
+     * @param problemId 问题 ID
+     */
+    void removeProblemCache(Long problemId);
+
+    /**
      * 获取当前的设备码
      * <p>
      * 通常设备码是一个实时随机生成的值，且有一定的时效性，超过一段时间后将会失效

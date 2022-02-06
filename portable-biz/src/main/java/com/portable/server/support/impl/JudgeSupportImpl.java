@@ -209,6 +209,11 @@ public class JudgeSupportImpl implements JudgeSupport {
     }
 
     @Override
+    public void removeProblemCache(Long problemId) {
+        judgeCodeJudgeMap.values().forEach(judgeContainer -> judgeContainer.addDeleteProblemCacheId(problemId));
+    }
+
+    @Override
     public ServiceVerifyCode getServiceCode() {
         return serviceVerifyCode != null ? serviceVerifyCode : temporaryDataManager.getServiceCode();
     }
@@ -236,6 +241,7 @@ public class JudgeSupportImpl implements JudgeSupport {
                 .judgeWorkMap(new ConcurrentHashMap<>(1))
                 .testWorkMap(new ConcurrentHashMap<>(1))
                 .tcpAddressSet(tcpAddressSet)
+                .needDeleteProblemCacheIdList(new ArrayList<>())
                 .build();
 
         tcpJudgeMap.put(address, judgeContainer);
@@ -280,6 +286,7 @@ public class JudgeSupportImpl implements JudgeSupport {
             heartbeatResponse.setNewWorkCore(judgeContainer.getMaxWorkCore());
             heartbeatResponse.setNewSocketCore(judgeContainer.getMaxSocketCore());
         }
+        judgeContainer.dumpDeleteProblemCacheId(heartbeatResponse);
         int newWork = judgeContainer.getMaxWorkNum() - judgeContainer.getJudgeWorkMap().size() - judgeContainer.getTestWorkMap().size();
         for (int i = 0; i < newWork; i++) {
             AbstractJudgeWork judgeWork = judgeWorkPriorityQueue.poll();

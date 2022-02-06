@@ -2,10 +2,12 @@ package com.portable.server.model.judge.entity;
 
 import com.portable.server.model.judge.work.SolutionJudgeWork;
 import com.portable.server.model.judge.work.TestJudgeWork;
+import com.portable.server.model.response.judge.HeartbeatResponse;
 import lombok.Builder;
 import lombok.Data;
 
 import java.util.Date;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -80,4 +82,18 @@ public class JudgeContainer {
      * 所有连接的 TCP
      */
     private Set<String> tcpAddressSet;
+
+    /**
+     * 需要删除的问题 cache 列表
+     */
+    private List<Long> needDeleteProblemCacheIdList;
+
+    public synchronized void addDeleteProblemCacheId(Long problemId) {
+        needDeleteProblemCacheIdList.add(problemId);
+    }
+
+    public synchronized void dumpDeleteProblemCacheId(HeartbeatResponse heartbeatResponse) {
+        needDeleteProblemCacheIdList.forEach(heartbeatResponse::addCleanProblem);
+        needDeleteProblemCacheIdList.clear();
+    }
 }
