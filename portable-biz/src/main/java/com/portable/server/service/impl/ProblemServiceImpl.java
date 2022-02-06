@@ -288,12 +288,12 @@ public class ProblemServiceImpl implements ProblemService {
             throw PortableException.of("A-04-005");
         }
 
-        problemPackage.getProblem().toUntreated();
-        judgeSupport.removeProblemCache(problemTestRequest.getId());
-
-        if (ProblemStatusType.NORMAL.equals(problemPackage.getProblem().getStatusType())) {
+        if (problemPackage.getProblem().getStatusType().getTreated()) {
             problemPackage.getProblemData().nextVersion();
+            judgeSupport.removeProblemCache(problemTestRequest.getId());
         }
+
+        problemPackage.getProblem().toUntreated();
 
         problemPackage.getProblemData().setGmtModifyTime(new Date());
 
@@ -348,12 +348,12 @@ public class ProblemServiceImpl implements ProblemService {
         }
         problemCodeRequest.toStdCode(problemPackage.getProblemData().getStdCode());
         problemPackage.getProblemData().getStdCode().setExpectResultType(SolutionStatusType.ACCEPT);
-        if (ProblemStatusType.NORMAL.equals(problemPackage.getProblem().getStatusType())) {
+        if (problemPackage.getProblem().getStatusType().getTreated()) {
             problemPackage.getProblemData().nextVersion();
+            judgeSupport.removeProblemCache(problemCodeRequest.getId());
         }
 
         problemPackage.getProblem().toUntreated();
-        judgeSupport.removeProblemCache(problemCodeRequest.getId());
 
         problemManager.updateProblemStatus(problemPackage.getProblem().getId(), problemPackage.getProblem().getStatusType());
         problemDataManager.updateProblemData(problemPackage.getProblemData());
