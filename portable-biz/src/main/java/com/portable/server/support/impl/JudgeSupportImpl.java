@@ -511,7 +511,9 @@ public class JudgeSupportImpl implements JudgeSupport {
             addJudgeTask(solution.getId());
             stdCode.setSolutionId(solution.getId());
         }
-        problemManager.updateProblemStatus(problemId, ProblemStatusType.CHECKING);
+        if (problemData.getTestCodeList().size() == 0) {
+            problemManager.updateProblemStatus(problemId, ProblemStatusType.NORMAL);
+        }
         problemDataManager.updateProblemData(problemData);
     }
 
