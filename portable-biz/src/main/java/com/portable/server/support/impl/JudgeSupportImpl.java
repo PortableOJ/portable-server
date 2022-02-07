@@ -389,7 +389,7 @@ public class JudgeSupportImpl implements JudgeSupport {
     }
 
     @Override
-    public File getStandardJudgeCode(String name) throws PortableException {
+    public InputStream getStandardJudgeCode(String name) throws PortableException {
         try {
             JudgeCodeType judgeCodeType = JudgeCodeType.valueOf(name);
             return judgeCodeType.getCode();
@@ -399,7 +399,7 @@ public class JudgeSupportImpl implements JudgeSupport {
     }
 
     @Override
-    public File getTestLibCode() throws PortableException {
+    public InputStream getTestLibCode() {
         return JudgeCodeType.getTestLib();
     }
 

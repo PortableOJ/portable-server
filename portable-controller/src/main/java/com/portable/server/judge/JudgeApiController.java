@@ -81,7 +81,7 @@ public class JudgeApiController {
     }
 
     @EpollMethod("StandardJudgeCode")
-    public File getStandardJudgeCode(@EpollParam String name) throws PortableException {
+    public InputStream getStandardJudgeCode(@EpollParam String name) throws PortableException {
         return judgeSupport.getStandardJudgeCode(name);
     }
 
@@ -101,7 +101,7 @@ public class JudgeApiController {
     }
 
     @EpollMethod("TestLibRequest")
-    public File getTestLibCode() throws PortableException {
+    public InputStream getTestLibCode() throws PortableException {
         return judgeSupport.getTestLibCode();
     }
 

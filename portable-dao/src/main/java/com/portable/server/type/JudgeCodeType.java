@@ -38,24 +38,14 @@ public enum JudgeCodeType implements ExceptionTextType {
         this.text = text;
     }
 
-    public File getCode() throws PortableException {
+    public InputStream getCode() throws PortableException {
         if (this == DIY) {
             throw PortableException.of("S-01-006");
         }
-        ClassPathResource resource = new ClassPathResource(String.format("judge%s%s.cpp", File.separator, this.name()));
-        try {
-            return resource.getFile();
-        } catch (IOException e) {
-            throw PortableException.of("S-01-005", name());
-        }
+        return this.getClass().getResourceAsStream(String.format("/judge/%s.cpp", this.name()));
     }
 
-    public static File getTestLib() throws PortableException {
-        ClassPathResource resource = new ClassPathResource(String.format("judge%stestlib.h", File.separator));
-        try {
-            return resource.getFile();
-        } catch (IOException e) {
-            throw PortableException.of("S-01-005", "testlib");
-        }
+    public static InputStream getTestLib() {
+        return JudgeCodeType.class.getResourceAsStream("/judge/testlib.h");
     }
 }

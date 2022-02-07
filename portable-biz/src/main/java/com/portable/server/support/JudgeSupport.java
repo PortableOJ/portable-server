@@ -181,7 +181,7 @@ public interface JudgeSupport {
      * @return 标准代码任务
      * @throws PortableException 找不到时抛出错误
      */
-    File getStandardJudgeCode(String name) throws PortableException;
+    InputStream getStandardJudgeCode(String name) throws PortableException;
 
     /**
      * 获取默认的标准 testlib 代码
@@ -189,7 +189,7 @@ public interface JudgeSupport {
      * @return testlib 代码
      * @throws PortableException 找不到时抛出错误
      */
-    File getTestLibCode() throws PortableException;
+    InputStream getTestLibCode() throws PortableException;
 
     /**
      * 获取题目的标准输入文件
