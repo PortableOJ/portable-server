@@ -48,15 +48,7 @@ public class EpollManager {
         closeMethod = new ArrayList<>();
         if (runner == null) {
             //noinspection AlibabaAvoidManuallyCreateThread
-            runner = new Thread(() -> {
-                try {
-                    log.info("create socket");
-                    EpollUtil.initEpollSocket(9090, this);
-                } catch (Exception e) {
-                    e.printStackTrace();
-                    log.error("Socket start fail, {}", e.getMessage());
-                }
-            });
+            runner = new Thread(() -> EpollUtil.initEpollSocket(9090, this));
             runner.start();
         }
         clearClass();

@@ -10,6 +10,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.InetSocketAddress;
 import java.nio.ByteBuffer;
+import java.nio.channels.ClosedChannelException;
 import java.nio.channels.SelectionKey;
 import java.nio.channels.Selector;
 import java.nio.channels.ServerSocketChannel;
@@ -45,46 +46,38 @@ public class EpollUtil {
      */
     private static EpollManager epollManager;
 
-    /**
-     * 执行的线程池
-     */
-    private static final ThreadPoolExecutor THREAD_POOL_EXECUTOR;
-
-    private static final Set<SelectionKey> ON_RUNNING_SELECTION_KEY_SET;
-
     static {
         RETURN_BUFFER.put(Constant.RETURN_BYTE);
-        THREAD_POOL_EXECUTOR = new ThreadPoolExecutor(Constant.DEFAULT_JUDGE_NUM, Constant.DEFAULT_JUDGE_NUM * 2,
-                60, TimeUnit.SECONDS, new ArrayBlockingQueue<>(Constant.QUEUE_WAIT_NUM),
-                Executors.defaultThreadFactory(), new ThreadPoolExecutor.CallerRunsPolicy());
-        ON_RUNNING_SELECTION_KEY_SET = Collections.synchronizedSet(new HashSet<>());
     }
 
-    public static void initEpollSocket(Integer port, EpollManager epollManager) throws Exception {
+    public static void initEpollSocket(Integer port, EpollManager epollManager) {
         EpollUtil.epollManager = epollManager;
 
-        ServerSocketChannel serverSocketChannel = ServerSocketChannel.open();
-        serverSocketChannel.bind(new InetSocketAddress(port));
-        serverSocketChannel.configureBlocking(false);
-        selector = Selector.open();
+        //noinspection InfiniteLoopStatement
+        while (true) {
+            try {
+                ServerSocketChannel serverSocketChannel = ServerSocketChannel.open();
+                serverSocketChannel.bind(new InetSocketAddress(port));
+                serverSocketChannel.configureBlocking(false);
+                selector = Selector.open();
 
-        serverSocketChannel.register(selector, SelectionKey.OP_ACCEPT);
+                serverSocketChannel.register(selector, SelectionKey.OP_ACCEPT);
 
-        while (selector.select() > 0) {
-            Set<SelectionKey> selectionKeys = selector.selectedKeys();
-            Iterator<SelectionKey> iterator = selectionKeys.iterator();
-            while (iterator.hasNext()) {
-                SelectionKey selectionKey = iterator.next();
-                iterator.remove();
-                if (ON_RUNNING_SELECTION_KEY_SET.contains(selectionKey)) {
-                    continue;
+                while (selector.select() > 0) {
+                    Set<SelectionKey> selectionKeys = selector.selectedKeys();
+                    Iterator<SelectionKey> iterator = selectionKeys.iterator();
+                    while (iterator.hasNext()) {
+                        SelectionKey selectionKey = iterator.next();
+                        iterator.remove();
+                        if (selectionKey.isAcceptable()) {
+                            acceptHandler(selectionKey);
+                        } else if (selectionKey.isReadable()) {
+                            readHandler(selectionKey);
+                        }
+                    }
                 }
-                if (selectionKey.isAcceptable()) {
-                    acceptHandler(selectionKey);
-                } else if (selectionKey.isReadable()) {
-                    ON_RUNNING_SELECTION_KEY_SET.add(selectionKey);
-                    THREAD_POOL_EXECUTOR.execute(() -> readHandler(selectionKey));
-                }
+            } catch (IOException e) {
+                e.printStackTrace();
             }
         }
     }
@@ -123,7 +116,6 @@ public class EpollUtil {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        ON_RUNNING_SELECTION_KEY_SET.remove(key);
     }
 
     private static void acceptHandler(SelectionKey selectionKey) throws IOException {
