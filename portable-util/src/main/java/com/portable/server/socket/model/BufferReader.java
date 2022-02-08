@@ -1,5 +1,7 @@
 package com.portable.server.socket.model;
 
+import com.portable.server.exception.PortableException;
+
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.channels.SocketChannel;
@@ -39,6 +41,8 @@ public class BufferReader {
         return data;
     }
 
+    private static final Long MAX_DATA_LEN = 10000L;
+
     public BufferReader(SocketChannel socketChannel) {
         this.socketChannel = socketChannel;
         this.byteBuffer = ByteBuffer.allocate(1024);
@@ -74,6 +78,9 @@ public class BufferReader {
         byte b;
         for (b = get(); b != RETURN_BYTE && b != -1; b = get()) {
             method.append((char) b);
+            if (method.length() > MAX_DATA_LEN) {
+                throw new IOException("过长的请求方法");
+            }
         }
         if (b == RETURN_BYTE) {
             mode = ReadMode.READ_LEN;
@@ -97,6 +104,9 @@ public class BufferReader {
 
     private Boolean readData() throws IOException {
         if (data == null) {
+            if (len <= 0 || len > MAX_DATA_LEN) {
+                throw new IOException(String.format("错误的请求参数长度, %d, method: %s", len, method));
+            }
             data = new byte[len];
         }
         do {
