@@ -118,6 +118,8 @@ public class EpollUtil {
             e.printStackTrace();
             try {
                 writeFail(client);
+                client.close();
+                key.cancel();
             } catch (IOException ex) {
                 ex.printStackTrace();
             }
