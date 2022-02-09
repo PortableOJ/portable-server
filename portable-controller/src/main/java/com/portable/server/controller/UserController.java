@@ -24,6 +24,7 @@ import org.springframework.web.bind.annotation.RestController;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
+import java.util.regex.Pattern;
 
 /**
  * @author shiroha
@@ -36,23 +37,25 @@ public class UserController {
     private UserService userService;
 
     /**
-     * 账号长度限制
+     * 账号限制
      */
-    private static final Integer MIN_HANDLE_LENGTH = 3;
-    private static final Integer MAX_HANDLE_LENGTH = 30;
+    private static final String NORMAL_HANDLE_REGEX = "^[a-zA-Z0-9_\\-]{4,15}$";
+    private static final Pattern NORMAL_HANDLE_PATTERN;
 
     /**
      * 密码长度限制
      */
-    private static final Integer MIN_PASSWORD_LENGTH = 4;
-    private static final Integer MAX_PASSWORD_LENGTH = 16;
+    private static final String PASSWORD_REGEX = "^[a-zA-Z0-9_\\-@#$%^&*~`',./?:]{6,16}$";
+    private static final Pattern PASSWORD_PATTERN;
+
+    static  {
+        NORMAL_HANDLE_PATTERN = Pattern.compile(NORMAL_HANDLE_REGEX);
+        PASSWORD_PATTERN = Pattern.compile(PASSWORD_REGEX);
+    }
 
     @NeedLogin(false)
     @PostMapping("/login")
     public Response<UserBasicInfoResponse> login(HttpServletRequest request, @RequestBody LoginRequest loginRequest) throws PortableException {
-        lengthCheck(loginRequest.getHandle(), MIN_HANDLE_LENGTH, MAX_HANDLE_LENGTH, "A-01-004");
-        lengthCheck(loginRequest.getPassword(), MIN_PASSWORD_LENGTH, MAX_PASSWORD_LENGTH, "A-01-005");
-
         UserBasicInfoResponse userBasicInfoResponse = userService.login(loginRequest);
         HttpSession httpSession = request.getSession();
         httpSession.setAttribute(RequestSessionConstant.USER_ID, userBasicInfoResponse.getId());
@@ -62,9 +65,12 @@ public class UserController {
     @NeedLogin(false)
     @PostMapping("/register")
     public Response<NormalUserInfoResponse> register(HttpServletRequest request, @RequestBody RegisterRequest registerRequest) throws PortableException {
-        lengthCheck(registerRequest.getHandle(), MIN_HANDLE_LENGTH, MAX_HANDLE_LENGTH, "A-01-004");
-        lengthCheck(registerRequest.getPassword(), MIN_PASSWORD_LENGTH, MAX_PASSWORD_LENGTH, "A-01-005");
-
+        if (!NORMAL_HANDLE_PATTERN.matcher(registerRequest.getHandle()).matches()) {
+            throw PortableException.of("A-01-004");
+        }
+        if (!PASSWORD_PATTERN.matcher(registerRequest.getPassword()).matches()) {
+            throw PortableException.of("A-01-005");
+        }
         NormalUserInfoResponse normalUserInfoResponse = userService.register(registerRequest);
         HttpSession httpSession = request.getSession();
         httpSession.setAttribute(RequestSessionConstant.USER_ID, normalUserInfoResponse.getId());
@@ -116,11 +122,5 @@ public class UserController {
     public Response<Void> removePermission(@RequestBody PermissionRequest permissionRequest) throws PortableException {
         userService.removePermission(permissionRequest.getTargetId(), permissionRequest.getPermissionType());
         return Response.ofOk();
-    }
-
-    private void lengthCheck(String text, Integer min, Integer max, String code) throws PortableException {
-        if (Strings.isEmpty(text) || text.length() < min || text.length() > max) {
-            throw PortableException.of(code, min, max);
-        }
     }
 }
