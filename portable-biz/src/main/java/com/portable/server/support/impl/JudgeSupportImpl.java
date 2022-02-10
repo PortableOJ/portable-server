@@ -1,7 +1,13 @@
 package com.portable.server.support.impl;
 
 import com.portable.server.exception.PortableException;
-import com.portable.server.manager.*;
+import com.portable.server.manager.NormalUserManager;
+import com.portable.server.manager.ProblemDataManager;
+import com.portable.server.manager.ProblemManager;
+import com.portable.server.manager.SolutionDataManager;
+import com.portable.server.manager.SolutionManager;
+import com.portable.server.manager.TemporaryDataManager;
+import com.portable.server.manager.UserManager;
 import com.portable.server.model.ServiceVerifyCode;
 import com.portable.server.model.judge.entity.JudgeContainer;
 import com.portable.server.model.judge.entity.UpdateJudgeContainer;
@@ -17,9 +23,9 @@ import com.portable.server.model.solution.Solution;
 import com.portable.server.model.solution.SolutionData;
 import com.portable.server.model.user.NormalUserData;
 import com.portable.server.model.user.User;
-import com.portable.server.support.JudgeSupport;
 import com.portable.server.socket.EpollManager;
 import com.portable.server.support.FileSupport;
+import com.portable.server.support.JudgeSupport;
 import com.portable.server.type.AccountType;
 import com.portable.server.type.JudgeCodeType;
 import com.portable.server.type.JudgeWorkType;
@@ -32,7 +38,6 @@ import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
-import java.io.File;
 import java.io.InputStream;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
