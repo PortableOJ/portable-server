@@ -3,20 +3,24 @@ package com.portable.server.encryption;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Component;
 
+/**
+ * @author shiroha
+ */
 @Component
+@SuppressWarnings("AlibabaClassNamingShouldBeCamel")
 public class BCryptEncoder {
 
-    private static final BCryptPasswordEncoder bCryptPasswordEncoder;
+    private static final BCryptPasswordEncoder B_CRYPT_PASSWORD_ENCODER;
 
     static {
-        bCryptPasswordEncoder = new BCryptPasswordEncoder();
+        B_CRYPT_PASSWORD_ENCODER = new BCryptPasswordEncoder();
     }
 
     public String encoder(String password) {
-        return bCryptPasswordEncoder.encode(password);
+        return B_CRYPT_PASSWORD_ENCODER.encode(password);
     }
 
     public Boolean match(String inputPassword, String password) {
-        return bCryptPasswordEncoder.matches(inputPassword, password);
+        return B_CRYPT_PASSWORD_ENCODER.matches(inputPassword, password);
     }
 }
