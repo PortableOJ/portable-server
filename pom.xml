@@ -34,6 +34,7 @@
         <spring.test.version>2.5.3</spring.test.version>
         <junit.version>4.13.2</junit.version>
         <mockito.version>4.0.0</mockito.version>
+        <jackson.version>2.13.1</jackson.version>
     </properties>
 
     <modules>
@@ -172,6 +173,11 @@
                 <groupId>io.springfox</groupId>
                 <artifactId>springfox-boot-starter</artifactId>
                 <version>${swagger.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.fasterxml.jackson.core</groupId>
+                <artifactId>jackson-annotations</artifactId>
+                <version>${jackson.version}</version>
             </dependency>
         </dependencies>
     </dependencyManagement>

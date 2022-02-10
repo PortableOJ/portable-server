@@ -17,22 +17,13 @@
         <parameter property="type" javaType="java.lang.Enum" jdbcType="VARCHAR"/>
     </parameterMap>
 
-    <sql id="selectAll">
-        SELECT id,
-               data_id,
-               handle,
-               password,
-               type
-        FROM user
-    </sql>
-
     <select id="selectAccountById" resultMap="User" parameterType="java.lang.Long">
-        <include refid="selectAll" />
+        SELECT * FROM user
         WHERE id = #{id}
     </select>
 
     <select id="selectAccountByHandle" resultMap="User" parameterType="java.lang.String">
-        <include refid="selectAll" />
+        SELECT * FROM user
         WHERE handle = #{handle}
     </select>
 

@@ -19,6 +19,7 @@ public class SolutionData {
      * Mongo ID
      */
     @Id
+    @SuppressWarnings("AlibabaAvoidStartWithDollarAndUnderLineNaming")
     private String _id;
 
     /**
@@ -34,10 +35,23 @@ public class SolutionData {
     /**
      * 运行中 judge 反馈信息
      */
-    private List<SolutionStatusType> runningMsg;
+    private Map<String, JudgeReportMsg> runningMsg;
 
     /**
      * 运行的版本号
      */
     private Integer runOnVersion;
+
+    public static class JudgeReportMsg {
+
+        /**
+         * 运行结果
+         */
+        private SolutionStatusType statusType;
+
+        /**
+         * judge 反馈信息
+         */
+        private String msg;
+    }
 }

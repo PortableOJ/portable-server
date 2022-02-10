@@ -14,6 +14,11 @@ import java.util.List;
 @Repository
 public interface SolutionMapper {
 
+    /**
+     * 根据提交类型统计数量
+     * @param solutionType 提交的类型
+     * @return 此提交类型的总数量
+     */
     Integer countSolutionByType(@Param("solutionType") SolutionType solutionType);
 
     Integer countSolutionByContest(@Param("contestId") Long contestId);

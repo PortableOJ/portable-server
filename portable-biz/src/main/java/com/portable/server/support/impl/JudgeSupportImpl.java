@@ -593,6 +593,11 @@ public class JudgeSupportImpl implements JudgeSupport {
         return problemData;
     }
 
+    /**
+     * 如果这次提交是进行 check 的，那么检查现在 check 是不是已经结束了
+     * @param solutionJudgeWork 这次提交的测试信息
+     * @throws PortableException 题目不存在则抛出错误
+     */
     private void checkProblemCheckOver(SolutionJudgeWork solutionJudgeWork) throws PortableException {
         if (JudgeWorkType.CHECK_PROBLEM.equals(solutionJudgeWork.getJudgeWorkType())) {
             synchronized (this) {

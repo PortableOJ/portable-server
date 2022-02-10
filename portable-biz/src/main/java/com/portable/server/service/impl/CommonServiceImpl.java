@@ -4,14 +4,12 @@ import com.alibaba.fastjson.JSONObject;
 import com.portable.server.exception.PortableException;
 import com.portable.server.service.CommonService;
 import com.portable.server.util.DateTime;
-import org.springframework.data.mongodb.core.aggregation.Fields;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.util.Arrays;
 import java.util.Base64;
 import java.util.Date;
 import java.util.HashMap;
@@ -22,7 +20,6 @@ import java.util.Map;
  */
 @Component
 public class CommonServiceImpl implements CommonService {
-
 
     private static final Integer LONG_BYTE_SIZE = 8;
 

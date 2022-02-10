@@ -25,7 +25,7 @@ public class SolutionDataManagerImpl implements SolutionDataManager {
                 ._id(null)
                 .code(null)
                 .compileMsg(null)
-                .runningMsg(new ArrayList<>())
+                .runningMsg(new HashMap<>(problemData.getTestName().size()))
                 .runOnVersion(problemData.getVersion())
                 .build();
     }

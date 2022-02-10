@@ -1,5 +1,6 @@
 package com.portable.server.model.judge.work;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.portable.server.model.judge.entity.JudgeContainer;
 import com.portable.server.type.JudgeWorkType;
 import lombok.Getter;
@@ -22,6 +23,7 @@ public abstract class AbstractJudgeWork implements Comparable<AbstractJudgeWork>
      * 被分配到的 judge 容器
      */
     @Setter
+    @JsonIgnore
     private JudgeContainer judgeContainer;
 
     /**
