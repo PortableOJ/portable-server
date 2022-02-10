@@ -520,10 +520,14 @@ long long InStream::readLong(const string &desc) {
     if (!isdigit(tmp)) {
         if (tmp == '-') {
             flag = !flag;
-        } else if (tmp != '+') {
+            tmp = peekNext();
+        } else if (tmp == -1) {
+            endJudge(waResult, "expect get a number for %s, but reach the EOF", desc.c_str());
+        } else if (tmp == '+') {
+            tmp = peekNext();
+        } else {
             endJudge(waResult, "get %s fail, expect number or sign, but get %c", desc.c_str(), tmp);
         }
-        tmp = peekNext();
     }
     while (isdigit(tmp)) {
         res = res * 10 + tmp - '0';
@@ -545,19 +549,27 @@ long long InStream::readLong(long long int lower, long long int upper, const str
 double InStream::readReal(const string &desc) {
     readDelimiter();
     double res = 0, d = 0.1;
-    bool flag = false;
+    bool flag = false, jump = false;
     char tmp = peek();
     if (!isdigit(tmp)) {
         if (tmp == '-') {
             flag = !flag;
-        } else if (tmp != '+') {
+            tmp = peekNext();
+        } else if (tmp == -1) {
+            endJudge(waResult, "expect get a number for %s, but reach the EOF", desc.c_str());
+        } else if (tmp == '.') {
+            jump = true;
+        } else if (tmp == '+') {
+            tmp = peekNext();
+        }  else {
             endJudge(waResult, "get %s fail, expect number or sign, but get %c", desc.c_str(), tmp);
         }
-        tmp = peekNext();
     }
-    while (isdigit(tmp)) {
-        res = res * 10 + tmp - '0';
-        tmp = peekNext();
+    if (!jump) {
+        while (isdigit(tmp)) {
+            res = res * 10 + tmp - '0';
+            tmp = peekNext();
+        }
     }
     if (tmp == '.') {
         tmp = peekNext();
