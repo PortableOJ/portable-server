@@ -429,13 +429,23 @@ public class ProblemServiceImpl implements ProblemService {
         if (problemPackage.getProblem().getStatusType().getChecked()) {
             return;
         }
-        // 只需要 check 时
         if (problemPackage.getProblem().getStatusType().getOnTreatedOrCheck()) {
             throw PortableException.of("A-04-008");
         }
+        // 只需要 check 时
         if (problemPackage.getProblem().getStatusType().getTreated()) {
             judgeSupport.reportTestOver(id);
         } else {
+            // 校验是否满足能够 treat 的条件
+
+            ProblemData.StdCode stdCode = problemPackage.getProblemData().getStdCode();
+            if (stdCode.getCode() == null && stdCode.getLanguageType() == null) {
+                throw PortableException.of("A-04-009");
+            }
+            if (problemPackage.getProblemData().getTestName().isEmpty()) {
+                throw PortableException.of("A-04-010");
+            }
+
             judgeSupport.addTestTask(id);
         }
     }

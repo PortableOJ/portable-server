@@ -1,5 +1,6 @@
 package com.portable.server.socket;
 
+import com.portable.server.exception.PortableException;
 import com.portable.server.socket.annotation.EpollMethod;
 import com.portable.server.socket.annotation.EpollParam;
 import com.portable.server.socket.model.MethodDescribe;
@@ -146,7 +147,8 @@ public class EpollManager {
         try {
             ADDRESS_THREAD_LOCAL.set(address);
             return invoke(methodDescribe, paramMap);
-        } catch (Exception ignore) {
+        } catch (Exception e) {
+            log.debug("method fail, method: {}, message: {}", method, e.getMessage());
         } finally {
             ADDRESS_THREAD_LOCAL.remove();
         }

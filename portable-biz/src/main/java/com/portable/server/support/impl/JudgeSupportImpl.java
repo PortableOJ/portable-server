@@ -300,6 +300,7 @@ public class JudgeSupportImpl implements JudgeSupport {
 
                 // 虽然还在队列中，但是已经被删除 judge 了
                 if (!solutionJudgeWorkMap.containsKey(solutionJudgeWork.getSolutionId())) {
+                    i--;
                     continue;
                 }
                 Long solutionId = solutionJudgeWork.getSolutionId();
