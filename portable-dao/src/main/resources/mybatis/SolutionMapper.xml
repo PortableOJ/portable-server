@@ -29,10 +29,10 @@
         <parameter property="memoryCost" javaType="java.lang.Integer" jdbcType="INTEGER"/>
    </parameterMap>
 
-    <select id="countSolutionByType" resultType="java.lang.Integer">
+    <select id="countPublicSolution" resultType="java.lang.Integer">
         SELECT count(*)
         FROM solution
-        WHERE solution_type = #{solutionType}
+        WHERE solution_type = 'PUBLIC'
         <if test="userId != null">
             AND user_id = ${userId}
         </if>
@@ -44,12 +44,13 @@
     <select id="countSolutionByContest" resultType="java.lang.Integer">
         SELECT count(*)
         FROM solution
-        WHERE contest_id = #{contestId}
+        WHERE solution_type = 'CONTEST'
+        AND contest_id = #{contestId}
     </select>
 
-    <select id="selectSolutionByTypeAndPage" resultMap="Solution">
+    <select id="selectPublicSolutionByPage" resultMap="Solution">
         SELECT * FROM solution
-        WHERE solution_type = #{solutionType}
+        WHERE solution_type = 'PUBLIC'
         <if test="userId != null">
             AND user_id = ${userId}
         </if>
@@ -63,7 +64,8 @@
 
     <select id="selectSolutionByContestAndPage" resultType="com.portable.server.model.solution.Solution">
         SELECT * FROM solution
-        WHERE contest_id = #{contestId}
+        WHERE solution_type = 'CONTEST'
+        AND contest_id = #{contestId}
         LIMIT #{pageSize}
         OFFSET #{offset}
     </select>
