@@ -31,6 +31,8 @@ import java.util.List;
 @RequestMapping("/api/problem")
 public class ProblemController {
 
+    private static final Long MAX_SUBMIT_CODE_LENGTH = 65536L;
+
     @Resource
     private ProblemService problemService;
 
@@ -176,6 +178,7 @@ public class ProblemController {
     @PostMapping("/updateStdCode")
     @PermissionRequirement(PermissionType.CREATE_AND_EDIT_PROBLEM)
     public Response<Void> updateStdCode(@RequestBody ProblemCodeRequest problemCodeRequest) throws PortableException {
+        checkCodeLength(problemCodeRequest.getCode());
         problemService.updateProblemStdCode(problemCodeRequest);
         return Response.ofOk();
     }
@@ -184,6 +187,7 @@ public class ProblemController {
     @PostMapping("/addTestCode")
     @PermissionRequirement(PermissionType.CREATE_AND_EDIT_PROBLEM)
     public Response<Void> addTestCode(@RequestBody ProblemCodeRequest problemCodeRequest) throws PortableException {
+        checkCodeLength(problemCodeRequest.getCode());
         problemService.addProblemTestCode(problemCodeRequest);
         return Response.ofOk();
     }
@@ -253,6 +257,13 @@ public class ProblemController {
     @NeedLogin
     @PostMapping("/submit")
     public Response<Long> submit(@RequestBody SubmitSolutionRequest submitSolutionRequest) throws PortableException {
+        checkCodeLength(submitSolutionRequest.getCode());
         return Response.ofOk(problemService.submit(submitSolutionRequest));
+    }
+
+    private void checkCodeLength(String code) throws PortableException {
+        if (code.length() > MAX_SUBMIT_CODE_LENGTH) {
+            throw PortableException.of("A-04-011", MAX_SUBMIT_CODE_LENGTH);
+        }
     }
 }
