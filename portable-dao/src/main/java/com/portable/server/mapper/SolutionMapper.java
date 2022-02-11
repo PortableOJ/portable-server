@@ -17,13 +17,29 @@ public interface SolutionMapper {
     /**
      * 根据提交类型统计数量
      * @param solutionType 提交的类型
+     * @param userId 用户的 ID，若为 null，则为请求所有的
+     * @param problemId 题目的 ID，若为 null，则为请求所有的
      * @return 此提交类型的总数量
      */
-    Integer countSolutionByType(@Param("solutionType") SolutionType solutionType);
+    Integer countSolutionByType(@Param("solutionType") SolutionType solutionType, @Param("userId") Long userId, @Param("problemId") Long problemId);
 
+    /**
+     * 根据提交至的比赛 id 统计数量
+     * @param contestId 比赛 ID
+     * @return 此比赛中的总提交数量
+     */
     Integer countSolutionByContest(@Param("contestId") Long contestId);
 
-    List<Solution> selectSolutionByTypeAndPage(@Param("pageSize") Integer pageSize, @Param("offset") Integer offset, @Param("solutionType") SolutionType solutionType);
+    /**
+     * 根据提交类型，分页获取提交信息
+     * @param pageSize 每页数量
+     * @param offset 偏移量
+     * @param solutionType 提交类型
+     * @param userId 用户 ID
+     * @param problemId 问题 ID
+     * @return 提交列表
+     */
+    List<Solution> selectSolutionByTypeAndPage(@Param("pageSize") Integer pageSize, @Param("offset") Integer offset, @Param("solutionType") SolutionType solutionType, @Param("userId") Long userId, @Param("problemId") Long problemId);
 
     List<Solution> selectSolutionByContestAndPage(@Param("pageSize") Integer pageSize, @Param("offset") Integer offset, @Param("contestId") Long contestId);
 

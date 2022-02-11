@@ -2,6 +2,7 @@ package com.portable.server.service;
 
 import com.portable.server.exception.PortableException;
 import com.portable.server.model.request.PageRequest;
+import com.portable.server.model.request.solution.SolutionListQueryRequest;
 import com.portable.server.model.request.solution.SubmitSolutionRequest;
 import com.portable.server.model.response.PageResponse;
 import com.portable.server.model.response.solution.SolutionDetailResponse;
@@ -17,7 +18,7 @@ public interface SolutionService {
      * @param pageRequest 分页
      * @return 公共提交列表
      */
-    PageResponse<SolutionListResponse> getPublicStatus(PageRequest<Void> pageRequest);
+    PageResponse<SolutionListResponse> getPublicStatus(PageRequest<SolutionListQueryRequest> pageRequest);
 
     /**
      * 获取公共提交中的某次详细信息

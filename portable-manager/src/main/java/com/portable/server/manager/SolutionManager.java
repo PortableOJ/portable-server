@@ -18,9 +18,11 @@ public interface SolutionManager {
 
     /**
      * 统计所有公开的提交数量
+     * @param userId 只查询某个用户，若为 null 则查询所有
+     * @param problemId 只查询某个题目的提交，若为 null 则查询所有
      * @return 公开提交的总量
      */
-    Integer countPublicSolution();
+    Integer countPublicSolution(Long userId, Long problemId);
 
     /**
      * 统计所有此比赛的提交数量
@@ -33,9 +35,11 @@ public interface SolutionManager {
      * 分页获取提交的列表
      * @param pageSize 每页内容数量
      * @param offset 偏移量
+     * @param userId 只查询某个用户，若为 null 则查询所有
+     * @param problemId 只查询某个题目的提交，若为 null 则查询所有
      * @return 提交列表
      */
-    List<Solution> selectPublicSolutionByPage(Integer pageSize, Integer offset);
+    List<Solution> selectPublicSolutionByPage(Integer pageSize, Integer offset, Long userId, Long problemId);
 
     List<Solution> selectSolutionByContestAndPage(Integer pageSize, Integer offset, Long contestId);
 

@@ -7,6 +7,7 @@ import com.portable.server.manager.SolutionManager;
 import com.portable.server.manager.UserManager;
 import com.portable.server.model.problem.Problem;
 import com.portable.server.model.request.PageRequest;
+import com.portable.server.model.request.solution.SolutionListQueryRequest;
 import com.portable.server.model.response.PageResponse;
 import com.portable.server.model.response.solution.SolutionDetailResponse;
 import com.portable.server.model.response.solution.SolutionListResponse;
@@ -43,10 +44,16 @@ public class SolutionServiceImpl implements SolutionService {
     private SolutionDataManager solutionDataManager;
 
     @Override
-    public PageResponse<SolutionListResponse> getPublicStatus(PageRequest<Void> pageRequest) {
-        Integer solutionCount = solutionManager.countPublicSolution();
+    public PageResponse<SolutionListResponse> getPublicStatus(PageRequest<SolutionListQueryRequest> pageRequest) {
+        Integer solutionCount = solutionManager.countPublicSolution(pageRequest.getQueryData().getUserId(), pageRequest.getQueryData().getProblemId());
         PageResponse<SolutionListResponse> response = PageResponse.of(pageRequest, solutionCount);
-        List<Solution> solutionList = solutionManager.selectPublicSolutionByPage(response.getPageSize(), response.offset());
+        List<Solution> solutionList = solutionManager.selectPublicSolutionByPage(
+                response.getPageSize(),
+                response.offset(),
+                pageRequest.getQueryData().getUserId(),
+                pageRequest.getQueryData().getProblemId()
+        );
+
         List<SolutionListResponse> solutionListResponseList = solutionList.stream()
                 .parallel()
                 .map(solution -> {

@@ -33,6 +33,12 @@
         SELECT count(*)
         FROM solution
         WHERE solution_type = #{solutionType}
+        <if test="userId != null">
+            AND user_id = ${userId}
+        </if>
+        <if test="problemId != null">
+            AND problem_id = ${problemId}
+        </if>
     </select>
 
     <select id="countSolutionByContest" resultType="java.lang.Integer">
@@ -44,10 +50,17 @@
     <select id="selectSolutionByTypeAndPage" resultMap="Solution">
         SELECT * FROM solution
         WHERE solution_type = #{solutionType}
+        <if test="userId != null">
+            AND user_id = ${userId}
+        </if>
+        <if test="problemId != null">
+            AND problem_id = ${problemId}
+        </if>
         ORDER BY id DESC
         LIMIT #{pageSize}
         OFFSET #{offset}
     </select>
+
     <select id="selectSolutionByContestAndPage" resultType="com.portable.server.model.solution.Solution">
         SELECT * FROM solution
         WHERE contest_id = #{contestId}
