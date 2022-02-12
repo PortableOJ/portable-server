@@ -9,6 +9,7 @@ import com.portable.server.model.response.Response;
 import com.portable.server.model.response.solution.SolutionDetailResponse;
 import com.portable.server.model.response.solution.SolutionListResponse;
 import com.portable.server.service.SolutionService;
+import com.portable.server.type.SolutionStatusType;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -27,7 +28,7 @@ public class SolutionController {
 
     @NeedLogin(false)
     @GetMapping("/getPublicStatus")
-    public Response<PageResponse<SolutionListResponse>> getPublicSolutionList(Integer pageNum, Integer pageSize, Long userId, Long problemId) {
+    public Response<PageResponse<SolutionListResponse>> getPublicSolutionList(Integer pageNum, Integer pageSize, Long userId, Long problemId, SolutionStatusType statusType) {
         PageRequest<SolutionListQueryRequest> pageRequest = PageRequest.<SolutionListQueryRequest>builder()
                 .pageNum(pageNum)
                 .pageSize(pageSize)
@@ -35,6 +36,7 @@ public class SolutionController {
                         SolutionListQueryRequest.builder()
                                 .userId(userId)
                                 .problemId(problemId)
+                                .statusType(statusType)
                                 .build()
                 )
                 .build();

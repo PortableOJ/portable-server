@@ -18,9 +18,10 @@ public interface SolutionMapper {
      * 根据提交类型统计数量
      * @param userId 用户的 ID，若为 null，则为请求所有的
      * @param problemId 题目的 ID，若为 null，则为请求所有的
+     * @param statusType 状态，若为 null，则为请求所有的
      * @return 此提交类型的总数量
      */
-    Integer countPublicSolution(@Param("userId") Long userId, @Param("problemId") Long problemId);
+    Integer countPublicSolution(@Param("userId") Long userId, @Param("problemId") Long problemId, @Param("statusType") SolutionStatusType statusType);
 
     /**
      * 根据提交至的比赛 id 统计数量
@@ -35,9 +36,10 @@ public interface SolutionMapper {
      * @param offset 偏移量
      * @param userId 用户 ID
      * @param problemId 问题 ID
+     * @param statusType 状态，若为 null，则为请求所有的
      * @return 提交列表
      */
-    List<Solution> selectPublicSolutionByPage(@Param("pageSize") Integer pageSize, @Param("offset") Integer offset, @Param("userId") Long userId, @Param("problemId") Long problemId);
+    List<Solution> selectPublicSolutionByPage(@Param("pageSize") Integer pageSize, @Param("offset") Integer offset, @Param("userId") Long userId, @Param("problemId") Long problemId, @Param("statusType") SolutionStatusType statusType);
 
     List<Solution> selectSolutionByContestAndPage(@Param("pageSize") Integer pageSize, @Param("offset") Integer offset, @Param("contestId") Long contestId);
 

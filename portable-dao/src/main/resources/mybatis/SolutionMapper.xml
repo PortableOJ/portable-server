@@ -34,10 +34,13 @@
         FROM solution
         WHERE solution_type = 'PUBLIC'
         <if test="userId != null">
-            AND user_id = ${userId}
+            AND user_id = #{userId}
         </if>
         <if test="problemId != null">
-            AND problem_id = ${problemId}
+            AND problem_id = #{problemId}
+        </if>
+        <if test="statusType != null">
+            AND status = #{statusType}
         </if>
     </select>
 
@@ -52,10 +55,13 @@
         SELECT * FROM solution
         WHERE solution_type = 'PUBLIC'
         <if test="userId != null">
-            AND user_id = ${userId}
+            AND user_id = #{userId}
         </if>
         <if test="problemId != null">
-            AND problem_id = ${problemId}
+            AND problem_id = #{problemId}
+        </if>
+        <if test="statusType != null">
+            AND status = #{statusType}
         </if>
         ORDER BY id DESC
         LIMIT #{pageSize}

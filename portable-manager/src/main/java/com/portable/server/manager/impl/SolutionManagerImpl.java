@@ -38,8 +38,8 @@ public class SolutionManagerImpl implements SolutionManager {
     }
 
     @Override
-    public Integer countPublicSolution(Long userId, Long problemId) {
-        return solutionMapper.countPublicSolution(userId, problemId);
+    public Integer countPublicSolution(Long userId, Long problemId, SolutionStatusType statusType) {
+        return solutionMapper.countPublicSolution(userId, problemId, statusType);
     }
 
     @Override
@@ -48,8 +48,8 @@ public class SolutionManagerImpl implements SolutionManager {
     }
 
     @Override
-    public List<Solution> selectPublicSolutionByPage(Integer pageSize, Integer offset, Long userId, Long problemId) {
-        return solutionMapper.selectPublicSolutionByPage(pageSize, offset, userId, problemId);
+    public List<Solution> selectPublicSolutionByPage(Integer pageSize, Integer offset, Long userId, Long problemId, SolutionStatusType statusType) {
+        return solutionMapper.selectPublicSolutionByPage(pageSize, offset, userId, problemId, statusType);
     }
 
     @Override

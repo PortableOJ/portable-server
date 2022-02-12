@@ -20,9 +20,10 @@ public interface SolutionManager {
      * 统计所有公开的提交数量
      * @param userId 只查询某个用户，若为 null 则查询所有
      * @param problemId 只查询某个题目的提交，若为 null 则查询所有
+     * @param statusType 只查询某个状态的提交，若为 null 则查询所有
      * @return 公开提交的总量
      */
-    Integer countPublicSolution(Long userId, Long problemId);
+    Integer countPublicSolution(Long userId, Long problemId, SolutionStatusType statusType);
 
     /**
      * 统计所有此比赛的提交数量
@@ -37,9 +38,10 @@ public interface SolutionManager {
      * @param offset 偏移量
      * @param userId 只查询某个用户，若为 null 则查询所有
      * @param problemId 只查询某个题目的提交，若为 null 则查询所有
+     * @param statusType 只查询某个状态，若为 null 则查询所有
      * @return 提交列表
      */
-    List<Solution> selectPublicSolutionByPage(Integer pageSize, Integer offset, Long userId, Long problemId);
+    List<Solution> selectPublicSolutionByPage(Integer pageSize, Integer offset, Long userId, Long problemId, SolutionStatusType statusType);
 
     List<Solution> selectSolutionByContestAndPage(Integer pageSize, Integer offset, Long contestId);
 
