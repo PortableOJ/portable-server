@@ -186,6 +186,7 @@ public class JudgeSupportImpl implements JudgeSupport {
         switch (solution.getSolutionType()) {
             case CONTEST:
                 // contest 还需要单独加入到 contest 的统计列表中
+                break;
             case PUBLIC:
                 problemManager.updateProblemCount(solutionJudgeWork.getProblemId(), 0, 1);
 
@@ -372,9 +373,17 @@ public class JudgeSupportImpl implements JudgeSupport {
     }
 
     @Override
-    public void reportRunningResult(Long solutionId, SolutionStatusType statusType, Integer timeCost, Integer memoryCost) throws PortableException {
+    public void reportRunningResult(Long solutionId, SolutionStatusType statusType, String testName, Integer timeCost, Integer memoryCost, String msg) throws PortableException {
         getCurContainer();
         SolutionJudgeWork solutionJudgeWork = solutionJudgeWorkMap.get(solutionId);
+        SolutionData solutionData = getSolutionData(solutionId);
+        solutionData.getRunningMsg().put(testName,
+                SolutionData.JudgeReportMsg.builder()
+                        .statusType(statusType)
+                        .msg(msg)
+                        .build()
+        );
+        solutionDataManager.saveSolutionData(solutionData);
         if (!SolutionStatusType.ACCEPT.equals(statusType)) {
             killJudgeTask(solutionId, statusType, timeCost, memoryCost);
             checkProblemCheckOver(solutionJudgeWork);
@@ -601,6 +610,7 @@ public class JudgeSupportImpl implements JudgeSupport {
 
     /**
      * 如果这次提交是进行 check 的，那么检查现在 check 是不是已经结束了
+     *
      * @param solutionJudgeWork 这次提交的测试信息
      * @throws PortableException 题目不存在则抛出错误
      */

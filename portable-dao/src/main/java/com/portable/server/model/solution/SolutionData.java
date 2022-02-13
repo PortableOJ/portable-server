@@ -42,6 +42,8 @@ public class SolutionData {
      */
     private Integer runOnVersion;
 
+    @Data
+    @Builder
     public static class JudgeReportMsg {
 
         /**

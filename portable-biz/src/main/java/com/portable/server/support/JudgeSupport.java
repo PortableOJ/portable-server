@@ -161,11 +161,13 @@ public interface JudgeSupport {
      *
      * @param solutionId 对应的提交 ID
      * @param statusType 状态
+     * @param testName 本次测试的名称
      * @param timeCost   耗时(ms)
      * @param memoryCost 内存消耗(KB)
+     * @param msg 运行的信息
      * @throws PortableException 遇到意料之外的情况则抛出错误
      */
-    void reportRunningResult(Long solutionId, SolutionStatusType statusType, Integer timeCost, Integer memoryCost) throws PortableException;
+    void reportRunningResult(Long solutionId, SolutionStatusType statusType, String testName, Integer timeCost, Integer memoryCost, String msg) throws PortableException;
 
     /**
      * 获取默认的标准 judge 列表

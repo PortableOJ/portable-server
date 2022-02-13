@@ -78,8 +78,7 @@ public class SolutionServiceImpl implements SolutionService {
         }
         UserContext userContext = UserContext.ctx();
         boolean isHost = Objects.equals(solution.getUserId(), userContext.getId());
-        boolean hasPermission = userContext.isLogin() &&
-                UserContext.ctx().getPermissionTypeSet().contains(PermissionType.VIEW_PUBLIC_SOLUTION);
+        boolean hasPermission = UserContext.ctx().getPermissionTypeSet().contains(PermissionType.VIEW_PUBLIC_SOLUTION);
         if (!isHost && !hasPermission) {
             throw PortableException.of("A-05-003");
         }
@@ -89,6 +88,8 @@ public class SolutionServiceImpl implements SolutionService {
         }
         User user = userManager.getAccountById(solution.getUserId());
         Problem problem = problemManager.getProblemById(solution.getProblemId());
-        return SolutionDetailResponse.of(solution, solutionData, user, problem);
+        boolean shareJudgeMsg = Objects.equals(user.getId(), userContext.getId())
+                || userContext.getPermissionTypeSet().contains(PermissionType.VIEW_SOLUTION_MESSAGE);
+        return SolutionDetailResponse.of(solution, solutionData, user, problem, shareJudgeMsg);
     }
 }

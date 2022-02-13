@@ -59,6 +59,10 @@ public class UserServiceImpl implements UserService {
             rootUser.setPassword(bCryptEncoder.encoder(rootPassword));
             rootUser.setDataId(normalUserData.get_id());
             userManager.insertAccount(rootUser);
+        } else {
+            NormalUserData normalUserData = normalUserManager.getUserDataById(rootUser.getDataId());
+            normalUserData.setPermissionTypeSet(Arrays.stream(PermissionType.values()).collect(Collectors.toSet()));
+            normalUserManager.updateNormalUserData(normalUserData);
         }
     }
 

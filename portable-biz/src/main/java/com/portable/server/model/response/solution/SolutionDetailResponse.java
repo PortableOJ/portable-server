@@ -1,6 +1,7 @@
 package com.portable.server.model.response.solution;
 
 import com.portable.server.model.problem.Problem;
+import com.portable.server.model.problem.ProblemData;
 import com.portable.server.model.solution.Solution;
 import com.portable.server.model.solution.SolutionData;
 import com.portable.server.model.user.User;
@@ -10,6 +11,7 @@ import com.portable.server.type.SolutionType;
 import lombok.Data;
 
 import java.util.Date;
+import java.util.Map;
 
 /**
  * @author shiroha
@@ -87,7 +89,12 @@ public class SolutionDetailResponse {
      */
     private String compileMsg;
 
-    private SolutionDetailResponse(Solution solution, SolutionData solutionData, User user, Problem problem) {
+    /**
+     * 每个测试样例的执行结果信息
+     */
+    private Map<String, SolutionData.JudgeReportMsg> judgeReportMsgMap;
+
+    private SolutionDetailResponse(Solution solution, SolutionData solutionData, User user, Problem problem, Boolean shareJudgeMsg) {
         this.id = solution.getId();
         this.submitTime = solution.getSubmitTime();
         this.userId = solution.getUserId();
@@ -102,9 +109,10 @@ public class SolutionDetailResponse {
         this.memoryCost = solution.getMemoryCost();
         this.code = solutionData.getCode();
         this.compileMsg = solutionData.getCompileMsg();
+        this.judgeReportMsgMap = shareJudgeMsg ? solutionData.getRunningMsg() : null;
     }
 
-    public static SolutionDetailResponse of(Solution solution, SolutionData solutionData, User user, Problem problem) {
-        return new SolutionDetailResponse(solution, solutionData, user, problem);
+    public static SolutionDetailResponse of(Solution solution, SolutionData solutionData, User user, Problem problem, Boolean shareJudgeMsg) {
+        return new SolutionDetailResponse(solution, solutionData, user, problem, shareJudgeMsg);
     }
 }

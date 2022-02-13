@@ -63,6 +63,7 @@ public class NeedLoginInterceptor implements HandlerInterceptor {
         if (checkLogin(classRequirement) || checkLogin(methodRequirement)) {
             throw PortableException.of("A-02-001");
         }
+        UserContext.set(UserContext.getNullUser());
         return true;
     }
 

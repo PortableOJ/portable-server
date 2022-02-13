@@ -59,15 +59,14 @@ public class JudgeApiController {
         return judgeSupport.getSolutionNextTestName(id);
     }
 
-    @EpollMethod("SolutionTestReport")
-    public void reportRunningResult(@EpollParam Long id, @EpollParam SolutionStatusType value, @EpollParam(EpollDataType.COMPLEX) String msg, @EpollParam Integer timeCost, @EpollParam Integer memoryCost) throws PortableException {
-        System.out.println(msg);
-        judgeSupport.reportRunningResult(id, value, timeCost, memoryCost);
-    }
-
     @EpollMethod("SolutionCompileMsgReport")
     public void reportCompileResult(@EpollParam Long id, @EpollParam Boolean value, @EpollParam Boolean judge, @EpollParam(EpollDataType.COMPLEX) String msg) throws PortableException {
         judgeSupport.reportCompileResult(id, value, judge, msg);
+    }
+
+    @EpollMethod("SolutionTestReport")
+    public void reportRunningResult(@EpollParam Long id, @EpollParam SolutionStatusType value, @EpollParam String testName, @EpollParam(EpollDataType.COMPLEX) String msg, @EpollParam Integer timeCost, @EpollParam Integer memoryCost) throws PortableException {
+        judgeSupport.reportRunningResult(id, value, testName, timeCost, memoryCost, msg);
     }
 
     @EpollMethod("SolutionCode")

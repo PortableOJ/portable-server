@@ -7,6 +7,7 @@ import com.portable.server.model.request.solution.SubmitSolutionRequest;
 import com.portable.server.model.response.PageResponse;
 import com.portable.server.model.response.solution.SolutionDetailResponse;
 import com.portable.server.model.response.solution.SolutionListResponse;
+import com.portable.server.model.solution.SolutionData;
 
 /**
  * @author shiroha

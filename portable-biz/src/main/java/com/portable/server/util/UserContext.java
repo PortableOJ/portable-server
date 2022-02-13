@@ -82,13 +82,7 @@ public class UserContext implements AutoCloseable {
                 .build(new CacheLoader<Long, UserContext>() {
                     @Override
                     public UserContext load(@NonNull Long aLong) {
-                        UserContext userContext = new UserContext();
-                        userContext.setId(null);
-                        userContext.setDataId(null);
-                        userContext.setType(null);
-                        userContext.setOrganization(null);
-                        userContext.setPermissionTypeSet(new HashSet<>());
-                        return userContext;
+                        return getNullUser();
                     }
                 });
     }
@@ -107,7 +101,9 @@ public class UserContext implements AutoCloseable {
 
     public static void set(UserContext userContext) {
         LOCAL.set(userContext);
-        USER_CACHE.put(userContext.getId(), userContext);
+        if (userContext.getId() != null) {
+            USER_CACHE.put(userContext.getId(), userContext);
+        }
     }
 
     public static void set(User user) throws PortableException {
@@ -136,6 +132,16 @@ public class UserContext implements AutoCloseable {
 
     public static void remove() {
         LOCAL.remove();
+    }
+
+    public static UserContext getNullUser() {
+        UserContext userContext = new UserContext();
+        userContext.setId(null);
+        userContext.setDataId(null);
+        userContext.setType(null);
+        userContext.setOrganization(null);
+        userContext.setPermissionTypeSet(new HashSet<>());
+        return userContext;
     }
 
     public Boolean isLogin() {
