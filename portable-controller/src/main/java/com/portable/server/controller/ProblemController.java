@@ -6,23 +6,32 @@ import com.portable.server.exception.PortableException;
 import com.portable.server.model.problem.Problem;
 import com.portable.server.model.request.IdRequest;
 import com.portable.server.model.request.PageRequest;
-import com.portable.server.model.request.problem.*;
+import com.portable.server.model.request.problem.ProblemCodeRequest;
+import com.portable.server.model.request.problem.ProblemContentRequest;
+import com.portable.server.model.request.problem.ProblemJudgeRequest;
+import com.portable.server.model.request.problem.ProblemNameRequest;
+import com.portable.server.model.request.problem.ProblemSettingRequest;
+import com.portable.server.model.request.problem.ProblemTestRequest;
 import com.portable.server.model.request.solution.SubmitSolutionRequest;
 import com.portable.server.model.response.PageResponse;
 import com.portable.server.model.response.Response;
 import com.portable.server.model.response.problem.ProblemDataResponse;
 import com.portable.server.model.response.problem.ProblemListResponse;
 import com.portable.server.model.response.problem.ProblemStdTestCodeResponse;
-import com.portable.server.model.response.solution.SolutionDetailResponse;
 import com.portable.server.service.ProblemService;
 import com.portable.server.type.PermissionType;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.List;
+import java.util.regex.Pattern;
 
 /**
  * @author shiroha
@@ -31,10 +40,23 @@ import java.util.List;
 @RequestMapping("/api/problem")
 public class ProblemController {
 
-    private static final Long MAX_SUBMIT_CODE_LENGTH = 65536L;
-
     @Resource
     private ProblemService problemService;
+
+    /**
+     * 代码最长长度
+     */
+    private static final Long MAX_SUBMIT_CODE_LENGTH = 65536L;
+
+    /**
+     * 问题测试数据名称限制
+     */
+    private static final String PROBLEM_TEST_NAME_REGEX = "^[a-zA-Z0-9_\\-]{1,15}$";
+    private static final Pattern PROBLEM_TEST_NAME_PATTERN;
+
+    static {
+        PROBLEM_TEST_NAME_PATTERN = Pattern.compile(PROBLEM_TEST_NAME_REGEX);
+    }
 
     @NeedLogin(false)
     @GetMapping("/getList")
@@ -149,6 +171,9 @@ public class ProblemController {
     @PostMapping("/addTest")
     @PermissionRequirement(PermissionType.CREATE_AND_EDIT_PROBLEM)
     public Response<Void> addTest(Long id, String name, MultipartFile fileData) throws PortableException {
+        if (!PROBLEM_TEST_NAME_PATTERN.matcher(name).matches()) {
+            throw PortableException.of("A-04-012");
+        }
         problemService.addProblemTest(
                 ProblemTestRequest.builder()
                         .id(id)
@@ -187,6 +212,9 @@ public class ProblemController {
     @PostMapping("/addTestCode")
     @PermissionRequirement(PermissionType.CREATE_AND_EDIT_PROBLEM)
     public Response<Void> addTestCode(@RequestBody ProblemCodeRequest problemCodeRequest) throws PortableException {
+        if (!PROBLEM_TEST_NAME_PATTERN.matcher(problemCodeRequest.getCodeName()).matches()) {
+            throw PortableException.of("A-04-013");
+        }
         checkCodeLength(problemCodeRequest.getCode());
         problemService.addProblemTestCode(problemCodeRequest);
         return Response.ofOk();

@@ -20,6 +20,7 @@ import com.portable.server.repo.NormalUserDataRepo;
 import com.portable.server.support.JudgeSupport;
 import com.portable.server.support.FileSupport;
 import com.portable.server.service.ProblemService;
+import com.portable.server.type.JudgeCodeType;
 import com.portable.server.type.PermissionType;
 import com.portable.server.type.ProblemAccessType;
 import com.portable.server.type.ProblemStatusType;
@@ -256,6 +257,9 @@ public class ProblemServiceImpl implements ProblemService {
 
     @Override
     public void updateProblemJudge(ProblemJudgeRequest problemJudgeRequest) throws PortableException {
+        if (!JudgeCodeType.DIY.equals(problemJudgeRequest.getJudgeCodeType())) {
+            problemJudgeRequest.setJudgeCode("");
+        }
         ProblemPackage problemPackage = getForEditProblem(problemJudgeRequest.getId());
         if (problemPackage.getProblem().getStatusType().getOnTreatedOrCheck()) {
             throw PortableException.of("A-04-007");

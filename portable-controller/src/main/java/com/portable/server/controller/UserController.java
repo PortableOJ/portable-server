@@ -3,9 +3,9 @@ package com.portable.server.controller;
 import com.portable.server.annotation.NeedLogin;
 import com.portable.server.annotation.PermissionRequirement;
 import com.portable.server.exception.PortableException;
-import com.portable.server.model.request.user.PermissionRequest;
 import com.portable.server.model.request.user.LoginRequest;
 import com.portable.server.model.request.user.OrganizationChangeRequest;
+import com.portable.server.model.request.user.PermissionRequest;
 import com.portable.server.model.request.user.RegisterRequest;
 import com.portable.server.model.response.Response;
 import com.portable.server.model.response.user.NormalUserInfoResponse;
@@ -14,7 +14,6 @@ import com.portable.server.service.UserService;
 import com.portable.server.type.PermissionType;
 import com.portable.server.util.RequestSessionConstant;
 import com.portable.server.util.UserContext;
-import org.apache.logging.log4j.util.Strings;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -45,7 +44,7 @@ public class UserController {
     /**
      * 密码长度限制
      */
-    private static final String PASSWORD_REGEX = "^[a-zA-Z0-9_\\-@#$%^&*~`',./?:]{6,16}$";
+    private static final String PASSWORD_REGEX = "^[a-zA-Z0-9_\\-@#$%^&*~',./?:]{6,16}$";
     private static final Pattern PASSWORD_PATTERN;
 
     static  {
