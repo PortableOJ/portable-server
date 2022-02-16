@@ -67,7 +67,7 @@ public class UserContext implements AutoCloseable {
     /**
      * 用户信息缓存大小
      */
-    public static final Integer USER_CONTEXT_CACHE_SIZE = 1000;
+    public static final Integer USER_CONTEXT_CACHE_SIZE = 500;
 
     /**
      * 用户信息缓存过期时间(s)
