@@ -1,6 +1,7 @@
 package com.portable.server.model.contest;
 
 import com.portable.server.type.ContestAccessType;
+import lombok.Builder;
 import lombok.Data;
 
 import java.util.Date;
@@ -9,6 +10,7 @@ import java.util.Date;
  * @author shiroha
  */
 @Data
+@Builder
 public class Contest {
 
     /**

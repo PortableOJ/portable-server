@@ -1,6 +1,7 @@
 package com.portable.server.model.contest;
 
 import com.portable.server.type.ProblemAccessType;
+import lombok.Builder;
 import lombok.Data;
 
 import java.util.List;
@@ -10,6 +11,7 @@ import java.util.Set;
  * @author shiroha
  */
 @Data
+@Builder
 public abstract class BasicContestData {
 
     /**
