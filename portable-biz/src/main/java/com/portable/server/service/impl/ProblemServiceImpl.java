@@ -8,15 +8,13 @@ import com.portable.server.model.request.PageRequest;
 import com.portable.server.model.request.problem.*;
 import com.portable.server.model.request.solution.SubmitSolutionRequest;
 import com.portable.server.model.response.PageResponse;
-import com.portable.server.model.response.problem.ProblemDataResponse;
+import com.portable.server.model.response.problem.ProblemDetailResponse;
 import com.portable.server.model.response.problem.ProblemListResponse;
 import com.portable.server.model.response.problem.ProblemStdTestCodeResponse;
-import com.portable.server.model.response.solution.SolutionDetailResponse;
 import com.portable.server.model.solution.Solution;
 import com.portable.server.model.solution.SolutionData;
 import com.portable.server.model.user.NormalUserData;
 import com.portable.server.model.user.User;
-import com.portable.server.repo.NormalUserDataRepo;
 import com.portable.server.support.JudgeSupport;
 import com.portable.server.support.FileSupport;
 import com.portable.server.service.ProblemService;
@@ -172,10 +170,10 @@ public class ProblemServiceImpl implements ProblemService {
     }
 
     @Override
-    public ProblemDataResponse getProblem(Long id) throws PortableException {
+    public ProblemDetailResponse getProblem(Long id) throws PortableException {
         ProblemPackage problemPackage = getForViewProblem(id);
         User user = userManager.getAccountById(problemPackage.getProblem().getOwner());
-        return ProblemDataResponse.of(problemPackage.getProblem(), problemPackage.getProblemData(), user);
+        return ProblemDetailResponse.of(problemPackage.getProblem(), problemPackage.getProblemData(), user);
     }
 
     @Override

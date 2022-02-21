@@ -45,7 +45,7 @@ public class ExceptionAdvice {
     @ExceptionHandler(value = PortableException.class)
     public Response<Void> exceptionPortableHandler(HttpServletRequest httpServletRequest, PortableException e) {
         Response<Void> response = getResponse(e);
-        log.error(response.getMsg() + "\n\t[URI]: " + httpServletRequest.getRequestURI());
+        log.error(response.getMsg() + "[URI]: " + httpServletRequest.getRequestURI());
         return response;
     }
 

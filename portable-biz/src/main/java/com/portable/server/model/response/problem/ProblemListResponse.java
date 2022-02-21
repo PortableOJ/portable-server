@@ -44,11 +44,6 @@ public class ProblemListResponse {
     private Integer acceptCount;
 
     /**
-     * 作者
-     */
-    private Long owner;
-
-    /**
      * 当前题目的通过状态
      */
     private ProblemListStatusType problemListStatusType;
@@ -60,7 +55,6 @@ public class ProblemListResponse {
         this.accessType = problem.getAccessType();
         this.submissionCount = problem.getSubmissionCount();
         this.acceptCount = problem.getAcceptCount();
-        this.owner = problem.getOwner();
         this.problemListStatusType = problemListStatusType;
     }
 

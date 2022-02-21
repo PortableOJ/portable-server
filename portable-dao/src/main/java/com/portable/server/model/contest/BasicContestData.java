@@ -1,8 +1,8 @@
 package com.portable.server.model.contest;
 
 import com.portable.server.type.ProblemAccessType;
-import lombok.Builder;
 import lombok.Data;
+import lombok.experimental.SuperBuilder;
 
 import java.util.List;
 import java.util.Set;
@@ -11,7 +11,7 @@ import java.util.Set;
  * @author shiroha
  */
 @Data
-@Builder
+@SuperBuilder
 public abstract class BasicContestData {
 
     /**

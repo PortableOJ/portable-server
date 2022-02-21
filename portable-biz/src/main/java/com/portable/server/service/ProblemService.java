@@ -6,10 +6,9 @@ import com.portable.server.model.request.PageRequest;
 import com.portable.server.model.request.problem.*;
 import com.portable.server.model.request.solution.SubmitSolutionRequest;
 import com.portable.server.model.response.PageResponse;
-import com.portable.server.model.response.problem.ProblemDataResponse;
+import com.portable.server.model.response.problem.ProblemDetailResponse;
 import com.portable.server.model.response.problem.ProblemListResponse;
 import com.portable.server.model.response.problem.ProblemStdTestCodeResponse;
-import com.portable.server.model.response.solution.SolutionDetailResponse;
 
 import java.io.OutputStream;
 import java.util.List;
@@ -34,7 +33,7 @@ public interface ProblemService {
      * @return 题目详情内容
      * @throws PortableException 遇到意外情况抛出错误
      */
-    ProblemDataResponse getProblem(Long id) throws PortableException;
+    ProblemDetailResponse getProblem(Long id) throws PortableException;
 
     /**
      * 查看题目输入输出文件列表

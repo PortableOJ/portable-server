@@ -1,14 +1,14 @@
 package com.portable.server.model.contest;
 
-import lombok.Builder;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.experimental.SuperBuilder;
 
 /**
  * @author shiroha
  */
 @Data
-@Builder
+@SuperBuilder
 @EqualsAndHashCode(callSuper = true)
 public class PasswordContestData extends BasicContestData {
 
