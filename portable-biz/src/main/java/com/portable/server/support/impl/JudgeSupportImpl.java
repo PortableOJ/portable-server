@@ -1,7 +1,7 @@
 package com.portable.server.support.impl;
 
 import com.portable.server.exception.PortableException;
-import com.portable.server.manager.NormalUserManager;
+import com.portable.server.manager.UserDataManager;
 import com.portable.server.manager.ProblemDataManager;
 import com.portable.server.manager.ProblemManager;
 import com.portable.server.manager.SolutionDataManager;
@@ -92,7 +92,7 @@ public class JudgeSupportImpl implements JudgeSupport {
     private UserManager userManager;
 
     @Resource
-    private NormalUserManager normalUserManager;
+    private UserDataManager userDataManager;
 
     @Resource
     private SolutionManager solutionManager;
@@ -192,9 +192,9 @@ public class JudgeSupportImpl implements JudgeSupport {
 
                 User user = userManager.getAccountById(solution.getUserId());
                 if (user != null && AccountType.NORMAL.equals(user.getType())) {
-                    NormalUserData normalUserData = normalUserManager.getUserDataById(user.getDataId());
+                    NormalUserData normalUserData = userDataManager.getUserDataById(user.getDataId());
                     normalUserData.setAccept(normalUserData.getAccept() + 1);
-                    normalUserManager.updateNormalUserData(normalUserData);
+                    userDataManager.updateNormalUserData(normalUserData);
                 }
                 break;
             case PROBLEM_PROCESS:

@@ -1,6 +1,6 @@
 package com.portable.server.manager.impl;
 
-import com.portable.server.manager.NormalUserManager;
+import com.portable.server.manager.UserDataManager;
 import com.portable.server.model.user.NormalUserData;
 import com.portable.server.repo.NormalUserDataRepo;
 import com.portable.server.type.OrganizationType;
@@ -13,7 +13,7 @@ import javax.annotation.Resource;
  * @author shiroha
  */
 @Component
-public class NormalUserManagerImpl implements NormalUserManager {
+public class UserDataManagerImpl implements UserDataManager {
 
     @Resource
     private NormalUserDataRepo normalUserDataRepo;

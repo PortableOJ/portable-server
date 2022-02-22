@@ -131,7 +131,7 @@ public class ProblemServiceImpl implements ProblemService {
     private UserManager userManager;
 
     @Resource
-    private NormalUserManager normalUserManager;
+    private UserDataManager userDataManager;
 
     @Resource
     private SolutionManager solutionManager;
@@ -461,9 +461,9 @@ public class ProblemServiceImpl implements ProblemService {
         UserContext userContext = UserContext.ctx();
 
         problemManager.updateProblemCount(submitSolutionRequest.getProblemId(), 1, 0);
-        NormalUserData normalUserData = normalUserManager.getUserDataById(userContext.getDataId());
+        NormalUserData normalUserData = userDataManager.getUserDataById(userContext.getDataId());
         normalUserData.setSubmission(normalUserData.getSubmission() + 1);
-        normalUserManager.updateNormalUserData(normalUserData);
+        userDataManager.updateNormalUserData(normalUserData);
 
         SolutionData solutionData = solutionDataManager.newSolutionData(problemPackage.getProblemData());
         submitSolutionRequest.toSolutionData(solutionData);

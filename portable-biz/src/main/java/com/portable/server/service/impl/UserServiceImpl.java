@@ -3,7 +3,7 @@ package com.portable.server.service.impl;
 import com.portable.server.encryption.BCryptEncoder;
 import com.portable.server.exception.PortableException;
 import com.portable.server.manager.UserManager;
-import com.portable.server.manager.NormalUserManager;
+import com.portable.server.manager.UserDataManager;
 import com.portable.server.model.request.user.LoginRequest;
 import com.portable.server.model.request.user.RegisterRequest;
 import com.portable.server.model.response.user.NormalUserInfoResponse;
@@ -33,7 +33,7 @@ public class UserServiceImpl implements UserService {
     private UserManager userManager;
 
     @Resource
-    private NormalUserManager normalUserManager;
+    private UserDataManager userDataManager;
 
     @Resource
     private BCryptEncoder bCryptEncoder;
@@ -49,10 +49,10 @@ public class UserServiceImpl implements UserService {
         // 创建 root 账户
         User rootUser = userManager.getAccountByHandle(rootName);
         if (rootUser == null) {
-            NormalUserData normalUserData = normalUserManager.newUserData();
+            NormalUserData normalUserData = userDataManager.newUserData();
             normalUserData.setOrganization(OrganizationType.ADMIN);
             normalUserData.setPermissionTypeSet(Arrays.stream(PermissionType.values()).collect(Collectors.toSet()));
-            normalUserManager.insertNormalUserData(normalUserData);
+            userDataManager.insertNormalUserData(normalUserData);
 
             rootUser = userManager.newNormalAccount();
             rootUser.setHandle(rootName);
@@ -60,9 +60,9 @@ public class UserServiceImpl implements UserService {
             rootUser.setDataId(normalUserData.get_id());
             userManager.insertAccount(rootUser);
         } else {
-            NormalUserData normalUserData = normalUserManager.getUserDataById(rootUser.getDataId());
+            NormalUserData normalUserData = userDataManager.getUserDataById(rootUser.getDataId());
             normalUserData.setPermissionTypeSet(Arrays.stream(PermissionType.values()).collect(Collectors.toSet()));
-            normalUserManager.updateNormalUserData(normalUserData);
+            userDataManager.updateNormalUserData(normalUserData);
         }
     }
 
@@ -78,7 +78,7 @@ public class UserServiceImpl implements UserService {
         UserContext.set(user);
         switch (user.getType()) {
             case NORMAL:
-                NormalUserData normalUserData = normalUserManager.getUserDataById(user.getDataId());
+                NormalUserData normalUserData = userDataManager.getUserDataById(user.getDataId());
                 if (normalUserData == null) {
                     throw PortableException.of("S-02-001");
                 }
@@ -97,8 +97,8 @@ public class UserServiceImpl implements UserService {
             throw PortableException.of("A-01-003");
         }
 
-        NormalUserData normalUserData = normalUserManager.newUserData();
-        normalUserManager.insertNormalUserData(normalUserData);
+        NormalUserData normalUserData = userDataManager.newUserData();
+        userDataManager.insertNormalUserData(normalUserData);
 
         user = userManager.newNormalAccount();
         user.setHandle(registerRequest.getHandle());
@@ -137,7 +137,7 @@ public class UserServiceImpl implements UserService {
             throw PortableException.of("A-03-002", newOrganization);
         }
         targetUserData.setOrganization(newOrganization);
-        normalUserManager.updateNormalUserData(targetUserData);
+        userDataManager.updateNormalUserData(targetUserData);
     }
 
     @Override
@@ -147,7 +147,7 @@ public class UserServiceImpl implements UserService {
             throw PortableException.of("A-02-007", newPermission);
         }
         targetUserData.getPermissionTypeSet().add(newPermission);
-        normalUserManager.updateNormalUserData(targetUserData);
+        userDataManager.updateNormalUserData(targetUserData);
     }
 
     @Override
@@ -157,7 +157,7 @@ public class UserServiceImpl implements UserService {
             throw PortableException.of("A-02-007", permission);
         }
         targetUserData.getPermissionTypeSet().remove(permission);
-        normalUserManager.updateNormalUserData(targetUserData);
+        userDataManager.updateNormalUserData(targetUserData);
     }
 
     private NormalUserData organizationCheck(Long target) throws PortableException {
@@ -169,7 +169,7 @@ public class UserServiceImpl implements UserService {
             throw PortableException.of("A-02-003");
         }
 
-        NormalUserData targetUserData = normalUserManager.getUserDataById(user.getDataId());
+        NormalUserData targetUserData = userDataManager.getUserDataById(user.getDataId());
         if (targetUserData == null) {
             throw PortableException.of("S-02-001");
         }
@@ -183,7 +183,7 @@ public class UserServiceImpl implements UserService {
     private UserBasicInfoResponse getUserBasicInfoResponse(User user) throws PortableException {
         switch (user.getType()) {
             case NORMAL:
-                NormalUserData normalUserData = normalUserManager.getUserDataById(user.getDataId());
+                NormalUserData normalUserData = userDataManager.getUserDataById(user.getDataId());
                 if (normalUserData == null) {
                     throw PortableException.of("S-02-001");
                 }
