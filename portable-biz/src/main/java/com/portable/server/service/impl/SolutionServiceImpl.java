@@ -88,7 +88,7 @@ public class SolutionServiceImpl implements SolutionService {
         }
         User user = userManager.getAccountById(solution.getUserId());
         Problem problem = problemManager.getProblemById(solution.getProblemId());
-        boolean shareJudgeMsg = Objects.equals(user.getId(), userContext.getId())
+        boolean shareJudgeMsg = Objects.equals(problem.getOwner(), userContext.getId())
                 || userContext.getPermissionTypeSet().contains(PermissionType.VIEW_SOLUTION_MESSAGE);
         return SolutionDetailResponse.of(solution, solutionData, user, problem, shareJudgeMsg);
     }
