@@ -15,6 +15,4 @@ public interface ContestService {
      * @return 比赛列表
      */
     PageResponse<ContestListResponse> getContestList(PageRequest<Void> pageRequest);
-
-
 }

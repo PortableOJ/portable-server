@@ -4,15 +4,21 @@ import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
 import com.portable.server.exception.PortableException;
-import com.portable.server.model.user.User;
+import com.portable.server.model.contest.ContestVisitPermission;
 import com.portable.server.model.user.NormalUserData;
+import com.portable.server.model.user.User;
 import com.portable.server.type.AccountType;
 import com.portable.server.type.OrganizationType;
 import com.portable.server.type.PermissionType;
 import lombok.Data;
 import lombok.NonNull;
+import org.springframework.data.redis.core.StringRedisTemplate;
 
+import javax.annotation.PostConstruct;
+import javax.annotation.Resource;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.ExecutionException;
@@ -23,6 +29,9 @@ import java.util.concurrent.TimeUnit;
  */
 @Data
 public class UserContext implements AutoCloseable {
+
+    @Resource
+    private StringRedisTemplate stringRedisTemplate;
 
     /**
      * 当前用户 id
@@ -55,6 +64,11 @@ public class UserContext implements AutoCloseable {
     private Set<PermissionType> permissionTypeSet;
 
     /**
+     * 用户验证过的比赛情况
+     */
+    private Map<Long, ContestVisitPermission> contestVisitPermissionMap;
+
+    /**
      * 当前登陆的用户信息
      */
     private static final ThreadLocal<UserContext> LOCAL;
@@ -65,14 +79,24 @@ public class UserContext implements AutoCloseable {
     private static final LoadingCache<Long, UserContext> USER_CACHE;
 
     /**
-     * 用户信息缓存大小
+     * 用户信息使用的 redis 缓存
      */
-    public static final Integer USER_CONTEXT_CACHE_SIZE = 500;
+    private static StringRedisTemplate redisTemplate;
 
     /**
-     * 用户信息缓存过期时间(s)
+     * 用户信息一级缓存容量
      */
-    public static final Integer USER_CONTEXT_EXPIRE_AFTER_ACCESS = 3600;
+    private static final Integer USER_CONTEXT_CACHE_SIZE = 500;
+
+    /**
+     * 用户信息一级缓存过期时间(s)
+     */
+    private static final Integer USER_CONTEXT_EXPIRE_AFTER_ACCESS = 3600;
+
+    /**
+     * 用户信息二级缓存过期时间(m)
+     */
+    private static final Integer USER_CONTEXT_EXPIRE_LEVEL_2 = 30;
 
     static {
         LOCAL = ThreadLocal.withInitial(UserContext::new);
@@ -82,27 +106,43 @@ public class UserContext implements AutoCloseable {
                 .build(new CacheLoader<Long, UserContext>() {
                     @Override
                     public UserContext load(@NonNull Long aLong) {
-                        return getNullUser();
+                        String redisResult = redisTemplate.opsForValue().get(aLong.toString());
+                        if (Objects.isNull(redisResult) || redisResult.isEmpty()) {
+                            return getNullUser();
+                        }
+                        return JsonUtils.toObject(redisResult, UserContext.class);
                     }
                 });
+    }
+
+    @PostConstruct
+    public void  init() {
+        UserContext.redisTemplate = this.stringRedisTemplate;
     }
 
     public static UserContext ctx() {
         return LOCAL.get();
     }
 
-    public static void restore(Long userId) {
+    public static Boolean restore(Long userId) {
         try {
             UserContext userContext = USER_CACHE.get(userId);
             LOCAL.set(userContext);
+            return !Objects.isNull(userContext.getId());
         } catch (ExecutionException ignored) {
         }
+        return false;
     }
 
     public static void set(UserContext userContext) {
         LOCAL.set(userContext);
         if (userContext.getId() != null) {
             USER_CACHE.put(userContext.getId(), userContext);
+            redisTemplate.opsForValue().set(
+                    userContext.getId().toString(),
+                    JsonUtils.toString(userContext),
+                    USER_CONTEXT_EXPIRE_LEVEL_2,
+                    TimeUnit.MINUTES);
         }
     }
 
@@ -111,7 +151,7 @@ public class UserContext implements AutoCloseable {
             throw PortableException.of("A-02-001");
         }
 
-        UserContext userContext = LOCAL.get();
+        UserContext userContext = ctx();
         userContext.setId(user.getId());
         userContext.setHandle(user.getHandle());
         userContext.setDataId(user.getDataId());
@@ -124,9 +164,15 @@ public class UserContext implements AutoCloseable {
             throw PortableException.of("A-02-001");
         }
 
-        UserContext userContext = LOCAL.get();
+        UserContext userContext = ctx();
         userContext.setOrganization(normalUserData.getOrganization());
         userContext.setPermissionTypeSet(normalUserData.getPermissionTypeSet());
+        set(userContext);
+    }
+
+    public static void addContestVisit(Long contestId, ContestVisitPermission contestVisitPermission) {
+        UserContext userContext = ctx();
+        userContext.getContestVisitPermissionMap().put(contestId, contestVisitPermission);
         set(userContext);
     }
 
@@ -141,6 +187,7 @@ public class UserContext implements AutoCloseable {
         userContext.setType(null);
         userContext.setOrganization(null);
         userContext.setPermissionTypeSet(new HashSet<>());
+        userContext.setContestVisitPermissionMap(new HashMap<>(0));
         return userContext;
     }
 

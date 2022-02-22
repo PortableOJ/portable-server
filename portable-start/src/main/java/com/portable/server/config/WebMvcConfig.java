@@ -2,6 +2,7 @@ package com.portable.server.config;
 
 import com.portable.server.interceptor.NeedLoginInterceptor;
 import com.portable.server.interceptor.PermissionInterceptor;
+import com.portable.server.util.UserContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
@@ -34,6 +35,15 @@ public class WebMvcConfig implements WebMvcConfigurer {
     @Bean
     public PermissionInterceptor permissionInterceptor() {
         return new PermissionInterceptor();
+    }
+
+    /**
+     * 用于获取 redis 的模版注入，不需要使用此 bean
+     * @return ignore
+     */
+    @Bean
+    public UserContext userContext() {
+        return new UserContext();
     }
 
     @Bean
