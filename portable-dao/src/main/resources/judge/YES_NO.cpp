@@ -61,5 +61,5 @@ int main(int argc, char *argv[]) {
 
     ouf.readEof();
 
-    accept("%d 'yes and no' word is same", totalYesOrNo);
+    accept("%d 'yes and no' word(s) is/are same", totalYesOrNo);
 }

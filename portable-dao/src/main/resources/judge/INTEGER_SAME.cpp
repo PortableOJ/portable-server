@@ -22,5 +22,5 @@ int main(int argc, char *argv[]) {
 
     ouf.readEof();
 
-    accept("%d integers is same", totalNumber);
+    accept("%d integer(s) is/are same", totalNumber);
 }

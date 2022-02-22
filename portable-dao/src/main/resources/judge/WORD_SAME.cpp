@@ -30,5 +30,5 @@ int main(int argc, char *argv[]) {
 
     ouf.readEof();
 
-    accept("%d valid strings is same", totalWord);
+    accept("%d valid string(s) is/are same", totalWord);
 }
