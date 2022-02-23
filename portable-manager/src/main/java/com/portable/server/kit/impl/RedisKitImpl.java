@@ -1,7 +1,7 @@
-package com.portable.server.support.impl;
+package com.portable.server.kit.impl;
 
 import com.portable.server.model.RedisKeyAndExpire;
-import com.portable.server.support.RedisSupport;
+import com.portable.server.kit.RedisKit;
 import com.portable.server.util.JsonUtils;
 import org.springframework.data.redis.core.BoundValueOperations;
 import org.springframework.data.redis.core.StringRedisTemplate;
@@ -17,7 +17,7 @@ import java.util.concurrent.TimeUnit;
  * @author shiroha
  */
 @Component
-public class RedisSupportImpl implements RedisSupport {
+public class RedisKitImpl implements RedisKit {
 
     @Resource
     private StringRedisTemplate stringRedisTemplate;

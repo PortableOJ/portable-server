@@ -1,4 +1,4 @@
-package com.portable.server.support;
+package com.portable.server.kit;
 
 import com.portable.server.model.RedisKeyAndExpire;
 
@@ -7,7 +7,7 @@ import java.util.Optional;
 /**
  * @author shiroha
  */
-public interface RedisSupport {
+public interface RedisKit {
 
     /**
      * 保存数据

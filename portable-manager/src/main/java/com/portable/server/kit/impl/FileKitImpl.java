@@ -1,7 +1,7 @@
-package com.portable.server.manager.impl;
+package com.portable.server.kit.impl;
 
 import com.portable.server.exception.PortableException;
-import com.portable.server.manager.FileManager;
+import com.portable.server.kit.FileKit;
 import com.portable.server.util.StreamUtils;
 import org.springframework.stereotype.Component;
 
@@ -16,7 +16,7 @@ import java.io.InputStream;
  * @author shiroha
  */
 @Component
-public class FileManagerImpl implements FileManager {
+public class FileKitImpl implements FileKit {
 
     @Override
     public void createDirIfNotExist(String dir) throws PortableException {

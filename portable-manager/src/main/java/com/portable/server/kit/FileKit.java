@@ -1,4 +1,4 @@
-package com.portable.server.manager;
+package com.portable.server.kit;
 
 import com.portable.server.exception.PortableException;
 
@@ -7,7 +7,7 @@ import java.io.InputStream;
 /**
  * @author shiroha
  */
-public interface FileManager {
+public interface FileKit {
 
     /**
      * 创建一个目录，如果不存在的话
