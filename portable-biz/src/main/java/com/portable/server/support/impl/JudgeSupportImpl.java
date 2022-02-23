@@ -6,8 +6,8 @@ import com.portable.server.manager.ProblemDataManager;
 import com.portable.server.manager.ProblemManager;
 import com.portable.server.manager.SolutionDataManager;
 import com.portable.server.manager.SolutionManager;
-import com.portable.server.manager.TemporaryDataManager;
 import com.portable.server.manager.UserManager;
+import com.portable.server.model.RedisKeyAndExpire;
 import com.portable.server.model.ServiceVerifyCode;
 import com.portable.server.model.judge.entity.JudgeContainer;
 import com.portable.server.model.judge.entity.UpdateJudgeContainer;
@@ -26,6 +26,7 @@ import com.portable.server.model.user.User;
 import com.portable.server.socket.EpollManager;
 import com.portable.server.support.FileSupport;
 import com.portable.server.support.JudgeSupport;
+import com.portable.server.support.RedisSupport;
 import com.portable.server.type.AccountType;
 import com.portable.server.type.JudgeCodeType;
 import com.portable.server.type.JudgeWorkType;
@@ -33,6 +34,7 @@ import com.portable.server.type.LanguageType;
 import com.portable.server.type.ProblemStatusType;
 import com.portable.server.type.SolutionStatusType;
 import com.portable.server.type.SolutionType;
+import com.portable.server.util.Switch;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
 
@@ -85,6 +87,11 @@ public class JudgeSupportImpl implements JudgeSupport {
      */
     private ServiceVerifyCode serviceVerifyCode;
 
+    /**
+     * 保存在 redis 中的服务器密钥的 key 值
+     */
+    private static final String SERVICE_CODE_KEY = "SERVICE_CODE";
+
     @Resource
     private Environment env;
 
@@ -107,10 +114,10 @@ public class JudgeSupportImpl implements JudgeSupport {
     private ProblemDataManager problemDataManager;
 
     @Resource
-    private TemporaryDataManager temporaryDataManager;
+    private FileSupport fileSupport;
 
     @Resource
-    private FileSupport fileSupport;
+    private RedisSupport redisSupport;
 
     @PostConstruct
     public void init() {
@@ -221,7 +228,28 @@ public class JudgeSupportImpl implements JudgeSupport {
 
     @Override
     public ServiceVerifyCode getServiceCode() {
-        return serviceVerifyCode != null ? serviceVerifyCode : temporaryDataManager.getServiceCode();
+        if (serviceVerifyCode != null) {
+            return serviceVerifyCode;
+        }
+        RedisKeyAndExpire<String> serviceCode = redisSupport.getValueAndTime(SERVICE_CODE_KEY, "", String.class);
+        if (serviceCode.getHasKey()) {
+            Calendar calendar = Calendar.getInstance();
+            calendar.add(Calendar.SECOND, serviceCode.getExpireTime().intValue());
+            return ServiceVerifyCode.builder()
+                    .code(serviceCode.getData())
+                    .endTime(calendar.getTime())
+                    .temporary(true)
+                    .build();
+        }
+        String code = UUID.randomUUID().toString();
+        redisSupport.set(SERVICE_CODE_KEY, "", code, Switch.serverCodeExpireTime);
+        Calendar calendar = Calendar.getInstance();
+        calendar.add(Calendar.SECOND, Switch.serverCodeExpireTime.intValue());
+        return ServiceVerifyCode.builder()
+                .code(code)
+                .temporary(true)
+                .endTime(calendar.getTime())
+                .build();
     }
 
     @Override
