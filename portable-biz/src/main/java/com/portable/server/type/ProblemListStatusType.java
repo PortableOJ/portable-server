@@ -2,11 +2,30 @@ package com.portable.server.type;
 
 import lombok.Getter;
 
+/**
+ * @author shiroha
+ */
 @Getter
 public enum ProblemListStatusType {
+
+    /**
+     * 未提交过
+     */
     NEVER_SUBMIT("未提交过"),
+
+    /**
+     * 正在判题中
+     */
     ON_JUDGE("正在判题中"),
+
+    /**
+     * 没有通过
+     */
     NOT_PASS("没有通过"),
+
+    /**
+     * 通过
+     */
     PASS("通过"),
     ;
 
@@ -36,7 +55,8 @@ public enum ProblemListStatusType {
             case JUDGE_FAIL:
             case WRONG_ANSWER:
                 return NOT_PASS;
+            default:
+                return NEVER_SUBMIT;
         }
-        return NEVER_SUBMIT;
     }
 }
