@@ -37,12 +37,12 @@ public class ProblemDetailResponse {
     private ProblemAccessType accessType;
 
     /**
-     * 历史提交数量
+     * 历史提交数量/比赛中的提交数量
      */
     private Integer submissionCount;
 
     /**
-     * 历史通过的数量
+     * 历史通过的数量/比赛中的通过数量
      */
     private Integer acceptCount;
 

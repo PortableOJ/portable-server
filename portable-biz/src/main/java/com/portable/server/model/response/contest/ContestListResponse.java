@@ -37,6 +37,11 @@ public class ContestListResponse {
      */
     private ContestAccessType accessType;
 
+    /**
+     * 是否已经认证过了，即不需要输入认证信息
+     */
+    private Boolean isCertified;
+
     private ContestListResponse(Contest contest) {
         this.id = contest.getId();
         this.title = contest.getTitle();

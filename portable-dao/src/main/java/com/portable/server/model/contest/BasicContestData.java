@@ -5,6 +5,7 @@ import lombok.Data;
 import lombok.experimental.SuperBuilder;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 /**
@@ -15,9 +16,9 @@ import java.util.Set;
 public abstract class BasicContestData {
 
     /**
-     * 题目列表
+     * 题目列表与题目信息
      */
-    private List<Long> problemList;
+    private Map<Long, ContestProblemData> problemList;
 
     /**
      * 允许此类访问权限的题目
@@ -38,4 +39,23 @@ public abstract class BasicContestData {
      * 公告
      */
     private String announcement;
+
+    @Data
+    public static class ContestProblemData {
+
+        /**
+         * 历史提交数量
+         */
+        private Integer submissionCount;
+
+        /**
+         * 历史通过的数量
+         */
+        private Integer acceptCount;
+
+        ContestProblemData() {
+            this.submissionCount = 0;
+            this.acceptCount = 0;
+        }
+    }
 }

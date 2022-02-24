@@ -199,7 +199,7 @@ public class JudgeSupportImpl implements JudgeSupport {
 
                 User user = userManager.getAccountById(solution.getUserId());
                 if (user != null && AccountType.NORMAL.equals(user.getType())) {
-                    NormalUserData normalUserData = userDataManager.getUserDataById(user.getDataId());
+                    NormalUserData normalUserData = userDataManager.getNormalUserDataById(user.getDataId());
                     normalUserData.setAccept(normalUserData.getAccept() + 1);
                     userDataManager.updateNormalUserData(normalUserData);
                 }

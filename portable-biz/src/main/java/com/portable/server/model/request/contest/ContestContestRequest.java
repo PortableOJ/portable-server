@@ -1,8 +1,6 @@
-package com.portable.server.model.response.contest;
+package com.portable.server.model.request.contest;
 
-import com.portable.server.model.response.problem.ProblemListResponse;
 import com.portable.server.type.ContestAccessType;
-import com.portable.server.type.ProblemAccessType;
 import lombok.Data;
 
 import java.util.Date;
@@ -13,7 +11,7 @@ import java.util.Set;
  * @author shiroha
  */
 @Data
-public class ContestDetailResponse {
+public class ContestContestRequest {
 
     /**
      * 数据库主键
@@ -41,14 +39,9 @@ public class ContestDetailResponse {
     private ContestAccessType accessType;
 
     /**
-     * 作者 handle
-     */
-    private String ownerHandle;
-
-    /**
      * 题目列表
      */
-    private List<ProblemListResponse> problemList;
+    private List<Long> problemList;
 
     /**
      * 共同的出题人的昵称

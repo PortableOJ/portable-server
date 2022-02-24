@@ -14,7 +14,7 @@ import lombok.Data;
 public class ProblemListResponse {
 
     /**
-     * 题目的 ID
+     * 题目的 ID/序号（在比赛中）
      */
     private Long id;
 
