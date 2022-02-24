@@ -19,7 +19,7 @@ public class UserDataManagerImpl implements UserDataManager {
     private NormalUserDataRepo normalUserDataRepo;
 
     @Override
-    public NormalUserData newUserData() {
+    public NormalUserData newNormalUserData() {
         return NormalUserData.builder()
                 ._id(null)
                 .organization(OrganizationType.STUDENT)
@@ -31,7 +31,7 @@ public class UserDataManagerImpl implements UserDataManager {
     }
 
     @Override
-    public NormalUserData getUserDataById(String dataId) {
+    public NormalUserData getNormalUserDataById(String dataId) {
         return normalUserDataRepo.getUserDataById(dataId);
     }
 

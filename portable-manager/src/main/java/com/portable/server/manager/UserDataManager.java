@@ -12,7 +12,7 @@ public interface UserDataManager {
      *
      * @return 普通用户数据实体
      */
-    NormalUserData newUserData();
+    NormalUserData newNormalUserData();
 
     /**
      * 通过用户的数据 id 获取普通用户
@@ -20,7 +20,7 @@ public interface UserDataManager {
      * @param dataId 用户的数据 id
      * @return 用户数据
      */
-    NormalUserData getUserDataById(String dataId);
+    NormalUserData getNormalUserDataById(String dataId);
 
     /**
      * 新增一个普通用户数据

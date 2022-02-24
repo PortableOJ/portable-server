@@ -94,7 +94,7 @@ public class UserServiceImplTest {
     public void loginTestNoData() {
         Mockito.when(accountManager.getAccountByHandle(Mockito.any())).thenReturn(user);
         Mockito.when(bCryptEncoder.match(Mockito.any(), Mockito.any())).thenReturn(true);
-        Mockito.when(normalUserManager.getUserDataById(Mockito.any())).thenReturn(null);
+        Mockito.when(normalUserManager.getNormalUserDataById(Mockito.any())).thenReturn(null);
 
         LoginRequest loginRequest = new LoginRequest();
         loginRequest.setHandle("name");
@@ -112,7 +112,7 @@ public class UserServiceImplTest {
     public void loginTestNormalUserDataSuccess() {
         Mockito.when(accountManager.getAccountByHandle(Mockito.any())).thenReturn(user);
         Mockito.when(bCryptEncoder.match(Mockito.any(), Mockito.any())).thenReturn(true);
-        Mockito.when(normalUserManager.getUserDataById(Mockito.any())).thenReturn(normalUserData);
+        Mockito.when(normalUserManager.getNormalUserDataById(Mockito.any())).thenReturn(normalUserData);
 
         LoginRequest loginRequest = new LoginRequest();
         loginRequest.setHandle("name");
@@ -147,7 +147,7 @@ public class UserServiceImplTest {
     @Test
     public void registerTestSuccess() {
         Mockito.when(accountManager.getAccountByHandle(Mockito.any())).thenReturn(null);
-        Mockito.when(normalUserManager.newUserData()).thenCallRealMethod();
+        Mockito.when(normalUserManager.newNormalUserData()).thenCallRealMethod();
         Mockito.doAnswer(invocationOnMock -> {
             NormalUserData normalUserData = invocationOnMock.getArgument(0, NormalUserData.class);
             normalUserData.set_id("dataId");
@@ -180,7 +180,7 @@ public class UserServiceImplTest {
     public void changeOrganizationTestNotDominateUser() {
         UserContext.ctx().setOrganization(OrganizationType.ACMER);
         Mockito.when(accountManager.getAccountById(Mockito.any())).thenReturn(user);
-        Mockito.when(normalUserManager.getUserDataById(Mockito.any())).thenReturn(normalUserData);
+        Mockito.when(normalUserManager.getNormalUserDataById(Mockito.any())).thenReturn(normalUserData);
 
         try {
             userService.changeOrganization(1L, OrganizationType.TEACHER);
@@ -194,7 +194,7 @@ public class UserServiceImplTest {
     public void changeOrganizationTestNotDominateOrganization() {
         UserContext.ctx().setOrganization(OrganizationType.HONOR);
         Mockito.when(accountManager.getAccountById(Mockito.any())).thenReturn(user);
-        Mockito.when(normalUserManager.getUserDataById(Mockito.any())).thenReturn(normalUserData);
+        Mockito.when(normalUserManager.getNormalUserDataById(Mockito.any())).thenReturn(normalUserData);
 
         try {
             userService.changeOrganization(1L, OrganizationType.BOSS);
@@ -208,7 +208,7 @@ public class UserServiceImplTest {
     public void changeOrganizationTestSuccess() {
         UserContext.ctx().setOrganization(OrganizationType.BOSS);
         Mockito.when(accountManager.getAccountById(Mockito.any())).thenReturn(user);
-        Mockito.when(normalUserManager.getUserDataById(Mockito.any())).thenReturn(normalUserData);
+        Mockito.when(normalUserManager.getNormalUserDataById(Mockito.any())).thenReturn(normalUserData);
 
         try {
             userService.changeOrganization(1L, OrganizationType.HONOR);
@@ -222,7 +222,7 @@ public class UserServiceImplTest {
         UserContext.ctx().setOrganization(OrganizationType.ACMER);
         UserContext.ctx().setPermissionTypeSet(new HashSet<>());
         Mockito.when(accountManager.getAccountById(Mockito.any())).thenReturn(user);
-        Mockito.when(normalUserManager.getUserDataById(Mockito.any())).thenReturn(normalUserData);
+        Mockito.when(normalUserManager.getNormalUserDataById(Mockito.any())).thenReturn(normalUserData);
 
         try {
             userService.addPermission(1L, PermissionType.CREATE_AND_EDIT_PROBLEM);
@@ -240,7 +240,7 @@ public class UserServiceImplTest {
             add(PermissionType.CREATE_AND_EDIT_PROBLEM);
         }});
         Mockito.when(accountManager.getAccountById(Mockito.any())).thenReturn(user);
-        Mockito.when(normalUserManager.getUserDataById(Mockito.any())).thenReturn(normalUserData);
+        Mockito.when(normalUserManager.getNormalUserDataById(Mockito.any())).thenReturn(normalUserData);
 
         try {
             userService.addPermission(1L, PermissionType.CREATE_AND_EDIT_PROBLEM);
@@ -254,7 +254,7 @@ public class UserServiceImplTest {
         UserContext.ctx().setOrganization(OrganizationType.ACMER);
         UserContext.ctx().setPermissionTypeSet(new HashSet<>());
         Mockito.when(accountManager.getAccountById(Mockito.any())).thenReturn(user);
-        Mockito.when(normalUserManager.getUserDataById(Mockito.any())).thenReturn(normalUserData);
+        Mockito.when(normalUserManager.getNormalUserDataById(Mockito.any())).thenReturn(normalUserData);
 
         try {
             userService.removePermission(1L, PermissionType.CREATE_AND_EDIT_PROBLEM);
@@ -272,7 +272,7 @@ public class UserServiceImplTest {
             add(PermissionType.CREATE_AND_EDIT_PROBLEM);
         }});
         Mockito.when(accountManager.getAccountById(Mockito.any())).thenReturn(user);
-        Mockito.when(normalUserManager.getUserDataById(Mockito.any())).thenReturn(normalUserData);
+        Mockito.when(normalUserManager.getNormalUserDataById(Mockito.any())).thenReturn(normalUserData);
 
         try {
             userService.removePermission(1L, PermissionType.CREATE_AND_EDIT_PROBLEM);

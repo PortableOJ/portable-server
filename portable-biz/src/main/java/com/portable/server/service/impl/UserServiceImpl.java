@@ -49,7 +49,7 @@ public class UserServiceImpl implements UserService {
         // 创建 root 账户
         User rootUser = userManager.getAccountByHandle(rootName);
         if (rootUser == null) {
-            NormalUserData normalUserData = userDataManager.newUserData();
+            NormalUserData normalUserData = userDataManager.newNormalUserData();
             normalUserData.setOrganization(OrganizationType.ADMIN);
             normalUserData.setPermissionTypeSet(Arrays.stream(PermissionType.values()).collect(Collectors.toSet()));
             userDataManager.insertNormalUserData(normalUserData);
@@ -60,7 +60,7 @@ public class UserServiceImpl implements UserService {
             rootUser.setDataId(normalUserData.get_id());
             userManager.insertAccount(rootUser);
         } else {
-            NormalUserData normalUserData = userDataManager.getUserDataById(rootUser.getDataId());
+            NormalUserData normalUserData = userDataManager.getNormalUserDataById(rootUser.getDataId());
             normalUserData.setPermissionTypeSet(Arrays.stream(PermissionType.values()).collect(Collectors.toSet()));
             userDataManager.updateNormalUserData(normalUserData);
         }
@@ -78,7 +78,7 @@ public class UserServiceImpl implements UserService {
         UserContext.set(user);
         switch (user.getType()) {
             case NORMAL:
-                NormalUserData normalUserData = userDataManager.getUserDataById(user.getDataId());
+                NormalUserData normalUserData = userDataManager.getNormalUserDataById(user.getDataId());
                 if (normalUserData == null) {
                     throw PortableException.of("S-02-001");
                 }
@@ -97,7 +97,7 @@ public class UserServiceImpl implements UserService {
             throw PortableException.of("A-01-003");
         }
 
-        NormalUserData normalUserData = userDataManager.newUserData();
+        NormalUserData normalUserData = userDataManager.newNormalUserData();
         userDataManager.insertNormalUserData(normalUserData);
 
         user = userManager.newNormalAccount();
@@ -169,7 +169,7 @@ public class UserServiceImpl implements UserService {
             throw PortableException.of("A-02-003");
         }
 
-        NormalUserData targetUserData = userDataManager.getUserDataById(user.getDataId());
+        NormalUserData targetUserData = userDataManager.getNormalUserDataById(user.getDataId());
         if (targetUserData == null) {
             throw PortableException.of("S-02-001");
         }
@@ -183,7 +183,7 @@ public class UserServiceImpl implements UserService {
     private UserBasicInfoResponse getUserBasicInfoResponse(User user) throws PortableException {
         switch (user.getType()) {
             case NORMAL:
-                NormalUserData normalUserData = userDataManager.getUserDataById(user.getDataId());
+                NormalUserData normalUserData = userDataManager.getNormalUserDataById(user.getDataId());
                 if (normalUserData == null) {
                     throw PortableException.of("S-02-001");
                 }

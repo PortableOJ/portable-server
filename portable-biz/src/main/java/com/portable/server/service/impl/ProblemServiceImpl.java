@@ -461,7 +461,7 @@ public class ProblemServiceImpl implements ProblemService {
         UserContext userContext = UserContext.ctx();
 
         problemManager.updateProblemCount(submitSolutionRequest.getProblemId(), 1, 0);
-        NormalUserData normalUserData = userDataManager.getUserDataById(userContext.getDataId());
+        NormalUserData normalUserData = userDataManager.getNormalUserDataById(userContext.getDataId());
         normalUserData.setSubmission(normalUserData.getSubmission() + 1);
         userDataManager.updateNormalUserData(normalUserData);
 
