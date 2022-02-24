@@ -1,11 +1,23 @@
 package com.portable.server.service.impl;
 
 import com.portable.server.exception.PortableException;
-import com.portable.server.manager.*;
+import com.portable.server.manager.ContestManager;
+import com.portable.server.manager.ProblemDataManager;
+import com.portable.server.manager.ProblemManager;
+import com.portable.server.manager.SolutionDataManager;
+import com.portable.server.manager.SolutionManager;
+import com.portable.server.manager.UserDataManager;
+import com.portable.server.manager.UserManager;
+import com.portable.server.model.contest.Contest;
 import com.portable.server.model.problem.Problem;
 import com.portable.server.model.problem.ProblemData;
 import com.portable.server.model.request.PageRequest;
-import com.portable.server.model.request.problem.*;
+import com.portable.server.model.request.problem.ProblemCodeRequest;
+import com.portable.server.model.request.problem.ProblemContentRequest;
+import com.portable.server.model.request.problem.ProblemJudgeRequest;
+import com.portable.server.model.request.problem.ProblemNameRequest;
+import com.portable.server.model.request.problem.ProblemSettingRequest;
+import com.portable.server.model.request.problem.ProblemTestRequest;
 import com.portable.server.model.request.solution.SubmitSolutionRequest;
 import com.portable.server.model.response.PageResponse;
 import com.portable.server.model.response.problem.ProblemDetailResponse;
@@ -15,9 +27,9 @@ import com.portable.server.model.solution.Solution;
 import com.portable.server.model.solution.SolutionData;
 import com.portable.server.model.user.NormalUserData;
 import com.portable.server.model.user.User;
-import com.portable.server.support.JudgeSupport;
-import com.portable.server.support.FileSupport;
 import com.portable.server.service.ProblemService;
+import com.portable.server.support.FileSupport;
+import com.portable.server.support.JudgeSupport;
 import com.portable.server.type.JudgeCodeType;
 import com.portable.server.type.PermissionType;
 import com.portable.server.type.ProblemAccessType;
@@ -29,6 +41,7 @@ import com.portable.server.util.UserContext;
 import lombok.Builder;
 import lombok.Data;
 import lombok.Getter;
+import org.checkerframework.checker.units.qual.C;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
@@ -36,6 +49,7 @@ import javax.annotation.Resource;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.Arrays;
+import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
@@ -140,6 +154,9 @@ public class ProblemServiceImpl implements ProblemService {
     private SolutionDataManager solutionDataManager;
 
     @Resource
+    private ContestManager contestManager;
+
+    @Resource
     private FileSupport fileSupport;
 
     @Resource
@@ -230,6 +247,17 @@ public class ProblemServiceImpl implements ProblemService {
     public void updateProblemContent(ProblemContentRequest problemContentRequest) throws PortableException {
         ProblemPackage problemPackage = getForEditProblem(problemContentRequest.getId());
         problemContentRequest.toProblemData(problemPackage.getProblemData());
+
+        // 校验题目关联的比赛是否已经结束
+        if (problemPackage.getProblemData().getContestId() != null) {
+            Contest contest = contestManager.getContestById(problemPackage.getProblemData().getContestId());
+            Calendar calendar = Calendar.getInstance();
+            calendar.setTime(contest.getStartTime());
+            calendar.add(Calendar.MINUTE, contest.getDuration());
+            if (calendar.getTime().after(new Date())) {
+                throw PortableException.of("A-04-014", problemPackage.getProblemData().getContestId());
+            }
+        }
 
         problemManager.updateProblemTitle(problemContentRequest.getId(), problemContentRequest.getTitle());
         problemDataManager.updateProblemData(problemPackage.getProblemData());
