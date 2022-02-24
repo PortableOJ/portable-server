@@ -49,4 +49,8 @@ public class ContestListResponse {
         this.duration = contest.getDuration();
         this.accessType = contest.getAccessType();
     }
+
+    public static ContestListResponse of(Contest contest) {
+        return new ContestListResponse(contest);
+    }
 }

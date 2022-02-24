@@ -22,11 +22,11 @@ public interface ContestMapper {
 
     /**
      * 根据分页获取比赛列表
-     * @param pageNum 页码
+     * @param pageSize 单页数量
      * @param offset 偏移量
      * @return 比赛列表
      */
-    List<Contest> getContestByPage(@Param("pageNum") Integer pageNum, @Param("offset") Integer offset);
+    List<Contest> getContestByPage(@Param("pageSize") Integer pageSize, @Param("offset") Integer offset);
 
     /**
      * 根据 id 获取比赛信息

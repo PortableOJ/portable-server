@@ -21,11 +21,6 @@ public abstract class BasicContestData {
     private Map<Long, ContestProblemData> problemList;
 
     /**
-     * 允许此类访问权限的题目
-     */
-    private Set<ProblemAccessType> problemAccessTypeList;
-
-    /**
      * 共同的出题人
      */
     private Set<Long> coAuthor;

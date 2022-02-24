@@ -25,11 +25,11 @@ public interface ContestManager {
 
     /**
      * 根据分页获取比赛列表
-     * @param pageNum 页码
+     * @param pageSize 单页数量
      * @param offset 偏移量
      * @return 比赛列表
      */
-    List<Contest> getContestByPage(Integer pageNum, Integer offset);
+    List<Contest> getContestByPage(Integer pageSize, Integer offset);
 
     /**
      * 根据 id 获取比赛信息

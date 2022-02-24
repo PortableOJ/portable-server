@@ -53,6 +53,21 @@ public enum PermissionType implements ExceptionTextType {
     VIEW_SOLUTION_MESSAGE("查看提交的运行信息"),
 
     /**
+     * 查看所有比赛
+     */
+    VIEW_ALL_CONTEST("查看所有比赛"),
+
+    /**
+     * 创建和更新比赛内容权利
+     */
+    CREATE_AND_EDIT_CONTEST("创建和更新比赛内容"),
+
+    /**
+     * 管理其他人拥有的比赛内容权利
+     */
+    EDIT_NOT_OWNER_CONTEST("管理其他人拥有的比赛内容"),
+
+    /**
      * 管理 Judge 系统的权利
      */
     MANAGER_JUDGE("管理 Judge 系统的权利"),

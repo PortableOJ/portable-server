@@ -1,19 +1,19 @@
 package com.portable.server.service;
 
+import com.portable.server.exception.PortableException;
 import com.portable.server.model.request.PageRequest;
 import com.portable.server.model.request.contest.ContestAddProblem;
 import com.portable.server.model.request.contest.ContestContestRequest;
 import com.portable.server.model.request.solution.SolutionListQueryRequest;
 import com.portable.server.model.request.solution.SubmitSolutionRequest;
 import com.portable.server.model.response.PageResponse;
+import com.portable.server.model.response.contest.ContestAdminDetailResponse;
 import com.portable.server.model.response.contest.ContestDetailResponse;
 import com.portable.server.model.response.contest.ContestListResponse;
 import com.portable.server.model.response.contest.ContestRankResponse;
 import com.portable.server.model.response.problem.ProblemDetailResponse;
 import com.portable.server.model.response.solution.SolutionDetailResponse;
 import com.portable.server.model.response.solution.SolutionListResponse;
-
-import java.util.List;
 
 /**
  * @author shiroha
@@ -30,9 +30,17 @@ public interface ContestService {
     /**
      * 获取比赛的详情
      * @param contestId 比赛的 id
+     * @throws PortableException 比赛不存在或者无权访问则抛出错误
      * @return 比赛的详情
      */
-    ContestDetailResponse getContestData(Long contestId);
+    ContestDetailResponse getContestData(Long contestId) throws PortableException;
+
+    /**
+     * 获取比赛的管理员级别信息
+     * @param contestId 比赛的 id
+     * @return 比赛的详情
+     */
+    ContestAdminDetailResponse getContestAdminData(Long contestId);
 
     /**
      * 查看比赛中的题目信息

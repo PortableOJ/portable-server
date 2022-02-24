@@ -170,10 +170,9 @@ public class UserContext implements AutoCloseable {
         set(userContext);
     }
 
-    public static void addContestVisit(Long contestId, ContestVisitPermission contestVisitPermission) {
+    public static void addCurUserContestVisit(Long contestId, ContestVisitPermission contestVisitPermission) {
         UserContext userContext = ctx();
-        userContext.getContestVisitPermissionMap().put(contestId, contestVisitPermission);
-        set(userContext);
+        userContext.addContestVisit(contestId, contestVisitPermission);
     }
 
     public static void remove() {
@@ -193,6 +192,11 @@ public class UserContext implements AutoCloseable {
 
     public Boolean isLogin() {
         return id != null;
+    }
+
+    public void addContestVisit(Long contestId, ContestVisitPermission contestVisitPermission) {
+        contestVisitPermissionMap.put(contestId, contestVisitPermission);
+        set(this);
     }
 
     @Override

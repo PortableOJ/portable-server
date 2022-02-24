@@ -38,8 +38,8 @@ public class ContestManagerImpl implements ContestManager {
     }
 
     @Override
-    public List<Contest> getContestByPage(Integer pageNum, Integer offset) {
-        return contestMapper.getContestByPage(pageNum, offset);
+    public List<Contest> getContestByPage(Integer pageSize, Integer offset) {
+        return contestMapper.getContestByPage(pageSize, offset);
     }
 
     @Override

@@ -1,5 +1,7 @@
 package com.portable.server.model.response.contest;
 
+import com.portable.server.model.contest.BasicContestData;
+import com.portable.server.model.contest.Contest;
 import com.portable.server.model.response.problem.ProblemListResponse;
 import com.portable.server.type.ContestAccessType;
 import com.portable.server.type.ProblemAccessType;
@@ -7,6 +9,7 @@ import lombok.Data;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 /**
@@ -64,4 +67,17 @@ public class ContestDetailResponse {
      * 公告
      */
     private String announcement;
+
+    ContestDetailResponse(Contest contest, BasicContestData contestData, String ownerHandle, List<ProblemListResponse> problemList, Set<String> coAuthor) {
+        this.id = contest.getId();
+        this.title = contest.getTitle();
+        this.startTime = contest.getStartTime();
+        this.duration = contest.getDuration();
+        this.accessType = contest.getAccessType();
+        this.ownerHandle = ownerHandle;
+        this.problemList = problemList;
+        this.coAuthor = coAuthor;
+        this.freezeTime = contestData.getFreezeTime();
+        this.announcement = contestData.getAnnouncement();
+    }
 }
