@@ -33,6 +33,13 @@ public interface SolutionManager {
     Integer countSolutionByContest(Long contestId);
 
     /**
+     * 统计所有此比赛的测试提交数量
+     * @param contestId 比赛 ID
+     * @return 此比赛的测试提交数量
+     */
+    Integer countSolutionByTestContest(Long contestId);
+
+    /**
      * 分页获取提交的列表
      * @param pageSize 每页内容数量
      * @param offset 偏移量
@@ -43,7 +50,23 @@ public interface SolutionManager {
      */
     List<Solution> selectPublicSolutionByPage(Integer pageSize, Integer offset, Long userId, Long problemId, SolutionStatusType statusType);
 
+    /**
+     * 分页获取比赛的提交列表
+     * @param pageSize 单页数量
+     * @param offset 偏移量
+     * @param contestId 比赛 id
+     * @return 提交列表
+     */
     List<Solution> selectSolutionByContestAndPage(Integer pageSize, Integer offset, Long contestId);
+
+    /**
+     * 分页获取比赛的测试提交列表
+     * @param pageSize 单页数量
+     * @param offset 偏移量
+     * @param contestId 比赛 id
+     * @return 提交列表
+     */
+    List<Solution> selectSolutionByTestContestAndPage(Integer pageSize, Integer offset, Long contestId);
 
     /**
      * 根据 ID 获取 solution
@@ -59,6 +82,15 @@ public interface SolutionManager {
      * @return 提交的问题的
      */
     Solution selectLastSolutionByUserIdAndProblemId(Long userId, Long problemId);
+
+    /**
+     * 获取目标用户的目标题目以及目标比赛的最后一次提交的结果
+     * @param userId 用户 ID
+     * @param problemId 题目的 ID
+     * @param contestId 比赛的 ID
+     * @return 提交的问题的
+     */
+    Solution selectLastSolutionByUserIdAndProblemIdAndContestId(Long userId, Long problemId, Long contestId);
 
     /**
      * 新增一个 solution
