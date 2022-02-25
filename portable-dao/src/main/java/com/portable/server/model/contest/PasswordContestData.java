@@ -16,4 +16,9 @@ public class PasswordContestData extends BasicContestData {
      * 密码
      */
     private String password;
+
+    @Override
+    public Object getAccessValue() {
+        return password;
+    }
 }

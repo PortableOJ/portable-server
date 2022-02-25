@@ -18,4 +18,9 @@ public class PrivateContestData extends BasicContestData {
      * 邀请的用户列表
      */
     private Set<Long> inviteUserSet;
+
+    @Override
+    public Object getAccessValue() {
+        return inviteUserSet;
+    }
 }

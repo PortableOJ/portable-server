@@ -1,11 +1,9 @@
 package com.portable.server.model.contest;
 
-import com.portable.server.type.ProblemAccessType;
 import lombok.Data;
 import lombok.experimental.SuperBuilder;
 
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 /**
@@ -18,7 +16,7 @@ public abstract class BasicContestData {
     /**
      * 题目列表与题目信息
      */
-    private Map<Long, ContestProblemData> problemList;
+    private List<ContestProblemData> problemList;
 
     /**
      * 共同的出题人
@@ -35,8 +33,19 @@ public abstract class BasicContestData {
      */
     private String announcement;
 
+    /**
+     * 获取访问权限的值
+     * @return 访问权限的值
+     */
+    public abstract Object getAccessValue();
+
     @Data
     public static class ContestProblemData {
+
+        /**
+         * 真实的问题 id
+         */
+        private Long problemId;
 
         /**
          * 历史提交数量
