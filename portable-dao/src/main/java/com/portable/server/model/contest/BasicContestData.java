@@ -26,7 +26,7 @@ public abstract class BasicContestData {
     /**
      * 封榜时长
      */
-    private Long freezeTime;
+    private Integer freezeTime;
 
     /**
      * 公告
@@ -34,10 +34,9 @@ public abstract class BasicContestData {
     private String announcement;
 
     /**
-     * 获取访问权限的值
-     * @return 访问权限的值
+     * 惩罚时间（分钟）
      */
-    public abstract Object getAccessValue();
+    private Integer penaltyTime;
 
     @Data
     public static class ContestProblemData {
@@ -57,7 +56,8 @@ public abstract class BasicContestData {
          */
         private Integer acceptCount;
 
-        ContestProblemData() {
+        public ContestProblemData(Long problemId) {
+            this.problemId = problemId;
             this.submissionCount = 0;
             this.acceptCount = 0;
         }

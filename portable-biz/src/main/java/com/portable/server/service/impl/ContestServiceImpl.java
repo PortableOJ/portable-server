@@ -3,10 +3,18 @@ package com.portable.server.service.impl;
 import com.portable.server.exception.PortableException;
 import com.portable.server.manager.ContestDataManager;
 import com.portable.server.manager.ContestManager;
+import com.portable.server.manager.ProblemDataManager;
+import com.portable.server.manager.ProblemManager;
+import com.portable.server.manager.SolutionDataManager;
+import com.portable.server.manager.SolutionManager;
+import com.portable.server.manager.UserManager;
 import com.portable.server.model.contest.BasicContestData;
 import com.portable.server.model.contest.Contest;
 import com.portable.server.model.contest.ContestVisitPermission;
+import com.portable.server.model.contest.PasswordContestData;
 import com.portable.server.model.contest.PrivateContestData;
+import com.portable.server.model.problem.Problem;
+import com.portable.server.model.problem.ProblemData;
 import com.portable.server.model.request.PageRequest;
 import com.portable.server.model.request.contest.ContestAddProblem;
 import com.portable.server.model.request.contest.ContestContestRequest;
@@ -18,31 +26,35 @@ import com.portable.server.model.response.contest.ContestDetailResponse;
 import com.portable.server.model.response.contest.ContestListResponse;
 import com.portable.server.model.response.contest.ContestRankResponse;
 import com.portable.server.model.response.problem.ProblemDetailResponse;
+import com.portable.server.model.response.problem.ProblemListResponse;
 import com.portable.server.model.response.solution.SolutionDetailResponse;
 import com.portable.server.model.response.solution.SolutionListResponse;
+import com.portable.server.model.solution.Solution;
+import com.portable.server.model.solution.SolutionData;
+import com.portable.server.model.user.User;
 import com.portable.server.service.ContestService;
+import com.portable.server.type.ContestAccessType;
 import com.portable.server.type.PermissionType;
+import com.portable.server.type.SolutionType;
 import com.portable.server.util.UserContext;
 import lombok.Builder;
 import lombok.Data;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 /**
  * @author shiroha
  */
 @Component
 public class ContestServiceImpl implements ContestService {
-
-    @Resource
-    private ContestManager contestManager;
-
-    @Resource
-    private ContestDataManager contestDataManager;
 
     @Data
     @Builder
@@ -51,76 +63,251 @@ public class ContestServiceImpl implements ContestService {
         private BasicContestData contestData;
     }
 
+    @Resource
+    private ContestManager contestManager;
+
+    @Resource
+    private ContestDataManager contestDataManager;
+
+    @Resource
+    private UserManager userManager;
+
+    @Resource
+    private ProblemManager problemManager;
+
+    @Resource
+    private ProblemDataManager problemDataManager;
+
+    @Resource
+    private SolutionManager solutionManager;
+
+    @Resource
+    private SolutionDataManager solutionDataManager;
+
     @Override
     public PageResponse<ContestListResponse> getContestList(PageRequest<Void> pageRequest) {
         Integer contestCount = contestManager.getAllContestNumber();
         PageResponse<ContestListResponse> response = PageResponse.of(pageRequest, contestCount);
         List<Contest> contestList = contestManager.getContestByPage(response.getPageSize(), response.offset());
-        List<ContestListResponse> contestListResponses = contestList.stream()
+        List<ContestListResponse> contestListResponseList = contestList.stream()
                 .map(ContestListResponse::of)
                 .collect(Collectors.toList());
-        response.setData(contestListResponses);
+        response.setData(contestListResponseList);
         return response;
     }
 
     @Override
+    public ContestVisitPermission authorizeContest(Long contestId, String password) throws PortableException {
+        ContestPackage contestPackage = getContestPackage(contestId);
+        ContestVisitPermission contestVisitPermission = checkPermission(contestPackage);
+
+        // 如果已经至少是参与者了，则返回
+        if (ContestVisitPermission.PARTICIPANT.approve(contestVisitPermission)) {
+            return contestVisitPermission;
+        }
+
+        // 通过密码可以验证用户是否可以参与到这个比赛中
+        if (ContestAccessType.PASSWORD.equals(contestPackage.getContest().getAccessType())) {
+            PasswordContestData contestData = (PasswordContestData) contestPackage.getContestData();
+            if (!Objects.equals(contestData.getPassword(), password)) {
+                throw PortableException.of("A-08-003");
+            }
+            UserContext.addCurUserContestVisit(contestId, ContestVisitPermission.PARTICIPANT);
+            return ContestVisitPermission.PARTICIPANT;
+        }
+        return contestVisitPermission;
+    }
+
+    @Override
     public ContestDetailResponse getContestData(Long contestId) throws PortableException {
+        return getContestAdminData(contestId, false);
+    }
+
+    @Override
+    public ContestAdminDetailResponse getContestAdminData(Long contestId) throws PortableException {
+        return (ContestAdminDetailResponse) getContestAdminData(contestId, true);
+    }
+
+    @Override
+    public ProblemDetailResponse getContestProblem(Long contestId, Integer problemIndex) throws PortableException {
         ContestPackage contestPackage = getContestPackage(contestId);
         ContestVisitPermission contestVisitPermission = checkPermission(contestPackage);
         if (!ContestVisitPermission.VISIT.approve(contestVisitPermission)) {
-            // TODO
+            throw PortableException.of("A-08-004", contestId);
         }
-        return null;
+        BasicContestData.ContestProblemData contestProblemData = contestPackage.getContestData().getProblemList().get(problemIndex);
+        Problem problem = problemManager.getProblemById(contestProblemData.getProblemId());
+        ProblemData problemData = problemDataManager.getProblemData(problem.getDataId());
+        User user = userManager.getAccountById(problem.getOwner());
+        return ProblemDetailResponse.of(problem, problemData, user);
     }
 
     @Override
-    public ContestAdminDetailResponse getContestAdminData(Long contestId) {
-        return null;
+    public PageResponse<SolutionListResponse> getContestStatusList(Long contestId, PageRequest<SolutionListQueryRequest> pageRequest) throws PortableException {
+        ContestPackage contestPackage = getContestPackage(contestId);
+        ContestVisitPermission contestVisitPermission = checkPermission(contestPackage);
+        if (!ContestVisitPermission.VISIT.approve(contestVisitPermission)) {
+            throw PortableException.of("A-08-004", contestId);
+        }
+
+        int problemLength = contestPackage.getContestData().getProblemList().size();
+        Map<Long, Integer> problemIdToProblemIndexMap = IntStream.range(0, problemLength)
+                .boxed()
+                .collect(Collectors.toMap(i ->contestPackage.getContestData().getProblemList().get(i).getProblemId(), i -> i));
+
+        Integer solutionCount = solutionManager.countSolutionByContest(contestId);
+        PageResponse<SolutionListResponse> response = PageResponse.of(pageRequest, solutionCount);
+        List<Solution> solutionList = solutionManager.selectSolutionByContestAndPage(response.getPageSize(), response.offset(), contestId);
+        @SuppressWarnings("DuplicatedCode")
+        List<SolutionListResponse> solutionListResponseList = solutionList.stream()
+                .map(solution -> {
+                    User user = userManager.getAccountById(solution.getUserId());
+                    Problem problem = problemManager.getProblemById(solution.getProblemId());
+                    SolutionListResponse solutionListResponse = SolutionListResponse.of(solution, user, problem);
+                    solutionListResponse.setProblemId(Long.valueOf(problemIdToProblemIndexMap.get(problem.getId())));
+                    return solutionListResponse;
+                })
+                .collect(Collectors.toList());
+        response.setData(solutionListResponseList);
+        return response;
     }
 
     @Override
-    public ProblemDetailResponse getContestProblem(Long contestId, Long problemIndex) {
-        return null;
+    public SolutionDetailResponse getContestSolution(Long solutionId) throws PortableException {
+        Solution solution = solutionManager.selectSolutionById(solutionId);
+        ContestPackage contestPackage = getContestPackage(solution.getContestId());
+        ContestVisitPermission contestVisitPermission = checkPermission(contestPackage);
+        if (!ContestVisitPermission.VISIT.approve(contestVisitPermission)) {
+            throw PortableException.of("A-08-004", contestPackage.getContest().getId());
+        }
+
+        int problemLength = contestPackage.getContestData().getProblemList().size();
+        Map<Long, Integer> problemIdToProblemIndexMap = IntStream.range(0, problemLength)
+                .boxed()
+                .collect(Collectors.toMap(i ->contestPackage.getContestData().getProblemList().get(i).getProblemId(), i -> i));
+
+        // 比赛结束之后，所有人都可以查看其他人的提交。否则，仅本人和管理员可以查看
+        Long curUserId = UserContext.ctx().getId();
+        boolean endContest = contestPackage.getContest().isEnd();
+        boolean self = Objects.equals(solution.getUserId(), curUserId);
+        boolean admin = Objects.equals(contestPackage.getContest().getOwner(), curUserId)
+                || contestPackage.getContestData().getCoAuthor().contains(curUserId);
+        if (endContest || self || admin) {
+            SolutionData solutionData = solutionDataManager.getSolutionData(solution.getDataId());
+            User user = userManager.getAccountById(solution.getUserId());
+            Problem problem = problemManager.getProblemById(solution.getProblemId());
+            SolutionDetailResponse solutionDetailResponse = SolutionDetailResponse.of(solution, solutionData, user, problem, admin);
+            solutionDetailResponse.setProblemId(Long.valueOf(problemIdToProblemIndexMap.get(problem.getId())));
+            return solutionDetailResponse;
+        }
+        throw PortableException.of("A-08-005", solutionId);
     }
 
     @Override
-    public PageResponse<SolutionListResponse> getContestStatusList(Long contestId, PageRequest<SolutionListQueryRequest> pageRequest) {
-        return null;
+    public PageResponse<SolutionListResponse> getContestTestStatusList(Long contestId, PageRequest<SolutionListQueryRequest> pageRequest) throws PortableException {
+        ContestPackage contestPackage = getContestPackage(contestId);
+        ContestVisitPermission contestVisitPermission = checkPermission(contestPackage);
+        if (!ContestVisitPermission.CO_AUTHOR.approve(contestVisitPermission)) {
+            throw PortableException.of("A-08-006", contestId);
+        }
+
+        int problemLength = contestPackage.getContestData().getProblemList().size();
+        Map<Long, Integer> problemIdToProblemIndexMap = IntStream.range(0, problemLength)
+                .boxed()
+                .collect(Collectors.toMap(i ->contestPackage.getContestData().getProblemList().get(i).getProblemId(), i -> i));
+
+        Integer solutionCount = solutionManager.countSolutionByTestContest(contestId);
+        PageResponse<SolutionListResponse> response = PageResponse.of(pageRequest, solutionCount);
+        List<Solution> solutionList = solutionManager.selectSolutionByTestContestAndPage(response.getPageSize(), response.offset(), contestId);
+        @SuppressWarnings("DuplicatedCode")
+        List<SolutionListResponse> solutionListResponseList = solutionList.stream()
+                .map(solution -> {
+                    User user = userManager.getAccountById(solution.getUserId());
+                    Problem problem = problemManager.getProblemById(solution.getProblemId());
+                    SolutionListResponse solutionListResponse = SolutionListResponse.of(solution, user, problem);
+                    solutionListResponse.setProblemId(Long.valueOf(problemIdToProblemIndexMap.get(problem.getId())));
+                    return solutionListResponse;
+                })
+                .collect(Collectors.toList());
+        response.setData(solutionListResponseList);
+        return response;
     }
 
     @Override
-    public SolutionDetailResponse getContestSolution(Long solutionId) {
-        return null;
-    }
+    public SolutionDetailResponse getContestTestSolution(Long solutionId) throws PortableException {
+        Solution solution = solutionManager.selectSolutionById(solutionId);
+        ContestPackage contestPackage = getContestPackage(solution.getContestId());
+        ContestVisitPermission contestVisitPermission = checkPermission(contestPackage);
+        if (!ContestVisitPermission.CO_AUTHOR.approve(contestVisitPermission)) {
+            throw PortableException.of("A-08-006", contestPackage.getContest().getId());
+        }
 
-    @Override
-    public PageResponse<SolutionListResponse> getContestTestStatusList(Long contestId, PageRequest<SolutionListQueryRequest> pageRequest) {
-        return null;
-    }
+        int problemLength = contestPackage.getContestData().getProblemList().size();
+        Map<Long, Integer> problemIdToProblemIndexMap = IntStream.range(0, problemLength)
+                .boxed()
+                .collect(Collectors.toMap(i ->contestPackage.getContestData().getProblemList().get(i).getProblemId(), i -> i));
 
-    @Override
-    public SolutionDetailResponse getContestTestSolution(Long solutionId) {
-        return null;
+        SolutionData solutionData = solutionDataManager.getSolutionData(solution.getDataId());
+        User user = userManager.getAccountById(solution.getUserId());
+        Problem problem = problemManager.getProblemById(solution.getProblemId());
+        SolutionDetailResponse solutionDetailResponse = SolutionDetailResponse.of(solution, solutionData, user, problem, true);
+        solutionDetailResponse.setProblemId(Long.valueOf(problemIdToProblemIndexMap.get(problem.getId())));
+        return solutionDetailResponse;
     }
 
     @Override
     public PageResponse<ContestRankResponse> getContestRank(Long contestId, PageRequest<Void> pageRequest) {
+        // TODO: 待完成榜单系统
         return null;
     }
 
     @Override
-    public Long submit(SubmitSolutionRequest submitSolutionRequest) {
-        return null;
+    public Long submit(SubmitSolutionRequest submitSolutionRequest) throws PortableException {
+        ContestPackage contestPackage = getContestPackage(submitSolutionRequest.getContestId());
+        ContestVisitPermission contestVisitPermission = checkPermission(contestPackage);
+        if (!ContestVisitPermission.PARTICIPANT.approve(contestVisitPermission)) {
+            throw PortableException.of("A-08-007", submitSolutionRequest.getContestId());
+        }
+
+        // 普通参赛的仅允许在比赛开始期间进行提交
+        if (ContestVisitPermission.PARTICIPANT.equals(contestVisitPermission)) {
+            if (!contestPackage.getContest().isStarted() || contestPackage.getContest().isEnd()) {
+                throw PortableException.of("A-08-008", submitSolutionRequest.getContestId());
+            }
+        }
+
+        BasicContestData.ContestProblemData contestProblemData = contestPackage.getContestData()
+                .getProblemList()
+                .get(Math.toIntExact(submitSolutionRequest.getProblemId()));
+
+        Problem problem = problemManager.getProblemById(contestProblemData.getProblemId());
+        ProblemData problemData = problemDataManager.getProblemData(problem.getDataId());
+
+        Solution solution = solutionManager.newSolution();
+        SolutionData solutionData = solutionDataManager.newSolutionData(problemData);
+
+        // 普通参赛选手提交至普通提交列表
+        if (ContestVisitPermission.PARTICIPANT.equals(contestVisitPermission)) {
+            contestProblemData.setSubmissionCount(contestProblemData.getSubmissionCount() + 1);
+            contestDataManager.saveContestData(contestPackage.getContestData());
+            solution.setSolutionType(SolutionType.CONTEST);
+        } else {
+            solution.setSolutionType(SolutionType.TEST_CONTEST);
+        }
+        solutionDataManager.insertSolutionData(solutionData);
+        solution.setDataId(solutionData.get_id());
+        solutionManager.insertSolution(solution);
+        return solution.getId();
     }
 
     @Override
     public Long createContest(ContestContestRequest contestContestRequest) {
+        // TODO: 记得要改比赛的拥有者
         return null;
     }
 
     @Override
     public void updateContest(ContestContestRequest contestContestRequest) {
-
     }
 
     @Override
@@ -151,6 +338,94 @@ public class ContestServiceImpl implements ContestService {
                 .contest(contest)
                 .contestData(contestData)
                 .build();
+    }
+
+    /**
+     * 验证题目的访问权限，并获取题目信息
+     *
+     * @param contestId       比赛 id
+     * @param withProblemLock 是否需要比赛锁信息
+     * @return 比赛详情
+     * @throws PortableException 出现非法访问则抛出错误
+     */
+    public ContestDetailResponse getContestAdminData(Long contestId, Boolean withProblemLock) throws PortableException {
+        ContestPackage contestPackage = getContestPackage(contestId);
+        ContestVisitPermission contestVisitPermission = checkPermission(contestPackage);
+        if (!ContestVisitPermission.VISIT.approve(contestVisitPermission)) {
+            throw PortableException.of("A-08-004", contestId);
+        }
+        // 获取主办方和出题人的名称
+        User owner = userManager.getAccountById(contestPackage.getContest().getOwner());
+        Set<String> coAuthor = contestPackage.getContestData().getCoAuthor().stream()
+                .parallel()
+                .map(aLong -> {
+                    User author = userManager.getAccountById(aLong);
+                    return author == null ? "" : author.getHandle();
+                })
+                .collect(Collectors.toSet());
+
+        // 获取题目信息
+        UserContext userContext = UserContext.ctx();
+        List<Boolean> problemLock = new ArrayList<>();
+        List<ProblemListResponse> problemListResponses = IntStream.range(0, contestPackage.getContestData().getProblemList().size())
+                .mapToObj(i -> {
+                    BasicContestData.ContestProblemData contestProblemData = contestPackage.getContestData().getProblemList().get(i);
+                    Problem problem = problemManager.getProblemById(contestProblemData.getProblemId());
+                    if (problem == null) {
+                        return null;
+                    }
+                    Solution solution = solutionManager.selectLastSolutionByUserIdAndProblemIdAndContestId(userContext.getId(), problem.getId(), contestId);
+                    ProblemListResponse problemListResponse = ProblemListResponse.of(problem, solution);
+                    problemListResponse.setAcceptCount(contestProblemData.getAcceptCount());
+                    problemListResponse.setSubmissionCount(contestProblemData.getSubmissionCount());
+
+                    // 将每道题目的序号设置为比赛中的序号
+                    problemListResponse.setId((long) i);
+                    if (withProblemLock) {
+                        ProblemData problemData = problemDataManager.getProblemData(problem.getDataId());
+                        problemLock.add(Objects.equals(problemData.getContestId(), contestId));
+                    }
+                    return problemListResponse;
+                })
+                .collect(Collectors.toList());
+        if (problemListResponses.contains(null)) {
+            throw PortableException.of("S-07-001", contestId);
+        }
+        if (withProblemLock) {
+            Set<String> inviteUserSet = null;
+            switch (contestPackage.getContest().getAccessType()) {
+                case PUBLIC:
+                case PASSWORD:
+                    break;
+                case PRIVATE:
+                    PrivateContestData privateContestData = (PrivateContestData) contestPackage.getContestData();
+                    inviteUserSet = privateContestData.getInviteUserSet().stream()
+                            .map(aLong -> {
+                                User user = userManager.getAccountById(aLong);
+                                if (user == null) {
+                                    return null;
+                                }
+                                return user.getHandle();
+                            })
+                            .filter(s -> !Objects.isNull(s))
+                            .collect(Collectors.toSet());
+                    break;
+                default:
+                    throw PortableException.of("A-08-001", contestPackage.getContest().getAccessType());
+            }
+            return ContestAdminDetailResponse.of(contestPackage.getContest(),
+                    contestPackage.getContestData(),
+                    owner.getHandle(),
+                    problemListResponses,
+                    coAuthor,
+                    problemLock,
+                    inviteUserSet);
+        }
+        return ContestAdminDetailResponse.of(contestPackage.getContest(),
+                contestPackage.getContestData(),
+                owner.getHandle(),
+                problemListResponses,
+                coAuthor);
     }
 
     private ContestVisitPermission checkPermission(ContestPackage contestPackage) {

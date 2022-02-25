@@ -79,6 +79,7 @@
         SELECT * FROM solution
         WHERE solution_type = 'CONTEST'
         AND contest_id = #{contestId}
+        ORDER BY id DESC
         LIMIT #{pageSize}
         OFFSET #{offset}
     </select>
@@ -87,6 +88,7 @@
         SELECT * FROM solution
         WHERE solution_type = 'TEST_CONTEST'
           AND contest_id = #{contestId}
+        ORDER BY id DESC
         LIMIT #{pageSize}
         OFFSET #{offset}
     </select>

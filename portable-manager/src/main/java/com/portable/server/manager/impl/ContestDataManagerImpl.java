@@ -30,23 +30,26 @@ public class ContestDataManagerImpl implements ContestDataManager {
                 return PublicContestData.builder()
                         .problemList(new ArrayList<>())
                         .coAuthor(new HashSet<>())
-                        .freezeTime(0L)
+                        .freezeTime(0)
                         .announcement("")
+                        .penaltyTime(0)
                         .build();
             case PASSWORD:
                 return PasswordContestData.builder()
                         .problemList(new ArrayList<>())
                         .coAuthor(new HashSet<>())
-                        .freezeTime(0L)
+                        .freezeTime(0)
                         .announcement("")
+                        .penaltyTime(0)
                         .password("")
                         .build();
             case PRIVATE:
                 return PrivateContestData.builder()
                         .problemList(new ArrayList<>())
                         .coAuthor(new HashSet<>())
-                        .freezeTime(0L)
+                        .freezeTime(0)
                         .announcement("")
+                        .penaltyTime(0)
                         .inviteUserSet(new HashSet<>())
                         .build();
             default:

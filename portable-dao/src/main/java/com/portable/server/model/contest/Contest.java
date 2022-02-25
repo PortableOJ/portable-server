@@ -3,7 +3,9 @@ package com.portable.server.model.contest;
 import com.portable.server.type.ContestAccessType;
 import lombok.Builder;
 import lombok.Data;
+import org.checkerframework.checker.units.qual.C;
 
+import java.util.Calendar;
 import java.util.Date;
 
 /**
@@ -47,4 +49,15 @@ public class Contest {
      * 访问权限
      */
     private ContestAccessType accessType;
+
+    public Boolean isStarted() {
+        return !startTime.after(new Date());
+    }
+
+    public Boolean isEnd() {
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(startTime);
+        calendar.add(Calendar.MINUTE, duration);
+        return !calendar.getTime().after(new Date());
+    }
 }

@@ -61,7 +61,7 @@ public class ContestDetailResponse {
     /**
      * 封榜时长
      */
-    private Long freezeTime;
+    private Integer freezeTime;
 
     /**
      * 公告
@@ -79,5 +79,9 @@ public class ContestDetailResponse {
         this.coAuthor = coAuthor;
         this.freezeTime = contestData.getFreezeTime();
         this.announcement = contestData.getAnnouncement();
+    }
+
+    public static ContestDetailResponse of(Contest contest, BasicContestData contestData, String ownerHandle, List<ProblemListResponse> problemList, Set<String> coAuthor) {
+        return new ContestDetailResponse(contest, contestData, ownerHandle, problemList, coAuthor);
     }
 }

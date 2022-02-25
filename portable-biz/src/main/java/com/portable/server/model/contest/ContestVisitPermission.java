@@ -19,17 +19,17 @@ public enum ContestVisitPermission {
     VISIT(1),
 
     /**
-     * 比赛参与者
+     * 比赛参与者，可以提交
      */
     PARTICIPANT(2),
 
     /**
-     * 合作出题人
+     * 合作出题人，可以在比赛开始前添加题目，可以提交至测试列表
      */
     CO_AUTHOR(3),
 
     /**
-     * 比赛拥有者
+     * 比赛拥有者，可以拥有题目的完整权限，提交至测试列表
      */
     ADMIN(4),
     ;
@@ -41,6 +41,6 @@ public enum ContestVisitPermission {
     }
 
     public Boolean approve(ContestVisitPermission contestVisitPermission) {
-        return this.code < contestVisitPermission.getCode();
+        return this.code <= contestVisitPermission.getCode();
     }
 }

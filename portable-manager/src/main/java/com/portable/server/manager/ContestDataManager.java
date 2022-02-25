@@ -16,6 +16,7 @@ public interface ContestDataManager {
      * 创建一个新的比赛实体
      * @param accessType 比赛类型
      * @return 实体信息
+     * @throws PortableException 不存在此类型的比赛时候抛出
      */
     BasicContestData newContestData(ContestAccessType accessType) throws PortableException;
 

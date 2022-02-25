@@ -48,6 +48,11 @@ public class SolutionManagerImpl implements SolutionManager {
     }
 
     @Override
+    public Integer countSolutionByTestContest(Long contestId) {
+        return solutionMapper.countSolutionByTestContest(contestId);
+    }
+
+    @Override
     public List<Solution> selectPublicSolutionByPage(Integer pageSize, Integer offset, Long userId, Long problemId, SolutionStatusType statusType) {
         return solutionMapper.selectPublicSolutionByPage(pageSize, offset, userId, problemId, statusType);
     }
@@ -58,6 +63,11 @@ public class SolutionManagerImpl implements SolutionManager {
     }
 
     @Override
+    public List<Solution> selectSolutionByTestContestAndPage(Integer pageSize, Integer offset, Long contestId) {
+        return solutionMapper.selectSolutionByTestContestAndPage(pageSize, offset, contestId);
+    }
+
+    @Override
     public Solution selectSolutionById(Long id) {
         return solutionMapper.selectSolutionById(id);
     }
@@ -65,6 +75,11 @@ public class SolutionManagerImpl implements SolutionManager {
     @Override
     public Solution selectLastSolutionByUserIdAndProblemId(Long userId, Long problemId) {
         return solutionMapper.selectLastSolutionByUserIdAndProblemId(userId, problemId);
+    }
+
+    @Override
+    public Solution selectLastSolutionByUserIdAndProblemIdAndContestId(Long userId, Long problemId, Long contestId) {
+        return solutionMapper.selectLastSolutionByUserIdAndProblemIdAndContestId(userId, problemId, contestId);
     }
 
     @Override

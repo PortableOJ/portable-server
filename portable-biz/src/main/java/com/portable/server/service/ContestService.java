@@ -1,6 +1,7 @@
 package com.portable.server.service;
 
 import com.portable.server.exception.PortableException;
+import com.portable.server.model.contest.ContestVisitPermission;
 import com.portable.server.model.request.PageRequest;
 import com.portable.server.model.request.contest.ContestAddProblem;
 import com.portable.server.model.request.contest.ContestContestRequest;
@@ -28,6 +29,15 @@ public interface ContestService {
     PageResponse<ContestListResponse> getContestList(PageRequest<Void> pageRequest);
 
     /**
+     * 通过密码认证比赛
+     * @param contestId 比赛的 id
+     * @param password 密码
+     * @throws PortableException 比赛 id 错误或者密码错误时抛出
+     * @return 访问权限
+     */
+    ContestVisitPermission authorizeContest(Long contestId, String password) throws PortableException;
+
+    /**
      * 获取比赛的详情
      * @param contestId 比赛的 id
      * @throws PortableException 比赛不存在或者无权访问则抛出错误
@@ -40,7 +50,7 @@ public interface ContestService {
      * @param contestId 比赛的 id
      * @return 比赛的详情
      */
-    ContestAdminDetailResponse getContestAdminData(Long contestId);
+    ContestAdminDetailResponse getContestAdminData(Long contestId) throws PortableException;
 
     /**
      * 查看比赛中的题目信息
@@ -48,7 +58,7 @@ public interface ContestService {
      * @param problemIndex 题目序号
      * @return 比赛的详情
      */
-    ProblemDetailResponse getContestProblem(Long contestId, Long problemIndex);
+    ProblemDetailResponse getContestProblem(Long contestId, Integer problemIndex) throws PortableException;
 
     /**
      * 获取比赛的所有提交信息
@@ -56,14 +66,14 @@ public interface ContestService {
      * @param pageRequest 提交的过滤条件
      * @return 比赛的提交列表
      */
-    PageResponse<SolutionListResponse> getContestStatusList(Long contestId, PageRequest<SolutionListQueryRequest> pageRequest);
+    PageResponse<SolutionListResponse> getContestStatusList(Long contestId, PageRequest<SolutionListQueryRequest> pageRequest) throws PortableException;
 
     /**
      * 查看比赛中的提交信息
      * @param solutionId 提交信息
      * @return 提交详情
      */
-    SolutionDetailResponse getContestSolution(Long solutionId);
+    SolutionDetailResponse getContestSolution(Long solutionId) throws PortableException;
 
     /**
      * 获取比赛的所有<span color="red">测试</span>提交信息
@@ -71,14 +81,14 @@ public interface ContestService {
      * @param pageRequest 提交的过滤条件
      * @return 比赛的提交列表
      */
-    PageResponse<SolutionListResponse> getContestTestStatusList(Long contestId, PageRequest<SolutionListQueryRequest> pageRequest);
+    PageResponse<SolutionListResponse> getContestTestStatusList(Long contestId, PageRequest<SolutionListQueryRequest> pageRequest) throws PortableException;
 
     /**
      * 查看比赛中的<span color="red">测试</span>提交信息
      * @param solutionId 提交信息
      * @return 提交详情
      */
-    SolutionDetailResponse getContestTestSolution(Long solutionId);
+    SolutionDetailResponse getContestTestSolution(Long solutionId) throws PortableException;
 
     /**
      * 获取比赛的榜单
@@ -93,7 +103,7 @@ public interface ContestService {
      * @param submitSolutionRequest 提交信息
      * @return 提交的 id
      */
-    Long submit(SubmitSolutionRequest submitSolutionRequest);
+    Long submit(SubmitSolutionRequest submitSolutionRequest) throws PortableException;
 
     /**
      * 创建比赛

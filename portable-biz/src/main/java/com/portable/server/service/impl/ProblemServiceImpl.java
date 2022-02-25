@@ -41,7 +41,6 @@ import com.portable.server.util.UserContext;
 import lombok.Builder;
 import lombok.Data;
 import lombok.Getter;
-import org.checkerframework.checker.units.qual.C;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
@@ -49,7 +48,6 @@ import javax.annotation.Resource;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.Arrays;
-import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
@@ -251,10 +249,7 @@ public class ProblemServiceImpl implements ProblemService {
         // 校验题目关联的比赛是否已经结束
         if (problemPackage.getProblemData().getContestId() != null) {
             Contest contest = contestManager.getContestById(problemPackage.getProblemData().getContestId());
-            Calendar calendar = Calendar.getInstance();
-            calendar.setTime(contest.getStartTime());
-            calendar.add(Calendar.MINUTE, contest.getDuration());
-            if (calendar.getTime().after(new Date())) {
+            if (!contest.isEnd()) {
                 throw PortableException.of("A-04-014", problemPackage.getProblemData().getContestId());
             }
         }
@@ -488,11 +483,13 @@ public class ProblemServiceImpl implements ProblemService {
         }
         UserContext userContext = UserContext.ctx();
 
+        // 更新用户和题目的提交统计数量
         problemManager.updateProblemCount(submitSolutionRequest.getProblemId(), 1, 0);
         NormalUserData normalUserData = userDataManager.getNormalUserDataById(userContext.getDataId());
         normalUserData.setSubmission(normalUserData.getSubmission() + 1);
         userDataManager.updateNormalUserData(normalUserData);
 
+        // 创建提交信息
         SolutionData solutionData = solutionDataManager.newSolutionData(problemPackage.getProblemData());
         submitSolutionRequest.toSolutionData(solutionData);
         solutionDataManager.saveSolutionData(solutionData);
