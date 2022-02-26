@@ -4,7 +4,7 @@ import com.portable.server.exception.PortableException;
 import com.portable.server.model.contest.ContestVisitPermission;
 import com.portable.server.model.request.PageRequest;
 import com.portable.server.model.request.contest.ContestAddProblem;
-import com.portable.server.model.request.contest.ContestContestRequest;
+import com.portable.server.model.request.contest.ContestContentRequest;
 import com.portable.server.model.request.solution.SolutionListQueryRequest;
 import com.portable.server.model.request.solution.SubmitSolutionRequest;
 import com.portable.server.model.response.PageResponse;
@@ -49,6 +49,7 @@ public interface ContestService {
      * 获取比赛的管理员级别信息
      * @param contestId 比赛的 id
      * @return 比赛的详情
+     * @throws PortableException 没有权限或者没有此比赛时抛出
      */
     ContestAdminDetailResponse getContestAdminData(Long contestId) throws PortableException;
 
@@ -57,6 +58,7 @@ public interface ContestService {
      * @param contestId 比赛 id
      * @param problemIndex 题目序号
      * @return 比赛的详情
+     * @throws PortableException 没有权限或没有此比赛时抛出
      */
     ProblemDetailResponse getContestProblem(Long contestId, Integer problemIndex) throws PortableException;
 
@@ -65,6 +67,7 @@ public interface ContestService {
      * @param contestId 比赛的 id
      * @param pageRequest 提交的过滤条件
      * @return 比赛的提交列表
+     * @throws PortableException 没有权限或没有此比赛时抛出
      */
     PageResponse<SolutionListResponse> getContestStatusList(Long contestId, PageRequest<SolutionListQueryRequest> pageRequest) throws PortableException;
 
@@ -72,6 +75,7 @@ public interface ContestService {
      * 查看比赛中的提交信息
      * @param solutionId 提交信息
      * @return 提交详情
+     * @throws PortableException 没有权限或没有此比赛时抛出
      */
     SolutionDetailResponse getContestSolution(Long solutionId) throws PortableException;
 
@@ -80,6 +84,7 @@ public interface ContestService {
      * @param contestId 比赛的 id
      * @param pageRequest 提交的过滤条件
      * @return 比赛的提交列表
+     * @throws PortableException 没有权限或没有此比赛时抛出
      */
     PageResponse<SolutionListResponse> getContestTestStatusList(Long contestId, PageRequest<SolutionListQueryRequest> pageRequest) throws PortableException;
 
@@ -87,6 +92,7 @@ public interface ContestService {
      * 查看比赛中的<span color="red">测试</span>提交信息
      * @param solutionId 提交信息
      * @return 提交详情
+     * @throws PortableException 没有权限或没有此比赛时抛出
      */
     SolutionDetailResponse getContestTestSolution(Long solutionId) throws PortableException;
 
@@ -102,22 +108,24 @@ public interface ContestService {
      * 提交代码
      * @param submitSolutionRequest 提交信息
      * @return 提交的 id
+     * @throws PortableException 没有权限或没有此比赛时抛出
      */
     Long submit(SubmitSolutionRequest submitSolutionRequest) throws PortableException;
 
     /**
      * 创建比赛
-     * @param contestContestRequest 比赛的创建信息
+     * @param contestContentRequest 比赛的创建信息
      * @return 比赛创建后的 id
+     * @throws PortableException 没有权限或没有此比赛时抛出
      */
-    Long createContest(ContestContestRequest contestContestRequest);
+    Long createContest(ContestContentRequest contestContentRequest) throws PortableException;
 
     /**
      * 更新比赛的信息
      *
-     * @param contestContestRequest 比赛的更新后信息
+     * @param contestContentRequest 比赛的更新后信息
      */
-    void updateContest(ContestContestRequest contestContestRequest);
+    void updateContest(ContestContentRequest contestContentRequest);
 
     /**
      * 比赛合作出题人新增题目

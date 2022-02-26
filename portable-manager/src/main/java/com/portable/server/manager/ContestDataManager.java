@@ -1,7 +1,7 @@
 package com.portable.server.manager;
 
 import com.portable.server.exception.PortableException;
-import com.portable.server.model.contest.BasicContestData;
+import com.portable.server.model.contest.BaseContestData;
 import com.portable.server.model.contest.PasswordContestData;
 import com.portable.server.model.contest.PrivateContestData;
 import com.portable.server.model.contest.PublicContestData;
@@ -18,7 +18,7 @@ public interface ContestDataManager {
      * @return 实体信息
      * @throws PortableException 不存在此类型的比赛时候抛出
      */
-    BasicContestData newContestData(ContestAccessType accessType) throws PortableException;
+    BaseContestData newContestData(ContestAccessType accessType) throws PortableException;
 
     /**
      * 获取公开的比赛信息
@@ -45,11 +45,11 @@ public interface ContestDataManager {
      * 新建比赛
      * @param contestData 比赛的信息
      */
-    void insertContestData(BasicContestData contestData);
+    void insertContestData(BaseContestData contestData);
 
     /**
      * 更新比赛信息
      * @param contestData 比赛的信息
      */
-    void saveContestData(BasicContestData contestData);
+    void saveContestData(BaseContestData contestData);
 }

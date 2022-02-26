@@ -8,7 +8,7 @@ import com.portable.server.manager.ProblemManager;
 import com.portable.server.manager.SolutionDataManager;
 import com.portable.server.manager.SolutionManager;
 import com.portable.server.manager.UserManager;
-import com.portable.server.model.contest.BasicContestData;
+import com.portable.server.model.contest.BaseContestData;
 import com.portable.server.model.contest.Contest;
 import com.portable.server.model.contest.ContestVisitPermission;
 import com.portable.server.model.contest.PasswordContestData;
@@ -17,7 +17,7 @@ import com.portable.server.model.problem.Problem;
 import com.portable.server.model.problem.ProblemData;
 import com.portable.server.model.request.PageRequest;
 import com.portable.server.model.request.contest.ContestAddProblem;
-import com.portable.server.model.request.contest.ContestContestRequest;
+import com.portable.server.model.request.contest.ContestContentRequest;
 import com.portable.server.model.request.solution.SolutionListQueryRequest;
 import com.portable.server.model.request.solution.SubmitSolutionRequest;
 import com.portable.server.model.response.PageResponse;
@@ -60,7 +60,7 @@ public class ContestServiceImpl implements ContestService {
     @Builder
     public static class ContestPackage {
         private Contest contest;
-        private BasicContestData contestData;
+        private BaseContestData contestData;
     }
 
     @Resource
@@ -135,7 +135,7 @@ public class ContestServiceImpl implements ContestService {
         if (!ContestVisitPermission.VISIT.approve(contestVisitPermission)) {
             throw PortableException.of("A-08-004", contestId);
         }
-        BasicContestData.ContestProblemData contestProblemData = contestPackage.getContestData().getProblemList().get(problemIndex);
+        BaseContestData.ContestProblemData contestProblemData = contestPackage.getContestData().getProblemList().get(problemIndex);
         Problem problem = problemManager.getProblemById(contestProblemData.getProblemId());
         ProblemData problemData = problemDataManager.getProblemData(problem.getDataId());
         User user = userManager.getAccountById(problem.getOwner());
@@ -153,7 +153,7 @@ public class ContestServiceImpl implements ContestService {
         int problemLength = contestPackage.getContestData().getProblemList().size();
         Map<Long, Integer> problemIdToProblemIndexMap = IntStream.range(0, problemLength)
                 .boxed()
-                .collect(Collectors.toMap(i ->contestPackage.getContestData().getProblemList().get(i).getProblemId(), i -> i));
+                .collect(Collectors.toMap(i -> contestPackage.getContestData().getProblemList().get(i).getProblemId(), i -> i));
 
         Integer solutionCount = solutionManager.countSolutionByContest(contestId);
         PageResponse<SolutionListResponse> response = PageResponse.of(pageRequest, solutionCount);
@@ -184,7 +184,7 @@ public class ContestServiceImpl implements ContestService {
         int problemLength = contestPackage.getContestData().getProblemList().size();
         Map<Long, Integer> problemIdToProblemIndexMap = IntStream.range(0, problemLength)
                 .boxed()
-                .collect(Collectors.toMap(i ->contestPackage.getContestData().getProblemList().get(i).getProblemId(), i -> i));
+                .collect(Collectors.toMap(i -> contestPackage.getContestData().getProblemList().get(i).getProblemId(), i -> i));
 
         // 比赛结束之后，所有人都可以查看其他人的提交。否则，仅本人和管理员可以查看
         Long curUserId = UserContext.ctx().getId();
@@ -214,7 +214,7 @@ public class ContestServiceImpl implements ContestService {
         int problemLength = contestPackage.getContestData().getProblemList().size();
         Map<Long, Integer> problemIdToProblemIndexMap = IntStream.range(0, problemLength)
                 .boxed()
-                .collect(Collectors.toMap(i ->contestPackage.getContestData().getProblemList().get(i).getProblemId(), i -> i));
+                .collect(Collectors.toMap(i -> contestPackage.getContestData().getProblemList().get(i).getProblemId(), i -> i));
 
         Integer solutionCount = solutionManager.countSolutionByTestContest(contestId);
         PageResponse<SolutionListResponse> response = PageResponse.of(pageRequest, solutionCount);
@@ -245,7 +245,7 @@ public class ContestServiceImpl implements ContestService {
         int problemLength = contestPackage.getContestData().getProblemList().size();
         Map<Long, Integer> problemIdToProblemIndexMap = IntStream.range(0, problemLength)
                 .boxed()
-                .collect(Collectors.toMap(i ->contestPackage.getContestData().getProblemList().get(i).getProblemId(), i -> i));
+                .collect(Collectors.toMap(i -> contestPackage.getContestData().getProblemList().get(i).getProblemId(), i -> i));
 
         SolutionData solutionData = solutionDataManager.getSolutionData(solution.getDataId());
         User user = userManager.getAccountById(solution.getUserId());
@@ -276,7 +276,7 @@ public class ContestServiceImpl implements ContestService {
             }
         }
 
-        BasicContestData.ContestProblemData contestProblemData = contestPackage.getContestData()
+        BaseContestData.ContestProblemData contestProblemData = contestPackage.getContestData()
                 .getProblemList()
                 .get(Math.toIntExact(submitSolutionRequest.getProblemId()));
 
@@ -301,13 +301,43 @@ public class ContestServiceImpl implements ContestService {
     }
 
     @Override
-    public Long createContest(ContestContestRequest contestContestRequest) {
-        // TODO: 记得要改比赛的拥有者
-        return null;
+    public synchronized Long createContest(ContestContentRequest contestContentRequest) throws PortableException {
+        Contest contest = contestManager.newContest();
+        BaseContestData contestData = contestDataManager.newContestData(contestContentRequest.getAccessType());
+        contestContentRequest.toContest(contest);
+        contest.setOwner(UserContext.ctx().getId());
+        Set<Long> coAuthorIdSet = contestContentRequest.getCoAuthor().stream()
+                .parallel()
+                .map(s -> {
+                    User user = userManager.getAccountByHandle(s);
+                    if (user == null) {
+                        return null;
+                    }
+                    return user.getId();
+                })
+                .filter(aLong -> !Objects.isNull(aLong))
+                .collect(Collectors.toSet());
+        Set<Long> inviteUserIdSet = contestContentRequest.getInviteUserSet().stream()
+                .parallel()
+                .map(s -> {
+                    User user = userManager.getAccountByHandle(s);
+                    if (user == null) {
+                        return null;
+                    }
+                    return user.getId();
+                })
+                .filter(aLong -> !Objects.isNull(aLong))
+                .collect(Collectors.toSet());
+        contestContentRequest.toContestData(contestData, coAuthorIdSet, inviteUserIdSet);
+        contestDataManager.insertContestData(contestData);
+        contest.setDataId(contestData.get_id());
+        contestManager.newContest(contest);
+
+        return contest.getId();
     }
 
     @Override
-    public void updateContest(ContestContestRequest contestContestRequest) {
+    public void updateContest(ContestContentRequest contestContentRequest) {
     }
 
     @Override
@@ -320,7 +350,7 @@ public class ContestServiceImpl implements ContestService {
         if (contest == null) {
             throw PortableException.of("A-08-002", contestId);
         }
-        BasicContestData contestData;
+        BaseContestData contestData;
         switch (contest.getAccessType()) {
             case PUBLIC:
                 contestData = contestDataManager.getPublicContestDataById(contest.getDataId());
@@ -369,7 +399,7 @@ public class ContestServiceImpl implements ContestService {
         List<Boolean> problemLock = new ArrayList<>();
         List<ProblemListResponse> problemListResponses = IntStream.range(0, contestPackage.getContestData().getProblemList().size())
                 .mapToObj(i -> {
-                    BasicContestData.ContestProblemData contestProblemData = contestPackage.getContestData().getProblemList().get(i);
+                    BaseContestData.ContestProblemData contestProblemData = contestPackage.getContestData().getProblemList().get(i);
                     Problem problem = problemManager.getProblemById(contestProblemData.getProblemId());
                     if (problem == null) {
                         return null;
@@ -430,7 +460,7 @@ public class ContestServiceImpl implements ContestService {
 
     private ContestVisitPermission checkPermission(ContestPackage contestPackage) {
         Contest contest = contestPackage.getContest();
-        BasicContestData contestData = contestPackage.getContestData();
+        BaseContestData contestData = contestPackage.getContestData();
         UserContext userContext = UserContext.ctx();
         ContestVisitPermission contestVisitPermission = userContext.getContestVisitPermissionMap().get(contest.getId());
         if (contestVisitPermission != null) {

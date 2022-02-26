@@ -2,6 +2,7 @@ package com.portable.server.model.contest;
 
 import lombok.Data;
 import lombok.experimental.SuperBuilder;
+import org.springframework.data.annotation.Id;
 
 import java.util.List;
 import java.util.Set;
@@ -11,8 +12,14 @@ import java.util.Set;
  */
 @Data
 @SuperBuilder
-public abstract class BasicContestData {
+public abstract class BaseContestData {
 
+    /**
+     * Mongo 数据库主键
+     */
+    @Id
+    @SuppressWarnings("AlibabaAvoidStartWithDollarAndUnderLineNaming")
+    private String _id;
     /**
      * 题目列表与题目信息
      */

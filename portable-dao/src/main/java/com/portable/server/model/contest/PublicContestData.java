@@ -10,10 +10,5 @@ import lombok.experimental.SuperBuilder;
 @Data
 @SuperBuilder
 @EqualsAndHashCode(callSuper = true)
-public class PublicContestData extends BasicContestData {
-
-    @Override
-    public Object getAccessValue() {
-        return null;
-    }
+public class PublicContestData extends BaseContestData {
 }

@@ -1,7 +1,7 @@
 package com.portable.server.model.response.contest;
 
 import com.portable.server.exception.PortableException;
-import com.portable.server.model.contest.BasicContestData;
+import com.portable.server.model.contest.BaseContestData;
 import com.portable.server.model.contest.Contest;
 import com.portable.server.model.contest.PasswordContestData;
 import com.portable.server.model.response.problem.ProblemListResponse;
@@ -36,7 +36,7 @@ public class ContestAdminDetailResponse extends ContestDetailResponse {
     private List<Boolean> problemLock;
 
     ContestAdminDetailResponse(Contest contest,
-                               BasicContestData contestData,
+                               BaseContestData contestData,
                                String ownerHandle,
                                List<ProblemListResponse> problemList,
                                Set<String> coAuthor,
@@ -60,7 +60,7 @@ public class ContestAdminDetailResponse extends ContestDetailResponse {
     }
 
     public static ContestAdminDetailResponse of(Contest contest,
-                                                BasicContestData contestData,
+                                                BaseContestData contestData,
                                                 String ownerHandle,
                                                 List<ProblemListResponse> problemList,
                                                 Set<String> coAuthor,

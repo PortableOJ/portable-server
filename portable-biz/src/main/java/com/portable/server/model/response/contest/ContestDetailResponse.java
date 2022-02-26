@@ -1,15 +1,13 @@
 package com.portable.server.model.response.contest;
 
-import com.portable.server.model.contest.BasicContestData;
+import com.portable.server.model.contest.BaseContestData;
 import com.portable.server.model.contest.Contest;
 import com.portable.server.model.response.problem.ProblemListResponse;
 import com.portable.server.type.ContestAccessType;
-import com.portable.server.type.ProblemAccessType;
 import lombok.Data;
 
 import java.util.Date;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 /**
@@ -68,7 +66,7 @@ public class ContestDetailResponse {
      */
     private String announcement;
 
-    ContestDetailResponse(Contest contest, BasicContestData contestData, String ownerHandle, List<ProblemListResponse> problemList, Set<String> coAuthor) {
+    ContestDetailResponse(Contest contest, BaseContestData contestData, String ownerHandle, List<ProblemListResponse> problemList, Set<String> coAuthor) {
         this.id = contest.getId();
         this.title = contest.getTitle();
         this.startTime = contest.getStartTime();
@@ -81,7 +79,7 @@ public class ContestDetailResponse {
         this.announcement = contestData.getAnnouncement();
     }
 
-    public static ContestDetailResponse of(Contest contest, BasicContestData contestData, String ownerHandle, List<ProblemListResponse> problemList, Set<String> coAuthor) {
+    public static ContestDetailResponse of(Contest contest, BaseContestData contestData, String ownerHandle, List<ProblemListResponse> problemList, Set<String> coAuthor) {
         return new ContestDetailResponse(contest, contestData, ownerHandle, problemList, coAuthor);
     }
 }

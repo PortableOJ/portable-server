@@ -12,15 +12,10 @@ import java.util.Set;
 @Data
 @SuperBuilder
 @EqualsAndHashCode(callSuper = true)
-public class PrivateContestData extends BasicContestData {
+public class PrivateContestData extends BaseContestData {
 
     /**
      * 邀请的用户列表
      */
     private Set<Long> inviteUserSet;
-
-    @Override
-    public Object getAccessValue() {
-        return inviteUserSet;
-    }
 }

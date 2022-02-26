@@ -1,7 +1,7 @@
 package com.portable.server.model.request.contest;
 
 import com.portable.server.exception.PortableException;
-import com.portable.server.model.contest.BasicContestData;
+import com.portable.server.model.contest.BaseContestData;
 import com.portable.server.model.contest.Contest;
 import com.portable.server.model.contest.PasswordContestData;
 import com.portable.server.model.contest.PrivateContestData;
@@ -11,7 +11,6 @@ import lombok.Data;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -19,7 +18,7 @@ import java.util.stream.Collectors;
  * @author shiroha
  */
 @Data
-public class ContestContestRequest {
+public class ContestContentRequest {
 
     /**
      * 数据库主键
@@ -89,21 +88,21 @@ public class ContestContestRequest {
         contest.setAccessType(this.accessType);
     }
 
-    public void toContestData(BasicContestData contestData, Set<Long> coAuthorIdSet, Set<Long> inviteUserIdSet) throws PortableException {
+    public void toContestData(BaseContestData contestData, Set<Long> coAuthorIdSet, Set<Long> inviteUserIdSet) throws PortableException {
         contestData.setCoAuthor(coAuthorIdSet);
         contestData.setFreezeTime(this.freezeTime);
         contestData.setAnnouncement(this.announcement);
         contestData.setPenaltyTime(this.penaltyTime);
-        Map<Long, BasicContestData.ContestProblemData> problemDataMap = contestData.getProblemList()
+        Map<Long, BaseContestData.ContestProblemData> problemDataMap = contestData.getProblemList()
                 .stream()
-                .collect(Collectors.toMap(BasicContestData.ContestProblemData::getProblemId, contestProblemData -> contestProblemData));
-        List<BasicContestData.ContestProblemData> newProblemList = problemList.stream()
+                .collect(Collectors.toMap(BaseContestData.ContestProblemData::getProblemId, contestProblemData -> contestProblemData));
+        List<BaseContestData.ContestProblemData> newProblemList = problemList.stream()
                 .parallel()
                 .map(aLong -> {
                     if (problemDataMap.containsKey(aLong)) {
                         return problemDataMap.get(aLong);
                     } else {
-                        return new BasicContestData.ContestProblemData(aLong);
+                        return new BaseContestData.ContestProblemData(aLong);
                     }
                 })
                 .collect(Collectors.toList());

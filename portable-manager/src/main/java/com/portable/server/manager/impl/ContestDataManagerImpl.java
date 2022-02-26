@@ -2,7 +2,7 @@ package com.portable.server.manager.impl;
 
 import com.portable.server.exception.PortableException;
 import com.portable.server.manager.ContestDataManager;
-import com.portable.server.model.contest.BasicContestData;
+import com.portable.server.model.contest.BaseContestData;
 import com.portable.server.model.contest.PasswordContestData;
 import com.portable.server.model.contest.PrivateContestData;
 import com.portable.server.model.contest.PublicContestData;
@@ -24,7 +24,7 @@ public class ContestDataManagerImpl implements ContestDataManager {
     private ContestDataRepo contestDataRepo;
 
     @Override
-    public BasicContestData newContestData(ContestAccessType accessType) throws PortableException {
+    public BaseContestData newContestData(ContestAccessType accessType) throws PortableException {
         switch (accessType) {
             case PUBLIC:
                 return PublicContestData.builder()
@@ -73,12 +73,12 @@ public class ContestDataManagerImpl implements ContestDataManager {
     }
 
     @Override
-    public void insertContestData(BasicContestData contestData) {
+    public void insertContestData(BaseContestData contestData) {
         contestDataRepo.insertContestData(contestData);
     }
 
     @Override
-    public void saveContestData(BasicContestData contestData) {
+    public void saveContestData(BaseContestData contestData) {
         contestDataRepo.saveContestData(contestData);
     }
 }
