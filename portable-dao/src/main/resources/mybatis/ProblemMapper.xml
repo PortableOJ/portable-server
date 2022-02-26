@@ -45,7 +45,7 @@
         <if test="userId != null">
             OR problem.owner = #{userId}
         </if>
-        ORDER BY problem.id desc
+        ORDER BY problem.id
         LIMIT #{offset}, #{pageSize}
     </select>
 
