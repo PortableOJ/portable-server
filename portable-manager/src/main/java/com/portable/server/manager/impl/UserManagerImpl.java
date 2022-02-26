@@ -7,6 +7,11 @@ import com.portable.server.type.AccountType;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
+import java.util.Collection;
+import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * @author shiroha
@@ -31,6 +36,15 @@ public class UserManagerImpl implements UserManager {
     @Override
     public User getAccountByHandle(String handle) {
         return userMapper.selectAccountByHandle(handle);
+    }
+
+    @Override
+    public Stream<Long> changeUserHandleToUserId(Collection<String> handleList) {
+        return handleList.stream()
+                .map(s -> {
+                    User user = userMapper.selectAccountByHandle(s);
+                    return user == null ? null : user.getId();
+                });
     }
 
     @Override

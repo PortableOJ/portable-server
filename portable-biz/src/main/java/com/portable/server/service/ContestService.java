@@ -124,13 +124,15 @@ public interface ContestService {
      * 更新比赛的信息
      *
      * @param contestContentRequest 比赛的更新后信息
+     * @throws PortableException 无权或者数据非法则抛出
      */
-    void updateContest(ContestContentRequest contestContentRequest);
+    void updateContest(ContestContentRequest contestContentRequest) throws PortableException;
 
     /**
      * 比赛合作出题人新增题目
      *
      * @param contestAddProblem 比赛增加的题目
+     * @throws PortableException 无权或者数据非法则抛出
      */
-    void addContestProblem(ContestAddProblem contestAddProblem);
+    void addContestProblem(ContestAddProblem contestAddProblem) throws PortableException;
 }

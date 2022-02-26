@@ -8,5 +8,7 @@ import lombok.Data;
 @Data
 public class ContestAddProblem {
 
+    private Long contestId;
+
     private Long problemId;
 }

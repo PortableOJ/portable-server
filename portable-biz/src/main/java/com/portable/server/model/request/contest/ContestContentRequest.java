@@ -125,4 +125,34 @@ public class ContestContentRequest {
                 throw PortableException.of("A-08-001", this.accessType);
         }
     }
+
+    public void toContestData(BaseContestData contestData) throws PortableException {
+        contestData.setFreezeTime(this.freezeTime);
+        contestData.setAnnouncement(this.announcement);
+        contestData.setPenaltyTime(this.penaltyTime);
+        Map<Long, BaseContestData.ContestProblemData> problemDataMap = contestData.getProblemList()
+                .stream()
+                .collect(Collectors.toMap(BaseContestData.ContestProblemData::getProblemId, contestProblemData -> contestProblemData));
+        List<BaseContestData.ContestProblemData> newProblemList = problemList.stream()
+                // 防止因为删除 map 中数据的时候出现并发错误问题
+                .sequential()
+                .map(aLong -> {
+                    if (problemDataMap.containsKey(aLong)) {
+                        BaseContestData.ContestProblemData contestProblemData = problemDataMap.get(aLong);
+                        problemDataMap.remove(aLong);
+                        return contestProblemData;
+                    } else {
+                        return new BaseContestData.ContestProblemData(aLong);
+                    }
+                })
+                .collect(Collectors.toList());
+        if (!problemDataMap.isEmpty()) {
+            String deleteProblemList = problemDataMap.keySet().stream()
+                    .map(String::valueOf)
+                    .collect(Collectors.joining(", "));
+            throw PortableException.of("A-08-009", deleteProblemList);
+        }
+        contestData.setProblemList(newProblemList);
+    }
+
 }

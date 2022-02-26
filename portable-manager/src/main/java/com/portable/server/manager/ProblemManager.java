@@ -47,6 +47,13 @@ public interface ProblemManager {
     Problem getProblemById(Long id);
 
     /**
+     * 校验题目列表是否存在
+     * @param problemList 题目列表
+     * @return 不存在的题目列表
+     */
+    List<Long> checkProblemListExist(List<Long> problemList);
+
+    /**
      * 插入题目，强调是新增
      *
      * @param problem 需要新增的题目，其中的 id 字段会被新的值覆盖
