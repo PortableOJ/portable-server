@@ -1,9 +1,10 @@
 package com.portable.server.service;
 
 import com.portable.server.exception.PortableException;
-import com.portable.server.model.contest.ContestVisitPermission;
+import com.portable.server.type.ContestVisitPermission;
 import com.portable.server.model.request.PageRequest;
 import com.portable.server.model.request.contest.ContestAddProblem;
+import com.portable.server.model.request.contest.ContestAuth;
 import com.portable.server.model.request.contest.ContestContentRequest;
 import com.portable.server.model.request.solution.SolutionListQueryRequest;
 import com.portable.server.model.request.solution.SubmitSolutionRequest;
@@ -30,12 +31,11 @@ public interface ContestService {
 
     /**
      * 通过密码认证比赛
-     * @param contestId 比赛的 id
-     * @param password 密码
+     * @param contestAuth 验证信息
      * @throws PortableException 比赛 id 错误或者密码错误时抛出
      * @return 访问权限
      */
-    ContestVisitPermission authorizeContest(Long contestId, String password) throws PortableException;
+    ContestVisitPermission authorizeContest(ContestAuth contestAuth) throws PortableException;
 
     /**
      * 获取比赛的详情

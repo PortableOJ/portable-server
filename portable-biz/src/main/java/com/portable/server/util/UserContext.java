@@ -4,7 +4,7 @@ import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
 import com.portable.server.exception.PortableException;
-import com.portable.server.model.contest.ContestVisitPermission;
+import com.portable.server.type.ContestVisitPermission;
 import com.portable.server.model.user.NormalUserData;
 import com.portable.server.model.user.User;
 import com.portable.server.type.AccountType;

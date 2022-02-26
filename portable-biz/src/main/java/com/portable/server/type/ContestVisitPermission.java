@@ -1,4 +1,4 @@
-package com.portable.server.model.contest;
+package com.portable.server.type;
 
 import lombok.Getter;
 

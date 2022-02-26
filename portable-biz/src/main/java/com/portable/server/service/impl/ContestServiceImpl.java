@@ -10,13 +10,14 @@ import com.portable.server.manager.SolutionManager;
 import com.portable.server.manager.UserManager;
 import com.portable.server.model.contest.BaseContestData;
 import com.portable.server.model.contest.Contest;
-import com.portable.server.model.contest.ContestVisitPermission;
+import com.portable.server.type.ContestVisitPermission;
 import com.portable.server.model.contest.PasswordContestData;
 import com.portable.server.model.contest.PrivateContestData;
 import com.portable.server.model.problem.Problem;
 import com.portable.server.model.problem.ProblemData;
 import com.portable.server.model.request.PageRequest;
 import com.portable.server.model.request.contest.ContestAddProblem;
+import com.portable.server.model.request.contest.ContestAuth;
 import com.portable.server.model.request.contest.ContestContentRequest;
 import com.portable.server.model.request.solution.SolutionListQueryRequest;
 import com.portable.server.model.request.solution.SubmitSolutionRequest;
@@ -98,8 +99,8 @@ public class ContestServiceImpl implements ContestService {
     }
 
     @Override
-    public ContestVisitPermission authorizeContest(Long contestId, String password) throws PortableException {
-        ContestPackage contestPackage = getContestPackage(contestId);
+    public ContestVisitPermission authorizeContest(ContestAuth contestAuth) throws PortableException {
+        ContestPackage contestPackage = getContestPackage(contestAuth.getContestId());
         ContestVisitPermission contestVisitPermission = checkPermission(contestPackage);
 
         // 如果已经至少是参与者了，则返回
@@ -110,10 +111,10 @@ public class ContestServiceImpl implements ContestService {
         // 通过密码可以验证用户是否可以参与到这个比赛中
         if (ContestAccessType.PASSWORD.equals(contestPackage.getContest().getAccessType())) {
             PasswordContestData contestData = (PasswordContestData) contestPackage.getContestData();
-            if (!Objects.equals(contestData.getPassword(), password)) {
+            if (!Objects.equals(contestData.getPassword(), contestAuth.getPassword())) {
                 throw PortableException.of("A-08-003");
             }
-            UserContext.addCurUserContestVisit(contestId, ContestVisitPermission.PARTICIPANT);
+            UserContext.addCurUserContestVisit(contestAuth.getContestId(), ContestVisitPermission.PARTICIPANT);
             return ContestVisitPermission.PARTICIPANT;
         }
         return contestVisitPermission;
