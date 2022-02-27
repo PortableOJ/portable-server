@@ -55,6 +55,7 @@ public class UserController {
     @NeedLogin(false)
     @PostMapping("/login")
     public Response<UserBasicInfoResponse> login(HttpServletRequest request, @RequestBody LoginRequest loginRequest) throws PortableException {
+        UserContext.set(UserContext.getNullUser());
         UserBasicInfoResponse userBasicInfoResponse = userService.login(loginRequest);
         HttpSession httpSession = request.getSession();
         httpSession.setAttribute(RequestSessionConstant.USER_ID, userBasicInfoResponse.getId());
@@ -64,6 +65,7 @@ public class UserController {
     @NeedLogin(false)
     @PostMapping("/register")
     public Response<NormalUserInfoResponse> register(HttpServletRequest request, @RequestBody RegisterRequest registerRequest) throws PortableException {
+        UserContext.set(UserContext.getNullUser());
         if (!NORMAL_HANDLE_PATTERN.matcher(registerRequest.getHandle()).matches()) {
             throw PortableException.of("A-01-004");
         }
@@ -79,6 +81,7 @@ public class UserController {
     @NeedLogin
     @PostMapping("/logout")
     public Response<Void> logout(HttpServletRequest request) {
+        UserContext.set(UserContext.getNullUser());
         HttpSession httpSession = request.getSession();
         httpSession.removeAttribute(RequestSessionConstant.USER_ID);
         return Response.ofOk();
