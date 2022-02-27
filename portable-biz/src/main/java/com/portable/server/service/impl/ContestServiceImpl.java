@@ -137,11 +137,16 @@ public class ContestServiceImpl implements ContestService {
         if (!ContestVisitPermission.VISIT.approve(contestVisitPermission)) {
             throw PortableException.of("A-08-004", contestId);
         }
+        if (problemIndex >= contestPackage.getContestData().getProblemList().size() || problemIndex < 0) {
+            throw PortableException.of("A-08-018", contestId, problemIndex);
+        }
         BaseContestData.ContestProblemData contestProblemData = contestPackage.getContestData().getProblemList().get(problemIndex);
         Problem problem = problemManager.getProblemById(contestProblemData.getProblemId());
         ProblemData problemData = problemDataManager.getProblemData(problem.getDataId());
         User user = userManager.getAccountById(problem.getOwner());
-        return ProblemDetailResponse.of(problem, problemData, user);
+        ProblemDetailResponse problemDetailResponse = ProblemDetailResponse.of(problem, problemData, user);
+        problemDetailResponse.setId(Long.valueOf(problemIndex));
+        return problemDetailResponse;
     }
 
     @Override
@@ -284,9 +289,12 @@ public class ContestServiceImpl implements ContestService {
 
         Problem problem = problemManager.getProblemById(contestProblemData.getProblemId());
         ProblemData problemData = problemDataManager.getProblemData(problem.getDataId());
+        submitSolutionRequest.setProblemId(contestProblemData.getProblemId());
 
         Solution solution = solutionManager.newSolution();
         SolutionData solutionData = solutionDataManager.newSolutionData(problemData);
+        submitSolutionRequest.toSolution(solution);
+        submitSolutionRequest.toSolutionData(solutionData);
 
         // 普通参赛选手提交至普通提交列表
         if (ContestVisitPermission.PARTICIPANT.equals(contestVisitPermission)) {
@@ -298,6 +306,7 @@ public class ContestServiceImpl implements ContestService {
         }
         solutionDataManager.insertSolutionData(solutionData);
         solution.setDataId(solutionData.get_id());
+        solution.setUserId(UserContext.ctx().getId());
         solutionManager.insertSolution(solution);
         return solution.getId();
     }
@@ -426,7 +435,8 @@ public class ContestServiceImpl implements ContestService {
     public ContestDetailResponse getContestDetail(Long contestId, Boolean admin) throws PortableException {
         ContestPackage contestPackage = getContestPackage(contestId);
         ContestVisitPermission contestVisitPermission = checkPermission(contestPackage);
-        if (!ContestVisitPermission.VISIT.approve(contestVisitPermission)) {
+        if (admin && !ContestVisitPermission.ADMIN.approve(contestVisitPermission)
+                || !ContestVisitPermission.VISIT.approve(contestVisitPermission)) {
             throw PortableException.of("A-08-004", contestId);
         }
         // 获取主办方和出题人的名称
@@ -539,7 +549,7 @@ public class ContestServiceImpl implements ContestService {
             contestVisitPermission = ContestVisitPermission.ADMIN;
         }
 
-        if (!contestVisitPermission.approve(ContestVisitPermission.VISIT)
+        if (!ContestVisitPermission.VISIT.approve(contestVisitPermission)
                 && userContext.getPermissionTypeSet().contains(PermissionType.VIEW_ALL_CONTEST)) {
             contestVisitPermission = ContestVisitPermission.VISIT;
         }

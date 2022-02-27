@@ -1,6 +1,7 @@
 package com.portable.server.model.contest;
 
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
 import org.springframework.data.annotation.Id;
 
@@ -12,6 +13,7 @@ import java.util.Set;
  */
 @Data
 @SuperBuilder
+@NoArgsConstructor
 public abstract class BaseContestData {
 
     /**

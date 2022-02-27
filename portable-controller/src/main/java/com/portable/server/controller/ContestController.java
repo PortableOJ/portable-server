@@ -64,7 +64,7 @@ public class ContestController {
     }
 
     @NeedLogin
-    @GetMapping("/contestAdmin")
+    @GetMapping("/getAdmin")
     public Response<ContestAdminDetailResponse> getContestAdminData(Long contestId) throws PortableException {
         return Response.ofOk(contestService.getContestAdminData(contestId));
     }

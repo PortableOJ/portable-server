@@ -41,6 +41,7 @@ public class ContestListResponse {
      * 是否已经认证过了，即不需要输入认证信息
      */
     private Boolean isCertified;
+    // TODO: 没有写入
 
     private ContestListResponse(Contest contest) {
         this.id = contest.getId();

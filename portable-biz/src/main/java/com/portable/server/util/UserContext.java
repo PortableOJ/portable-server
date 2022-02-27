@@ -106,6 +106,7 @@ public class UserContext implements AutoCloseable {
                 .build(new CacheLoader<Long, UserContext>() {
                     @Override
                     public UserContext load(@NonNull Long aLong) {
+                        // TODO: 使用新的 redis 模版
                         String redisResult = redisTemplate.opsForValue().get(aLong.toString());
                         if (Objects.isNull(redisResult) || redisResult.isEmpty()) {
                             return getNullUser();
@@ -138,6 +139,7 @@ public class UserContext implements AutoCloseable {
         LOCAL.set(userContext);
         if (userContext.getId() != null) {
             USER_CACHE.put(userContext.getId(), userContext);
+            // TODO: 使用新的 redis 模版
             redisTemplate.opsForValue().set(
                     userContext.getId().toString(),
                     JsonUtils.toString(userContext),

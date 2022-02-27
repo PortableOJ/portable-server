@@ -9,6 +9,7 @@ import com.portable.server.type.ContestAccessType;
 import lombok.Data;
 
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -115,8 +116,8 @@ public class ContestContentRequest {
                 passwordContestData.setPassword(this.password);
                 break;
             case PRIVATE:
-                if (this.inviteUserSet == null) {
-                    throw PortableException.of("A-08-009");
+                if (inviteUserIdSet == null) {
+                    inviteUserIdSet = new HashSet<>();
                 }
                 PrivateContestData privateContestData = (PrivateContestData) contestData;
                 privateContestData.setInviteUserSet(inviteUserIdSet);

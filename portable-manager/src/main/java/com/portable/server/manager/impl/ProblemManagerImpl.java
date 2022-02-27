@@ -9,6 +9,7 @@ import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 /**
@@ -56,6 +57,7 @@ public class ProblemManagerImpl implements ProblemManager {
                     Problem problem = getProblemById(aLong);
                     return problem == null ? aLong : null;
                 })
+                .filter(aLong -> !Objects.isNull(aLong))
                 .collect(Collectors.toList());
     }
 
