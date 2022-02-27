@@ -27,7 +27,7 @@ public class ProblemDataManagerImpl implements ProblemDataManager {
         return ProblemData.builder()
                 ._id(null)
                 .contestId(null)
-                .defaultTimeLimit(1000)
+                .defaultTimeLimit(1)
                 .defaultMemoryLimit(128)
                 .specialTimeLimit(new HashMap<>(0))
                 .specialMemoryLimit(new HashMap<>(0))

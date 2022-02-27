@@ -27,6 +27,6 @@ int main(int argc, char *argv[]) {
 
     ouf.readEof();
 
-    accept("%d floating point numbers are all within the error range(%lf)",
+    accept("%d floating point number(s) is/are all within the error range(%lf)",
            totalFloat, eps);
 }
