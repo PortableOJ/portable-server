@@ -46,6 +46,16 @@ public class ProblemManagerImpl implements ProblemManager {
     }
 
     @Override
+    public List<Problem> searchRecentProblemByTypedAndKeyword(List<ProblemAccessType> accessTypeList, String keyword, Integer num) {
+        return problemMapper.selectRecentProblemByTypeAndKeyword(accessTypeList, keyword, num);
+    }
+
+    @Override
+    public List<Problem> searchRecentProblemByOwnerIdAndKeyword(Long ownerId, String keyword, Integer num) {
+        return problemMapper.selectPrivateProblemByKeyword(ownerId, keyword, num);
+    }
+
+    @Override
     public Problem getProblemById(Long id) {
         return problemMapper.selectProblemById(id);
     }

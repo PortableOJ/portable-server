@@ -37,6 +37,7 @@ import com.portable.server.type.ProblemStatusType;
 import com.portable.server.type.SolutionStatusType;
 import com.portable.server.type.SolutionType;
 import com.portable.server.util.StreamUtils;
+import com.portable.server.util.Switch;
 import com.portable.server.util.UserContext;
 import lombok.Builder;
 import lombok.Data;
@@ -182,6 +183,25 @@ public class ProblemServiceImpl implements ProblemService {
 
         problemPageResponse.setData(problemDataResponseList);
         return problemPageResponse;
+    }
+
+    @Override
+    public List<ProblemListResponse> searchProblemSetList(String keyword) {
+        boolean isLogin = UserContext.ctx().isLogin();
+        boolean viewHiddenProblem = isLogin && UserContext.ctx().getPermissionTypeSet().contains(PermissionType.VIEW_HIDDEN_PROBLEM);
+        List<ProblemAccessType> problemAccessTypeList = viewHiddenProblem ? Arrays.asList(ProblemAccessType.PUBLIC, ProblemAccessType.HIDDEN) : Collections.singletonList(ProblemAccessType.PUBLIC);
+        List<Problem> problemList = problemManager.searchRecentProblemByTypedAndKeyword(problemAccessTypeList, keyword, Switch.searchPageSize);
+        return problemList.stream()
+                .map(problem -> ProblemListResponse.of(problem, null))
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<ProblemListResponse> searchPrivateProblemList(String keyword) {
+        List<Problem> problemList = problemManager.searchRecentProblemByOwnerIdAndKeyword(UserContext.ctx().getId(), keyword, Switch.searchPageSize);
+        return problemList.stream()
+                .map(problem -> ProblemListResponse.of(problem, null))
+                .collect(Collectors.toList());
     }
 
     @Override

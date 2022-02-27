@@ -37,7 +37,7 @@
 
     <select id="selectProblemListByPageAndTypeAndOwnerId" resultMap="Problem">
         SELECT *
-        FROM portable_oj.problem
+        FROM problem
         WHERE problem.access_type IN
         <foreach collection="accessTypeList" item="type" open="(" separator="," close=")">
             #{type}
@@ -46,7 +46,32 @@
             OR problem.owner = #{userId}
         </if>
         ORDER BY problem.id
-        LIMIT #{offset}, #{pageSize}
+        LIMIT #{pageSize}
+        OFFSET #{offset}
+    </select>
+
+    <select id="selectRecentProblemByTypeAndKeyword" resultMap="Problem">
+        SELECT *
+        FROM problem
+        WHERE
+        problem.access_type IN
+        <foreach collection="accessTypeList" item="type" open="(" separator="," close=")">
+            #{type}
+        </foreach>
+            AND
+        title LIKE CONCAT('%', #{keyword}, '%')
+        ORDER BY problem.id DESC
+        LIMIT #{num}
+    </select>
+
+    <select id="selectPrivateProblemByKeyword" resultType="com.portable.server.model.problem.Problem">
+        SELECT *
+        FROM problem
+        WHERE access_type = 'PRIVATE'
+        AND owner = #{userId}
+        AND title LIKE CONCAT('%', #{keyword}, '%')
+        ORDER BY id DESC
+        LIMIT #{num}
     </select>
 
     <select id="selectProblemById" resultMap="Problem">
@@ -57,9 +82,14 @@
 
     <insert id="insertProblem" parameterMap="Problem" useGeneratedKeys="true" keyProperty="id">
         INSERT INTO portable_oj.problem
-        (problem.data_id, problem.title, problem.status_type, problem.access_type, problem.submission_count, problem.accept_count, problem.owner)
-        VALUES
-        (#{dataId}, #{title}, #{statusType}, #{accessType}, #{submissionCount}, #{acceptCount}, #{owner})
+        (problem.data_id,
+         problem.title,
+         problem.status_type,
+         problem.access_type,
+         problem.submission_count,
+         problem.accept_count,
+         problem.owner)
+        VALUES (#{dataId}, #{title}, #{statusType}, #{accessType}, #{submissionCount}, #{acceptCount}, #{owner})
     </insert>
 
     <update id="updateProblemTitle">
@@ -83,7 +113,7 @@
     <update id="updateProblemCount">
         UPDATE portable_oj.problem
         SET problem.submission_count = problem.submission_count + #{submitCount},
-            problem.accept_count = problem.accept_count + #{acceptCount}
+            problem.accept_count     = problem.accept_count + #{acceptCount}
         WHERE problem.id = #{id}
     </update>
 

@@ -27,6 +27,20 @@ public interface ProblemService {
     PageResponse<ProblemListResponse> getProblemList(PageRequest<Void> pageRequest);
 
     /**
+     * 获取公开的题库中匹配关键字的题目，可能搜索私有的
+     * @param keyword 关键字
+     * @return 题目列表
+     */
+    List<ProblemListResponse> searchProblemSetList(String keyword);
+
+    /**
+     * 获取私人题库中匹配关键字的题目，仅限私人
+     * @param keyword 关键字
+     * @return 题目列表
+     */
+    List<ProblemListResponse> searchPrivateProblemList(String keyword);
+
+    /**
      * 查看题目详情
      *
      * @param id 题目 ID
@@ -43,6 +57,7 @@ public interface ProblemService {
      * @throws PortableException 遇到意外情况抛出错误
      */
     List<String> getProblemTestList(Long id) throws PortableException;
+
 
     /**
      * 获取题目输入文件的预览

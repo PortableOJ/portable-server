@@ -69,6 +69,18 @@ public class ProblemController {
         return Response.ofOk(problemService.getProblemList(pageRequest));
     }
 
+    @NeedLogin
+    @GetMapping("/search")
+    public Response<List<ProblemListResponse>> searchProblem(String keyword) {
+        return Response.ofOk(problemService.searchProblemSetList(keyword));
+    }
+
+    @NeedLogin
+    @GetMapping("/searchPrivate")
+    public Response<List<ProblemListResponse>> searchProblemPrivate(String keyword) {
+        return Response.ofOk(problemService.searchPrivateProblemList(keyword));
+    }
+
     @NeedLogin(false)
     @GetMapping("/getData")
     public Response<ProblemDetailResponse> getProblem(Long id) throws PortableException {
