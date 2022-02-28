@@ -95,13 +95,18 @@ public class ProblemServiceImpl implements ProblemService {
             this.editProblem = editProblem;
         }
 
-        public static User2ProblemAccessType of(Problem problem) {
+        public static User2ProblemAccessType of(Problem problem, Contest contest) {
 
-            // 题目拥有者拥有完整权限
-            if (UserContext.ctx().isLogin()
-                    && Objects.equals(problem.getOwner(), UserContext.ctx().getId())
-                    && UserContext.ctx().getPermissionTypeSet().contains(PermissionType.CREATE_AND_EDIT_PROBLEM)) {
-                return FULL_ACCESS;
+            if (UserContext.ctx().getPermissionTypeSet().contains(PermissionType.CREATE_AND_EDIT_PROBLEM)) {
+                // 题目拥有者拥有完整权限
+                if (Objects.equals(problem.getOwner(), UserContext.ctx().getId())) {
+                    return FULL_ACCESS;
+                }
+
+                // 题目第一次绑定的比赛的拥有者，在比赛结束前拥有完整权限
+                if (contest != null && Objects.equals(contest.getOwner(), UserContext.ctx().getId()) && !contest.isEnd()) {
+                    return FULL_ACCESS;
+                }
             }
 
             User2ProblemAccessType resultAccessType;
@@ -527,55 +532,58 @@ public class ProblemServiceImpl implements ProblemService {
     }
 
     private ProblemPackage getForViewProblem(Long id) throws PortableException {
-        Problem problem = problemManager.getProblemById(id);
-        if (problem == null) {
-            throw PortableException.of("A-04-001", id);
+        ProblemPackage problemPackage = getProblemPackage(id);
+        Contest contest = null;
+        if (problemPackage.getProblemData().getContestId() != null) {
+            contest = contestManager.getContestById(problemPackage.getProblemData().getContestId());
         }
-        User2ProblemAccessType accessType = User2ProblemAccessType.of(problem);
+        User2ProblemAccessType accessType = User2ProblemAccessType.of(problemPackage.getProblem(), contest);
         if (accessType.getViewProblem()) {
-            ProblemData problemData = problemDataManager.getProblemData(problem.getDataId());
-            return ProblemPackage.builder()
-                    .problem(problem)
-                    .problemData(problemData)
-                    .build();
+            return problemPackage;
         }
         throw PortableException.of("A-02-004", id);
     }
 
     private ProblemPackage getForViewProblemTest(Long id) throws PortableException {
-        Problem problem = problemManager.getProblemById(id);
-        if (problem == null) {
-            throw PortableException.of("A-04-001", id);
+        ProblemPackage problemPackage = getProblemPackage(id);
+        Contest contest = null;
+        if (problemPackage.getProblemData().getContestId() != null) {
+            contest = contestManager.getContestById(problemPackage.getProblemData().getContestId());
         }
-        User2ProblemAccessType accessType = User2ProblemAccessType.of(problem);
-        if (!accessType.getEditProblem() && !accessType.getViewProblem()) {
-            throw PortableException.of("A-02-004", id);
-        }
-        ProblemData problemData = problemDataManager.getProblemData(problem.getDataId());
-        if (accessType.getEditProblem() || problemData.getShareTest()) {
-            return ProblemPackage.builder()
-                    .problem(problem)
-                    .problemData(problemData)
-                    .build();
+        User2ProblemAccessType accessType = User2ProblemAccessType.of(problemPackage.getProblem(), contest);
+        if (accessType.getEditProblem() || problemPackage.getProblemData().getShareTest()) {
+            return problemPackage;
         }
         throw PortableException.of("A-02-006");
     }
 
     private ProblemPackage getForEditProblem(Long id) throws PortableException {
+        ProblemPackage problemPackage = getProblemPackage(id);
+        Contest contest = null;
+        if (problemPackage.getProblemData().getContestId() != null) {
+            contest = contestManager.getContestById(problemPackage.getProblemData().getContestId());
+        }
+        User2ProblemAccessType accessType = User2ProblemAccessType.of(problemPackage.getProblem(), contest);
+        if (accessType.getEditProblem()) {
+            return problemPackage;
+        }
+        User user = userManager.getAccountById(problemPackage.getProblem().getOwner());
+        throw PortableException.of("A-02-005", id, user.getHandle());
+    }
+
+    private ProblemPackage getProblemPackage(Long id) throws PortableException {
         Problem problem = problemManager.getProblemById(id);
         if (problem == null) {
             throw PortableException.of("A-04-001", id);
         }
-        User2ProblemAccessType accessType = User2ProblemAccessType.of(problem);
-        if (accessType.getEditProblem()) {
-            ProblemData problemData = problemDataManager.getProblemData(problem.getDataId());
-            return ProblemPackage.builder()
-                    .problem(problem)
-                    .problemData(problemData)
-                    .build();
+        ProblemData problemData = problemDataManager.getProblemData(problem.getDataId());
+        if (problemData == null) {
+            throw PortableException.of("S-07-001", id);
         }
-        User user = userManager.getAccountById(problem.getOwner());
-        throw PortableException.of("A-02-005", id, user.getHandle());
+        return ProblemPackage.builder()
+                .problem(problem)
+                .problemData(problemData)
+                .build();
     }
 
     /**
