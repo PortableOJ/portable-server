@@ -142,6 +142,10 @@ public class ContestServiceImpl implements ContestService {
         if (!ContestVisitPermission.VISIT.approve(contestVisitPermission)) {
             throw PortableException.of("A-08-004", contestId);
         }
+        // 比赛开始前，仅管理员可以查看比赛内容
+        if (!contestPackage.getContest().isStarted() && !ContestVisitPermission.CO_AUTHOR.approve(contestVisitPermission)) {
+            throw PortableException.of("A-08-019", contestId);
+        }
         if (problemIndex >= contestPackage.getContestData().getProblemList().size() || problemIndex < 0) {
             throw PortableException.of("A-08-018", contestId, problemIndex);
         }
@@ -444,6 +448,9 @@ public class ContestServiceImpl implements ContestService {
                 || !ContestVisitPermission.VISIT.approve(contestVisitPermission)) {
             throw PortableException.of("A-08-004", contestId);
         }
+        if (!ContestVisitPermission.CO_AUTHOR.approve(contestVisitPermission) && !contestPackage.getContest().isStarted()) {
+            throw PortableException.of("A-08-019", contestId);
+        }
         // 获取主办方和出题人的名称
         User owner = userManager.getAccountById(contestPackage.getContest().getOwner());
         Set<String> coAuthor = contestPackage.getContestData().getCoAuthor().stream()
@@ -553,7 +560,6 @@ public class ContestServiceImpl implements ContestService {
         if (userContext.getPermissionTypeSet().contains(PermissionType.EDIT_NOT_OWNER_CONTEST)) {
             contestVisitPermission = ContestVisitPermission.ADMIN;
         }
-
         if (!ContestVisitPermission.VISIT.approve(contestVisitPermission)
                 && userContext.getPermissionTypeSet().contains(PermissionType.VIEW_ALL_CONTEST)) {
             contestVisitPermission = ContestVisitPermission.VISIT;
