@@ -108,6 +108,11 @@ public class ContestServiceImpl implements ContestService {
             return contestVisitPermission;
         }
 
+        // 没有密码，说明只是来尝试验证访问权限
+        if (contestAuth.getPassword() == null) {
+            return contestVisitPermission;
+        }
+
         // 通过密码可以验证用户是否可以参与到这个比赛中
         if (ContestAccessType.PASSWORD.equals(contestPackage.getContest().getAccessType())) {
             PasswordContestData contestData = (PasswordContestData) contestPackage.getContestData();
