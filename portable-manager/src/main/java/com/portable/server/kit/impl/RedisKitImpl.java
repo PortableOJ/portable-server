@@ -62,6 +62,25 @@ public class RedisKitImpl implements RedisKit {
                 .build();
     }
 
+    @Override
+    public RedisKeyAndExpire<String> getValueAndTime(String prefix, String key) {
+        BoundValueOperations<String, String> boundValueOperations = stringRedisTemplate.boundValueOps(getKey(prefix, key));
+        if (Boolean.TRUE.equals(stringRedisTemplate.hasKey(getKey(prefix, key)))) {
+            String value = boundValueOperations.get();
+            Long expire = boundValueOperations.getExpire();
+            return RedisKeyAndExpire.<String>builder()
+                    .data(value)
+                    .hasKey(true)
+                    .expireTime(expire)
+                    .build();
+        }
+        return RedisKeyAndExpire.<String>builder()
+                .data(null)
+                .hasKey(false)
+                .expireTime(0L)
+                .build();
+    }
+
     private String getKey(String prefix, String key) {
         return String.format("%s_%s", prefix, key);
     }
