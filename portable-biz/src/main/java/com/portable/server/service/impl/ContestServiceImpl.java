@@ -41,10 +41,12 @@ import com.portable.server.type.SolutionType;
 import com.portable.server.util.UserContext;
 import lombok.Builder;
 import lombok.Data;
+import org.springframework.security.core.parameters.P;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -349,12 +351,12 @@ public class ContestServiceImpl implements ContestService {
         // 根据状态修改参赛条件。注意，任何时候都不可以修改题目的权限配置
         contestContentRequest.setAccessType(contest.getAccessType());
         if (!contest.isStarted()) {
-            // TODO: 更新比赛标题
             // 未开始
             contestContentRequest.toContest(contest);
             if (contest.isStarted()) {
                 throw PortableException.of("A-08-012");
             }
+            checkSameProblem(contestContentRequest);
             setContestContentToContestData(contestContentRequest, contestData);
             contestManager.updateStartTime(contestContentRequest.getId(), contestContentRequest.getStartTime());
             contestManager.updateDuration(contestContentRequest.getId(), contestContentRequest.getDuration());
@@ -373,7 +375,9 @@ public class ContestServiceImpl implements ContestService {
             if (contest.isEnd()) {
                 throw PortableException.of("A-08-013");
             }
+            checkSameProblem(contestContentRequest);
             contestManager.updateDuration(contestContentRequest.getId(), contestContentRequest.getDuration());
+            // 下面的函数已经保证了不会删除题目
             contestContentRequest.toContestData(contestData);
             contestDataManager.saveContestData(contestData);
         } else {
@@ -566,6 +570,14 @@ public class ContestServiceImpl implements ContestService {
         }
         userContext.addContestVisit(contest.getId(), contestVisitPermission);
         return contestVisitPermission;
+    }
+
+    private void checkSameProblem(ContestContentRequest contestContentRequest) throws PortableException {
+        // 校验题目是否有重复
+        Set<Long> problemIdSet = new HashSet<>(contestContentRequest.getProblemList());
+        if (!Objects.equals(problemIdSet.size(), contestContentRequest.getProblemList().size())) {
+            throw PortableException.of("A-08-020");
+        }
     }
 
     private void setContestContentToContestData(ContestContentRequest contestContentRequest, BaseContestData contestData) throws PortableException {
