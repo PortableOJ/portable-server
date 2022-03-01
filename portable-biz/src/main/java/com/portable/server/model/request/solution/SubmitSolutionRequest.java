@@ -12,7 +12,7 @@ import lombok.Data;
 public class SubmitSolutionRequest {
 
     /**
-     * 问题的 id
+     * 问题的 id/序号
      */
     private Long problemId;
 

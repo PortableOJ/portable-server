@@ -15,7 +15,7 @@ import com.portable.server.model.request.problem.ProblemTestRequest;
 import com.portable.server.model.request.solution.SubmitSolutionRequest;
 import com.portable.server.model.response.PageResponse;
 import com.portable.server.model.response.Response;
-import com.portable.server.model.response.problem.ProblemDataResponse;
+import com.portable.server.model.response.problem.ProblemDetailResponse;
 import com.portable.server.model.response.problem.ProblemListResponse;
 import com.portable.server.model.response.problem.ProblemStdTestCodeResponse;
 import com.portable.server.service.ProblemService;
@@ -69,9 +69,21 @@ public class ProblemController {
         return Response.ofOk(problemService.getProblemList(pageRequest));
     }
 
+    @NeedLogin
+    @GetMapping("/search")
+    public Response<List<ProblemListResponse>> searchProblem(String keyword) {
+        return Response.ofOk(problemService.searchProblemSetList(keyword));
+    }
+
+    @NeedLogin
+    @GetMapping("/searchPrivate")
+    public Response<List<ProblemListResponse>> searchProblemPrivate(String keyword) {
+        return Response.ofOk(problemService.searchPrivateProblemList(keyword));
+    }
+
     @NeedLogin(false)
     @GetMapping("/getData")
-    public Response<ProblemDataResponse> getProblem(Long id) throws PortableException {
+    public Response<ProblemDetailResponse> getProblem(Long id) throws PortableException {
         return Response.ofOk(problemService.getProblem(id));
     }
 

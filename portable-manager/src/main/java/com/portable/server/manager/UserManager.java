@@ -2,6 +2,9 @@ package com.portable.server.manager;
 
 import com.portable.server.model.user.User;
 
+import java.util.Collection;
+import java.util.stream.Stream;
+
 /**
  * @author shiroha
  */
@@ -19,6 +22,13 @@ public interface UserManager {
      * @return 用户信息
      */
     User getAccountByHandle(String handle);
+
+    /**
+     * 批量转换用户的昵称为用户的 id
+     * @param handleList 用户昵称列表
+     * @return 用户 id 列表
+     */
+    Stream<Long> changeUserHandleToUserId(Collection<String> handleList);
 
     /**
      * 根据用户的 id 获取账号

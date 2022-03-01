@@ -23,6 +23,7 @@ public class JudgeServiceImpl implements JudgeService {
 
     @Override
     public ServiceVerifyCode getServerCode() {
+
         return judgeSupport.getServiceCode();
     }
 

@@ -9,6 +9,8 @@ import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
 import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collectors;
 
 /**
  * @author shiroha
@@ -44,8 +46,29 @@ public class ProblemManagerImpl implements ProblemManager {
     }
 
     @Override
+    public List<Problem> searchRecentProblemByTypedAndKeyword(List<ProblemAccessType> accessTypeList, String keyword, Integer num) {
+        return problemMapper.selectRecentProblemByTypeAndKeyword(accessTypeList, keyword, num);
+    }
+
+    @Override
+    public List<Problem> searchRecentProblemByOwnerIdAndKeyword(Long ownerId, String keyword, Integer num) {
+        return problemMapper.selectPrivateProblemByKeyword(ownerId, keyword, num);
+    }
+
+    @Override
     public Problem getProblemById(Long id) {
         return problemMapper.selectProblemById(id);
+    }
+
+    @Override
+    public List<Long> checkProblemListExist(List<Long> problemList) {
+        return problemList.stream()
+                .map(aLong -> {
+                    Problem problem = getProblemById(aLong);
+                    return problem == null ? aLong : null;
+                })
+                .filter(aLong -> !Objects.isNull(aLong))
+                .collect(Collectors.toList());
     }
 
     @Override

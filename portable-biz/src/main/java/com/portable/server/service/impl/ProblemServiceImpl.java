@@ -1,25 +1,35 @@
 package com.portable.server.service.impl;
 
 import com.portable.server.exception.PortableException;
-import com.portable.server.manager.*;
+import com.portable.server.manager.ContestManager;
+import com.portable.server.manager.UserDataManager;
+import com.portable.server.manager.ProblemDataManager;
+import com.portable.server.manager.ProblemManager;
+import com.portable.server.manager.SolutionDataManager;
+import com.portable.server.manager.SolutionManager;
+import com.portable.server.manager.UserManager;
+import com.portable.server.model.contest.Contest;
 import com.portable.server.model.problem.Problem;
 import com.portable.server.model.problem.ProblemData;
 import com.portable.server.model.request.PageRequest;
-import com.portable.server.model.request.problem.*;
+import com.portable.server.model.request.problem.ProblemCodeRequest;
+import com.portable.server.model.request.problem.ProblemContentRequest;
+import com.portable.server.model.request.problem.ProblemJudgeRequest;
+import com.portable.server.model.request.problem.ProblemNameRequest;
+import com.portable.server.model.request.problem.ProblemSettingRequest;
+import com.portable.server.model.request.problem.ProblemTestRequest;
 import com.portable.server.model.request.solution.SubmitSolutionRequest;
 import com.portable.server.model.response.PageResponse;
-import com.portable.server.model.response.problem.ProblemDataResponse;
+import com.portable.server.model.response.problem.ProblemDetailResponse;
 import com.portable.server.model.response.problem.ProblemListResponse;
 import com.portable.server.model.response.problem.ProblemStdTestCodeResponse;
-import com.portable.server.model.response.solution.SolutionDetailResponse;
 import com.portable.server.model.solution.Solution;
 import com.portable.server.model.solution.SolutionData;
 import com.portable.server.model.user.NormalUserData;
 import com.portable.server.model.user.User;
-import com.portable.server.repo.NormalUserDataRepo;
-import com.portable.server.support.JudgeSupport;
-import com.portable.server.support.FileSupport;
 import com.portable.server.service.ProblemService;
+import com.portable.server.support.FileSupport;
+import com.portable.server.support.JudgeSupport;
 import com.portable.server.type.JudgeCodeType;
 import com.portable.server.type.PermissionType;
 import com.portable.server.type.ProblemAccessType;
@@ -27,6 +37,7 @@ import com.portable.server.type.ProblemStatusType;
 import com.portable.server.type.SolutionStatusType;
 import com.portable.server.type.SolutionType;
 import com.portable.server.util.StreamUtils;
+import com.portable.server.util.Switch;
 import com.portable.server.util.UserContext;
 import lombok.Builder;
 import lombok.Data;
@@ -84,13 +95,18 @@ public class ProblemServiceImpl implements ProblemService {
             this.editProblem = editProblem;
         }
 
-        public static User2ProblemAccessType of(Problem problem) {
+        public static User2ProblemAccessType of(Problem problem, Contest contest) {
 
-            // 题目拥有者拥有完整权限
-            if (UserContext.ctx().isLogin()
-                    && Objects.equals(problem.getOwner(), UserContext.ctx().getId())
-                    && UserContext.ctx().getPermissionTypeSet().contains(PermissionType.CREATE_AND_EDIT_PROBLEM)) {
-                return FULL_ACCESS;
+            if (UserContext.ctx().getPermissionTypeSet().contains(PermissionType.CREATE_AND_EDIT_PROBLEM)) {
+                // 题目拥有者拥有完整权限
+                if (Objects.equals(problem.getOwner(), UserContext.ctx().getId())) {
+                    return FULL_ACCESS;
+                }
+
+                // 题目第一次绑定的比赛的拥有者，在比赛结束前拥有完整权限
+                if (contest != null && Objects.equals(contest.getOwner(), UserContext.ctx().getId()) && !contest.isEnd()) {
+                    return FULL_ACCESS;
+                }
             }
 
             User2ProblemAccessType resultAccessType;
@@ -133,13 +149,16 @@ public class ProblemServiceImpl implements ProblemService {
     private UserManager userManager;
 
     @Resource
-    private NormalUserManager normalUserManager;
+    private UserDataManager userDataManager;
 
     @Resource
     private SolutionManager solutionManager;
 
     @Resource
     private SolutionDataManager solutionDataManager;
+
+    @Resource
+    private ContestManager contestManager;
 
     @Resource
     private FileSupport fileSupport;
@@ -172,10 +191,29 @@ public class ProblemServiceImpl implements ProblemService {
     }
 
     @Override
-    public ProblemDataResponse getProblem(Long id) throws PortableException {
+    public List<ProblemListResponse> searchProblemSetList(String keyword) {
+        boolean isLogin = UserContext.ctx().isLogin();
+        boolean viewHiddenProblem = isLogin && UserContext.ctx().getPermissionTypeSet().contains(PermissionType.VIEW_HIDDEN_PROBLEM);
+        List<ProblemAccessType> problemAccessTypeList = viewHiddenProblem ? Arrays.asList(ProblemAccessType.PUBLIC, ProblemAccessType.HIDDEN) : Collections.singletonList(ProblemAccessType.PUBLIC);
+        List<Problem> problemList = problemManager.searchRecentProblemByTypedAndKeyword(problemAccessTypeList, keyword, Switch.searchPageSize);
+        return problemList.stream()
+                .map(problem -> ProblemListResponse.of(problem, null))
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<ProblemListResponse> searchPrivateProblemList(String keyword) {
+        List<Problem> problemList = problemManager.searchRecentProblemByOwnerIdAndKeyword(UserContext.ctx().getId(), keyword, Switch.searchPageSize);
+        return problemList.stream()
+                .map(problem -> ProblemListResponse.of(problem, null))
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public ProblemDetailResponse getProblem(Long id) throws PortableException {
         ProblemPackage problemPackage = getForViewProblem(id);
         User user = userManager.getAccountById(problemPackage.getProblem().getOwner());
-        return ProblemDataResponse.of(problemPackage.getProblem(), problemPackage.getProblemData(), user);
+        return ProblemDetailResponse.of(problemPackage.getProblem(), problemPackage.getProblemData(), user);
     }
 
     @Override
@@ -233,6 +271,14 @@ public class ProblemServiceImpl implements ProblemService {
         ProblemPackage problemPackage = getForEditProblem(problemContentRequest.getId());
         problemContentRequest.toProblemData(problemPackage.getProblemData());
 
+        // 校验题目关联的比赛是否已经结束
+        if (problemPackage.getProblemData().getContestId() != null) {
+            Contest contest = contestManager.getContestById(problemPackage.getProblemData().getContestId());
+            if (!contest.isEnd()) {
+                throw PortableException.of("A-04-014", problemPackage.getProblemData().getContestId());
+            }
+        }
+
         problemManager.updateProblemTitle(problemContentRequest.getId(), problemContentRequest.getTitle());
         problemDataManager.updateProblemData(problemPackage.getProblemData());
     }
@@ -242,6 +288,12 @@ public class ProblemServiceImpl implements ProblemService {
         ProblemPackage problemPackage = getForEditProblem(problemSettingRequest.getId());
         if (problemPackage.getProblem().getStatusType().getOnTreatedOrCheck()) {
             throw PortableException.of("A-04-007");
+        }
+
+        // 保护私有题目，若从私有题目转为公开/隐藏题目后，则不能再转为私有题目
+        if (!ProblemAccessType.PRIVATE.equals(problemPackage.getProblem().getAccessType())
+            && ProblemAccessType.PRIVATE.equals(problemSettingRequest.getAccessType())) {
+            throw PortableException.of("A-04-015");
         }
 
         boolean isChecked = problemPackage.getProblem().getStatusType().getChecked();
@@ -462,11 +514,13 @@ public class ProblemServiceImpl implements ProblemService {
         }
         UserContext userContext = UserContext.ctx();
 
+        // 更新用户和题目的提交统计数量
         problemManager.updateProblemCount(submitSolutionRequest.getProblemId(), 1, 0);
-        NormalUserData normalUserData = normalUserManager.getUserDataById(userContext.getDataId());
+        NormalUserData normalUserData = userDataManager.getNormalUserDataById(userContext.getDataId());
         normalUserData.setSubmission(normalUserData.getSubmission() + 1);
-        normalUserManager.updateNormalUserData(normalUserData);
+        userDataManager.updateNormalUserData(normalUserData);
 
+        // 创建提交信息
         SolutionData solutionData = solutionDataManager.newSolutionData(problemPackage.getProblemData());
         submitSolutionRequest.toSolutionData(solutionData);
         solutionDataManager.saveSolutionData(solutionData);
@@ -484,55 +538,58 @@ public class ProblemServiceImpl implements ProblemService {
     }
 
     private ProblemPackage getForViewProblem(Long id) throws PortableException {
-        Problem problem = problemManager.getProblemById(id);
-        if (problem == null) {
-            throw PortableException.of("A-04-001", id);
+        ProblemPackage problemPackage = getProblemPackage(id);
+        Contest contest = null;
+        if (problemPackage.getProblemData().getContestId() != null) {
+            contest = contestManager.getContestById(problemPackage.getProblemData().getContestId());
         }
-        User2ProblemAccessType accessType = User2ProblemAccessType.of(problem);
+        User2ProblemAccessType accessType = User2ProblemAccessType.of(problemPackage.getProblem(), contest);
         if (accessType.getViewProblem()) {
-            ProblemData problemData = problemDataManager.getProblemData(problem.getDataId());
-            return ProblemPackage.builder()
-                    .problem(problem)
-                    .problemData(problemData)
-                    .build();
+            return problemPackage;
         }
         throw PortableException.of("A-02-004", id);
     }
 
     private ProblemPackage getForViewProblemTest(Long id) throws PortableException {
-        Problem problem = problemManager.getProblemById(id);
-        if (problem == null) {
-            throw PortableException.of("A-04-001", id);
+        ProblemPackage problemPackage = getProblemPackage(id);
+        Contest contest = null;
+        if (problemPackage.getProblemData().getContestId() != null) {
+            contest = contestManager.getContestById(problemPackage.getProblemData().getContestId());
         }
-        User2ProblemAccessType accessType = User2ProblemAccessType.of(problem);
-        if (!accessType.getEditProblem() && !accessType.getViewProblem()) {
-            throw PortableException.of("A-02-004", id);
-        }
-        ProblemData problemData = problemDataManager.getProblemData(problem.getDataId());
-        if (accessType.getEditProblem() || problemData.getShareTest()) {
-            return ProblemPackage.builder()
-                    .problem(problem)
-                    .problemData(problemData)
-                    .build();
+        User2ProblemAccessType accessType = User2ProblemAccessType.of(problemPackage.getProblem(), contest);
+        if (accessType.getEditProblem() || problemPackage.getProblemData().getShareTest()) {
+            return problemPackage;
         }
         throw PortableException.of("A-02-006");
     }
 
     private ProblemPackage getForEditProblem(Long id) throws PortableException {
+        ProblemPackage problemPackage = getProblemPackage(id);
+        Contest contest = null;
+        if (problemPackage.getProblemData().getContestId() != null) {
+            contest = contestManager.getContestById(problemPackage.getProblemData().getContestId());
+        }
+        User2ProblemAccessType accessType = User2ProblemAccessType.of(problemPackage.getProblem(), contest);
+        if (accessType.getEditProblem()) {
+            return problemPackage;
+        }
+        User user = userManager.getAccountById(problemPackage.getProblem().getOwner());
+        throw PortableException.of("A-02-005", id, user.getHandle());
+    }
+
+    private ProblemPackage getProblemPackage(Long id) throws PortableException {
         Problem problem = problemManager.getProblemById(id);
         if (problem == null) {
             throw PortableException.of("A-04-001", id);
         }
-        User2ProblemAccessType accessType = User2ProblemAccessType.of(problem);
-        if (accessType.getEditProblem()) {
-            ProblemData problemData = problemDataManager.getProblemData(problem.getDataId());
-            return ProblemPackage.builder()
-                    .problem(problem)
-                    .problemData(problemData)
-                    .build();
+        ProblemData problemData = problemDataManager.getProblemData(problem.getDataId());
+        if (problemData == null) {
+            throw PortableException.of("S-07-001", id);
         }
-        User user = userManager.getAccountById(problem.getOwner());
-        throw PortableException.of("A-02-005", id, user.getHandle());
+        return ProblemPackage.builder()
+                .problem(problem)
+                .problemData(problemData)
+                .build();
     }
 
     /**

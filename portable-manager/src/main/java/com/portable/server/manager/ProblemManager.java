@@ -39,12 +39,37 @@ public interface ProblemManager {
     List<Problem> getProblemListByTypeAndOwnerIdAndPaged(List<ProblemAccessType> accessType, Long ownerId, Integer pageSize, Integer offset);
 
     /**
+     * 获取匹配标题的一定数量的最新题目
+     * @param accessTypeList 匹配的访问权限列表
+     * @param keyword 关键字
+     * @param num 总需要数量
+     * @return 问题列表
+     */
+    List<Problem> searchRecentProblemByTypedAndKeyword(List<ProblemAccessType> accessTypeList, String keyword, Integer num);
+
+    /**
+     * 获取匹配标题的一定数量的最新私人题目
+     * @param ownerId 用户 id
+     * @param keyword 关键字
+     * @param num 总需要数量
+     * @return 问题列表
+     */
+    List<Problem> searchRecentProblemByOwnerIdAndKeyword(Long ownerId, String keyword, Integer num);
+
+    /**
      * 获取对应 ID 的题目内容
      *
      * @param id 题目的 ID
      * @return 题目内容
      */
     Problem getProblemById(Long id);
+
+    /**
+     * 校验题目列表是否存在
+     * @param problemList 题目列表
+     * @return 不存在的题目列表
+     */
+    List<Long> checkProblemListExist(List<Long> problemList);
 
     /**
      * 插入题目，强调是新增

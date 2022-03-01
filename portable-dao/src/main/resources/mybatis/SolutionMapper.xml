@@ -51,6 +51,13 @@
         AND contest_id = #{contestId}
     </select>
 
+    <select id="countSolutionByTestContest" resultType="java.lang.Integer">
+        SELECT count(*)
+        FROM solution
+        WHERE solution_type = 'TEST_CONTEST'
+          AND contest_id = #{contestId}
+    </select>
+
     <select id="selectPublicSolutionByPage" resultMap="Solution">
         SELECT * FROM solution
         WHERE solution_type = 'PUBLIC'
@@ -72,6 +79,16 @@
         SELECT * FROM solution
         WHERE solution_type = 'CONTEST'
         AND contest_id = #{contestId}
+        ORDER BY id DESC
+        LIMIT #{pageSize}
+        OFFSET #{offset}
+    </select>
+
+    <select id="selectSolutionByTestContestAndPage" resultMap="Solution">
+        SELECT * FROM solution
+        WHERE solution_type = 'TEST_CONTEST'
+          AND contest_id = #{contestId}
+        ORDER BY id DESC
         LIMIT #{pageSize}
         OFFSET #{offset}
     </select>
@@ -84,7 +101,17 @@
     <select id="selectLastSolutionByUserIdAndProblemId" resultMap="Solution">
         SELECT * FROM solution
         WHERE user_id = #{userId}
-        AND problem_id = #{problemId}
+         AND problem_id = #{problemId}
+        ORDER BY id DESC
+        LIMIT 1
+    </select>
+
+    <select id="selectLastSolutionByUserIdAndProblemIdAndContestId" resultMap="Solution">
+        SELECT * FROM solution
+        WHERE user_id = #{userId}
+         AND solution_type = 'CONTEST'
+         AND problem_id = #{problemId}
+         AND contest_id = #{contestId}
         ORDER BY id DESC
         LIMIT 1
     </select>

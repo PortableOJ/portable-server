@@ -1,6 +1,6 @@
 package com.portable.server.manager.impl;
 
-import com.portable.server.manager.NormalUserManager;
+import com.portable.server.manager.UserDataManager;
 import com.portable.server.model.user.NormalUserData;
 import com.portable.server.repo.NormalUserDataRepo;
 import com.portable.server.type.OrganizationType;
@@ -13,13 +13,13 @@ import javax.annotation.Resource;
  * @author shiroha
  */
 @Component
-public class NormalUserManagerImpl implements NormalUserManager {
+public class UserDataManagerImpl implements UserDataManager {
 
     @Resource
     private NormalUserDataRepo normalUserDataRepo;
 
     @Override
-    public NormalUserData newUserData() {
+    public NormalUserData newNormalUserData() {
         return NormalUserData.builder()
                 ._id(null)
                 .organization(OrganizationType.STUDENT)
@@ -31,7 +31,7 @@ public class NormalUserManagerImpl implements NormalUserManager {
     }
 
     @Override
-    public NormalUserData getUserDataById(String dataId) {
+    public NormalUserData getNormalUserDataById(String dataId) {
         return normalUserDataRepo.getUserDataById(dataId);
     }
 

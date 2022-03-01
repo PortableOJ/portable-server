@@ -2,10 +2,6 @@ package com.portable.server.interceptor;
 
 import com.portable.server.annotation.NeedLogin;
 import com.portable.server.exception.PortableException;
-import com.portable.server.manager.UserManager;
-import com.portable.server.manager.NormalUserManager;
-import com.portable.server.model.user.User;
-import com.portable.server.model.user.NormalUserData;
 import com.portable.server.util.ExceptionConstant;
 import com.portable.server.util.RequestSessionConstant;
 import com.portable.server.util.UserContext;
@@ -15,23 +11,15 @@ import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.servlet.HandlerInterceptor;
 import org.springframework.web.servlet.ModelAndView;
 
-import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
-import java.util.Objects;
 
 /**
  * @author shiroha
  */
 @Slf4j
 public class NeedLoginInterceptor implements HandlerInterceptor {
-
-    @Resource
-    private UserManager userManager;
-
-    @Resource
-    private NormalUserManager normalUserManager;
 
     @Override
     public boolean preHandle(@NonNull HttpServletRequest request, @NonNull HttpServletResponse response, @NonNull Object handler) throws Exception {
@@ -45,15 +33,9 @@ public class NeedLoginInterceptor implements HandlerInterceptor {
         if (idObject instanceof Long) {
             // 已经登录了，就不需要关心是不是需要登录了
             Long id = (Long) idObject;
-            UserContext.restore(id);
-
-            if (Objects.isNull(UserContext.ctx().getId())) {
-                User user = userManager.getAccountById(id);
-                UserContext.set(user);
-                NormalUserData userData = normalUserManager.getUserDataById(UserContext.ctx().getDataId());
-                UserContext.set(userData);
+            if (UserContext.restore(id)) {
+                return true;
             }
-            return true;
         }
 
         // 检查方法或者类，是否必需要登录

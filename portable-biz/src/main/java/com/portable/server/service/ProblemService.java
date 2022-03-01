@@ -6,10 +6,9 @@ import com.portable.server.model.request.PageRequest;
 import com.portable.server.model.request.problem.*;
 import com.portable.server.model.request.solution.SubmitSolutionRequest;
 import com.portable.server.model.response.PageResponse;
-import com.portable.server.model.response.problem.ProblemDataResponse;
+import com.portable.server.model.response.problem.ProblemDetailResponse;
 import com.portable.server.model.response.problem.ProblemListResponse;
 import com.portable.server.model.response.problem.ProblemStdTestCodeResponse;
-import com.portable.server.model.response.solution.SolutionDetailResponse;
 
 import java.io.OutputStream;
 import java.util.List;
@@ -28,13 +27,27 @@ public interface ProblemService {
     PageResponse<ProblemListResponse> getProblemList(PageRequest<Void> pageRequest);
 
     /**
+     * 获取公开的题库中匹配关键字的题目，可能搜索私有的
+     * @param keyword 关键字
+     * @return 题目列表
+     */
+    List<ProblemListResponse> searchProblemSetList(String keyword);
+
+    /**
+     * 获取私人题库中匹配关键字的题目，仅限私人
+     * @param keyword 关键字
+     * @return 题目列表
+     */
+    List<ProblemListResponse> searchPrivateProblemList(String keyword);
+
+    /**
      * 查看题目详情
      *
      * @param id 题目 ID
      * @return 题目详情内容
      * @throws PortableException 遇到意外情况抛出错误
      */
-    ProblemDataResponse getProblem(Long id) throws PortableException;
+    ProblemDetailResponse getProblem(Long id) throws PortableException;
 
     /**
      * 查看题目输入输出文件列表
@@ -44,6 +57,7 @@ public interface ProblemService {
      * @throws PortableException 遇到意外情况抛出错误
      */
     List<String> getProblemTestList(Long id) throws PortableException;
+
 
     /**
      * 获取题目输入文件的预览

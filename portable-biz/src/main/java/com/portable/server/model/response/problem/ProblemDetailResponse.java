@@ -14,7 +14,7 @@ import java.util.Map;
  * @author shiroha
  */
 @Data
-public class ProblemDataResponse {
+public class ProblemDetailResponse {
 
     /**
      * 问题 ID
@@ -37,19 +37,14 @@ public class ProblemDataResponse {
     private ProblemAccessType accessType;
 
     /**
-     * 历史提交数量
+     * 历史提交数量/比赛中的提交数量
      */
     private Integer submissionCount;
 
     /**
-     * 历史通过的数量
+     * 历史通过的数量/比赛中的通过数量
      */
     private Integer acceptCount;
-
-    /**
-     * 作者
-     */
-    private Long owner;
 
     /**
      * 作者 handle
@@ -136,14 +131,13 @@ public class ProblemDataResponse {
      */
     private Date gmtModifyTime;
 
-    public ProblemDataResponse(Problem problem, ProblemData problemData, User user) {
+    public ProblemDetailResponse(Problem problem, ProblemData problemData, User user) {
         this.id = problem.getId();
         this.title = problem.getTitle();
         this.statusType = problem.getStatusType();
         this.accessType = problem.getAccessType();
         this.submissionCount = problem.getSubmissionCount();
         this.acceptCount = problem.getAcceptCount();
-        this.owner = problem.getOwner();
         this.ownerHandle = user == null ? "" : user.getHandle();
 
         this.defaultTimeLimit = problemData.getDefaultTimeLimit();
@@ -164,7 +158,7 @@ public class ProblemDataResponse {
         this.gmtModifyTime = problemData.getGmtModifyTime();
     }
 
-    public static ProblemDataResponse of(Problem problem, ProblemData problemData, User user) {
-        return new ProblemDataResponse(problem, problemData, user);
+    public static ProblemDetailResponse of(Problem problem, ProblemData problemData, User user) {
+        return new ProblemDetailResponse(problem, problemData, user);
     }
 }

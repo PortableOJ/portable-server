@@ -21,12 +21,17 @@ public enum JudgeWorkType {
     /**
      * 测试数据生成的任务
      */
-    TEST(1),
+    TEST(2),
 
     /**
      * 校验题目的任务
      */
-    CHECK_PROBLEM(1),
+    CHECK_PROBLEM(2),
+
+    /**
+     * 测试比赛的提交
+     */
+    TEST_CONTEST(1),
     ;
 
     private final Integer weight;
@@ -41,6 +46,8 @@ public enum JudgeWorkType {
                 return CONTEST;
             case PROBLEM_PROCESS:
                 return CHECK_PROBLEM;
+            case TEST_CONTEST:
+                return TEST_CONTEST;
             case PUBLIC:
             default:
                 return PROBLEM;

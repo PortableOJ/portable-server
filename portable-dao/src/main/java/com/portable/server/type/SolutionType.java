@@ -23,6 +23,11 @@ public enum SolutionType implements ExceptionTextType {
      * 处理题目时产生的提交
      */
     PROBLEM_PROCESS("处理题目时的提交"),
+
+    /**
+     * 测试比赛的提交
+     */
+    TEST_CONTEST("测试比赛的提交"),
     ;
 
     private final String text;
