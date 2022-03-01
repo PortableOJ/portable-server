@@ -21,5 +21,5 @@ int main(int argc, char *argv[]) {
     }
     ouf.getEof();
 
-    accept("%d bytes is same", totalByte);
+    accept("%d byte(s) is/are same", totalByte);
 }

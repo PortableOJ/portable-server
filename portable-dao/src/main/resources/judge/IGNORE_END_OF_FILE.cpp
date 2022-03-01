@@ -28,5 +28,5 @@ int main(int argc, char *argv[]) {
     }
     ouf.getEof();
 
-    accept("%d line is same", totalLine);
+    accept("%d line(s) is/are same", totalLine);
 }

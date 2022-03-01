@@ -4,6 +4,9 @@ import com.portable.server.type.AccountType;
 import lombok.Builder;
 import lombok.Data;
 
+/**
+ * @author shiroha
+ */
 @Data
 @Builder
 public class User {
