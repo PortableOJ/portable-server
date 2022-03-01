@@ -1,12 +1,14 @@
 package com.portable.server.service.impl;
 
 import com.portable.server.exception.PortableException;
-import com.portable.server.manager.NormalUserManager;
+import com.portable.server.manager.ContestManager;
+import com.portable.server.manager.UserDataManager;
 import com.portable.server.manager.ProblemDataManager;
 import com.portable.server.manager.ProblemManager;
 import com.portable.server.manager.SolutionDataManager;
 import com.portable.server.manager.SolutionManager;
 import com.portable.server.manager.UserManager;
+import com.portable.server.model.contest.Contest;
 import com.portable.server.model.problem.Problem;
 import com.portable.server.model.problem.ProblemData;
 import com.portable.server.model.request.PageRequest;
@@ -18,6 +20,7 @@ import com.portable.server.model.request.problem.ProblemSettingRequest;
 import com.portable.server.model.request.problem.ProblemTestRequest;
 import com.portable.server.model.request.solution.SubmitSolutionRequest;
 import com.portable.server.model.response.PageResponse;
+import com.portable.server.model.response.problem.ProblemDetailResponse;
 import com.portable.server.model.response.problem.ProblemListResponse;
 import com.portable.server.model.response.problem.ProblemStdTestCodeResponse;
 import com.portable.server.model.solution.Solution;
@@ -290,7 +293,7 @@ public class ProblemServiceImpl implements ProblemService {
         // 保护私有题目，若从私有题目转为公开/隐藏题目后，则不能再转为私有题目
         if (!ProblemAccessType.PRIVATE.equals(problemPackage.getProblem().getAccessType())
             && ProblemAccessType.PRIVATE.equals(problemSettingRequest.getAccessType())) {
-            throw PortableException.of("A-04-014");
+            throw PortableException.of("A-04-015");
         }
 
         boolean isChecked = problemPackage.getProblem().getStatusType().getChecked();
