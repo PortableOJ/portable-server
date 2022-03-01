@@ -30,6 +30,11 @@ public class RedisKitImpl implements RedisKit {
     }
 
     @Override
+    public void set(String prefix, String key, String data, Long time) {
+        redisValueOperation.set(getKey(prefix, key), data, time, TimeUnit.SECONDS);
+    }
+
+    @Override
     public <T> void set(String prefix, String key, T data, Long time) {
         redisValueOperation.set(getKey(prefix, key), JsonUtils.toString(data), time, TimeUnit.SECONDS);
     }
