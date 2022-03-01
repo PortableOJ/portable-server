@@ -62,6 +62,11 @@ public class ContestDetailResponse {
     private Integer freezeTime;
 
     /**
+     * 惩罚时间（分钟）
+     */
+    private Integer penaltyTime;
+
+    /**
      * 公告
      */
     private String announcement;
@@ -76,6 +81,7 @@ public class ContestDetailResponse {
         this.problemList = problemList;
         this.coAuthor = coAuthor;
         this.freezeTime = contestData.getFreezeTime();
+        this.penaltyTime = contestData.getPenaltyTime();
         this.announcement = contestData.getAnnouncement();
     }
 

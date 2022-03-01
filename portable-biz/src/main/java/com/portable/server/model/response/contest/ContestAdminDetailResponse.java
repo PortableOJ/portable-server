@@ -11,6 +11,7 @@ import lombok.Setter;
 
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * @author shiroha
@@ -35,6 +36,11 @@ public class ContestAdminDetailResponse extends ContestDetailResponse {
      */
     private List<Boolean> problemLock;
 
+    /**
+     * 题目的真实 id
+     */
+    private List<Long> problemRealId;
+
     ContestAdminDetailResponse(Contest contest,
                                BaseContestData contestData,
                                String ownerHandle,
@@ -57,6 +63,9 @@ public class ContestAdminDetailResponse extends ContestDetailResponse {
                 throw PortableException.of("A-08-001", contest.getAccessType());
         }
         this.problemLock = problemLock;
+        this.problemRealId = contestData.getProblemList().stream()
+                .map(BaseContestData.ContestProblemData::getProblemId)
+                .collect(Collectors.toList());
     }
 
     public static ContestAdminDetailResponse of(Contest contest,

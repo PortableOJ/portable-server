@@ -160,7 +160,7 @@ public class ContestController {
     @NeedLogin
     @PostMapping("/updateContest")
     @PermissionRequirement(PermissionType.CREATE_AND_EDIT_CONTEST)
-    public Response<Void> updateContest(ContestContentRequest contestContentRequest) throws PortableException {
+    public Response<Void> updateContest(@RequestBody ContestContentRequest contestContentRequest) throws PortableException {
         contestService.updateContest(contestContentRequest);
         return Response.ofOk();
 
@@ -168,9 +168,8 @@ public class ContestController {
 
     @NeedLogin
     @PostMapping("/addProblem")
-    public Response<Void> addContestProblem(ContestAddProblem contestAddProblem) throws PortableException {
+    public Response<Void> addContestProblem(@RequestBody ContestAddProblem contestAddProblem) throws PortableException {
         contestService.addContestProblem(contestAddProblem);
         return Response.ofOk();
-
     }
 }

@@ -444,7 +444,7 @@ public class ContestServiceImpl implements ContestService {
     public ContestDetailResponse getContestDetail(Long contestId, Boolean admin) throws PortableException {
         ContestPackage contestPackage = getContestPackage(contestId);
         ContestVisitPermission contestVisitPermission = checkPermission(contestPackage);
-        if (admin && !ContestVisitPermission.ADMIN.approve(contestVisitPermission)
+        if (admin && !ContestVisitPermission.CO_AUTHOR.approve(contestVisitPermission)
                 || !ContestVisitPermission.VISIT.approve(contestVisitPermission)) {
             throw PortableException.of("A-08-004", contestId);
         }
