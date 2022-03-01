@@ -38,4 +38,13 @@ public interface RedisKit {
      * @return 过期时间数据结构
      */
     <T> RedisKeyAndExpire<T> getValueAndTime(String prefix, String key, Class<T> clazz);
+
+
+    /**
+     * 检查是否存在此 key
+     * @param prefix key 的前缀
+     * @param key key 的值
+     * @return 过期时间数据结构
+     */
+    RedisKeyAndExpire<String> getValueAndTime(String prefix, String key);
 }

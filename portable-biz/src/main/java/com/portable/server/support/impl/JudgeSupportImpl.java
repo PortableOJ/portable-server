@@ -231,7 +231,7 @@ public class JudgeSupportImpl implements JudgeSupport {
         if (serviceVerifyCode != null) {
             return serviceVerifyCode;
         }
-        RedisKeyAndExpire<String> serviceCode = redisKit.getValueAndTime(SERVICE_CODE_KEY, "", String.class);
+        RedisKeyAndExpire<String> serviceCode = redisKit.getValueAndTime(SERVICE_CODE_KEY, "");
         if (serviceCode.getHasKey()) {
             Calendar calendar = Calendar.getInstance();
             calendar.add(Calendar.SECOND, serviceCode.getExpireTime().intValue());
