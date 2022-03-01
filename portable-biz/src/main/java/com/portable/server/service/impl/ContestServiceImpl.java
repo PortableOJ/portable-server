@@ -330,6 +330,7 @@ public class ContestServiceImpl implements ContestService {
         contest.setOwner(UserContext.ctx().getId());
         setContestContentToContestData(contestContentRequest, contestData);
 
+        checkSameProblem(contestContentRequest);
         contestDataManager.insertContestData(contestData);
         contest.setDataId(contestData.get_id());
         contestManager.newContest(contest);
