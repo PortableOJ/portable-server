@@ -10,7 +10,6 @@ import com.portable.server.manager.SolutionManager;
 import com.portable.server.manager.UserManager;
 import com.portable.server.model.contest.BaseContestData;
 import com.portable.server.model.contest.Contest;
-import com.portable.server.type.ContestVisitPermission;
 import com.portable.server.model.contest.PasswordContestData;
 import com.portable.server.model.contest.PrivateContestData;
 import com.portable.server.model.problem.Problem;
@@ -34,14 +33,15 @@ import com.portable.server.model.solution.Solution;
 import com.portable.server.model.solution.SolutionData;
 import com.portable.server.model.user.User;
 import com.portable.server.service.ContestService;
+import com.portable.server.support.JudgeSupport;
 import com.portable.server.type.ContestAccessType;
+import com.portable.server.type.ContestVisitPermission;
 import com.portable.server.type.PermissionType;
 import com.portable.server.type.ProblemAccessType;
 import com.portable.server.type.SolutionType;
 import com.portable.server.util.UserContext;
 import lombok.Builder;
 import lombok.Data;
-import org.springframework.security.core.parameters.P;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
@@ -87,6 +87,9 @@ public class ContestServiceImpl implements ContestService {
 
     @Resource
     private SolutionDataManager solutionDataManager;
+
+    @Resource
+    private JudgeSupport judgeSupport;
 
     @Override
     public PageResponse<ContestListResponse> getContestList(PageRequest<Void> pageRequest) {
@@ -319,6 +322,7 @@ public class ContestServiceImpl implements ContestService {
         solution.setDataId(solutionData.get_id());
         solution.setUserId(UserContext.ctx().getId());
         solutionManager.insertSolution(solution);
+        judgeSupport.addJudgeTask(solution.getId());
         return solution.getId();
     }
 
