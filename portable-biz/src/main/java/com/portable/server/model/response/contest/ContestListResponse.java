@@ -2,6 +2,7 @@ package com.portable.server.model.response.contest;
 
 import com.portable.server.model.contest.Contest;
 import com.portable.server.type.ContestAccessType;
+import com.portable.server.util.UserContext;
 import lombok.Data;
 
 import java.util.Date;
@@ -36,12 +37,6 @@ public class ContestListResponse {
      * 访问权限
      */
     private ContestAccessType accessType;
-
-    /**
-     * 是否已经认证过了，即不需要输入认证信息
-     */
-    private Boolean isCertified;
-    // TODO: 没有写入
 
     private ContestListResponse(Contest contest) {
         this.id = contest.getId();
