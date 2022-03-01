@@ -4,15 +4,15 @@ import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
 import com.portable.server.exception.PortableException;
-import com.portable.server.type.ContestVisitPermission;
+import com.portable.server.kit.RedisKit;
 import com.portable.server.model.user.NormalUserData;
 import com.portable.server.model.user.User;
 import com.portable.server.type.AccountType;
+import com.portable.server.type.ContestVisitPermission;
 import com.portable.server.type.OrganizationType;
 import com.portable.server.type.PermissionType;
 import lombok.Data;
 import lombok.NonNull;
-import org.springframework.data.redis.core.StringRedisTemplate;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
@@ -20,6 +20,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
@@ -31,7 +32,7 @@ import java.util.concurrent.TimeUnit;
 public class UserContext implements AutoCloseable {
 
     @Resource
-    private StringRedisTemplate stringRedisTemplate;
+    private RedisKit redisKit;
 
     /**
      * 当前用户 id
@@ -81,7 +82,7 @@ public class UserContext implements AutoCloseable {
     /**
      * 用户信息使用的 redis 缓存
      */
-    private static StringRedisTemplate redisTemplate;
+    private static RedisKit staticRedisKit;
 
     /**
      * 用户信息一级缓存容量
@@ -98,6 +99,11 @@ public class UserContext implements AutoCloseable {
      */
     private static final Integer USER_CONTEXT_EXPIRE_LEVEL_2 = 30;
 
+    /**
+     * 用户二级缓存的前缀
+     */
+    private static final String USER_CONTEST_CACHE_PREFIX = "USER_CONTEST";
+
     static {
         LOCAL = ThreadLocal.withInitial(UserContext::new);
         USER_CACHE = CacheBuilder.newBuilder()
@@ -106,19 +112,15 @@ public class UserContext implements AutoCloseable {
                 .build(new CacheLoader<Long, UserContext>() {
                     @Override
                     public UserContext load(@NonNull Long aLong) {
-                        // TODO: 使用新的 redis 模版
-                        String redisResult = redisTemplate.opsForValue().get(aLong.toString());
-                        if (Objects.isNull(redisResult) || redisResult.isEmpty()) {
-                            return getNullUser();
-                        }
-                        return JsonUtils.toObject(redisResult, UserContext.class);
+                        Optional<UserContext> optionalUserContext = staticRedisKit.get(USER_CONTEST_CACHE_PREFIX, aLong.toString(), UserContext.class);
+                        return optionalUserContext.orElse(getNullUser());
                     }
                 });
     }
 
     @PostConstruct
     public void  init() {
-        UserContext.redisTemplate = this.stringRedisTemplate;
+        UserContext.staticRedisKit = this.redisKit;
     }
 
     public static UserContext ctx() {
@@ -139,12 +141,7 @@ public class UserContext implements AutoCloseable {
         LOCAL.set(userContext);
         if (userContext.getId() != null) {
             USER_CACHE.put(userContext.getId(), userContext);
-            // TODO: 使用新的 redis 模版
-            redisTemplate.opsForValue().set(
-                    userContext.getId().toString(),
-                    JsonUtils.toString(userContext),
-                    USER_CONTEXT_EXPIRE_LEVEL_2,
-                    TimeUnit.MINUTES);
+            staticRedisKit.set(USER_CONTEST_CACHE_PREFIX, userContext.getId().toString(), userContext, Long.valueOf(USER_CONTEXT_EXPIRE_LEVEL_2));
         }
     }
 
