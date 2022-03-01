@@ -392,7 +392,7 @@ public class ContestServiceImpl implements ContestService {
     public void addContestProblem(ContestAddProblem contestAddProblem) throws PortableException {
         ContestPackage contestPackage = getContestPackage(contestAddProblem.getContestId());
         ContestVisitPermission contestVisitPermission = checkPermission(contestPackage);
-        if (ContestVisitPermission.CO_AUTHOR.approve(contestVisitPermission)) {
+        if (!ContestVisitPermission.CO_AUTHOR.approve(contestVisitPermission)) {
             throw PortableException.of("A-08-014", contestAddProblem.getContestId());
         }
         // 仅允许添加自己拥有的，且为私有的题目
