@@ -5,6 +5,7 @@ import com.portable.server.interceptor.PermissionInterceptor;
 import com.portable.server.util.UserContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import springfox.documentation.builders.ApiInfoBuilder;
@@ -19,6 +20,7 @@ import springfox.documentation.spring.web.plugins.Docket;
  */
 @Configuration
 @EnableOpenApi
+@EnableScheduling
 public class WebMvcConfig implements WebMvcConfigurer {
 
     @Override

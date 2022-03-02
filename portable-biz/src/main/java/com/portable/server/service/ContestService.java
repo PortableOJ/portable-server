@@ -12,7 +12,7 @@ import com.portable.server.model.response.PageResponse;
 import com.portable.server.model.response.contest.ContestAdminDetailResponse;
 import com.portable.server.model.response.contest.ContestDetailResponse;
 import com.portable.server.model.response.contest.ContestListResponse;
-import com.portable.server.model.response.contest.ContestRankResponse;
+import com.portable.server.model.response.contest.ContestRankListResponse;
 import com.portable.server.model.response.problem.ProblemDetailResponse;
 import com.portable.server.model.response.solution.SolutionDetailResponse;
 import com.portable.server.model.response.solution.SolutionListResponse;
@@ -102,7 +102,7 @@ public interface ContestService {
      * @param pageRequest 比赛榜单过滤条件
      * @return 比赛榜单
      */
-    PageResponse<ContestRankResponse> getContestRank(Long contestId, PageRequest<Void> pageRequest);
+    PageResponse<ContestRankListResponse> getContestRank(Long contestId, PageRequest<Void> pageRequest);
 
     /**
      * 提交代码

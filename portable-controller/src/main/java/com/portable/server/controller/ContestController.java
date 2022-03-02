@@ -14,7 +14,7 @@ import com.portable.server.model.response.Response;
 import com.portable.server.model.response.contest.ContestAdminDetailResponse;
 import com.portable.server.model.response.contest.ContestDetailResponse;
 import com.portable.server.model.response.contest.ContestListResponse;
-import com.portable.server.model.response.contest.ContestRankResponse;
+import com.portable.server.model.response.contest.ContestRankListResponse;
 import com.portable.server.model.response.problem.ProblemDetailResponse;
 import com.portable.server.model.response.solution.SolutionDetailResponse;
 import com.portable.server.model.response.solution.SolutionListResponse;
@@ -135,7 +135,7 @@ public class ContestController {
 
     @NeedLogin
     @GetMapping("/rank")
-    public Response<PageResponse<ContestRankResponse>> getContestRank(Long contestId, Integer pageNum, Integer pageSize) throws PortableException {
+    public Response<PageResponse<ContestRankListResponse>> getContestRank(Long contestId, Integer pageNum, Integer pageSize) throws PortableException {
         PageRequest<Void> pageRequest = PageRequest.<Void>builder()
                 .pageNum(pageNum)
                 .pageSize(pageSize)

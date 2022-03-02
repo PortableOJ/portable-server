@@ -21,6 +21,15 @@ public interface ContestDataManager {
     BaseContestData newContestData(ContestAccessType accessType) throws PortableException;
 
     /**
+     * 获取通用的比赛信息
+     * @param datId 比赛的 id
+     * @param accessType 比赛类型
+     * @return 比赛信息
+     * @throws PortableException 比赛类型错误则抛出
+     */
+    BaseContestData getBaseContestDataById(String datId, ContestAccessType accessType) throws PortableException;
+
+    /**
      * 获取公开的比赛信息
      * @param datId 比赛的 id
      * @return 比赛信息

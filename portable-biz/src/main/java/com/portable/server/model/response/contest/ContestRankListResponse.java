@@ -8,7 +8,12 @@ import java.util.Map;
  * @author shiroha
  */
 @Data
-public class ContestRankResponse {
+public class ContestRankListResponse {
+
+    /**
+     * 排名
+     */
+    private Integer rank;
 
     /**
      * 用户信息
@@ -28,24 +33,24 @@ public class ContestRankResponse {
     /**
      * 用户提交的题目的信息
      */
-    private Map<Integer, ContestRankProblemResponse> submitStatus;
+    private Map<Integer, ContestRankProblemStatusResponse> submitStatus;
 
     @Data
-    public static class ContestRankProblemResponse {
+    public static class ContestRankProblemStatusResponse {
 
         /**
          * 解决此题目经过的时间（秒）
          */
-        private Integer solveTime;
+        private Long solveTime;
 
         /**
-         * 总共提交的且不包含不惩罚的次数
+         * 总共需要惩罚的次数
          */
-        private Integer tryTimes;
+        private Integer penaltyTimes;
 
         /**
-         * 冻结榜单的时候提交的次数
+         * 未结束评测以及冻结榜单时的提交数量
          */
-        private Integer freezeSubmit;
+        private Integer runningSubmit;
     }
 }

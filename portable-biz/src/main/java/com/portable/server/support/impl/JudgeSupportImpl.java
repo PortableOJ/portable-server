@@ -26,7 +26,7 @@ import com.portable.server.model.user.User;
 import com.portable.server.socket.EpollManager;
 import com.portable.server.support.FileSupport;
 import com.portable.server.support.JudgeSupport;
-import com.portable.server.kit.RedisKit;
+import com.portable.server.kit.RedisValueKit;
 import com.portable.server.type.AccountType;
 import com.portable.server.type.JudgeCodeType;
 import com.portable.server.type.JudgeWorkType;
@@ -117,7 +117,7 @@ public class JudgeSupportImpl implements JudgeSupport {
     private FileSupport fileSupport;
 
     @Resource
-    private RedisKit redisKit;
+    private RedisValueKit redisValueKit;
 
     @PostConstruct
     public void init() {
@@ -236,7 +236,7 @@ public class JudgeSupportImpl implements JudgeSupport {
         if (serviceVerifyCode != null) {
             return serviceVerifyCode;
         }
-        RedisKeyAndExpire<String> serviceCode = redisKit.getValueAndTime(SERVICE_CODE_KEY, "");
+        RedisKeyAndExpire<String> serviceCode = redisValueKit.getValueAndTime(SERVICE_CODE_KEY, "");
         if (serviceCode.getHasKey()) {
             Calendar calendar = Calendar.getInstance();
             calendar.add(Calendar.SECOND, serviceCode.getExpireTime().intValue());
@@ -247,7 +247,7 @@ public class JudgeSupportImpl implements JudgeSupport {
                     .build();
         }
         String code = UUID.randomUUID().toString();
-        redisKit.set(SERVICE_CODE_KEY, "", code, Switch.serverCodeExpireTime);
+        redisValueKit.set(SERVICE_CODE_KEY, "", code, Switch.serverCodeExpireTime);
         Calendar calendar = Calendar.getInstance();
         calendar.add(Calendar.SECOND, Switch.serverCodeExpireTime.intValue());
         return ServiceVerifyCode.builder()

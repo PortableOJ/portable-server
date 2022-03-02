@@ -24,7 +24,7 @@ import com.portable.server.model.response.PageResponse;
 import com.portable.server.model.response.contest.ContestAdminDetailResponse;
 import com.portable.server.model.response.contest.ContestDetailResponse;
 import com.portable.server.model.response.contest.ContestListResponse;
-import com.portable.server.model.response.contest.ContestRankResponse;
+import com.portable.server.model.response.contest.ContestRankListResponse;
 import com.portable.server.model.response.problem.ProblemDetailResponse;
 import com.portable.server.model.response.problem.ProblemListResponse;
 import com.portable.server.model.response.solution.SolutionDetailResponse;
@@ -277,7 +277,7 @@ public class ContestServiceImpl implements ContestService {
     }
 
     @Override
-    public PageResponse<ContestRankResponse> getContestRank(Long contestId, PageRequest<Void> pageRequest) {
+    public PageResponse<ContestRankListResponse> getContestRank(Long contestId, PageRequest<Void> pageRequest) {
         // TODO: 待完成榜单系统
         return null;
     }

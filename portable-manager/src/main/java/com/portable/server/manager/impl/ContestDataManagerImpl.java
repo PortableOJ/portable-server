@@ -58,6 +58,20 @@ public class ContestDataManagerImpl implements ContestDataManager {
     }
 
     @Override
+    public BaseContestData getBaseContestDataById(String datId, ContestAccessType accessType) throws PortableException {
+        switch (accessType) {
+            case PUBLIC:
+                return getPublicContestDataById(datId);
+            case PASSWORD:
+                return getPasswordContestDataById(datId);
+            case PRIVATE:
+                return getPrivateContestDataById(datId);
+            default:
+                throw PortableException.of("A-08-001", accessType);
+        }
+    }
+
+    @Override
     public PublicContestData getPublicContestDataById(String datId) {
         return contestDataRepo.getPublicContestDataById(datId);
     }
