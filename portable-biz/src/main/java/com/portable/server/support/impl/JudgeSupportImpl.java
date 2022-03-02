@@ -227,6 +227,11 @@ public class JudgeSupportImpl implements JudgeSupport {
     }
 
     @Override
+    public void killJudge(String judgeCode) {
+        judgeCodeJudgeMap.get(judgeCode).setTerminal(true);
+    }
+
+    @Override
     public ServiceVerifyCode getServiceCode() {
         if (serviceVerifyCode != null) {
             return serviceVerifyCode;
@@ -276,6 +281,7 @@ public class JudgeSupportImpl implements JudgeSupport {
                 .testWorkMap(new ConcurrentHashMap<>(1))
                 .tcpAddressSet(tcpAddressSet)
                 .needDeleteProblemCacheIdList(new ArrayList<>())
+                .terminal(false)
                 .build();
 
         tcpJudgeMap.put(address, judgeContainer);
@@ -315,6 +321,11 @@ public class JudgeSupportImpl implements JudgeSupport {
         judgeContainer.setLastHeartbeat(new Date());
 
         HeartbeatResponse heartbeatResponse = new HeartbeatResponse();
+        if (judgeContainer.getTerminal()) {
+            heartbeatResponse.terminate();
+            return heartbeatResponse;
+        }
+
         if (judgeContainer.getIsNewCore()) {
             judgeContainer.setIsNewCore(false);
             heartbeatResponse.setNewThreadCore(judgeContainer.getMaxThreadCore());

@@ -71,6 +71,12 @@ public interface JudgeSupport {
     void removeProblemCache(Long problemId);
 
     /**
+     * 关闭一个 judge
+     * @param judgeCode 关闭一个 judge
+     */
+    void killJudge(String judgeCode);
+
+    /**
      * 获取当前的设备码
      * <p>
      * 通常设备码是一个实时随机生成的值，且有一定的时效性，超过一段时间后将会失效
