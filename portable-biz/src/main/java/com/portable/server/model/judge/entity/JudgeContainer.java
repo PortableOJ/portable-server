@@ -88,6 +88,11 @@ public class JudgeContainer {
      */
     private List<Long> needDeleteProblemCacheIdList;
 
+    /**
+     * 关闭此 judge
+     */
+    private Boolean terminal;
+
     public synchronized void addDeleteProblemCacheId(Long problemId) {
         needDeleteProblemCacheIdList.add(problemId);
     }

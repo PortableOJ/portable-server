@@ -19,7 +19,7 @@ public interface SolutionService {
      * @param pageRequest 分页
      * @return 公共提交列表
      */
-    PageResponse<SolutionListResponse> getPublicStatus(PageRequest<SolutionListQueryRequest> pageRequest);
+    PageResponse<SolutionListResponse, Void> getPublicStatus(PageRequest<SolutionListQueryRequest> pageRequest);
 
     /**
      * 获取公共提交中的某次详细信息

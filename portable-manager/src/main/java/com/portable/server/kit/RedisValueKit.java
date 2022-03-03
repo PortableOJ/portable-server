@@ -2,12 +2,13 @@ package com.portable.server.kit;
 
 import com.portable.server.model.RedisKeyAndExpire;
 
+import java.io.Serializable;
 import java.util.Optional;
 
 /**
  * @author shiroha
  */
-public interface RedisKit {
+public interface RedisValueKit {
 
     /**
      * 保存数据
@@ -26,7 +27,7 @@ public interface RedisKit {
      * @param time 过期时间（分钟）
      * @param <T> 数据类型
      */
-    <T> void set(String prefix, String key, T data, Long time);
+    <T> void set(String prefix, Object key, T data, Long time);
 
     /**
      * 获取数据
@@ -47,7 +48,6 @@ public interface RedisKit {
      * @return 过期时间数据结构
      */
     <T> RedisKeyAndExpire<T> getValueAndTime(String prefix, String key, Class<T> clazz);
-
 
     /**
      * 检查是否存在此 key

@@ -45,7 +45,7 @@ public class ExceptionAdvice {
     @ExceptionHandler(value = PortableException.class)
     public Response<Void> exceptionPortableHandler(HttpServletRequest httpServletRequest, PortableException e) {
         Response<Void> response = getResponse(e);
-        log.error(response.getMsg() + "[URI]: " + httpServletRequest.getRequestURI());
+        log.error(response.getMsg() + "\t([URI]: " + httpServletRequest.getRequestURI() + ")");
         return response;
     }
 
@@ -53,11 +53,8 @@ public class ExceptionAdvice {
     @ResponseBody
     @ExceptionHandler(value = Exception.class)
     public Response<Void> exceptionSupperHandler(HttpServletRequest httpServletRequest, Exception e) {
-        if (e instanceof PortableException) {
-            return exceptionPortableHandler(httpServletRequest, (PortableException) e);
-        }
-
-        log.error(e.getMessage() + "\n\t[URI]: " + httpServletRequest.getRequestURI());
+        e.printStackTrace();
+        log.error(e.getClass().getName() + "\t([URI]: " + httpServletRequest.getRequestURI() + ")");
         return getResponse(PortableException.systemDefaultException());
     }
 }

@@ -14,7 +14,7 @@ import com.portable.server.model.response.Response;
 import com.portable.server.model.response.contest.ContestAdminDetailResponse;
 import com.portable.server.model.response.contest.ContestDetailResponse;
 import com.portable.server.model.response.contest.ContestListResponse;
-import com.portable.server.model.response.contest.ContestRankResponse;
+import com.portable.server.model.response.contest.ContestRankListResponse;
 import com.portable.server.model.response.problem.ProblemDetailResponse;
 import com.portable.server.model.response.solution.SolutionDetailResponse;
 import com.portable.server.model.response.solution.SolutionListResponse;
@@ -42,7 +42,7 @@ public class ContestController {
 
     @NeedLogin(false)
     @GetMapping("/getList")
-    public Response<PageResponse<ContestListResponse>> getContestList(Integer pageNum, Integer pageSize) {
+    public Response<PageResponse<ContestListResponse, Void>> getContestList(Integer pageNum, Integer pageSize) {
         PageRequest<Void> pageRequest = PageRequest.<Void>builder()
                 .pageNum(pageNum)
                 .pageSize(pageSize)
@@ -77,7 +77,7 @@ public class ContestController {
 
     @NeedLogin
     @GetMapping("/status")
-    public Response<PageResponse<SolutionListResponse>> getContestStatusList(Long contestId,
+    public Response<PageResponse<SolutionListResponse, Void>> getContestStatusList(Long contestId,
                                                                              Integer pageNum,
                                                                              Integer pageSize,
                                                                              Long userId,
@@ -106,7 +106,7 @@ public class ContestController {
 
     @NeedLogin
     @GetMapping("/testStatus")
-    public Response<PageResponse<SolutionListResponse>> getContestTestStatusList(Long contestId,
+    public Response<PageResponse<SolutionListResponse, Void>> getContestTestStatusList(Long contestId,
                                                                                  Integer pageNum,
                                                                                  Integer pageSize,
                                                                                  Long userId,
@@ -135,7 +135,7 @@ public class ContestController {
 
     @NeedLogin
     @GetMapping("/rank")
-    public Response<PageResponse<ContestRankResponse>> getContestRank(Long contestId, Integer pageNum, Integer pageSize) throws PortableException {
+    public Response<PageResponse<ContestRankListResponse, ContestRankListResponse>> getContestRank(Long contestId, Integer pageNum, Integer pageSize) throws PortableException {
         PageRequest<Void> pageRequest = PageRequest.<Void>builder()
                 .pageNum(pageNum)
                 .pageSize(pageSize)

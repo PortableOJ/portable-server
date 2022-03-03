@@ -48,6 +48,6 @@ public class JudgeServiceImpl implements JudgeService {
 
     @Override
     public void stopJudge(String judgeCode) {
-        // TODO
+        judgeSupport.killJudge(judgeCode);
     }
 }

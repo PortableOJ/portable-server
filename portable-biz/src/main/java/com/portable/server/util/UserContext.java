@@ -4,7 +4,7 @@ import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
 import com.portable.server.exception.PortableException;
-import com.portable.server.kit.RedisKit;
+import com.portable.server.kit.RedisValueKit;
 import com.portable.server.model.user.NormalUserData;
 import com.portable.server.model.user.User;
 import com.portable.server.type.AccountType;
@@ -32,7 +32,7 @@ import java.util.concurrent.TimeUnit;
 public class UserContext implements AutoCloseable {
 
     @Resource
-    private RedisKit redisKit;
+    private RedisValueKit redisValueKit;
 
     /**
      * 当前用户 id
@@ -82,7 +82,7 @@ public class UserContext implements AutoCloseable {
     /**
      * 用户信息使用的 redis 缓存
      */
-    private static RedisKit staticRedisKit;
+    private static RedisValueKit staticRedisValueKit;
 
     /**
      * 用户信息一级缓存容量
@@ -112,7 +112,7 @@ public class UserContext implements AutoCloseable {
                 .build(new CacheLoader<Long, UserContext>() {
                     @Override
                     public UserContext load(@NonNull Long aLong) {
-                        Optional<UserContext> optionalUserContext = staticRedisKit.get(USER_CONTEST_CACHE_PREFIX, aLong.toString(), UserContext.class);
+                        Optional<UserContext> optionalUserContext = staticRedisValueKit.get(USER_CONTEST_CACHE_PREFIX, aLong.toString(), UserContext.class);
                         return optionalUserContext.orElse(getNullUser());
                     }
                 });
@@ -120,7 +120,7 @@ public class UserContext implements AutoCloseable {
 
     @PostConstruct
     public void  init() {
-        UserContext.staticRedisKit = this.redisKit;
+        UserContext.staticRedisValueKit = this.redisValueKit;
     }
 
     public static UserContext ctx() {
@@ -141,7 +141,7 @@ public class UserContext implements AutoCloseable {
         LOCAL.set(userContext);
         if (userContext.getId() != null) {
             USER_CACHE.put(userContext.getId(), userContext);
-            staticRedisKit.set(USER_CONTEST_CACHE_PREFIX, userContext.getId().toString(), userContext, Long.valueOf(USER_CONTEXT_EXPIRE_LEVEL_2));
+            staticRedisValueKit.set(USER_CONTEST_CACHE_PREFIX, userContext.getId(), userContext, Long.valueOf(USER_CONTEXT_EXPIRE_LEVEL_2));
         }
     }
 

@@ -1,7 +1,7 @@
 package com.portable.server.kit.impl;
 
+import com.portable.server.kit.RedisValueKit;
 import com.portable.server.model.RedisKeyAndExpire;
-import com.portable.server.kit.RedisKit;
 import com.portable.server.util.JsonUtils;
 import org.springframework.data.redis.core.BoundValueOperations;
 import org.springframework.data.redis.core.StringRedisTemplate;
@@ -10,6 +10,7 @@ import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
+import java.io.Serializable;
 import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 
@@ -17,7 +18,7 @@ import java.util.concurrent.TimeUnit;
  * @author shiroha
  */
 @Component
-public class RedisKitImpl implements RedisKit {
+public class RedisValueKitImpl extends BaseRedisKit implements RedisValueKit {
 
     @Resource
     private StringRedisTemplate stringRedisTemplate;
@@ -35,7 +36,7 @@ public class RedisKitImpl implements RedisKit {
     }
 
     @Override
-    public <T> void set(String prefix, String key, T data, Long time) {
+    public <T> void set(String prefix, Object key, T data, Long time) {
         redisValueOperation.set(getKey(prefix, key), JsonUtils.toString(data), time, TimeUnit.SECONDS);
     }
 
@@ -84,9 +85,5 @@ public class RedisKitImpl implements RedisKit {
                 .hasKey(false)
                 .expireTime(0L)
                 .build();
-    }
-
-    private String getKey(String prefix, String key) {
-        return String.format("%s_%s", prefix, key);
     }
 }

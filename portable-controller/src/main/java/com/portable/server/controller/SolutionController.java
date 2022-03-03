@@ -28,7 +28,7 @@ public class SolutionController {
 
     @NeedLogin(false)
     @GetMapping("/getPublicStatus")
-    public Response<PageResponse<SolutionListResponse>> getPublicSolutionList(Integer pageNum,
+    public Response<PageResponse<SolutionListResponse, Void>> getPublicSolutionList(Integer pageNum,
                                                                               Integer pageSize,
                                                                               Long userId,
                                                                               Long problemId,
