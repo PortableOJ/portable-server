@@ -11,6 +11,7 @@ import com.portable.server.model.contest.Contest;
 import com.portable.server.model.contest.ContestRankItem;
 import com.portable.server.model.solution.Solution;
 import com.portable.server.support.ContestSupport;
+import com.portable.server.type.SolutionStatusType;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
@@ -193,6 +194,7 @@ public class ContestSupportImpl implements ContestSupport {
         Map<Long, Integer> problemIndexMap = IntStream.range(0, contestData.getProblemList().size())
                 .parallel()
                 .boxed()
+                .peek(integer -> contestData.getProblemList().get(integer).init())
                 .collect(Collectors.toMap(i -> contestData.getProblemList().get(i).getProblemId(), i -> i));
 
         // 通过分页获取，减轻 io 负担
@@ -206,6 +208,13 @@ public class ContestSupportImpl implements ContestSupport {
             // 先并行创建不存在的参加者
             solutionList.stream()
                     .parallel()
+                    .peek(solution -> {
+                        if (!SolutionStatusType.ACCEPT.equals(solution.getStatus())) {
+                            return;
+                        }
+                        Integer problemIndex = problemIndexMap.get(solution.getProblemId());
+                        contestData.getProblemList().get(problemIndex).addAccept();
+                    })
                     .unordered()
                     .map(Solution::getUserId)
                     .distinct()
@@ -231,6 +240,7 @@ public class ContestSupportImpl implements ContestSupport {
                 .peek(contestRankItem -> contestRankItem.calCost(contestData.getPenaltyTime()))
                 .sorted()
                 .collect(Collectors.toList());
+        contestDataManager.saveContestData(contestData);
         saveRank(contestId, contestRankItemList);
     }
 
