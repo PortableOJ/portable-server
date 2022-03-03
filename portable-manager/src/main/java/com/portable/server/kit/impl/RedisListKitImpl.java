@@ -32,6 +32,9 @@ public class RedisListKitImpl extends BaseRedisKit implements RedisListKit {
 
     @Override
     public <T> void create(String prefix, Object key, List<T> data) {
+        if (data.isEmpty()) {
+            return;
+        }
         List<String> stringList = data.stream().map(JsonUtils::toString).collect(Collectors.toList());
         redisListOperation.rightPushAll(getKey(prefix, key), stringList);
     }
