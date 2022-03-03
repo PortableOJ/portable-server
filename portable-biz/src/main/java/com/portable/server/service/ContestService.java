@@ -27,7 +27,7 @@ public interface ContestService {
      * @param pageRequest 比赛页码请求信息
      * @return 比赛列表
      */
-    PageResponse<ContestListResponse> getContestList(PageRequest<Void> pageRequest);
+    PageResponse<ContestListResponse, Void> getContestList(PageRequest<Void> pageRequest);
 
     /**
      * 通过密码认证比赛
@@ -69,7 +69,7 @@ public interface ContestService {
      * @return 比赛的提交列表
      * @throws PortableException 没有权限或没有此比赛时抛出
      */
-    PageResponse<SolutionListResponse> getContestStatusList(Long contestId, PageRequest<SolutionListQueryRequest> pageRequest) throws PortableException;
+    PageResponse<SolutionListResponse, Void> getContestStatusList(Long contestId, PageRequest<SolutionListQueryRequest> pageRequest) throws PortableException;
 
     /**
      * 查看比赛中的提交信息
@@ -86,7 +86,7 @@ public interface ContestService {
      * @return 比赛的提交列表
      * @throws PortableException 没有权限或没有此比赛时抛出
      */
-    PageResponse<SolutionListResponse> getContestTestStatusList(Long contestId, PageRequest<SolutionListQueryRequest> pageRequest) throws PortableException;
+    PageResponse<SolutionListResponse, Void> getContestTestStatusList(Long contestId, PageRequest<SolutionListQueryRequest> pageRequest) throws PortableException;
 
     /**
      * 查看比赛中的<span color="red">测试</span>提交信息
@@ -102,7 +102,7 @@ public interface ContestService {
      * @param pageRequest 比赛榜单过滤条件
      * @return 比赛榜单
      */
-    PageResponse<ContestRankListResponse> getContestRank(Long contestId, PageRequest<Void> pageRequest);
+    PageResponse<ContestRankListResponse, Void> getContestRank(Long contestId, PageRequest<Void> pageRequest);
 
     /**
      * 提交代码

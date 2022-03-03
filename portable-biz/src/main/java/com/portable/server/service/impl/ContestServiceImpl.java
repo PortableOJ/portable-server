@@ -92,9 +92,9 @@ public class ContestServiceImpl implements ContestService {
     private JudgeSupport judgeSupport;
 
     @Override
-    public PageResponse<ContestListResponse> getContestList(PageRequest<Void> pageRequest) {
+    public PageResponse<ContestListResponse, Void> getContestList(PageRequest<Void> pageRequest) {
         Integer contestCount = contestManager.getAllContestNumber();
-        PageResponse<ContestListResponse> response = PageResponse.of(pageRequest, contestCount);
+        PageResponse<ContestListResponse, Void> response = PageResponse.of(pageRequest, contestCount);
         List<Contest> contestList = contestManager.getContestByPage(response.getPageSize(), response.offset());
         List<ContestListResponse> contestListResponseList = contestList.stream()
                 .map(ContestListResponse::of)
@@ -164,7 +164,7 @@ public class ContestServiceImpl implements ContestService {
     }
 
     @Override
-    public PageResponse<SolutionListResponse> getContestStatusList(Long contestId, PageRequest<SolutionListQueryRequest> pageRequest) throws PortableException {
+    public PageResponse<SolutionListResponse, Void> getContestStatusList(Long contestId, PageRequest<SolutionListQueryRequest> pageRequest) throws PortableException {
         ContestPackage contestPackage = getContestPackage(contestId);
         ContestVisitPermission contestVisitPermission = checkPermission(contestPackage);
         if (!ContestVisitPermission.VISIT.approve(contestVisitPermission)) {
@@ -177,7 +177,7 @@ public class ContestServiceImpl implements ContestService {
                 .collect(Collectors.toMap(i -> contestPackage.getContestData().getProblemList().get(i).getProblemId(), i -> i));
 
         Integer solutionCount = solutionManager.countSolutionByContest(contestId);
-        PageResponse<SolutionListResponse> response = PageResponse.of(pageRequest, solutionCount);
+        PageResponse<SolutionListResponse, Void> response = PageResponse.of(pageRequest, solutionCount);
         List<Solution> solutionList = solutionManager.selectSolutionByContestAndPage(response.getPageSize(), response.offset(), contestId);
         @SuppressWarnings("DuplicatedCode")
         List<SolutionListResponse> solutionListResponseList = solutionList.stream()
@@ -225,7 +225,7 @@ public class ContestServiceImpl implements ContestService {
     }
 
     @Override
-    public PageResponse<SolutionListResponse> getContestTestStatusList(Long contestId, PageRequest<SolutionListQueryRequest> pageRequest) throws PortableException {
+    public PageResponse<SolutionListResponse, Void> getContestTestStatusList(Long contestId, PageRequest<SolutionListQueryRequest> pageRequest) throws PortableException {
         ContestPackage contestPackage = getContestPackage(contestId);
         ContestVisitPermission contestVisitPermission = checkPermission(contestPackage);
         if (!ContestVisitPermission.CO_AUTHOR.approve(contestVisitPermission)) {
@@ -238,7 +238,7 @@ public class ContestServiceImpl implements ContestService {
                 .collect(Collectors.toMap(i -> contestPackage.getContestData().getProblemList().get(i).getProblemId(), i -> i));
 
         Integer solutionCount = solutionManager.countSolutionByTestContest(contestId);
-        PageResponse<SolutionListResponse> response = PageResponse.of(pageRequest, solutionCount);
+        PageResponse<SolutionListResponse, Void> response = PageResponse.of(pageRequest, solutionCount);
         List<Solution> solutionList = solutionManager.selectSolutionByTestContestAndPage(response.getPageSize(), response.offset(), contestId);
         @SuppressWarnings("DuplicatedCode")
         List<SolutionListResponse> solutionListResponseList = solutionList.stream()
@@ -277,7 +277,7 @@ public class ContestServiceImpl implements ContestService {
     }
 
     @Override
-    public PageResponse<ContestRankListResponse> getContestRank(Long contestId, PageRequest<Void> pageRequest) {
+    public PageResponse<ContestRankListResponse, Void> getContestRank(Long contestId, PageRequest<Void> pageRequest) {
         // TODO: 待完成榜单系统
         return null;
     }

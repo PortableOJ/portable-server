@@ -42,7 +42,7 @@ public class ContestController {
 
     @NeedLogin(false)
     @GetMapping("/getList")
-    public Response<PageResponse<ContestListResponse>> getContestList(Integer pageNum, Integer pageSize) {
+    public Response<PageResponse<ContestListResponse, Void>> getContestList(Integer pageNum, Integer pageSize) {
         PageRequest<Void> pageRequest = PageRequest.<Void>builder()
                 .pageNum(pageNum)
                 .pageSize(pageSize)
@@ -77,7 +77,7 @@ public class ContestController {
 
     @NeedLogin
     @GetMapping("/status")
-    public Response<PageResponse<SolutionListResponse>> getContestStatusList(Long contestId,
+    public Response<PageResponse<SolutionListResponse, Void>> getContestStatusList(Long contestId,
                                                                              Integer pageNum,
                                                                              Integer pageSize,
                                                                              Long userId,
@@ -106,7 +106,7 @@ public class ContestController {
 
     @NeedLogin
     @GetMapping("/testStatus")
-    public Response<PageResponse<SolutionListResponse>> getContestTestStatusList(Long contestId,
+    public Response<PageResponse<SolutionListResponse, Void>> getContestTestStatusList(Long contestId,
                                                                                  Integer pageNum,
                                                                                  Integer pageSize,
                                                                                  Long userId,
@@ -135,7 +135,7 @@ public class ContestController {
 
     @NeedLogin
     @GetMapping("/rank")
-    public Response<PageResponse<ContestRankListResponse>> getContestRank(Long contestId, Integer pageNum, Integer pageSize) throws PortableException {
+    public Response<PageResponse<ContestRankListResponse, Void>> getContestRank(Long contestId, Integer pageNum, Integer pageSize) throws PortableException {
         PageRequest<Void> pageRequest = PageRequest.<Void>builder()
                 .pageNum(pageNum)
                 .pageSize(pageSize)

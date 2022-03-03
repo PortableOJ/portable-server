@@ -24,7 +24,7 @@ public interface ProblemService {
      * @param pageRequest 分页请求
      * @return 分页后的题目列表
      */
-    PageResponse<ProblemListResponse> getProblemList(PageRequest<Void> pageRequest);
+    PageResponse<ProblemListResponse, Void> getProblemList(PageRequest<Void> pageRequest);
 
     /**
      * 获取公开的题库中匹配关键字的题目，可能搜索私有的

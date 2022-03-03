@@ -167,14 +167,14 @@ public class ProblemServiceImpl implements ProblemService {
     private JudgeSupport judgeSupport;
 
     @Override
-    public PageResponse<ProblemListResponse> getProblemList(PageRequest<Void> pageRequest) {
+    public PageResponse<ProblemListResponse, Void> getProblemList(PageRequest<Void> pageRequest) {
         boolean isLogin = UserContext.ctx().isLogin();
         Long userId = isLogin ? UserContext.ctx().getId() : null;
         boolean viewHiddenProblem = isLogin && UserContext.ctx().getPermissionTypeSet().contains(PermissionType.VIEW_HIDDEN_PROBLEM);
         List<ProblemAccessType> problemAccessTypeList = viewHiddenProblem ? Arrays.asList(ProblemAccessType.PUBLIC, ProblemAccessType.HIDDEN) : Collections.singletonList(ProblemAccessType.PUBLIC);
 
         Integer problemCount = problemManager.countProblemByTypeAndOwnerId(problemAccessTypeList, userId);
-        PageResponse<ProblemListResponse> problemPageResponse = PageResponse.of(pageRequest, problemCount);
+        PageResponse<ProblemListResponse, Void> problemPageResponse = PageResponse.of(pageRequest, problemCount);
         List<Problem> problemList = problemManager.getProblemListByTypeAndOwnerIdAndPaged(problemAccessTypeList, userId, problemPageResponse.getPageSize(), problemPageResponse.offset());
         List<ProblemListResponse> problemDataResponseList = isLogin
                 ? problemList.stream()

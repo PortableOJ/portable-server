@@ -12,7 +12,7 @@ import java.util.List;
  */
 @Getter
 @AllArgsConstructor
-public class PageResponse<T> {
+public class PageResponse<E, T> {
 
     private Integer pageNum;
 
@@ -23,9 +23,12 @@ public class PageResponse<T> {
     private Integer totalPage;
 
     @Setter
-    private List<T> data;
+    private List<E> data;
 
-    public static <T, U> PageResponse<T> of(PageRequest<U> request, Integer totalNum) {
+    @Setter
+    private T metaData;
+
+    public static <E, T, U> PageResponse<E, T> of(PageRequest<U> request, Integer totalNum) {
         int maxPageNum = totalNum == 0 ? 1 : (totalNum + request.getPageSize() - 1) / request.getPageSize();
         if (maxPageNum < request.getPageNum()) {
             request.setPageNum(maxPageNum);
@@ -34,6 +37,7 @@ public class PageResponse<T> {
                 request.getPageSize(),
                 totalNum,
                 (totalNum + request.getPageNum() - 1) / request.getPageSize(),
+                null,
                 null);
     }
 

@@ -60,7 +60,7 @@ public class ProblemController {
 
     @NeedLogin(false)
     @GetMapping("/getList")
-    public Response<PageResponse<ProblemListResponse>> getProblemList(Integer pageNum, Integer pageSize) {
+    public Response<PageResponse<ProblemListResponse, Void>> getProblemList(Integer pageNum, Integer pageSize) {
         PageRequest<Void> pageRequest = PageRequest.<Void>builder()
                         .pageNum(pageNum)
                         .pageSize(pageSize)

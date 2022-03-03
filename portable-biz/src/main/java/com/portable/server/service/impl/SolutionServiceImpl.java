@@ -44,9 +44,9 @@ public class SolutionServiceImpl implements SolutionService {
     private SolutionDataManager solutionDataManager;
 
     @Override
-    public PageResponse<SolutionListResponse> getPublicStatus(PageRequest<SolutionListQueryRequest> pageRequest) {
+    public PageResponse<SolutionListResponse, Void> getPublicStatus(PageRequest<SolutionListQueryRequest> pageRequest) {
         Integer solutionCount = solutionManager.countPublicSolution(pageRequest.getQueryData().getUserId(), pageRequest.getQueryData().getProblemId(), pageRequest.getQueryData().getStatusType());
-        PageResponse<SolutionListResponse> response = PageResponse.of(pageRequest, solutionCount);
+        PageResponse<SolutionListResponse, Void> response = PageResponse.of(pageRequest, solutionCount);
         List<Solution> solutionList = solutionManager.selectPublicSolutionByPage(
                 response.getPageSize(),
                 response.offset(),
