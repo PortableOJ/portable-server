@@ -85,6 +85,6 @@ public class ContestRankItem implements Comparable<ContestRankItem> {
         if (Objects.equals(totalSolve, o.getTotalSolve())) {
             return Long.compare(totalCost, o.getTotalCost());
         }
-        return Long.compare(totalSolve, o.getTotalSolve());
+        return Long.compare(o.getTotalSolve(), totalSolve);
     }
 }

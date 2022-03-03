@@ -59,6 +59,7 @@ public class ContestRankProblemStatus {
                 firstSolveId = solution.getId();
                 solveTime = (solution.getSubmitTime().getTime() - startTime.getTime()) / 1000;
                 penaltyTimes = 0;
+                runningSubmit = 0;
             }
         }
     }
