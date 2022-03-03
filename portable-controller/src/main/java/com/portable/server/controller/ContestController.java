@@ -135,7 +135,7 @@ public class ContestController {
 
     @NeedLogin
     @GetMapping("/rank")
-    public Response<PageResponse<ContestRankListResponse, Void>> getContestRank(Long contestId, Integer pageNum, Integer pageSize) throws PortableException {
+    public Response<PageResponse<ContestRankListResponse, ContestRankListResponse>> getContestRank(Long contestId, Integer pageNum, Integer pageSize) throws PortableException {
         PageRequest<Void> pageRequest = PageRequest.<Void>builder()
                 .pageNum(pageNum)
                 .pageSize(pageSize)

@@ -101,8 +101,9 @@ public interface ContestService {
      * @param contestId 比赛 id
      * @param pageRequest 比赛榜单过滤条件
      * @return 比赛榜单
+     * @throws PortableException 创建比赛榜单出错时抛出
      */
-    PageResponse<ContestRankListResponse, Void> getContestRank(Long contestId, PageRequest<Void> pageRequest);
+    PageResponse<ContestRankListResponse, ContestRankListResponse> getContestRank(Long contestId, PageRequest<Void> pageRequest) throws PortableException;
 
     /**
      * 提交代码

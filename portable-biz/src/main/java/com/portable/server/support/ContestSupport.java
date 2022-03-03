@@ -17,13 +17,27 @@ public interface ContestSupport {
     void addTraceRank(Long contestId);
 
     /**
+     * 验证比赛的 rank 数据
+     * @param contestId 比赛 id
+     * @throws PortableException 比赛不存在或者生成出错则抛出
+     */
+    void ensureRank(Long contestId) throws PortableException;
+
+    /**
+     * 获取比赛的榜单长度
+     * @param contestId 比赛 id
+     * @return 榜单长度
+     */
+    Integer getContestRankLen(Long contestId);
+
+    /**
      * 分页获取 rank 信息
      * @param contestId 比赛的 id
      * @param pageSize 每页几个
      * @param offset 偏移量
      * @return rank 列表
      */
-    List<ContestRankItem> getContestRank(Long contestId, Integer pageSize, Integer offset) throws PortableException;
+    List<ContestRankItem> getContestRank(Long contestId, Integer pageSize, Integer offset);
 
     /**
      * 获取某一个用户的比赛情况

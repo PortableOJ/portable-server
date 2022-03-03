@@ -1,10 +1,10 @@
 package com.portable.server.model.contest;
 
 import com.portable.server.model.solution.Solution;
-import com.portable.server.type.SolutionStatusType;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
-import org.springframework.lang.Nullable;
+import lombok.NoArgsConstructor;
 
 import java.util.Date;
 import java.util.Map;
@@ -15,6 +15,8 @@ import java.util.Objects;
  */
 @Data
 @Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class ContestRankItem implements Comparable<ContestRankItem> {
 
     /**
@@ -44,13 +46,13 @@ public class ContestRankItem implements Comparable<ContestRankItem> {
 
     /**
      * 添加评测
-     * @param solution 提交的信息
+     *
+     * @param solution     提交的信息
      * @param problemIndex 比赛的序号
-     * @param startTime 比赛开始时间
-     * @param freezeTime 比赛冻结时间
-     * @param penaltyCost 单次惩罚时间
+     * @param startTime    比赛开始时间
+     * @param freezeTime   比赛冻结时间
      */
-    public void addSolution(Solution solution, Integer problemIndex, Date startTime, Date freezeTime, Integer penaltyCost) {
+    public void addSolution(Solution solution, Integer problemIndex, Date startTime, Date freezeTime) {
         ContestRankProblemStatus contestRankProblemStatus;
         if (!submitStatus.containsKey(problemIndex)) {
             contestRankProblemStatus = ContestRankProblemStatus.builder()
@@ -63,12 +65,19 @@ public class ContestRankItem implements Comparable<ContestRankItem> {
         } else {
             contestRankProblemStatus = submitStatus.get(problemIndex);
         }
-        Long penalty = contestRankProblemStatus.add(solution, startTime, freezeTime, penaltyCost);
-        if (penalty == null) {
-            return;
-        }
-        totalCost += penalty;
-        ++totalSolve;
+        contestRankProblemStatus.add(solution, startTime, freezeTime);
+    }
+
+    public void calCost(Integer penaltyTime) {
+        totalCost = submitStatus.values().stream()
+                .map(contestRankProblemStatus -> {
+                    if (contestRankProblemStatus.getFirstSolveId() == null) {
+                        return 0L;
+                    }
+                    totalSolve++;
+                    return contestRankProblemStatus.getSolveTime() + (long) contestRankProblemStatus.getPenaltyTimes() * penaltyTime;
+                })
+                .reduce(0L, Long::sum);
     }
 
     @Override
@@ -77,58 +86,5 @@ public class ContestRankItem implements Comparable<ContestRankItem> {
             return Long.compare(totalCost, o.getTotalCost());
         }
         return Long.compare(totalSolve, o.getTotalSolve());
-    }
-
-    @Data
-    @Builder
-    public static class ContestRankProblemStatus {
-
-        /**
-         * 第一次解决此问题的 solution id
-         */
-        private Long firstSolveId;
-
-        /**
-         * 解决此题目经过的时间（秒）
-         */
-        private Long solveTime;
-
-        /**
-         * 总共结束评测的提交的且不包含不惩罚的次数
-         */
-        private Integer penaltyTimes;
-
-        /**
-         * 未结束评测以及冻结榜单时的提交数量
-         */
-        private Integer runningSubmit;
-
-        /**
-         * 添加评测
-         * @param solution 提交的信息
-         * @param startTime 比赛开始时间
-         * @param freezeTime 比赛冻结时间
-         * @param penaltyCost 单次惩罚时间
-         * @return 惩罚添加的时间，若不需要惩罚，则返回 null
-         */
-        @Nullable
-        public Long add(Solution solution, Date startTime, Date freezeTime, Integer penaltyCost) {
-            if (freezeTime.before(solution.getSubmitTime())) {
-                runningSubmit++;
-            } else {
-                if (!solution.getStatus().getEndingResult()) {
-                    runningSubmit++;
-                } else if (solution.getStatus().getPenalty()) {
-                    penaltyTimes++;
-                } else if (SolutionStatusType.ACCEPT.equals(solution.getStatus())) {
-                    if (firstSolveId != null) {
-                        firstSolveId = solution.getId();
-                        solveTime = (solution.getSubmitTime().getTime() - startTime.getTime()) / 1000;
-                        return ((long) penaltyTimes * penaltyCost) + solveTime;
-                    }
-                }
-            }
-            return null;
-        }
     }
 }

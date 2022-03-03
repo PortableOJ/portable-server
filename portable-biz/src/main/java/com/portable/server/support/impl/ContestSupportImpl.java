@@ -12,11 +12,11 @@ import com.portable.server.model.contest.ContestRankItem;
 import com.portable.server.model.solution.Solution;
 import com.portable.server.support.ContestSupport;
 import org.springframework.scheduling.annotation.Scheduled;
-import org.springframework.security.core.parameters.P;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -93,7 +93,7 @@ public class ContestSupportImpl implements ContestSupport {
     @Scheduled(fixedDelayString = "${portable.contest.rank.update}")
     public void updateRank() {
         Date now = new Date();
-        CACHED_RANK = CACHED_RANK.entrySet().stream()
+        CACHED_RANK = Collections.synchronizedMap(CACHED_RANK.entrySet().stream()
                 .sequential()
                 .map(longDateEntry -> {
                     if (longDateEntry.getValue().before(now)) {
@@ -108,7 +108,7 @@ public class ContestSupportImpl implements ContestSupport {
                     }
                 })
                 .filter(longDateEntry -> !Objects.isNull(longDateEntry))
-                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue)));
     }
 
     @Override
@@ -119,13 +119,14 @@ public class ContestSupportImpl implements ContestSupport {
     }
 
     @Override
-    public List<ContestRankItem> getContestRank(Long contestId, Integer pageSize, Integer offset) throws PortableException {
+    public void ensureRank(Long contestId) throws PortableException {
         if (CACHED_RANK.containsKey(contestId)) {
-            return redisListKit.getPage(RANK_LIST_PREFIX, contestId, pageSize, offset, ContestRankItem.class);
+            addTraceRank(contestId);
+            return;
         }
         boolean needMake = false;
         try {
-            synchronized (this) {
+            synchronized (ON_MAKING_CONTEST) {
                 if (ON_MAKING_CONTEST.contains(contestId)) {
                     do {
                         this.wait();
@@ -143,12 +144,28 @@ public class ContestSupportImpl implements ContestSupport {
                     RANK_MAKER++;
                 }
                 makeRank(contestId);
-                this.notifyAll();
-                MAX_RANK_MAKER.notifyAll();
+                addTraceRank(contestId);
+                synchronized (MAX_RANK_MAKER) {
+                    RANK_MAKER--;
+                    MAX_RANK_MAKER.notifyAll();
+                }
+                synchronized (ON_MAKING_CONTEST) {
+                    ON_MAKING_CONTEST.remove(contestId);
+                    ON_MAKING_CONTEST.notifyAll();
+                }
             }
         } catch (InterruptedException ignore) {
             throw PortableException.of("S-00-000");
         }
+    }
+
+    @Override
+    public Integer getContestRankLen(Long contestId) {
+        return redisListKit.getLen(RANK_LIST_PREFIX, contestId);
+    }
+
+    @Override
+    public List<ContestRankItem> getContestRank(Long contestId, Integer pageSize, Integer offset) {
         return redisListKit.getPage(RANK_LIST_PREFIX, contestId, pageSize, offset, ContestRankItem.class);
     }
 
@@ -192,7 +209,7 @@ public class ContestSupportImpl implements ContestSupport {
                     .unordered()
                     .map(Solution::getUserId)
                     .distinct()
-                    .filter(userIdContestRankMap::containsKey)
+                    .filter(aLong -> !userIdContestRankMap.containsKey(aLong))
                     .forEach(aLong -> userIdContestRankMap.put(aLong, ContestRankItem.builder()
                             .rank(0)
                             .userId(aLong)
@@ -200,19 +217,18 @@ public class ContestSupportImpl implements ContestSupport {
                             .totalSolve(0)
                             .submitStatus(new ConcurrentHashMap<>(0))
                             .build()));
-            solutionList.stream()
-                    .parallel()
-                    .forEach(solution -> {
-                        ContestRankItem contestRankItem = userIdContestRankMap.get(solution.getUserId());
-                        contestRankItem.addSolution(solution,
-                                problemIndexMap.get(solution.getProblemId()),
-                                contest.getStartTime(),
-                                freezeTime,
-                                contestData.getPenaltyTime());
-                    });
+            solutionList.forEach(solution -> {
+                ContestRankItem contestRankItem = userIdContestRankMap.get(solution.getUserId());
+                contestRankItem.addSolution(solution,
+                        problemIndexMap.get(solution.getProblemId()),
+                        contest.getStartTime(),
+                        freezeTime
+                );
+            });
         }
         List<ContestRankItem> contestRankItemList = userIdContestRankMap.values().stream()
                 .parallel()
+                .peek(contestRankItem -> contestRankItem.calCost(contestData.getPenaltyTime()))
                 .sorted()
                 .collect(Collectors.toList());
         saveRank(contestId, contestRankItemList);
@@ -228,7 +244,9 @@ public class ContestSupportImpl implements ContestSupport {
                     return contestRankItem;
                 })
                 .collect(Collectors.toMap(ContestRankItem::getUserId, ContestRankItem::getRank));
+        redisHashKit.clear(RANK_HASH_PREFIX, contestId);
         redisHashKit.create(RANK_HASH_PREFIX, contestId, userRankMap);
+        redisListKit.clear(RANK_LIST_PREFIX, contestId);
         redisListKit.create(RANK_LIST_PREFIX, contestId, contestRankItemList);
     }
 }

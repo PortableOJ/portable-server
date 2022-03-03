@@ -10,6 +10,7 @@ import com.portable.server.manager.SolutionManager;
 import com.portable.server.manager.UserManager;
 import com.portable.server.model.contest.BaseContestData;
 import com.portable.server.model.contest.Contest;
+import com.portable.server.model.contest.ContestRankItem;
 import com.portable.server.model.contest.PasswordContestData;
 import com.portable.server.model.contest.PrivateContestData;
 import com.portable.server.model.problem.Problem;
@@ -33,6 +34,7 @@ import com.portable.server.model.solution.Solution;
 import com.portable.server.model.solution.SolutionData;
 import com.portable.server.model.user.User;
 import com.portable.server.service.ContestService;
+import com.portable.server.support.ContestSupport;
 import com.portable.server.support.JudgeSupport;
 import com.portable.server.type.ContestAccessType;
 import com.portable.server.type.ContestVisitPermission;
@@ -90,6 +92,9 @@ public class ContestServiceImpl implements ContestService {
 
     @Resource
     private JudgeSupport judgeSupport;
+
+    @Resource
+    private ContestSupport contestSupport;
 
     @Override
     public PageResponse<ContestListResponse, Void> getContestList(PageRequest<Void> pageRequest) {
@@ -277,9 +282,34 @@ public class ContestServiceImpl implements ContestService {
     }
 
     @Override
-    public PageResponse<ContestRankListResponse, Void> getContestRank(Long contestId, PageRequest<Void> pageRequest) {
-        // TODO: 待完成榜单系统
-        return null;
+    public PageResponse<ContestRankListResponse, ContestRankListResponse> getContestRank(Long contestId, PageRequest<Void> pageRequest) throws PortableException {
+        ContestPackage contestPackage = getContestPackage(contestId);
+        ContestVisitPermission contestVisitPermission = checkPermission(contestPackage);
+        if (!ContestVisitPermission.VISIT.approve(contestVisitPermission)) {
+            throw PortableException.of("A-08-004", contestId);
+        }
+        contestSupport.ensureRank(contestId);
+        Integer totalNum = contestSupport.getContestRankLen(contestId);
+        PageResponse<ContestRankListResponse, ContestRankListResponse> response = PageResponse.of(pageRequest, totalNum);
+        List<ContestRankItem> contestRankItemList = contestSupport.getContestRank(contestId, response.getPageSize(), response.offset());
+        List<ContestRankListResponse> contestRankListResponseList = contestRankItemList.stream()
+                .map(contestRankItem -> {
+                    User user = userManager.getAccountById(contestRankItem.getUserId());
+                    if (user == null) {
+                        return ContestRankListResponse.of(contestRankItem, "");
+                    }
+                    return ContestRankListResponse.of(contestRankItem, user.getHandle());
+                })
+                .collect(Collectors.toList());
+        UserContext userContext = UserContext.ctx();
+        ContestRankItem userItem = contestSupport.getContestByUserId(contestId, userContext.getId());
+        ContestRankListResponse metaData = null;
+        if (userItem != null) {
+            metaData = ContestRankListResponse.of(userItem, userContext.getHandle());
+        }
+        response.setData(contestRankListResponseList);
+        response.setMetaData(metaData);
+        return response;
     }
 
     @Override
