@@ -191,9 +191,6 @@ public class JudgeSupportImpl implements JudgeSupport {
         }
         // 更新统计数量
         switch (solution.getSolutionType()) {
-            case CONTEST:
-                // contest 还需要单独加入到 contest 的统计列表中
-                break;
             case PUBLIC:
                 problemManager.updateProblemCount(solutionJudgeWork.getProblemId(), 0, 1);
 
@@ -205,6 +202,9 @@ public class JudgeSupportImpl implements JudgeSupport {
                 }
                 break;
             case PROBLEM_PROCESS:
+            case CONTEST:
+                // 在生成榜单时候，再更新
+            case TEST_CONTEST:
             default:
                 break;
         }

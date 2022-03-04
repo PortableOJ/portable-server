@@ -70,5 +70,13 @@ public abstract class BaseContestData {
             this.submissionCount = 0;
             this.acceptCount = 0;
         }
+
+        public void init() {
+            this.acceptCount = 0;
+        }
+
+        public void addAccept() {
+            this.acceptCount++;
+        }
     }
 }

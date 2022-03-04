@@ -30,6 +30,9 @@ public class RedisHashKitImpl extends BaseRedisKit implements RedisHashKit {
 
     @Override
     public void create(String prefix, Object key, Map<Long, Integer> map) {
+        if (map.isEmpty()) {
+            return;
+        }
         Map<String, String> dataMap = map.entrySet().stream()
                 .parallel()
                 .collect(Collectors.toMap(longIntegerEntry -> longIntegerEntry.getKey().toString(),
@@ -49,6 +52,9 @@ public class RedisHashKitImpl extends BaseRedisKit implements RedisHashKit {
     @Override
     public void clear(String prefix, Object key) {
         Set<Object> keySet = hashOperations.keys(getKey(prefix, key));
+        if (keySet.isEmpty()) {
+            return;
+        }
         hashOperations.delete(getKey(prefix, key), keySet.toArray());
     }
 }
