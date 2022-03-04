@@ -48,6 +48,7 @@ import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -357,18 +358,19 @@ public class ContestServiceImpl implements ContestService {
     }
 
     @Override
-    public synchronized Long createContest(ContestContentRequest contestContentRequest) throws PortableException {
+    public Long createContest(ContestContentRequest contestContentRequest) throws PortableException {
         Contest contest = contestManager.newContest();
         BaseContestData contestData = contestDataManager.newContestData(contestContentRequest.getAccessType());
         contestContentRequest.toContest(contest);
         contest.setOwner(UserContext.ctx().getId());
+        checkSameProblem(contestContentRequest);
         setContestContentToContestData(contestContentRequest, contestData);
 
-        checkSameProblem(contestContentRequest);
         contestDataManager.insertContestData(contestData);
         contest.setDataId(contestData.get_id());
         contestManager.newContest(contest);
 
+        updateContestLock(contest.getId(), contestContentRequest.getProblemList());
         return contest.getId();
     }
 
@@ -415,6 +417,7 @@ public class ContestServiceImpl implements ContestService {
             // 下面的函数已经保证了不会删除题目
             contestContentRequest.toContestData(contestData);
             contestDataManager.saveContestData(contestData);
+            updateContestLock(contest.getId(), contestContentRequest.getProblemList());
         } else {
             // 比赛已经结束，仅允许修改比赛公告
             contestData.setAnnouncement(contestContentRequest.getAnnouncement());
@@ -445,6 +448,8 @@ public class ContestServiceImpl implements ContestService {
             throw PortableException.of("A-08-016");
         }
         contestPackage.getContestData().getProblemList().add(new BaseContestData.ContestProblemData(contestAddProblem.getProblemId()));
+        contestDataManager.saveContestData(contestPackage.getContestData());
+        updateContestLock(contestAddProblem.getContestId(), Collections.singletonList(contestAddProblem.getProblemId()));
     }
 
     private ContestPackage getContestPackage(Long contestId) throws PortableException {
@@ -613,10 +618,7 @@ public class ContestServiceImpl implements ContestService {
         if (!Objects.equals(problemIdSet.size(), contestContentRequest.getProblemList().size())) {
             throw PortableException.of("A-08-020");
         }
-    }
-
-    private void setContestContentToContestData(ContestContentRequest contestContentRequest, BaseContestData contestData) throws PortableException {
-        // 校验题目是否都是合法存在的
+        // 校验题目是否都存在
         List<Long> notExistProblemList = problemManager.checkProblemListExist(contestContentRequest.getProblemList());
         if (!notExistProblemList.isEmpty()) {
             String notExistProblem = notExistProblemList.stream()
@@ -624,6 +626,9 @@ public class ContestServiceImpl implements ContestService {
                     .collect(Collectors.joining(", "));
             throw PortableException.of("A-08-010", notExistProblem);
         }
+    }
+
+    private void setContestContentToContestData(ContestContentRequest contestContentRequest, BaseContestData contestData) throws PortableException {
         // 过滤掉不存在的邀请用户和邀请的合作出题人
         Set<Long> coAuthorIdSet = userManager.changeUserHandleToUserId(contestContentRequest.getCoAuthor())
                 .filter(aLong -> !Objects.isNull(aLong))
@@ -634,6 +639,34 @@ public class ContestServiceImpl implements ContestService {
                     .filter(aLong -> !Objects.isNull(aLong))
                     .collect(Collectors.toSet());
         }
+        List<Long> lastProblemList = contestData.getProblemList().stream()
+                .map(BaseContestData.ContestProblemData::getProblemId)
+                .collect(Collectors.toList());
         contestContentRequest.toContestData(contestData, coAuthorIdSet, inviteUserIdSet);
+        // 在数据完成输入后，再更新题目的锁定状态
+        lastProblemList.stream()
+                .parallel()
+                .forEach(aLong -> {
+                    // 已经校验过题目是否合法了
+                    Problem problem = problemManager.getProblemById(aLong);
+                    ProblemData problemData = problemDataManager.getProblemData(problem.getDataId());
+                    if (Objects.equals(problemData.getContestId(), contestContentRequest.getId())) {
+                        problemData.setContestId(null);
+                        problemDataManager.updateProblemData(problemData);
+                    }
+                });
+    }
+
+    private void updateContestLock(Long contestId, List<Long> problemIdList) {
+        problemIdList.stream()
+                .parallel()
+                .forEach(aLong -> {
+                    Problem problem = problemManager.getProblemById(aLong);
+                    ProblemData problemData = problemDataManager.getProblemData(problem.getDataId());
+                    if (problemData.getContestId() == null) {
+                        problemData.setContestId(contestId);
+                        problemDataManager.updateProblemData(problemData);
+                    }
+                });
     }
 }
