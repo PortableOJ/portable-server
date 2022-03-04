@@ -19,6 +19,12 @@ public interface JudgeService {
     ServiceVerifyCode getServerCode();
 
     /**
+     * 在项目启动后，获取一次 server code
+     * @return serve code
+     */
+    String getTheServerCodeFirstTime();
+
+    /**
      * 获取所有 Judge 信息
      * @return 所有 Judge 信息
      */
