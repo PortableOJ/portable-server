@@ -18,12 +18,27 @@ import java.util.List;
 @Component
 public class JudgeServiceImpl implements JudgeService {
 
+    private static Boolean firstServerCode;
+
+    static {
+        firstServerCode = true;
+    }
+
     @Resource
     private JudgeSupport judgeSupport;
 
     @Override
     public ServiceVerifyCode getServerCode() {
         return judgeSupport.getServiceCode();
+    }
+
+    @Override
+    public String getTheServerCodeFirstTime() {
+        if (firstServerCode) {
+            firstServerCode = false;
+            return judgeSupport.getServiceCode().getCode();
+        }
+        return null;
     }
 
     @Override

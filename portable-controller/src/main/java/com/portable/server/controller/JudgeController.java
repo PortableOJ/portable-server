@@ -17,6 +17,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 
 /**
@@ -34,6 +38,21 @@ public class JudgeController {
     @PermissionRequirement(PermissionType.MANAGER_JUDGE)
     public Response<ServiceVerifyCode> getServerCode() {
         return Response.ofOk(judgeService.getServerCode());
+    }
+
+    @NeedLogin(false)
+    @GetMapping("/initCode")
+    public void getServerCodeFirst(HttpServletResponse response) {
+        String code = judgeService.getTheServerCodeFirstTime();
+        try {
+            if (code != null) {
+                OutputStream outputStream = response.getOutputStream();
+                outputStream.write(code.getBytes(StandardCharsets.UTF_8));
+            } else {
+                response.setStatus(404);
+            }
+        } catch (IOException ignore) {
+        }
     }
 
     @NeedLogin
