@@ -5,6 +5,7 @@ import com.portable.server.exception.PortableException;
 import com.portable.server.model.response.Response;
 import com.portable.server.service.FileService;
 import com.portable.server.type.FileStoreType;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -39,8 +40,7 @@ public class FileController {
         }
     }
 
-    @NeedLogin
-    @PostMapping("/get")
+    @GetMapping("/get")
     public void get(String id, FileStoreType type, HttpServletResponse response) throws PortableException {
         try {
             fileService.get(id, type, response.getOutputStream());

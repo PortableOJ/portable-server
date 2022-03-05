@@ -15,12 +15,12 @@ public enum FileStoreType implements ExceptionTextType {
     /**
      * 头像
      */
-    AVATAR("头像", "image/.+", "file/alkaline.jpg", "image/jpeg"),
+    AVATAR("头像", "image/.+", "/file/alkaline.jpg", "image/jpeg"),
 
     /**
      * 图片
      */
-    IMAGE("图片", "image/.+", "file/deathImage.jpeg", "image/jpeg"),
+    IMAGE("图片", "image/.+", "/file/deathImage.jpeg", "image/jpeg"),
     ;
 
     private final String text;
