@@ -5,6 +5,9 @@ import com.portable.server.interceptor.PermissionInterceptor;
 import com.portable.server.util.UserContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.data.mongodb.MongoDatabaseFactory;
+import org.springframework.data.mongodb.core.convert.MongoConverter;
+import org.springframework.data.mongodb.gridfs.GridFsTemplate;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
@@ -46,6 +49,17 @@ public class WebMvcConfig implements WebMvcConfigurer {
     @Bean
     public UserContext userContext() {
         return new UserContext();
+    }
+
+    /**
+     * 设置 GridFs 的桶
+     * @param dbFactory bean
+     * @param converter bean
+     * @return bean
+     */
+    @Bean
+    public GridFsTemplate gridFsTemplate(MongoDatabaseFactory dbFactory, MongoConverter converter) {
+        return new GridFsTemplate(dbFactory, converter, "portable");
     }
 
     @Bean

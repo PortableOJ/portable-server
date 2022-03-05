@@ -19,10 +19,12 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
+import java.io.IOException;
 import java.util.regex.Pattern;
 
 /**
@@ -47,7 +49,9 @@ public class UserController {
     private static final String PASSWORD_REGEX = "^[a-zA-Z0-9_\\-@#$%^&*~',./?:]{6,16}$";
     private static final Pattern PASSWORD_PATTERN;
 
-    static  {
+    private static final Long IMAGE_FILE_MAX_SIZE = 1024 * 1024 * 10L;
+
+    static {
         NORMAL_HANDLE_PATTERN = Pattern.compile(NORMAL_HANDLE_REGEX);
         PASSWORD_PATTERN = Pattern.compile(PASSWORD_REGEX);
     }
@@ -124,5 +128,19 @@ public class UserController {
     public Response<Void> removePermission(@RequestBody PermissionRequest permissionRequest) throws PortableException {
         userService.removePermission(permissionRequest.getTargetId(), permissionRequest.getPermissionType());
         return Response.ofOk();
+    }
+
+    @NeedLogin
+    @PostMapping("/avatar")
+    public Response<Void> uploadAvatar(MultipartFile fileData) throws PortableException {
+        if (IMAGE_FILE_MAX_SIZE.compareTo(fileData.getSize()) < 0) {
+            throw PortableException.of("A-09-002", IMAGE_FILE_MAX_SIZE);
+        }
+        try {
+            userService.uploadAvatar(fileData.getInputStream(), fileData.getOriginalFilename(), fileData.getContentType());
+            return Response.ofOk();
+        } catch (IOException e) {
+            throw PortableException.of("S-01-003");
+        }
     }
 }

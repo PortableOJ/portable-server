@@ -27,6 +27,7 @@ public class UserDataManagerImpl implements UserDataManager {
                 .accept(0)
                 .permissionTypeSet(PermissionType.defaultPermission())
                 .email(null)
+                .avatar(null)
                 .build();
     }
 

@@ -3,6 +3,7 @@ package com.portable.server.adivce;
 import com.portable.server.exception.ExceptionTextType;
 import com.portable.server.exception.PortableException;
 import com.portable.server.model.response.Response;
+import com.portable.server.util.UserContext;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.MessageSource;
 import org.springframework.context.i18n.LocaleContextHolder;
@@ -45,7 +46,7 @@ public class ExceptionAdvice {
     @ExceptionHandler(value = PortableException.class)
     public Response<Void> exceptionPortableHandler(HttpServletRequest httpServletRequest, PortableException e) {
         Response<Void> response = getResponse(e);
-        log.error(response.getMsg() + "\t([URI]: " + httpServletRequest.getRequestURI() + ")");
+        logInfo(response.getMsg(), httpServletRequest);
         return response;
     }
 
@@ -54,7 +55,11 @@ public class ExceptionAdvice {
     @ExceptionHandler(value = Exception.class)
     public Response<Void> exceptionSupperHandler(HttpServletRequest httpServletRequest, Exception e) {
         e.printStackTrace();
-        log.error(e.getClass().getName() + "\t([URI]: " + httpServletRequest.getRequestURI() + ")");
+        logInfo(e.getClass().getName(), httpServletRequest);
         return getResponse(PortableException.systemDefaultException());
+    }
+
+    private void logInfo(String msg, HttpServletRequest httpServletRequest) {
+        log.error(msg + "\t([URI]: " + httpServletRequest.getRequestURI() + ",[UserHandle]:" + UserContext.ctx().getHandle() + ")");
     }
 }
