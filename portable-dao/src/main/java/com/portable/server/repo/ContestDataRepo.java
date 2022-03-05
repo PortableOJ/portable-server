@@ -7,14 +7,14 @@ import com.portable.server.model.contest.PublicContestData;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Repository;
 
 import javax.annotation.Resource;
 
 /**
  * @author shiroha
  */
-@Component
+@Repository
 public class ContestDataRepo {
 
     private static final String COLLECTION_NAME = "contestData";

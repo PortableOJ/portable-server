@@ -1,7 +1,7 @@
 package com.portable.server.model.user;
 
-import com.portable.server.type.PermissionType;
 import com.portable.server.type.OrganizationType;
+import com.portable.server.type.PermissionType;
 import lombok.Builder;
 import lombok.Data;
 import org.springframework.data.annotation.Id;
@@ -21,6 +21,11 @@ public class NormalUserData {
     @Id
     @SuppressWarnings("AlibabaAvoidStartWithDollarAndUnderLineNaming")
     private String _id;
+
+    /**
+     * 头像
+     */
+    private String avatar;
 
     /**
      * 所属组织
