@@ -24,11 +24,11 @@ public class GridFsRepo {
     @Resource
     private GridFsTemplate gridFsTemplate;
 
-    public String saveFile(InputStream inputStream, String contentType, FileStoreType fileStoreType) throws PortableException {
+    public String saveFile(InputStream inputStream, String name, String contentType, FileStoreType fileStoreType) throws PortableException {
         if (!fileStoreType.getContentTypePattern().matcher(contentType).matches()) {
             throw PortableException.of("A-09-001", contentType, fileStoreType);
         }
-        ObjectId objectId = gridFsTemplate.store(inputStream, null, contentType, null);
+        ObjectId objectId = gridFsTemplate.store(inputStream, name, contentType, null);
         return objectId.toString();
     }
 

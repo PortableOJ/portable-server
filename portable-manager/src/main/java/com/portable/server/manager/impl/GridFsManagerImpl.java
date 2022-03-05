@@ -20,13 +20,13 @@ public class GridFsManagerImpl implements GridFsManager {
     private GridFsRepo gridFsRepo;
 
     @Override
-    public String uploadAvatar(InputStream inputStream, String contentType) throws PortableException {
-        return gridFsRepo.saveFile(inputStream, contentType, FileStoreType.AVATAR);
+    public String uploadAvatar(InputStream inputStream, String name, String contentType) throws PortableException {
+        return gridFsRepo.saveFile(inputStream, name, contentType, FileStoreType.AVATAR);
     }
 
     @Override
-    public String uploadImage(InputStream inputStream, String contentType) throws PortableException {
-        return gridFsRepo.saveFile(inputStream, contentType, FileStoreType.IMAGE);
+    public String uploadImage(InputStream inputStream, String name, String contentType) throws PortableException {
+        return gridFsRepo.saveFile(inputStream, name, contentType, FileStoreType.IMAGE);
     }
 
     @Override
