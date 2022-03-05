@@ -20,7 +20,10 @@ public class GridFsManagerImpl implements GridFsManager {
     private GridFsRepo gridFsRepo;
 
     @Override
-    public String uploadAvatar(InputStream inputStream, String name, String contentType) throws PortableException {
+    public String uploadAvatar(String lastId, InputStream inputStream, String name, String contentType) throws PortableException {
+        if (lastId != null) {
+            gridFsRepo.deleteFile(lastId);
+        }
         return gridFsRepo.saveFile(inputStream, name, contentType, FileStoreType.AVATAR);
     }
 

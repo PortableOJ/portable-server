@@ -27,19 +27,6 @@ public class FileController {
     private static final Long IMAGE_FILE_MAX_SIZE = 1024 * 1024 * 20L;
 
     @NeedLogin
-    @PostMapping("/avatar")
-    public Response<String> uploadAvatar(MultipartFile fileData) throws PortableException {
-        if (IMAGE_FILE_MAX_SIZE.compareTo(fileData.getSize()) < 0) {
-            throw PortableException.of("A-09-002", IMAGE_FILE_MAX_SIZE);
-        }
-        try {
-            return Response.ofOk(fileService.uploadAvatar(fileData.getInputStream(), fileData.getOriginalFilename(), fileData.getContentType()));
-        } catch (IOException e) {
-            throw PortableException.of("S-01-003");
-        }
-    }
-
-    @NeedLogin
     @PostMapping("/image")
     public Response<String> uploadImage(MultipartFile fileData) throws PortableException {
         if (IMAGE_FILE_MAX_SIZE.compareTo(fileData.getSize()) < 0) {

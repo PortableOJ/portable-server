@@ -32,6 +32,10 @@ public class GridFsRepo {
         return objectId.toString();
     }
 
+    public void deleteFile(String id) {
+        gridFsTemplate.delete(new Query(Criteria.where("_id").is(id)));
+    }
+
     public FileData getFile(String id, FileStoreType fileStoreType) throws PortableException {
         GridFSFile file = gridFsTemplate.findOne(new Query(Criteria.where("_id").is(id)));
         if (file == null) {

@@ -12,16 +12,6 @@ import java.io.OutputStream;
 public interface FileService {
 
     /**
-     * 上传头像
-     * @param inputStream 头像文件流
-     * @param name 文件名
-     * @param contentType 文件类型
-     * @return 头像的 id
-     * @throws PortableException 类型不匹配则抛出
-     */
-    String uploadAvatar(InputStream inputStream, String name, String contentType) throws PortableException;
-
-    /**
      * 上传图片
      * @param inputStream 图片的文件流
      * @param name 文件名

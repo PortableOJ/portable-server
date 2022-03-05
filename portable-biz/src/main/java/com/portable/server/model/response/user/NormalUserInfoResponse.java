@@ -1,7 +1,7 @@
 package com.portable.server.model.response.user;
 
-import com.portable.server.model.user.User;
 import com.portable.server.model.user.NormalUserData;
+import com.portable.server.model.user.User;
 import com.portable.server.type.OrganizationType;
 import com.portable.server.type.PermissionType;
 import lombok.EqualsAndHashCode;
@@ -45,12 +45,19 @@ public class NormalUserInfoResponse extends UserBasicInfoResponse {
      */
     private String email;
 
+    /**
+     * 头像
+     */
+    private String avatar;
+
     private NormalUserInfoResponse(User user, NormalUserData normalUserData) {
         super(user);
         this.organizationType = normalUserData.getOrganization();
         this.submission = normalUserData.getSubmission();
         this.accept = normalUserData.getAccept();
         this.permissionTypeSet = normalUserData.getPermissionTypeSet();
+        this.email = normalUserData.getEmail();
+        this.avatar = normalUserData.getAvatar();
     }
 
     public static NormalUserInfoResponse of(User user, NormalUserData normalUserData) {

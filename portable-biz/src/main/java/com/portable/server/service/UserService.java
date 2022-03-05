@@ -8,6 +8,8 @@ import com.portable.server.model.response.user.UserBasicInfoResponse;
 import com.portable.server.type.OrganizationType;
 import com.portable.server.type.PermissionType;
 
+import java.io.InputStream;
+
 /**
  * 用户服务模块
  *
@@ -77,4 +79,14 @@ public interface UserService {
      * @throws PortableException 遇到意外情况抛出错误
      */
     void removePermission(Long targetId, PermissionType permission) throws PortableException;
+
+    /**
+     * 上传头像
+     * @param inputStream 头像文件流
+     * @param name 文件名
+     * @param contentType 文件类型
+     * @throws PortableException 类型不匹配则抛出
+     */
+    void uploadAvatar(InputStream inputStream, String name, String contentType) throws PortableException;
+
 }

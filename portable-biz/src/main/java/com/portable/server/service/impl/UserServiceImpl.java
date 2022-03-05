@@ -2,14 +2,15 @@ package com.portable.server.service.impl;
 
 import com.portable.server.encryption.BCryptEncoder;
 import com.portable.server.exception.PortableException;
-import com.portable.server.manager.UserManager;
+import com.portable.server.manager.GridFsManager;
 import com.portable.server.manager.UserDataManager;
+import com.portable.server.manager.UserManager;
 import com.portable.server.model.request.user.LoginRequest;
 import com.portable.server.model.request.user.RegisterRequest;
 import com.portable.server.model.response.user.NormalUserInfoResponse;
 import com.portable.server.model.response.user.UserBasicInfoResponse;
-import com.portable.server.model.user.User;
 import com.portable.server.model.user.NormalUserData;
+import com.portable.server.model.user.User;
 import com.portable.server.service.UserService;
 import com.portable.server.type.AccountType;
 import com.portable.server.type.OrganizationType;
@@ -20,6 +21,7 @@ import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
+import java.io.InputStream;
 import java.util.Arrays;
 import java.util.stream.Collectors;
 
@@ -37,6 +39,9 @@ public class UserServiceImpl implements UserService {
 
     @Resource
     private BCryptEncoder bCryptEncoder;
+
+    @Resource
+    private GridFsManager gridFsManager;
 
     @Value("${ROOT_NAME}")
     private String rootName;
@@ -158,6 +163,18 @@ public class UserServiceImpl implements UserService {
         }
         targetUserData.getPermissionTypeSet().remove(permission);
         userDataManager.updateNormalUserData(targetUserData);
+    }
+
+    @Override
+    public void uploadAvatar(InputStream inputStream, String name, String contentType) throws PortableException {
+        UserContext userContext = UserContext.ctx();
+        if (!AccountType.NORMAL.equals(userContext.getType())) {
+            throw PortableException.of("A-02-008", UserContext.ctx().getType());
+        }
+        NormalUserData normalUserData = userDataManager.getNormalUserDataById(userContext.getDataId());
+        String fileId = gridFsManager.uploadAvatar(normalUserData.getAvatar(), inputStream, name, contentType);
+        normalUserData.setAvatar(fileId);
+        userDataManager.updateNormalUserData(normalUserData);
     }
 
     private NormalUserData organizationCheck(Long target) throws PortableException {

@@ -22,11 +22,6 @@ public class FileServiceImpl implements FileService {
     private GridFsManager gridFsManager;
 
     @Override
-    public String uploadAvatar(InputStream inputStream, String name, String contentType) throws PortableException {
-        return gridFsManager.uploadAvatar(inputStream, name, contentType);
-    }
-
-    @Override
     public String uploadImage(InputStream inputStream, String name, String contentType) throws PortableException {
         return gridFsManager.uploadImage(inputStream, name, contentType);
     }
