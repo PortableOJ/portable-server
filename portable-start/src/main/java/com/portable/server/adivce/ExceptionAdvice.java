@@ -8,6 +8,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.MessageSource;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.core.annotation.Order;
+import org.springframework.validation.FieldError;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -15,6 +17,7 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import java.util.Arrays;
+import java.util.List;
 
 /**
  * @author shiroha
@@ -51,6 +54,20 @@ public class ExceptionAdvice {
     }
 
     @Order(2)
+    @ResponseBody
+    @ExceptionHandler(value = MethodArgumentNotValidException.class)
+    public Response<Void> exceptionArgumentNotValidHandler(HttpServletRequest httpServletRequest, MethodArgumentNotValidException e) {
+        List<FieldError> fieldErrors = e.getBindingResult().getFieldErrors();
+        FieldError fieldError = fieldErrors.stream().findAny().orElse(null);
+        if (fieldError == null) {
+            return exceptionSupperHandler(httpServletRequest, e);
+        }
+        Response<Void> response = Response.ofFail(fieldError.getDefaultMessage(), getMessage(fieldError.getDefaultMessage(), fieldError.getRejectedValue()));
+        logInfo(response.getMsg(), httpServletRequest);
+        return response;
+    }
+
+    @Order(3)
     @ResponseBody
     @ExceptionHandler(value = Exception.class)
     public Response<Void> exceptionSupperHandler(HttpServletRequest httpServletRequest, Exception e) {
