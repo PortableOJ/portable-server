@@ -25,12 +25,14 @@ import org.springframework.web.multipart.MultipartFile;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
+import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
 import java.io.IOException;
 
 /**
  * @author shiroha
  */
+@Validated
 @RestController
 @RequestMapping("/api/user")
 public class UserController {
@@ -42,7 +44,7 @@ public class UserController {
 
     @NeedLogin(false)
     @PostMapping("/login")
-    public Response<UserBasicInfoResponse> login(HttpServletRequest request, @Validated @RequestBody LoginRequest loginRequest) throws PortableException {
+    public Response<UserBasicInfoResponse> login(HttpServletRequest request, @Valid @RequestBody LoginRequest loginRequest) throws PortableException {
         UserContext.set(UserContext.getNullUser());
         UserBasicInfoResponse userBasicInfoResponse = userService.login(loginRequest);
         HttpSession httpSession = request.getSession();
@@ -52,7 +54,7 @@ public class UserController {
 
     @NeedLogin(false)
     @PostMapping("/register")
-    public Response<NormalUserInfoResponse> register(HttpServletRequest request, @Validated @RequestBody RegisterRequest registerRequest) throws PortableException {
+    public Response<NormalUserInfoResponse> register(HttpServletRequest request, @Valid @RequestBody RegisterRequest registerRequest) throws PortableException {
         UserContext.set(UserContext.getNullUser());
         NormalUserInfoResponse normalUserInfoResponse = userService.register(registerRequest);
         HttpSession httpSession = request.getSession();
@@ -80,7 +82,7 @@ public class UserController {
 
     @NeedLogin(false)
     @GetMapping("/getUserInfo")
-    public Response<UserBasicInfoResponse> getUserInfo(@Validated @NotBlank(message = "A-01-006") String handle) throws PortableException {
+    public Response<UserBasicInfoResponse> getUserInfo(@NotBlank(message = "A-01-006") String handle) throws PortableException {
         return Response.ofOk(userService.getUserInfo(handle));
     }
 
