@@ -27,6 +27,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 import java.io.IOException;
 
 /**
@@ -89,7 +90,7 @@ public class UserController {
     @NeedLogin
     @PostMapping("/changeOrganization")
     @PermissionRequirement(PermissionType.CHANGE_ORGANIZATION)
-    public Response<Void> changeOrganization(@RequestBody OrganizationChangeRequest organizationChangeRequest) throws PortableException {
+    public Response<Void> changeOrganization(@Valid @RequestBody OrganizationChangeRequest organizationChangeRequest) throws PortableException {
         userService.changeOrganization(organizationChangeRequest.getTargetId(), organizationChangeRequest.getNewOrganization());
         return Response.ofOk();
     }
@@ -97,7 +98,7 @@ public class UserController {
     @NeedLogin
     @PostMapping("/addPermission")
     @PermissionRequirement(PermissionType.GRANT)
-    public Response<Void> addPermission(@RequestBody PermissionRequest permissionRequest) throws PortableException {
+    public Response<Void> addPermission(@Valid @RequestBody PermissionRequest permissionRequest) throws PortableException {
         userService.addPermission(permissionRequest.getTargetId(), permissionRequest.getPermissionType());
         return Response.ofOk();
     }
@@ -105,14 +106,14 @@ public class UserController {
     @NeedLogin
     @PostMapping("/removePermission")
     @PermissionRequirement(PermissionType.GRANT)
-    public Response<Void> removePermission(@RequestBody PermissionRequest permissionRequest) throws PortableException {
+    public Response<Void> removePermission(@Valid @RequestBody PermissionRequest permissionRequest) throws PortableException {
         userService.removePermission(permissionRequest.getTargetId(), permissionRequest.getPermissionType());
         return Response.ofOk();
     }
 
     @NeedLogin
     @PostMapping("/avatar")
-    public Response<Void> uploadAvatar(MultipartFile fileData) throws PortableException {
+    public Response<Void> uploadAvatar(@NotNull(message = "A-01-010") MultipartFile fileData) throws PortableException {
         if (IMAGE_FILE_MAX_SIZE.compareTo(fileData.getSize()) < 0) {
             throw PortableException.of("A-09-002", IMAGE_FILE_MAX_SIZE);
         }

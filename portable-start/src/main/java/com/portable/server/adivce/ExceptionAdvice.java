@@ -70,7 +70,7 @@ public class ExceptionAdvice {
         return response;
     }
 
-    @Order(3)
+    @Order(2)
     @ResponseBody
     @ExceptionHandler(value = ConstraintViolationException.class)
     public Response<Void> exceptionConstraintViolationHandler(HttpServletRequest httpServletRequest, ConstraintViolationException e) {
