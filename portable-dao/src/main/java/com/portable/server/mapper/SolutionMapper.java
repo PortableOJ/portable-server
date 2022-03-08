@@ -16,58 +16,43 @@ public interface SolutionMapper {
 
     /**
      * 根据提交类型统计数量
-     * @param userId 用户的 ID，若为 null，则为请求所有的
-     * @param problemId 题目的 ID，若为 null，则为请求所有的
-     * @param statusType 状态，若为 null，则为请求所有的
+     *
+     * @param solutionType 需要获取的提交类型
+     * @param userId       用户的 ID，若为 null，则为请求所有的
+     * @param contestId    比赛的 id
+     * @param problemId    题目的 ID，若为 null，则为请求所有的
+     * @param statusType   状态，若为 null，则为请求所有的
      * @return 此提交类型的总数量
      */
-    Integer countPublicSolution(@Param("userId") Long userId, @Param("problemId") Long problemId, @Param("statusType") SolutionStatusType statusType);
-
-    /**
-     * 根据提交至的比赛 id 统计数量
-     * @param contestId 比赛 ID
-     * @return 此比赛中的总提交数量
-     */
-    Integer countSolutionByContest(@Param("contestId") Long contestId);
-
-    /**
-     * 根据提交至的比赛 id 统计测试数量
-     * @param contestId 比赛 ID
-     * @return 此比赛中的总测试提交数量
-     */
-    Integer countSolutionByTestContest(@Param("contestId") Long contestId);
+    Integer countSolution(@Param("solutionType") SolutionType solutionType,
+                          @Param("userId") Long userId,
+                          @Param("contestId") Long contestId,
+                          @Param("problemId") Long problemId,
+                          @Param("statusType") SolutionStatusType statusType);
 
     /**
      * 根据提交类型，分页获取提交信息
-     * @param pageSize 每页数量
-     * @param offset 偏移量
-     * @param userId 用户 ID
-     * @param problemId 问题 ID
-     * @param statusType 状态，若为 null，则为请求所有的
+     *
+     * @param pageSize     每页数量
+     * @param offset       偏移量
+     * @param solutionType 需要获取的提交类型
+     * @param userId       用户 ID
+     * @param contestId    比赛的 id
+     * @param problemId    问题 ID
+     * @param statusType   状态，若为 null，则为请求所有的
      * @return 提交列表
      */
-    List<Solution> selectPublicSolutionByPage(@Param("pageSize") Integer pageSize, @Param("offset") Integer offset, @Param("userId") Long userId, @Param("problemId") Long problemId, @Param("statusType") SolutionStatusType statusType);
-
-    /**
-     * 根据比赛获取提交列表
-     * @param pageSize 单页数量
-     * @param offset 偏移量
-     * @param contestId 比赛的 id
-     * @return 提交列表
-     */
-    List<Solution> selectSolutionByContestAndPage(@Param("pageSize") Integer pageSize, @Param("offset") Integer offset, @Param("contestId") Long contestId);
-
-    /**
-     * 根据比赛获取测试提交列表
-     * @param pageSize 单页数量
-     * @param offset 偏移量
-     * @param contestId 比赛的 id
-     * @return 提交列表
-     */
-    List<Solution> selectSolutionByTestContestAndPage(@Param("pageSize") Integer pageSize, @Param("offset") Integer offset, @Param("contestId") Long contestId);
+    List<Solution> selectSolutionByPage(@Param("pageSize") Integer pageSize,
+                                        @Param("offset") Integer offset,
+                                        @Param("solutionType") SolutionType solutionType,
+                                        @Param("userId") Long userId,
+                                        @Param("contestId") Long contestId,
+                                        @Param("problemId") Long problemId,
+                                        @Param("statusType") SolutionStatusType statusType);
 
     /**
      * 根据提交的 id 获取提交信息
+     *
      * @param id 提交 id
      * @return 提交信息
      */
@@ -75,7 +60,8 @@ public interface SolutionMapper {
 
     /**
      * 获取用户在公开提交中的最后一次提交
-     * @param userId 用户 id
+     *
+     * @param userId    用户 id
      * @param problemId 题目 id
      * @return 用户的最后一次提交
      */
@@ -83,16 +69,36 @@ public interface SolutionMapper {
 
     /**
      * 获取用户在比赛中的最后一次提交信息
-     * @param userId 用户 id
+     *
+     * @param userId    用户 id
      * @param problemId 题目 id
      * @param contestId 比赛 id
      * @return 用户在对应比赛中的最后一次提交信息
      */
     Solution selectLastSolutionByUserIdAndProblemIdAndContestId(@Param("userId") Long userId, @Param("problemId") Long problemId, @Param("contestId") Long contestId);
 
+    /**
+     * 新增一个提交
+     *
+     * @param solution 提交值
+     */
     void insertSolution(Solution solution);
 
+    /**
+     * 更新提交的状态
+     *
+     * @param id         提交的 id
+     * @param statusType 提交的新状态
+     */
     void updateStatus(@Param("id") Long id, @Param("statusType") SolutionStatusType statusType);
 
+    /**
+     * 更新提交的状态
+     *
+     * @param id         提交的 id
+     * @param statusType 提交的新状态
+     * @param timeCost   提交的新耗时（自动取历史最大）
+     * @param memoryCost 提交的新内存消耗（自动取历史最大）
+     */
     void updateCostAndStatus(@Param("id") Long id, @Param("statusType") SolutionStatusType statusType, @Param("timeCost") Integer timeCost, @Param("memoryCost") Integer memoryCost);
 }

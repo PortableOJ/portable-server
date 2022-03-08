@@ -39,32 +39,32 @@ public class SolutionManagerImpl implements SolutionManager {
 
     @Override
     public Integer countPublicSolution(Long userId, Long problemId, SolutionStatusType statusType) {
-        return solutionMapper.countPublicSolution(userId, problemId, statusType);
+        return solutionMapper.countSolution(SolutionType.PUBLIC, userId, null, problemId, statusType);
     }
 
     @Override
     public Integer countSolutionByContest(Long contestId) {
-        return solutionMapper.countSolutionByContest(contestId);
+        return solutionMapper.countSolution(SolutionType.CONTEST, null, contestId, null, null);
     }
 
     @Override
     public Integer countSolutionByTestContest(Long contestId) {
-        return solutionMapper.countSolutionByTestContest(contestId);
+        return solutionMapper.countSolution(SolutionType.TEST_CONTEST, null, contestId, null, null);
     }
 
     @Override
     public List<Solution> selectPublicSolutionByPage(Integer pageSize, Integer offset, Long userId, Long problemId, SolutionStatusType statusType) {
-        return solutionMapper.selectPublicSolutionByPage(pageSize, offset, userId, problemId, statusType);
+        return solutionMapper.selectSolutionByPage(pageSize, offset, SolutionType.PUBLIC, userId, null, problemId, statusType);
     }
 
     @Override
     public List<Solution> selectSolutionByContestAndPage(Integer pageSize, Integer offset, Long contestId) {
-        return solutionMapper.selectSolutionByContestAndPage(pageSize, offset, contestId);
+        return solutionMapper.selectSolutionByPage(pageSize, offset, SolutionType.CONTEST, null, contestId, null, null);
     }
 
     @Override
     public List<Solution> selectSolutionByTestContestAndPage(Integer pageSize, Integer offset, Long contestId) {
-        return solutionMapper.selectSolutionByTestContestAndPage(pageSize, offset, contestId);
+        return solutionMapper.selectSolutionByPage(pageSize, offset, SolutionType.TEST_CONTEST, null, contestId, null, null);
     }
 
     @Override
