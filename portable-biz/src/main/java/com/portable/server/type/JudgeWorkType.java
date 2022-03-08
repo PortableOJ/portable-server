@@ -11,7 +11,7 @@ public enum JudgeWorkType {
     /**
      * 比赛中的提交任务
      */
-    CONTEST(-1),
+    CONTEST(-20),
 
     /**
      * 题库中的提交任务
@@ -21,23 +21,23 @@ public enum JudgeWorkType {
     /**
      * 测试数据生成的任务
      */
-    TEST(2),
+    TEST(20),
 
     /**
      * 校验题目的任务
      */
-    CHECK_PROBLEM(2),
+    CHECK_PROBLEM(15),
 
     /**
      * 测试比赛的提交
      */
-    TEST_CONTEST(1),
+    TEST_CONTEST(10),
     ;
 
-    private final Integer weight;
+    private final Integer weightGrade;
 
-    JudgeWorkType(Integer weight) {
-        this.weight = weight;
+    JudgeWorkType(Integer weightGrade) {
+        this.weightGrade = weightGrade;
     }
 
     public static JudgeWorkType toJudgeWorkType(SolutionType solutionType) {
