@@ -22,7 +22,6 @@ import java.nio.channels.Selector;
 import java.nio.channels.ServerSocketChannel;
 import java.nio.channels.SocketChannel;
 import java.nio.charset.StandardCharsets;
-import java.util.Arrays;
 import java.util.Iterator;
 import java.util.Set;
 import java.util.concurrent.ExecutionException;
@@ -109,8 +108,6 @@ public class EpollUtil {
         BufferReader buffer = (BufferReader) key.attachment();
         try {
             while (buffer.read()) {
-                System.out.println(buffer.getMethod());
-                System.out.println(Arrays.toString(buffer.getData()));
                 Object response = epollManager.call(client.getRemoteAddress().toString(), buffer.getMethod(), buffer.getData());
                 if (response == null) {
                     writeFail(client);
