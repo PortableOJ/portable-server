@@ -5,6 +5,7 @@ import com.portable.server.exception.PortableException;
 import com.portable.server.model.response.Response;
 import com.portable.server.service.FileService;
 import com.portable.server.type.FileStoreType;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -18,6 +19,7 @@ import java.io.IOException;
 /**
  * @author shiroha
  */
+@Validated
 @RestController
 @RequestMapping("/api/file")
 public class FileController {

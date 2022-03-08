@@ -10,6 +10,7 @@ import com.portable.server.model.response.solution.SolutionDetailResponse;
 import com.portable.server.model.response.solution.SolutionListResponse;
 import com.portable.server.service.SolutionService;
 import com.portable.server.type.SolutionStatusType;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -19,6 +20,7 @@ import javax.annotation.Resource;
 /**
  * @author shiroha
  */
+@Validated
 @RestController
 @RequestMapping("/api/solution")
 public class SolutionController {

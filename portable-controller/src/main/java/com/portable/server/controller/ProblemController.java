@@ -20,6 +20,7 @@ import com.portable.server.model.response.problem.ProblemListResponse;
 import com.portable.server.model.response.problem.ProblemStdTestCodeResponse;
 import com.portable.server.service.ProblemService;
 import com.portable.server.type.PermissionType;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -36,6 +37,7 @@ import java.util.regex.Pattern;
 /**
  * @author shiroha
  */
+@Validated
 @RestController
 @RequestMapping("/api/problem")
 public class ProblemController {

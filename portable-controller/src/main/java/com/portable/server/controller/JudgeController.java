@@ -10,6 +10,7 @@ import com.portable.server.model.request.IdRequest;
 import com.portable.server.model.response.Response;
 import com.portable.server.service.JudgeService;
 import com.portable.server.type.PermissionType;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -26,6 +27,7 @@ import java.util.List;
 /**
  * @author shiroha
  */
+@Validated
 @RestController
 @RequestMapping("/api/judge")
 public class JudgeController {

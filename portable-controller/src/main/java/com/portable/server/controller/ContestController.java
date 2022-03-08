@@ -22,6 +22,7 @@ import com.portable.server.service.ContestService;
 import com.portable.server.type.ContestVisitPermission;
 import com.portable.server.type.PermissionType;
 import com.portable.server.type.SolutionStatusType;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -29,10 +30,13 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
+import javax.validation.constraints.Min;
+import javax.validation.constraints.NotNull;
 
 /**
  * @author shiroha
  */
+@Validated
 @RestController
 @RequestMapping("/api/contest")
 public class ContestController {
@@ -42,7 +46,8 @@ public class ContestController {
 
     @NeedLogin(false)
     @GetMapping("/getList")
-    public Response<PageResponse<ContestListResponse, Void>> getContestList(Integer pageNum, Integer pageSize) {
+    public Response<PageResponse<ContestListResponse, Void>> getContestList(Integer pageNum,
+                                                                            Integer pageSize) {
         PageRequest<Void> pageRequest = PageRequest.<Void>builder()
                 .pageNum(pageNum)
                 .pageSize(pageSize)
@@ -59,30 +64,30 @@ public class ContestController {
 
     @NeedLogin
     @GetMapping("/get")
-    public Response<ContestDetailResponse> getContestData(Long contestId) throws PortableException {
+    public Response<ContestDetailResponse> getContestData(@NotNull(message = "A-08-002") @Min(value = 1, message = "A-08-002") Long contestId) throws PortableException {
         return Response.ofOk(contestService.getContestData(contestId));
     }
 
     @NeedLogin
     @GetMapping("/getAdmin")
-    public Response<ContestAdminDetailResponse> getContestAdminData(Long contestId) throws PortableException {
+    public Response<ContestAdminDetailResponse> getContestAdminData(@NotNull(message = "A-08-002") @Min(value = 1, message = "A-08-002") Long contestId) throws PortableException {
         return Response.ofOk(contestService.getContestAdminData(contestId));
     }
 
     @NeedLogin
     @GetMapping("/problem")
-    public Response<ProblemDetailResponse> getContestProblem(Long contestId, Integer problemIndex) throws PortableException {
+    public Response<ProblemDetailResponse> getContestProblem(@NotNull(message = "A-08-002") @Min(value = 1, message = "A-08-002") Long contestId, @NotNull(message = "A-08-002") @Min(value = 0, message = "A-08-021") Integer problemIndex) throws PortableException {
         return Response.ofOk(contestService.getContestProblem(contestId, problemIndex));
     }
 
     @NeedLogin
     @GetMapping("/status")
-    public Response<PageResponse<SolutionListResponse, Void>> getContestStatusList(Long contestId,
-                                                                             Integer pageNum,
-                                                                             Integer pageSize,
-                                                                             Long userId,
-                                                                             Long problemId,
-                                                                             SolutionStatusType statusType) throws PortableException {
+    public Response<PageResponse<SolutionListResponse, Void>> getContestStatusList(@NotNull(message = "A-08-002") @Min(value = 1, message = "A-08-002") Long contestId,
+                                                                                   Integer pageNum,
+                                                                                   Integer pageSize,
+                                                                                   Long userId,
+                                                                                   Long problemId,
+                                                                                   SolutionStatusType statusType) throws PortableException {
         PageRequest<SolutionListQueryRequest> pageRequest = PageRequest.<SolutionListQueryRequest>builder()
                 .pageNum(pageNum)
                 .pageSize(pageSize)
@@ -100,18 +105,18 @@ public class ContestController {
 
     @NeedLogin
     @GetMapping("/statusDetail")
-    public Response<SolutionDetailResponse> getContestSolution(Long solutionId) throws PortableException {
+    public Response<SolutionDetailResponse> getContestSolution(@NotNull(message = "A-08-002") @Min(value = 1, message = "A-05-001") Long solutionId) throws PortableException {
         return Response.ofOk(contestService.getContestSolution(solutionId));
     }
 
     @NeedLogin
     @GetMapping("/testStatus")
-    public Response<PageResponse<SolutionListResponse, Void>> getContestTestStatusList(Long contestId,
-                                                                                 Integer pageNum,
-                                                                                 Integer pageSize,
-                                                                                 Long userId,
-                                                                                 Long problemId,
-                                                                                 SolutionStatusType statusType) throws PortableException {
+    public Response<PageResponse<SolutionListResponse, Void>> getContestTestStatusList(@NotNull(message = "A-08-002") @Min(value = 1, message = "A-08-002") Long contestId,
+                                                                                       Integer pageNum,
+                                                                                       Integer pageSize,
+                                                                                       Long userId,
+                                                                                       Long problemId,
+                                                                                       SolutionStatusType statusType) throws PortableException {
         PageRequest<SolutionListQueryRequest> pageRequest = PageRequest.<SolutionListQueryRequest>builder()
                 .pageNum(pageNum)
                 .pageSize(pageSize)
@@ -129,13 +134,15 @@ public class ContestController {
 
     @NeedLogin
     @GetMapping("/testStatusDetail")
-    public Response<SolutionDetailResponse> getContestTestSolution(Long solutionId) throws PortableException {
+    public Response<SolutionDetailResponse> getContestTestSolution(@NotNull(message = "A-08-002") @Min(value = 1, message = "A-05-001") Long solutionId) throws PortableException {
         return Response.ofOk(contestService.getContestTestSolution(solutionId));
     }
 
     @NeedLogin
     @GetMapping("/rank")
-    public Response<PageResponse<ContestRankListResponse, ContestRankListResponse>> getContestRank(Long contestId, Integer pageNum, Integer pageSize) throws PortableException {
+    public Response<PageResponse<ContestRankListResponse, ContestRankListResponse>> getContestRank(@NotNull(message = "A-08-002") @Min(value = 1, message = "A-08-002") Long contestId,
+                                                                                                   Integer pageNum,
+                                                                                                   Integer pageSize) throws PortableException {
         PageRequest<Void> pageRequest = PageRequest.<Void>builder()
                 .pageNum(pageNum)
                 .pageSize(pageSize)
@@ -143,6 +150,9 @@ public class ContestController {
         pageRequest.verify();
         return Response.ofOk(contestService.getContestRank(contestId, pageRequest));
     }
+
+
+    // TODO: 下面没有校验
 
     @NeedLogin
     @PostMapping("/submit")
