@@ -101,6 +101,7 @@
     <select id="selectLastSolutionByUserIdAndProblemId" resultMap="Solution">
         SELECT * FROM solution
         WHERE user_id = #{userId}
+         AND solution_type = 'PUBLIC'
          AND problem_id = #{problemId}
         ORDER BY id DESC
         LIMIT 1
