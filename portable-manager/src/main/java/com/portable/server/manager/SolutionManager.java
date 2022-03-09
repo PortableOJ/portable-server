@@ -103,4 +103,13 @@ public interface SolutionManager {
      * @param memoryCost 内存消耗
      */
     void updateCostAndStatus(Long id, SolutionStatusType statusType, Integer timeCost, Integer memoryCost);
+
+    /**
+     * 将所有给定状态全部转为指定状态
+     *
+     * @param fromStatus 给定状态
+     * @param toStatus   指定状态
+     */
+    void updateAllStatus(List<SolutionStatusType> fromStatus, SolutionStatusType toStatus);
+
 }

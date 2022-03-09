@@ -87,4 +87,9 @@ public class SolutionManagerImpl implements SolutionManager {
     public void updateCostAndStatus(Long id, SolutionStatusType statusType, Integer timeCost, Integer memoryCost) {
         solutionMapper.updateCostAndStatus(id, statusType, timeCost, memoryCost);
     }
+
+    @Override
+    public void updateAllStatus(List<SolutionStatusType> fromStatus, SolutionStatusType toStatus) {
+        solutionMapper.updateAllStatus(fromStatus, toStatus);
+    }
 }

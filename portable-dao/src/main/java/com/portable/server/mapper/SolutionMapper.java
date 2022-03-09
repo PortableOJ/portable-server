@@ -101,4 +101,12 @@ public interface SolutionMapper {
      * @param memoryCost 提交的新内存消耗（自动取历史最大）
      */
     void updateCostAndStatus(@Param("id") Long id, @Param("statusType") SolutionStatusType statusType, @Param("timeCost") Integer timeCost, @Param("memoryCost") Integer memoryCost);
+
+    /**
+     * 将所有给定状态全部转为指定状态
+     *
+     * @param fromStatus 给定状态
+     * @param toStatus   指定状态
+     */
+    void updateAllStatus(@Param("fromStatus") List<SolutionStatusType> fromStatus, @Param("toStatus") SolutionStatusType toStatus);
 }

@@ -129,4 +129,13 @@
             memory_cost = IF(ISNULL(memory_cost), #{memoryCost}, GREATEST(memory_cost, #{memoryCost}))
         WHERE id = #{id}
     </update>
+
+    <update id="updateAllStatus">
+        UPDATE solution
+        SET status = #{toStatus}
+        WHERE status IN
+        <foreach collection="fromStatus" item="type" open="(" close=")">
+            #{type}
+        </foreach>
+    </update>
 </mapper>
