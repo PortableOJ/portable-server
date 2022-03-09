@@ -177,15 +177,30 @@ public class ContestServiceImpl implements ContestService {
             throw PortableException.of("A-08-004", contestId);
         }
 
-        int problemLength = contestPackage.getContestData().getProblemList().size();
-        Map<Long, Integer> problemIdToProblemIndexMap = IntStream.range(0, problemLength)
-                .boxed()
-                .collect(Collectors.toMap(i -> contestPackage.getContestData().getProblemList().get(i).getProblemId(), i -> i));
-
-        Integer solutionCount = solutionManager.countSolutionByContest(contestId);
+        SolutionListQueryRequest queryData = pageRequest.getQueryData();
+        queryData.setProblemId(contestPackage.getContestData()
+                .getProblemList()
+                .get(Math.toIntExact(queryData.getProblemId()))
+                .getProblemId());
+        Integer solutionCount = solutionManager.countSolution(
+                SolutionType.CONTEST,
+                queryData.getUserId(),
+                contestId,
+                queryData.getProblemId(),
+                queryData.getStatusType()
+        );
         PageResponse<SolutionListResponse, Void> response = PageResponse.of(pageRequest, solutionCount);
-        List<Solution> solutionList = solutionManager.selectSolutionByContestAndPage(response.getPageSize(), response.offset(), contestId);
+        List<Solution> solutionList = solutionManager.selectSolutionByPage(
+                response.getPageSize(),
+                response.offset(),
+                SolutionType.CONTEST,
+                queryData.getUserId(),
+                contestId,
+                queryData.getProblemId(),
+                queryData.getStatusType()
+        );
         @SuppressWarnings("DuplicatedCode")
+        Map<Long, Integer> problemIdToProblemIndexMap = contestPackage.getContestData().idToIndex();
         List<SolutionListResponse> solutionListResponseList = solutionList.stream()
                 .map(solution -> {
                     User user = userManager.getAccountById(solution.getUserId());
@@ -208,11 +223,7 @@ public class ContestServiceImpl implements ContestService {
             throw PortableException.of("A-08-004", contestPackage.getContest().getId());
         }
 
-        int problemLength = contestPackage.getContestData().getProblemList().size();
-        Map<Long, Integer> problemIdToProblemIndexMap = IntStream.range(0, problemLength)
-                .boxed()
-                .collect(Collectors.toMap(i -> contestPackage.getContestData().getProblemList().get(i).getProblemId(), i -> i));
-
+        Map<Long, Integer> problemIdToProblemIndexMap = contestPackage.getContestData().idToIndex();
         // 比赛结束之后，所有人都可以查看其他人的提交。否则，仅本人和管理员可以查看
         Long curUserId = UserContext.ctx().getId();
         boolean endContest = contestPackage.getContest().isEnd();
@@ -238,15 +249,31 @@ public class ContestServiceImpl implements ContestService {
             throw PortableException.of("A-08-006", contestId);
         }
 
-        int problemLength = contestPackage.getContestData().getProblemList().size();
-        Map<Long, Integer> problemIdToProblemIndexMap = IntStream.range(0, problemLength)
-                .boxed()
-                .collect(Collectors.toMap(i -> contestPackage.getContestData().getProblemList().get(i).getProblemId(), i -> i));
+        SolutionListQueryRequest queryData = pageRequest.getQueryData();
+        queryData.setProblemId(contestPackage.getContestData()
+                .getProblemList()
+                .get(Math.toIntExact(queryData.getProblemId()))
+                .getProblemId());
 
-        Integer solutionCount = solutionManager.countSolutionByTestContest(contestId);
+        Integer solutionCount = solutionManager.countSolution(
+                SolutionType.TEST_CONTEST,
+                queryData.getUserId(),
+                contestId,
+                queryData.getProblemId(),
+                queryData.getStatusType()
+        );
         PageResponse<SolutionListResponse, Void> response = PageResponse.of(pageRequest, solutionCount);
-        List<Solution> solutionList = solutionManager.selectSolutionByTestContestAndPage(response.getPageSize(), response.offset(), contestId);
+        List<Solution> solutionList = solutionManager.selectSolutionByPage(
+                response.getPageSize(),
+                response.offset(),
+                SolutionType.TEST_CONTEST,
+                queryData.getUserId(),
+                contestId,
+                queryData.getProblemId(),
+                queryData.getStatusType()
+        );
         @SuppressWarnings("DuplicatedCode")
+        Map<Long, Integer> problemIdToProblemIndexMap = contestPackage.getContestData().idToIndex();
         List<SolutionListResponse> solutionListResponseList = solutionList.stream()
                 .map(solution -> {
                     User user = userManager.getAccountById(solution.getUserId());
@@ -269,11 +296,7 @@ public class ContestServiceImpl implements ContestService {
             throw PortableException.of("A-08-006", contestPackage.getContest().getId());
         }
 
-        int problemLength = contestPackage.getContestData().getProblemList().size();
-        Map<Long, Integer> problemIdToProblemIndexMap = IntStream.range(0, problemLength)
-                .boxed()
-                .collect(Collectors.toMap(i -> contestPackage.getContestData().getProblemList().get(i).getProblemId(), i -> i));
-
+        Map<Long, Integer> problemIdToProblemIndexMap = contestPackage.getContestData().idToIndex();
         SolutionData solutionData = solutionDataManager.getSolutionData(solution.getDataId());
         User user = userManager.getAccountById(solution.getUserId());
         Problem problem = problemManager.getProblemById(solution.getProblemId());
@@ -669,4 +692,6 @@ public class ContestServiceImpl implements ContestService {
                     }
                 });
     }
+
+
 }

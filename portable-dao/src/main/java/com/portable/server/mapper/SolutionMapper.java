@@ -48,7 +48,7 @@ public interface SolutionMapper {
                                         @Param("userId") Long userId,
                                         @Param("contestId") Long contestId,
                                         @Param("problemId") Long problemId,
-                                        @Param("statusType") SolutionStatusType statusType);
+                                        @Param("statusType") List<SolutionStatusType> statusType);
 
     /**
      * 根据提交的 id 获取提交信息

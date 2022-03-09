@@ -69,10 +69,14 @@
                 AND problem_id = #{problemId}
             </if>
             <if test="statusType != null">
-                AND status = #{statusType}
+                AND statusType IN
+                <foreach collection="statusType" item="type" open="(" separator="," close=")">
+                    #{type}
+                </foreach>
             </if>
         </where>
-        ORDER BY id DESC
+        ORDER BY id # noinspection SqlResolve
+        DESC
         OFFSET #{offset}
         LIMIT #{pageSize}
     </select>

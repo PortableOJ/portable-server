@@ -8,8 +8,11 @@ import com.portable.server.type.SolutionType;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * @author shiroha
@@ -38,33 +41,21 @@ public class SolutionManagerImpl implements SolutionManager {
     }
 
     @Override
-    public Integer countPublicSolution(Long userId, Long problemId, SolutionStatusType statusType) {
-        return solutionMapper.countSolution(SolutionType.PUBLIC, userId, null, problemId, statusType);
+    public Integer countSolution(SolutionType solutionType, Long userId, Long contestId, Long problemId, SolutionStatusType statusType) {
+        return solutionMapper.countSolution(solutionType, userId, contestId, problemId, statusType);
     }
 
     @Override
-    public Integer countSolutionByContest(Long contestId) {
-        return solutionMapper.countSolution(SolutionType.CONTEST, null, contestId, null, null);
+    public List<Solution> selectSolutionByPage(Integer pageSize, Integer offset, SolutionType solutionType, Long userId, Long contestId, Long problemId, SolutionStatusType statusType) {
+        return solutionMapper.selectSolutionByPage(pageSize, offset, solutionType, userId, contestId, problemId, Collections.singletonList(statusType));
     }
 
     @Override
-    public Integer countSolutionByTestContest(Long contestId) {
-        return solutionMapper.countSolution(SolutionType.TEST_CONTEST, null, contestId, null, null);
-    }
-
-    @Override
-    public List<Solution> selectPublicSolutionByPage(Integer pageSize, Integer offset, Long userId, Long problemId, SolutionStatusType statusType) {
-        return solutionMapper.selectSolutionByPage(pageSize, offset, SolutionType.PUBLIC, userId, null, problemId, statusType);
-    }
-
-    @Override
-    public List<Solution> selectSolutionByContestAndPage(Integer pageSize, Integer offset, Long contestId) {
-        return solutionMapper.selectSolutionByPage(pageSize, offset, SolutionType.CONTEST, null, contestId, null, null);
-    }
-
-    @Override
-    public List<Solution> selectSolutionByTestContestAndPage(Integer pageSize, Integer offset, Long contestId) {
-        return solutionMapper.selectSolutionByPage(pageSize, offset, SolutionType.TEST_CONTEST, null, contestId, null, null);
+    public List<Solution> selectSolutionLastNotEndSolution(Integer pageSize) {
+        List<SolutionStatusType> solutionStatusTypeList = Arrays.stream(SolutionStatusType.values())
+                .filter(solutionStatusType -> !solutionStatusType.getEndingResult())
+                .collect(Collectors.toList());
+        return solutionMapper.selectSolutionByPage(pageSize, 0, null, null, null, null, solutionStatusTypeList);
     }
 
     @Override
