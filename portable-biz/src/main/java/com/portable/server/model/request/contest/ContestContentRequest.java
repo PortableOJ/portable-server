@@ -7,7 +7,12 @@ import com.portable.server.model.contest.PasswordContestData;
 import com.portable.server.model.contest.PrivateContestData;
 import com.portable.server.type.ContestAccessType;
 import lombok.Data;
+import org.hibernate.validator.constraints.Range;
 
+import javax.validation.constraints.Future;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
@@ -29,21 +34,27 @@ public class ContestContentRequest {
     /**
      * 比赛标题
      */
+    @NotBlank(message = "A-08-022")
     private String title;
 
     /**
      * 开始时间
      */
+    @NotNull(message = "A-08-023")
+    @Future(message = "A-08-024")
     private Date startTime;
 
     /**
      * 持续时间（分钟）
      */
+    @NotNull(message = "A-08-025")
+    @Range(min = 4, max = 10081, message = "A-08-026")
     private Integer duration;
 
     /**
      * 访问权限
      */
+    @NotNull(message = "A-08-027")
     private ContestAccessType accessType;
 
     /**
@@ -59,16 +70,21 @@ public class ContestContentRequest {
     /**
      * 题目列表
      */
+    @NotNull(message = "A-08-028")
+    @Size(min = 1, max = 100, message = "A-08-028")
     private List<Long> problemList;
 
     /**
      * 共同的出题人的昵称
      */
+    @NotNull(message = "A-08-029")
     private Set<String> coAuthor;
 
     /**
      * 封榜时长
      */
+    @NotNull(message = "A-08-030")
+    @Range(min = 0, max = 10081, message = "A-08-031")
     private Integer freezeTime;
 
     /**
@@ -79,6 +95,8 @@ public class ContestContentRequest {
     /**
      * 惩罚时间（分钟）
      */
+    @NotNull(message = "A-08-032")
+    @Range(min = 0, max = 10081, message = "A-08-033")
     private Integer penaltyTime;
 
     public void toContest(Contest contest) {

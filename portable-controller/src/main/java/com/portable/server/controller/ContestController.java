@@ -30,6 +30,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
+import javax.validation.Valid;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 
@@ -151,26 +152,23 @@ public class ContestController {
         return Response.ofOk(contestService.getContestRank(contestId, pageRequest));
     }
 
-
-    // TODO: 下面没有校验
-
     @NeedLogin
     @PostMapping("/submit")
-    public Response<Long> submit(@RequestBody SubmitSolutionRequest submitSolutionRequest) throws PortableException {
+    public Response<Long> submit(@Valid @RequestBody SubmitSolutionRequest submitSolutionRequest) throws PortableException {
         return Response.ofOk(contestService.submit(submitSolutionRequest));
     }
 
     @NeedLogin
     @PostMapping("/newContest")
     @PermissionRequirement(PermissionType.CREATE_AND_EDIT_CONTEST)
-    public Response<Long> createContest(@RequestBody ContestContentRequest contestContentRequest) throws PortableException {
+    public Response<Long> createContest(@Valid @RequestBody ContestContentRequest contestContentRequest) throws PortableException {
         return Response.ofOk(contestService.createContest(contestContentRequest));
     }
 
     @NeedLogin
     @PostMapping("/updateContest")
     @PermissionRequirement(PermissionType.CREATE_AND_EDIT_CONTEST)
-    public Response<Void> updateContest(@RequestBody ContestContentRequest contestContentRequest) throws PortableException {
+    public Response<Void> updateContest(@Valid @RequestBody ContestContentRequest contestContentRequest) throws PortableException {
         contestService.updateContest(contestContentRequest);
         return Response.ofOk();
 
@@ -178,7 +176,7 @@ public class ContestController {
 
     @NeedLogin
     @PostMapping("/addProblem")
-    public Response<Void> addContestProblem(@RequestBody ContestAddProblem contestAddProblem) throws PortableException {
+    public Response<Void> addContestProblem(@Valid @RequestBody ContestAddProblem contestAddProblem) throws PortableException {
         contestService.addContestProblem(contestAddProblem);
         return Response.ofOk();
     }
