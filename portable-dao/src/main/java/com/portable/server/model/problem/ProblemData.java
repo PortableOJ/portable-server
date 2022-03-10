@@ -1,7 +1,10 @@
 package com.portable.server.model.problem;
 
 import com.portable.server.exception.PortableException;
-import com.portable.server.type.*;
+import com.portable.server.type.JudgeCodeType;
+import com.portable.server.type.LanguageType;
+import com.portable.server.type.ProblemType;
+import com.portable.server.type.SolutionStatusType;
 import lombok.Builder;
 import lombok.Data;
 import org.springframework.data.annotation.Id;
@@ -189,10 +192,10 @@ public class ProblemData {
     }
 
     public Integer getTimeLimit(LanguageType languageType) {
-        return specialTimeLimit.getOrDefault(languageType, defaultTimeLimit);
+        return specialTimeLimit == null ? defaultTimeLimit : specialTimeLimit.getOrDefault(languageType, defaultTimeLimit);
     }
 
     public Integer getMemoryLimit(LanguageType languageType) {
-        return specialMemoryLimit.getOrDefault(languageType, defaultMemoryLimit);
+        return specialMemoryLimit == null ? defaultMemoryLimit : specialMemoryLimit.getOrDefault(languageType, defaultMemoryLimit);
     }
 }

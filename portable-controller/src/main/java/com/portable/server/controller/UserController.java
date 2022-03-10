@@ -45,7 +45,7 @@ public class UserController {
 
     @NeedLogin(false)
     @PostMapping("/login")
-    public Response<UserBasicInfoResponse> login(HttpServletRequest request, @Valid @RequestBody LoginRequest loginRequest) throws PortableException {
+    public Response<UserBasicInfoResponse> login(HttpServletRequest request, @Valid @NotNull(message = "A-00-001") @RequestBody LoginRequest loginRequest) throws PortableException {
         UserContext.set(UserContext.getNullUser());
         UserBasicInfoResponse userBasicInfoResponse = userService.login(loginRequest);
         HttpSession httpSession = request.getSession();
@@ -55,7 +55,7 @@ public class UserController {
 
     @NeedLogin(false)
     @PostMapping("/register")
-    public Response<NormalUserInfoResponse> register(HttpServletRequest request, @Valid @RequestBody RegisterRequest registerRequest) throws PortableException {
+    public Response<NormalUserInfoResponse> register(HttpServletRequest request, @Valid @NotNull(message = "A-00-001") @RequestBody RegisterRequest registerRequest) throws PortableException {
         UserContext.set(UserContext.getNullUser());
         NormalUserInfoResponse normalUserInfoResponse = userService.register(registerRequest);
         HttpSession httpSession = request.getSession();
@@ -90,7 +90,7 @@ public class UserController {
     @NeedLogin
     @PostMapping("/changeOrganization")
     @PermissionRequirement(PermissionType.CHANGE_ORGANIZATION)
-    public Response<Void> changeOrganization(@Valid @RequestBody OrganizationChangeRequest organizationChangeRequest) throws PortableException {
+    public Response<Void> changeOrganization(@Valid @NotNull(message = "A-00-001") @RequestBody OrganizationChangeRequest organizationChangeRequest) throws PortableException {
         userService.changeOrganization(organizationChangeRequest.getTargetId(), organizationChangeRequest.getNewOrganization());
         return Response.ofOk();
     }
@@ -98,7 +98,7 @@ public class UserController {
     @NeedLogin
     @PostMapping("/addPermission")
     @PermissionRequirement(PermissionType.GRANT)
-    public Response<Void> addPermission(@Valid @RequestBody PermissionRequest permissionRequest) throws PortableException {
+    public Response<Void> addPermission(@Valid @NotNull(message = "A-00-001") @RequestBody PermissionRequest permissionRequest) throws PortableException {
         userService.addPermission(permissionRequest.getTargetId(), permissionRequest.getPermissionType());
         return Response.ofOk();
     }
@@ -106,7 +106,7 @@ public class UserController {
     @NeedLogin
     @PostMapping("/removePermission")
     @PermissionRequirement(PermissionType.GRANT)
-    public Response<Void> removePermission(@Valid @RequestBody PermissionRequest permissionRequest) throws PortableException {
+    public Response<Void> removePermission(@Valid @NotNull(message = "A-00-001") @RequestBody PermissionRequest permissionRequest) throws PortableException {
         userService.removePermission(permissionRequest.getTargetId(), permissionRequest.getPermissionType());
         return Response.ofOk();
     }

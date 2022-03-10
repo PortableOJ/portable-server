@@ -35,6 +35,7 @@ public class ContestContentRequest {
      * 比赛标题
      */
     @NotBlank(message = "A-08-022")
+    @Size(max = 60, message = "A-08-022")
     private String title;
 
     /**
@@ -48,7 +49,7 @@ public class ContestContentRequest {
      * 持续时间（分钟）
      */
     @NotNull(message = "A-08-025")
-    @Range(min = 4, max = 10081, message = "A-08-026")
+    @Range(min = 4, max = 10080, message = "A-08-026")
     private Integer duration;
 
     /**
@@ -84,7 +85,7 @@ public class ContestContentRequest {
      * 封榜时长
      */
     @NotNull(message = "A-08-030")
-    @Range(min = 0, max = 10081, message = "A-08-031")
+    @Range(min = 0, max = 10080, message = "A-08-031")
     private Integer freezeTime;
 
     /**
@@ -96,7 +97,7 @@ public class ContestContentRequest {
      * 惩罚时间（分钟）
      */
     @NotNull(message = "A-08-032")
-    @Range(min = 0, max = 10081, message = "A-08-033")
+    @Range(min = 0, max = 10080, message = "A-08-033")
     private Integer penaltyTime;
 
     public void toContest(Contest contest) {

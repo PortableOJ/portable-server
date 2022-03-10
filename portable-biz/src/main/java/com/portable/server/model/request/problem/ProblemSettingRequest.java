@@ -5,8 +5,9 @@ import com.portable.server.type.LanguageType;
 import com.portable.server.type.ProblemAccessType;
 import com.portable.server.type.ProblemType;
 import lombok.Data;
-import org.springframework.boot.autoconfigure.web.ServerProperties;
 
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -20,26 +21,34 @@ public class ProblemSettingRequest {
     /**
      * 问题的 ID
      */
+    @NotNull(message = "A-04-001")
     private Long id;
 
     /**
      * 题目的访问权限
      */
+    @NotNull(message = "A-04-020")
     private ProblemAccessType accessType;
 
     /**
      * 允许使用的语言类型
      */
+    @NotNull(message = "A-04-021")
+    @Size(min = 1, message = "A-04-021")
     private List<LanguageType> supportLanguage;
 
     /**
      * 默认的耗时限制，单位（s）
      */
+    @NotNull(message = "A-04-022")
+    @Size(min = 1, max = 30, message = "A-04-022")
     private Integer defaultTimeLimit;
 
     /**
      * 默认的内存限制，单位（mb）
      */
+    @NotNull(message = "A-04-023")
+    @Size(min = 10, max = 1024, message = "A-04-023")
     private Integer defaultMemoryLimit;
 
     /**
@@ -55,11 +64,13 @@ public class ProblemSettingRequest {
     /**
      * 是否允许下载样例
      */
+    @NotNull(message = "A-04-024")
     private Boolean shareTest;
 
     /**
      * 题目类型
      */
+    @NotNull(message = "A-04-025")
     private ProblemType type;
 
     /**

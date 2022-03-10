@@ -59,7 +59,7 @@ public class ContestController {
 
     @NeedLogin
     @PostMapping("/auth")
-    public Response<ContestVisitPermission> authorizeContest(@RequestBody ContestAuth contestAuth) throws PortableException {
+    public Response<ContestVisitPermission> authorizeContest(@Valid @NotNull(message = "A-00-001") @RequestBody ContestAuth contestAuth) throws PortableException {
         return Response.ofOk(contestService.authorizeContest(contestAuth));
     }
 
@@ -154,21 +154,21 @@ public class ContestController {
 
     @NeedLogin
     @PostMapping("/submit")
-    public Response<Long> submit(@Valid @RequestBody SubmitSolutionRequest submitSolutionRequest) throws PortableException {
+    public Response<Long> submit(@Valid @NotNull(message = "A-00-001") @RequestBody SubmitSolutionRequest submitSolutionRequest) throws PortableException {
         return Response.ofOk(contestService.submit(submitSolutionRequest));
     }
 
     @NeedLogin
     @PostMapping("/newContest")
     @PermissionRequirement(PermissionType.CREATE_AND_EDIT_CONTEST)
-    public Response<Long> createContest(@Valid @RequestBody ContestContentRequest contestContentRequest) throws PortableException {
+    public Response<Long> createContest(@Valid @NotNull(message = "A-00-001") @RequestBody ContestContentRequest contestContentRequest) throws PortableException {
         return Response.ofOk(contestService.createContest(contestContentRequest));
     }
 
     @NeedLogin
     @PostMapping("/updateContest")
     @PermissionRequirement(PermissionType.CREATE_AND_EDIT_CONTEST)
-    public Response<Void> updateContest(@Valid @RequestBody ContestContentRequest contestContentRequest) throws PortableException {
+    public Response<Void> updateContest(@Valid @NotNull(message = "A-00-001") @RequestBody ContestContentRequest contestContentRequest) throws PortableException {
         contestService.updateContest(contestContentRequest);
         return Response.ofOk();
 
@@ -176,7 +176,7 @@ public class ContestController {
 
     @NeedLogin
     @PostMapping("/addProblem")
-    public Response<Void> addContestProblem(@Valid @RequestBody ContestAddProblem contestAddProblem) throws PortableException {
+    public Response<Void> addContestProblem(@Valid @NotNull(message = "A-00-001") @RequestBody ContestAddProblem contestAddProblem) throws PortableException {
         contestService.addContestProblem(contestAddProblem);
         return Response.ofOk();
     }
