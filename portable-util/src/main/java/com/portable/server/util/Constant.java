@@ -14,16 +14,6 @@ public class Constant {
      */
     public static final Integer BUFFER_LEN = 4096;
 
-    /**
-     * 默认的 judge 机器数量
-     */
-    public static final Integer DEFAULT_JUDGE_NUM = 1;
-
-    /**
-     * 有界的任务队列最大容量
-     */
-    public static final Integer QUEUE_WAIT_NUM = 1000;
-
     // endregion
 
     // region 常见字符
