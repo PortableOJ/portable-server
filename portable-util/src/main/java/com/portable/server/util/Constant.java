@@ -10,6 +10,11 @@ public class Constant {
     public static final String UTF_8 = "UTF-8";
 
     /**
+     * 固定字体
+     */
+    public static final String ARIAL = "Arial";
+
+    /**
      * 单个字节流 BUFFER 长度
      */
     public static final Integer BUFFER_LEN = 4096;
