@@ -52,6 +52,7 @@
         </where>
     </select>
 
+    <!--suppress SqlIdentifier, SqlResolve -->
     <select id="selectSolutionByPage" resultMap="Solution">
         SELECT *
         FROM solution
@@ -69,16 +70,16 @@
                 AND problem_id = #{problemId}
             </if>
             <if test="statusType != null">
-                AND statusType IN
+                AND `status` IN
                 <foreach collection="statusType" item="type" open="(" separator="," close=")">
                     #{type}
                 </foreach>
             </if>
         </where>
-        ORDER BY id # noinspection SqlResolve
+        ORDER BY id
         DESC
-        OFFSET #{offset}
         LIMIT #{pageSize}
+        OFFSET #{offset}
     </select>
 
     <select id="selectSolutionById" resultMap="Solution">
