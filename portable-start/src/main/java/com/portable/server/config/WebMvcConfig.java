@@ -64,6 +64,7 @@ public class WebMvcConfig implements WebMvcConfigurer {
 
     @Bean
     public Docket docket() {
+        //noinspection SpellCheckingInspection
         return new Docket(DocumentationType.OAS_30)
                 .apiInfo(new ApiInfoBuilder()
                         .title("Portable")

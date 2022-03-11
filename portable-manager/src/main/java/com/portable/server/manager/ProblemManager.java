@@ -113,4 +113,12 @@ public interface ProblemManager {
      * @param newOwner 新的所有者
      */
     void updateProblemOwner(Long id, Long newOwner);
+
+    /**
+     * 更新所有的状态
+     *
+     * @param fromStatus 需要更新的状态
+     * @param toStatus   更新至的状态
+     */
+    void updateAllStatus(ProblemStatusType fromStatus, ProblemStatusType toStatus);
 }

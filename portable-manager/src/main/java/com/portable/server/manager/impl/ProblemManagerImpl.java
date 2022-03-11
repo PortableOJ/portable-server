@@ -100,4 +100,9 @@ public class ProblemManagerImpl implements ProblemManager {
     public void updateProblemOwner(Long id, Long newOwner) {
         problemMapper.updateProblemOwner(id, newOwner);
     }
+
+    @Override
+    public void updateAllStatus(ProblemStatusType fromStatus, ProblemStatusType toStatus) {
+        problemMapper.updateAllStatus(fromStatus, toStatus);
+    }
 }

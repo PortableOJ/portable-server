@@ -1,11 +1,12 @@
 package com.portable.server.support.impl;
 
 import com.portable.server.exception.PortableException;
-import com.portable.server.manager.UserDataManager;
+import com.portable.server.kit.RedisValueKit;
 import com.portable.server.manager.ProblemDataManager;
 import com.portable.server.manager.ProblemManager;
 import com.portable.server.manager.SolutionDataManager;
 import com.portable.server.manager.SolutionManager;
+import com.portable.server.manager.UserDataManager;
 import com.portable.server.manager.UserManager;
 import com.portable.server.model.RedisKeyAndExpire;
 import com.portable.server.model.ServiceVerifyCode;
@@ -26,7 +27,6 @@ import com.portable.server.model.user.User;
 import com.portable.server.socket.EpollManager;
 import com.portable.server.support.FileSupport;
 import com.portable.server.support.JudgeSupport;
-import com.portable.server.kit.RedisValueKit;
 import com.portable.server.type.AccountType;
 import com.portable.server.type.JudgeCodeType;
 import com.portable.server.type.JudgeWorkType;
@@ -35,6 +35,7 @@ import com.portable.server.type.ProblemStatusType;
 import com.portable.server.type.SolutionStatusType;
 import com.portable.server.type.SolutionType;
 import com.portable.server.util.Switch;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
 
@@ -87,6 +88,9 @@ public class JudgeSupportImpl implements JudgeSupport {
      */
     private ServiceVerifyCode serviceVerifyCode;
 
+    @Value("${portable.recover.judge}")
+    private Integer recoverJudgeJob;
+
     /**
      * 保存在 redis 中的服务器密钥的 key 值
      */
@@ -133,6 +137,24 @@ public class JudgeSupportImpl implements JudgeSupport {
         } else {
             serviceVerifyCode = null;
         }
+
+        // 获取过去一段时间内的一部分未完成的提交，并对他们进行 rejudge
+        List<Solution> solutionList = solutionManager.selectSolutionLastNotEndSolution(recoverJudgeJob);
+        solutionList.forEach(solution -> {
+            try {
+                // 不重新运行题目的校验任务
+                if (!SolutionType.PROBLEM_PROCESS.equals(solution.getSolutionType())) {
+                    addJudgeTask(solution.getId());
+                }
+            } catch (PortableException ignored) {
+            }
+        });
+        List<SolutionStatusType> notEndStatusList = Arrays.stream(SolutionStatusType.values())
+                .filter(solutionStatusType -> !solutionStatusType.getEndingResult())
+                .collect(Collectors.toList());
+        solutionManager.updateAllStatus(notEndStatusList, SolutionStatusType.SYSTEM_ERROR);
+        problemManager.updateAllStatus(ProblemStatusType.TREATING, ProblemStatusType.UNTREATED);
+        problemManager.updateAllStatus(ProblemStatusType.CHECKING, ProblemStatusType.UNCHECK);
     }
 
     @Override
@@ -416,6 +438,11 @@ public class JudgeSupportImpl implements JudgeSupport {
         getCurContainer();
         SolutionJudgeWork solutionJudgeWork = solutionJudgeWorkMap.get(solutionId);
         SolutionData solutionData = getSolutionData(solutionId);
+
+        // 除非是 AC 或者 WA，否则 msg 里面的信息有可能是上一次的信息
+        if (!SolutionStatusType.ACCEPT.equals(statusType) && !SolutionStatusType.WRONG_ANSWER.equals(statusType)) {
+            msg = null;
+        }
         solutionData.getRunningMsg().put(testName,
                 SolutionData.JudgeReportMsg.builder()
                         .statusType(statusType)

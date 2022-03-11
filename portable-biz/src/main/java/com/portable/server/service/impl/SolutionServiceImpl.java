@@ -45,12 +45,20 @@ public class SolutionServiceImpl implements SolutionService {
 
     @Override
     public PageResponse<SolutionListResponse, Void> getPublicStatus(PageRequest<SolutionListQueryRequest> pageRequest) {
-        Integer solutionCount = solutionManager.countPublicSolution(pageRequest.getQueryData().getUserId(), pageRequest.getQueryData().getProblemId(), pageRequest.getQueryData().getStatusType());
+        Integer solutionCount = solutionManager.countSolution(
+                SolutionType.PUBLIC,
+                pageRequest.getQueryData().getUserId(),
+                null,
+                pageRequest.getQueryData().getProblemId(),
+                pageRequest.getQueryData().getStatusType()
+        );
         PageResponse<SolutionListResponse, Void> response = PageResponse.of(pageRequest, solutionCount);
-        List<Solution> solutionList = solutionManager.selectPublicSolutionByPage(
+        List<Solution> solutionList = solutionManager.selectSolutionByPage(
                 response.getPageSize(),
                 response.offset(),
+                SolutionType.PUBLIC,
                 pageRequest.getQueryData().getUserId(),
+                null,
                 pageRequest.getQueryData().getProblemId(),
                 pageRequest.getQueryData().getStatusType()
         );

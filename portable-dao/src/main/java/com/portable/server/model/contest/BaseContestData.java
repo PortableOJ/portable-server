@@ -6,7 +6,10 @@ import lombok.experimental.SuperBuilder;
 import org.springframework.data.annotation.Id;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 /**
  * @author shiroha
@@ -78,5 +81,17 @@ public abstract class BaseContestData {
         public void addAccept() {
             this.acceptCount++;
         }
+    }
+
+    public Map<Long, Integer> idToIndex() {
+        return IntStream.range(0, problemList.size())
+                .boxed()
+                .collect(Collectors.toMap(i -> problemList.get(i).getProblemId(), i -> i));
+    }
+
+    public Map<Integer, Long> indexToId() {
+        return IntStream.range(0, problemList.size())
+                .boxed()
+                .collect(Collectors.toMap(i -> i, i -> problemList.get(i).getProblemId()));
     }
 }

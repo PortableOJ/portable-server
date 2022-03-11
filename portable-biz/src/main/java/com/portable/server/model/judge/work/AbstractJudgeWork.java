@@ -15,6 +15,16 @@ import java.util.Objects;
 public abstract class AbstractJudgeWork implements Comparable<AbstractJudgeWork> {
 
     /**
+     * 静态的工作 id，用于每次创建任务的时候 + 1
+     */
+    private static Long workId;
+
+    /**
+     * 权重
+     */
+    private final Long weight;
+
+    /**
      * 所属的任务类别
      */
     private final JudgeWorkType judgeWorkType;
@@ -38,6 +48,10 @@ public abstract class AbstractJudgeWork implements Comparable<AbstractJudgeWork>
     @Setter
     private Integer maxTest;
 
+    static {
+        workId = 0L;
+    }
+
     public Integer nextTest() {
         return curTestId++;
     }
@@ -47,11 +61,17 @@ public abstract class AbstractJudgeWork implements Comparable<AbstractJudgeWork>
     }
 
     public AbstractJudgeWork(JudgeWorkType judgeWorkType) {
+        Long curWorkId;
         this.judgeWorkType = judgeWorkType;
+        synchronized (AbstractJudgeWork.class) {
+            curWorkId = workId;
+            workId++;
+        }
+        this.weight = curWorkId + judgeWorkType.getWeightGrade();
     }
 
     @Override
     public int compareTo(AbstractJudgeWork o) {
-        return judgeWorkType.getWeight().compareTo(o.judgeWorkType.getWeight());
+        return Objects.compare(weight, o.getWeight(), Long::compareTo);
     }
 }

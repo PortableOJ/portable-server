@@ -12,6 +12,7 @@ import com.portable.server.model.contest.ContestRankItem;
 import com.portable.server.model.solution.Solution;
 import com.portable.server.support.ContestSupport;
 import com.portable.server.type.SolutionStatusType;
+import com.portable.server.type.SolutionType;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
@@ -191,20 +192,22 @@ public class ContestSupportImpl implements ContestSupport {
         calendar.add(Calendar.MINUTE, contest.getDuration() - contestData.getFreezeTime());
         Date freezeTime = calendar.getTime();
 
-        Map<Long, Integer> problemIndexMap = IntStream.range(0, contestData.getProblemList().size())
-                .parallel()
-                .boxed()
-                .peek(integer -> contestData.getProblemList().get(integer).init())
-                .collect(Collectors.toMap(i -> contestData.getProblemList().get(i).getProblemId(), i -> i));
-
+        Map<Long, Integer> problemIndexMap = contestData.idToIndex();
         // 通过分页获取，减轻 io 负担
-        Integer totalSolution = solutionManager.countSolutionByContest(contestId);
+        Integer totalSolution = solutionManager.countSolution(SolutionType.CONTEST, null, contestId, null, null);
         // + 1 导致多取出一页空白并不影响使用，同时可以尽量避免并发导致的少了部分提交的问题，此处计算页数不需要精确
         int totalPageNum = totalSolution / MAKE_RANK_PAGE_SIZE + 1;
         Map<Long, ContestRankItem> userIdContestRankMap = new ConcurrentHashMap<>(128);
         for (int i = 0; i < totalPageNum; i++) {
             Integer offset = i * MAKE_RANK_PAGE_SIZE;
-            List<Solution> solutionList = solutionManager.selectSolutionByContestAndPage(MAKE_RANK_PAGE_SIZE, offset, contestId);
+            List<Solution> solutionList = solutionManager.selectSolutionByPage(
+                    MAKE_RANK_PAGE_SIZE,
+                    offset,
+                    SolutionType.CONTEST,
+                    null,
+                    contestId,
+                    null,
+                    null);
             // 先并行创建不存在的参加者
             solutionList.stream()
                     .parallel()

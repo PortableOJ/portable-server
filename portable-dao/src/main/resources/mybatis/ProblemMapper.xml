@@ -58,7 +58,7 @@
         <foreach collection="accessTypeList" item="type" open="(" separator="," close=")">
             #{type}
         </foreach>
-            AND
+        AND
         title LIKE CONCAT('%', #{keyword}, '%')
         ORDER BY problem.id DESC
         LIMIT #{num}
@@ -68,8 +68,8 @@
         SELECT *
         FROM problem
         WHERE access_type = 'PRIVATE'
-        AND owner = #{userId}
-        AND title LIKE CONCAT('%', #{keyword}, '%')
+          AND owner = #{userId}
+          AND title LIKE CONCAT('%', #{keyword}, '%')
         ORDER BY id DESC
         LIMIT #{num}
     </select>
@@ -121,6 +121,12 @@
         UPDATE portable_oj.problem
         SET problem.owner = #{newOwner}
         WHERE problem.id = #{id}
+    </update>
+
+    <update id="updateAllStatus">
+        UPDATE portable_oj.problem
+        SET problem.status_type = #{toStatus}
+        WHERE problem.status_type = #{fromStatus}
     </update>
 
 </mapper>

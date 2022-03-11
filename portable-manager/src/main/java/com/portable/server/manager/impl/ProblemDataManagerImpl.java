@@ -4,6 +4,7 @@ import com.portable.server.manager.ProblemDataManager;
 import com.portable.server.model.problem.ProblemData;
 import com.portable.server.repo.ProblemDataRepo;
 import com.portable.server.type.JudgeCodeType;
+import com.portable.server.type.LanguageType;
 import com.portable.server.type.ProblemType;
 import com.portable.server.type.SolutionStatusType;
 import org.springframework.stereotype.Component;
@@ -45,7 +46,7 @@ public class ProblemDataManagerImpl implements ProblemDataManager {
                         .name("STD")
                         .code(null)
                         .expectResultType(SolutionStatusType.ACCEPT)
-                        .languageType(null)
+                        .languageType(LanguageType.CPP17)
                         .solutionId(null)
                         .build())
                 .testCodeList(new ArrayList<>())

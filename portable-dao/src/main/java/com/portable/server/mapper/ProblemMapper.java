@@ -117,4 +117,12 @@ public interface ProblemMapper {
      * @param newOwner 被转交对象
      */
     void updateProblemOwner(@Param("id") Long id, @Param("newOwner") Long newOwner);
+
+    /**
+     * 更新所有的状态
+     *
+     * @param fromStatus 需要更新的状态
+     * @param toStatus   更新至的状态
+     */
+    void updateAllStatus(@Param("fromStatus") ProblemStatusType fromStatus, @Param("toStatus") ProblemStatusType toStatus);
 }

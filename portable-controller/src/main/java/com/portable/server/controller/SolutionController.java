@@ -10,15 +10,19 @@ import com.portable.server.model.response.solution.SolutionDetailResponse;
 import com.portable.server.model.response.solution.SolutionListResponse;
 import com.portable.server.service.SolutionService;
 import com.portable.server.type.SolutionStatusType;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
+import javax.validation.constraints.Min;
+import javax.validation.constraints.NotNull;
 
 /**
  * @author shiroha
  */
+@Validated
 @RestController
 @RequestMapping("/api/solution")
 public class SolutionController {
@@ -29,10 +33,10 @@ public class SolutionController {
     @NeedLogin(false)
     @GetMapping("/getPublicStatus")
     public Response<PageResponse<SolutionListResponse, Void>> getPublicSolutionList(Integer pageNum,
-                                                                              Integer pageSize,
-                                                                              Long userId,
-                                                                              Long problemId,
-                                                                              SolutionStatusType statusType) {
+                                                                                    Integer pageSize,
+                                                                                    Long userId,
+                                                                                    Long problemId,
+                                                                                    SolutionStatusType statusType) {
         PageRequest<SolutionListQueryRequest> pageRequest = PageRequest.<SolutionListQueryRequest>builder()
                 .pageNum(pageNum)
                 .pageSize(pageSize)
@@ -50,7 +54,7 @@ public class SolutionController {
 
     @NeedLogin(false)
     @GetMapping("/getSolution")
-    public Response<SolutionDetailResponse> getSolution(Long id) throws PortableException {
+    public Response<SolutionDetailResponse> getSolution(@NotNull(message = "A-05-001") @Min(value = 1, message = "A-05-001") Long id) throws PortableException {
         return Response.ofOk(solutionService.getSolution(id));
     }
 }

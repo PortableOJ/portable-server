@@ -4,6 +4,9 @@ import com.portable.server.model.problem.Problem;
 import com.portable.server.model.problem.ProblemData;
 import lombok.Data;
 
+import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 import java.util.List;
 
 /**
@@ -20,6 +23,8 @@ public class ProblemContentRequest {
     /**
      * 标题
      */
+    @NotNull(message = "A-04-018")
+    @Size(max = 60, message = "A-04-018")
     private String title;
 
     /**
@@ -40,6 +45,9 @@ public class ProblemContentRequest {
     /**
      * 样例
      */
+    @Valid
+    @NotNull(message = "A-04-019")
+    @Size(min = 1, max = 5, message = "A-04-019")
     private List<ProblemData.Example> example;
 
     public void toProblem(Problem problem) {

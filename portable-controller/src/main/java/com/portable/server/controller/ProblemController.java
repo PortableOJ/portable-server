@@ -20,6 +20,7 @@ import com.portable.server.model.response.problem.ProblemListResponse;
 import com.portable.server.model.response.problem.ProblemStdTestCodeResponse;
 import com.portable.server.service.ProblemService;
 import com.portable.server.type.PermissionType;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -29,13 +30,17 @@ import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletResponse;
+import javax.validation.Valid;
+import javax.validation.constraints.Min;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Pattern;
 import java.io.IOException;
 import java.util.List;
-import java.util.regex.Pattern;
 
 /**
  * @author shiroha
  */
+@Validated
 @RestController
 @RequestMapping("/api/problem")
 public class ProblemController {
@@ -43,28 +48,14 @@ public class ProblemController {
     @Resource
     private ProblemService problemService;
 
-    /**
-     * 代码最长长度
-     */
-    private static final Long MAX_SUBMIT_CODE_LENGTH = 65536L;
-
-    /**
-     * 问题测试数据名称限制
-     */
-    private static final String PROBLEM_TEST_NAME_REGEX = "^[a-zA-Z0-9_\\-]{1,15}$";
-    private static final Pattern PROBLEM_TEST_NAME_PATTERN;
-
-    static {
-        PROBLEM_TEST_NAME_PATTERN = Pattern.compile(PROBLEM_TEST_NAME_REGEX);
-    }
-
     @NeedLogin(false)
     @GetMapping("/getList")
-    public Response<PageResponse<ProblemListResponse, Void>> getProblemList(Integer pageNum, Integer pageSize) {
+    public Response<PageResponse<ProblemListResponse, Void>> getProblemList(Integer pageNum,
+                                                                            Integer pageSize) {
         PageRequest<Void> pageRequest = PageRequest.<Void>builder()
-                        .pageNum(pageNum)
-                        .pageSize(pageSize)
-                        .build();
+                .pageNum(pageNum)
+                .pageSize(pageSize)
+                .build();
         pageRequest.verify();
         return Response.ofOk(problemService.getProblemList(pageRequest));
     }
@@ -83,19 +74,20 @@ public class ProblemController {
 
     @NeedLogin(false)
     @GetMapping("/getData")
-    public Response<ProblemDetailResponse> getProblem(Long id) throws PortableException {
+    public Response<ProblemDetailResponse> getProblem(@NotNull(message = "A-04-001") @Min(value = 1, message = "A-04-001") Long id) throws PortableException {
         return Response.ofOk(problemService.getProblem(id));
     }
 
     @NeedLogin
     @GetMapping("/getTestList")
-    public Response<List<String>> getTestList(Long id) throws PortableException {
+    public Response<List<String>> getTestList(@NotNull(message = "A-04-001") @Min(value = 1, message = "A-04-001") Long id) throws PortableException {
         return Response.ofOk(problemService.getProblemTestList(id));
     }
 
     @NeedLogin
     @GetMapping("/getTestInputShow")
-    public Response<String> getTestInputShow(Long id, String name) throws PortableException {
+    public Response<String> getTestInputShow(@NotNull(message = "A-04-001") @Min(value = 1, message = "A-04-001") Long id,
+                                             String name) throws PortableException {
         return Response.ofOk(problemService.showTestInput(
                 ProblemNameRequest.builder()
                         .id(id)
@@ -106,7 +98,8 @@ public class ProblemController {
 
     @NeedLogin
     @GetMapping("/getTestOutputShow")
-    public Response<String> getTestOutputShow(Long id, String name) throws PortableException {
+    public Response<String> getTestOutputShow(@NotNull(message = "A-04-001") @Min(value = 1, message = "A-04-001") Long id,
+                                              String name) throws PortableException {
         return Response.ofOk(problemService.showTestOutput(
                 ProblemNameRequest.builder()
                         .id(id)
@@ -117,7 +110,9 @@ public class ProblemController {
 
     @NeedLogin
     @GetMapping("/getTestInput")
-    public void getTestInput(HttpServletResponse response, Long id, String name) throws PortableException {
+    public void getTestInput(HttpServletResponse response,
+                             @NotNull(message = "A-04-001") @Min(value = 1, message = "A-04-001") Long id,
+                             String name) throws PortableException {
         try {
             problemService.downloadTestInput(
                     ProblemNameRequest.builder()
@@ -133,7 +128,9 @@ public class ProblemController {
 
     @NeedLogin
     @GetMapping("/getTestOutput")
-    public void getTestOutput(HttpServletResponse response, Long id, String name) throws PortableException {
+    public void getTestOutput(HttpServletResponse response,
+                              @NotNull(message = "A-04-001") @Min(value = 1, message = "A-04-001") Long id,
+                              String name) throws PortableException {
         try {
             problemService.downloadTestOutput(
                     ProblemNameRequest.builder()
@@ -150,7 +147,7 @@ public class ProblemController {
     @NeedLogin
     @PostMapping("/newProblem")
     @PermissionRequirement(PermissionType.CREATE_AND_EDIT_PROBLEM)
-    public Response<Long> newProblem(@RequestBody ProblemContentRequest problemContentRequest) throws PortableException {
+    public Response<Long> newProblem(@Valid @NotNull(message = "A-00-001") @RequestBody ProblemContentRequest problemContentRequest) throws PortableException {
         Problem problem = problemService.newProblem(problemContentRequest);
         return Response.ofOk(problem.getId());
     }
@@ -158,7 +155,7 @@ public class ProblemController {
     @NeedLogin
     @PostMapping("/updateContent")
     @PermissionRequirement(PermissionType.CREATE_AND_EDIT_PROBLEM)
-    public Response<Void> updateContent(@RequestBody ProblemContentRequest problemContentRequest) throws PortableException {
+    public Response<Void> updateContent(@Valid @NotNull(message = "A-00-001") @RequestBody ProblemContentRequest problemContentRequest) throws PortableException {
         problemService.updateProblemContent(problemContentRequest);
         return Response.ofOk();
     }
@@ -166,7 +163,7 @@ public class ProblemController {
     @NeedLogin
     @PostMapping("/updateSetting")
     @PermissionRequirement(PermissionType.CREATE_AND_EDIT_PROBLEM)
-    public Response<Void> updateSetting(@RequestBody ProblemSettingRequest problemSettingRequest) throws PortableException {
+    public Response<Void> updateSetting(@Valid @NotNull(message = "A-00-001") @RequestBody ProblemSettingRequest problemSettingRequest) throws PortableException {
         problemService.updateProblemSetting(problemSettingRequest);
         return Response.ofOk();
     }
@@ -174,7 +171,7 @@ public class ProblemController {
     @NeedLogin
     @PostMapping("/updateJudge")
     @PermissionRequirement(PermissionType.CREATE_AND_EDIT_PROBLEM)
-    public Response<Void> updateJudge(@RequestBody ProblemJudgeRequest problemJudgeRequest) throws PortableException {
+    public Response<Void> updateJudge(@Valid @NotNull(message = "A-00-001") @RequestBody ProblemJudgeRequest problemJudgeRequest) throws PortableException {
         problemService.updateProblemJudge(problemJudgeRequest);
         return Response.ofOk();
     }
@@ -182,10 +179,9 @@ public class ProblemController {
     @NeedLogin
     @PostMapping("/addTest")
     @PermissionRequirement(PermissionType.CREATE_AND_EDIT_PROBLEM)
-    public Response<Void> addTest(Long id, String name, MultipartFile fileData) throws PortableException {
-        if (!PROBLEM_TEST_NAME_PATTERN.matcher(name).matches()) {
-            throw PortableException.of("A-04-012");
-        }
+    public Response<Void> addTest(@NotNull(message = "A-04-001") @Min(value = 1, message = "A-04-001") Long id,
+                                  @NotNull(message = "A-04-001") @Pattern(regexp = "^[a-zA-Z0-9_\\-]{1,15}$", message = "A-04-012") String name,
+                                  @NotNull(message = "A-04-005") MultipartFile fileData) throws PortableException {
         problemService.addProblemTest(
                 ProblemTestRequest.builder()
                         .id(id)
@@ -199,7 +195,7 @@ public class ProblemController {
     @NeedLogin
     @PostMapping("/removeTest")
     @PermissionRequirement(PermissionType.CREATE_AND_EDIT_PROBLEM)
-    public Response<Void> removeTest(@RequestBody ProblemNameRequest problemNameRequest) throws PortableException {
+    public Response<Void> removeTest(@Valid @NotNull(message = "A-00-001") @RequestBody ProblemNameRequest problemNameRequest) throws PortableException {
         problemService.removeProblemTest(problemNameRequest);
         return Response.ofOk();
     }
@@ -207,15 +203,14 @@ public class ProblemController {
     @NeedLogin
     @GetMapping("/getStdTestCode")
     @PermissionRequirement(PermissionType.CREATE_AND_EDIT_PROBLEM)
-    public Response<ProblemStdTestCodeResponse> getStdTestCode(Long id) throws PortableException {
+    public Response<ProblemStdTestCodeResponse> getStdTestCode(@NotNull(message = "A-04-001") @Min(value = 1, message = "A-04-001") Long id) throws PortableException {
         return Response.ofOk(problemService.getProblemStdTestCode(id));
     }
 
     @NeedLogin
     @PostMapping("/updateStdCode")
     @PermissionRequirement(PermissionType.CREATE_AND_EDIT_PROBLEM)
-    public Response<Void> updateStdCode(@RequestBody ProblemCodeRequest problemCodeRequest) throws PortableException {
-        checkCodeLength(problemCodeRequest.getCode());
+    public Response<Void> updateStdCode(@Valid @NotNull(message = "A-00-001") @RequestBody ProblemCodeRequest problemCodeRequest) throws PortableException {
         problemService.updateProblemStdCode(problemCodeRequest);
         return Response.ofOk();
     }
@@ -223,11 +218,7 @@ public class ProblemController {
     @NeedLogin
     @PostMapping("/addTestCode")
     @PermissionRequirement(PermissionType.CREATE_AND_EDIT_PROBLEM)
-    public Response<Void> addTestCode(@RequestBody ProblemCodeRequest problemCodeRequest) throws PortableException {
-        if (!PROBLEM_TEST_NAME_PATTERN.matcher(problemCodeRequest.getCodeName()).matches()) {
-            throw PortableException.of("A-04-013");
-        }
-        checkCodeLength(problemCodeRequest.getCode());
+    public Response<Void> addTestCode(@Valid @NotNull(message = "A-00-001") @RequestBody ProblemCodeRequest problemCodeRequest) throws PortableException {
         problemService.addProblemTestCode(problemCodeRequest);
         return Response.ofOk();
     }
@@ -235,7 +226,7 @@ public class ProblemController {
     @NeedLogin
     @PostMapping("/removeTestCode")
     @PermissionRequirement(PermissionType.CREATE_AND_EDIT_PROBLEM)
-    public Response<Void> removeTestCode(@RequestBody ProblemNameRequest problemNameRequest) throws PortableException {
+    public Response<Void> removeTestCode(@Valid @NotNull(message = "A-00-001") @RequestBody ProblemNameRequest problemNameRequest) throws PortableException {
         problemService.removeProblemTestCode(problemNameRequest);
         return Response.ofOk();
     }
@@ -243,14 +234,14 @@ public class ProblemController {
     @NeedLogin
     @GetMapping("/getStdCodeShow")
     @PermissionRequirement(PermissionType.CREATE_AND_EDIT_PROBLEM)
-    public Response<String> getStdCodeShow(Long id) throws PortableException {
+    public Response<String> getStdCodeShow(@NotNull(message = "A-04-001") @Min(value = 1, message = "A-04-001") Long id) throws PortableException {
         return Response.ofOk(problemService.showStdCode(id));
     }
 
     @NeedLogin
     @GetMapping("/getTestCodeShow")
     @PermissionRequirement(PermissionType.CREATE_AND_EDIT_PROBLEM)
-    public Response<String> getStdCodeShow(Long id, String name) throws PortableException {
+    public Response<String> getStdCodeShow(@NotNull(message = "A-04-001") @Min(value = 1, message = "A-04-001") Long id, String name) throws PortableException {
         return Response.ofOk(problemService.showTestCode(
                 ProblemNameRequest.builder()
                         .id(id)
@@ -262,7 +253,7 @@ public class ProblemController {
     @NeedLogin
     @GetMapping("/getStdCode")
     @PermissionRequirement(PermissionType.CREATE_AND_EDIT_PROBLEM)
-    public void getStdCode(HttpServletResponse httpServletResponse, Long id) throws PortableException {
+    public void getStdCode(HttpServletResponse httpServletResponse, @NotNull(message = "A-04-001") @Min(value = 1, message = "A-04-001") Long id) throws PortableException {
         try {
             problemService.downloadStdCode(id, httpServletResponse.getOutputStream());
         } catch (IOException e) {
@@ -273,7 +264,7 @@ public class ProblemController {
     @NeedLogin
     @GetMapping("/getTestCode")
     @PermissionRequirement(PermissionType.CREATE_AND_EDIT_PROBLEM)
-    public void getTestCode(HttpServletResponse httpServletResponse, Long id, String name) throws PortableException {
+    public void getTestCode(HttpServletResponse httpServletResponse, @NotNull(message = "A-04-001") @Min(value = 1, message = "A-04-001") Long id, String name) throws PortableException {
         try {
             problemService.downloadTestCode(
                     ProblemNameRequest.builder()
@@ -289,21 +280,14 @@ public class ProblemController {
     @NeedLogin
     @PostMapping("/treatAndCheckProblem")
     @PermissionRequirement(PermissionType.CREATE_AND_EDIT_PROBLEM)
-    public Response<Void> treatAndCheckProblem(@RequestBody IdRequest idRequest) throws PortableException {
+    public Response<Void> treatAndCheckProblem(@Valid @NotNull(message = "A-00-001") @RequestBody IdRequest idRequest) throws PortableException {
         problemService.treatAndCheckProblem(idRequest.getId());
         return Response.ofOk();
     }
 
     @NeedLogin
     @PostMapping("/submit")
-    public Response<Long> submit(@RequestBody SubmitSolutionRequest submitSolutionRequest) throws PortableException {
-        checkCodeLength(submitSolutionRequest.getCode());
+    public Response<Long> submit(@Valid @NotNull(message = "A-00-001") @RequestBody SubmitSolutionRequest submitSolutionRequest) throws PortableException {
         return Response.ofOk(problemService.submit(submitSolutionRequest));
-    }
-
-    private void checkCodeLength(String code) throws PortableException {
-        if (code.length() > MAX_SUBMIT_CODE_LENGTH) {
-            throw PortableException.of("A-04-011", MAX_SUBMIT_CODE_LENGTH);
-        }
     }
 }

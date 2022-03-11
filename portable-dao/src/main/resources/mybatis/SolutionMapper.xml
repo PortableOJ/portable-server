@@ -27,100 +27,93 @@
         <parameter property="solutionType" javaType="java.lang.Enum" jdbcType="VARCHAR"/>
         <parameter property="timeCost" javaType="java.lang.Integer" jdbcType="INTEGER"/>
         <parameter property="memoryCost" javaType="java.lang.Integer" jdbcType="INTEGER"/>
-   </parameterMap>
+    </parameterMap>
 
-    <select id="countPublicSolution" resultType="java.lang.Integer">
+
+    <select id="countSolution" resultType="java.lang.Integer">
         SELECT count(*)
         FROM solution
-        WHERE solution_type = 'PUBLIC'
-        <if test="userId != null">
-            AND user_id = #{userId}
-        </if>
-        <if test="problemId != null">
-            AND problem_id = #{problemId}
-        </if>
-        <if test="statusType != null">
-            AND status = #{statusType}
-        </if>
+        <where>
+            <if test="solutionType != null">
+                AND solution_type = #{solutionType}
+            </if>
+            <if test="userId != null">
+                AND user_id = #{userId}
+            </if>
+            <if test="contestId != null">
+                AND contest_id = #{contestId}
+            </if>
+            <if test="problemId != null">
+                AND problem_id = #{problemId}
+            </if>
+            <if test="statusType != null">
+                AND status = #{statusType}
+            </if>
+        </where>
     </select>
 
-    <select id="countSolutionByContest" resultType="java.lang.Integer">
-        SELECT count(*)
+    <select id="selectSolutionByPage" resultMap="Solution">
+        SELECT *
         FROM solution
-        WHERE solution_type = 'CONTEST'
-        AND contest_id = #{contestId}
-    </select>
-
-    <select id="countSolutionByTestContest" resultType="java.lang.Integer">
-        SELECT count(*)
-        FROM solution
-        WHERE solution_type = 'TEST_CONTEST'
-          AND contest_id = #{contestId}
-    </select>
-
-    <select id="selectPublicSolutionByPage" resultMap="Solution">
-        SELECT * FROM solution
-        WHERE solution_type = 'PUBLIC'
-        <if test="userId != null">
-            AND user_id = #{userId}
-        </if>
-        <if test="problemId != null">
-            AND problem_id = #{problemId}
-        </if>
-        <if test="statusType != null">
-            AND status = #{statusType}
-        </if>
-        ORDER BY id DESC
-        LIMIT #{pageSize}
+        <where>
+            <if test="solutionType != null">
+                AND solution_type = #{solutionType}
+            </if>
+            <if test="userId != null">
+                AND user_id = #{userId}
+            </if>
+            <if test="contestId != null">
+                AND contest_id = #{contestId}
+            </if>
+            <if test="problemId != null">
+                AND problem_id = #{problemId}
+            </if>
+            <if test="statusType != null">
+                AND statusType IN
+                <foreach collection="statusType" item="type" open="(" separator="," close=")">
+                    #{type}
+                </foreach>
+            </if>
+        </where>
+        ORDER BY id # noinspection SqlResolve
+        DESC
         OFFSET #{offset}
-    </select>
-
-    <select id="selectSolutionByContestAndPage" resultType="com.portable.server.model.solution.Solution">
-        SELECT * FROM solution
-        WHERE solution_type = 'CONTEST'
-        AND contest_id = #{contestId}
-        ORDER BY id DESC
         LIMIT #{pageSize}
-        OFFSET #{offset}
-    </select>
-
-    <select id="selectSolutionByTestContestAndPage" resultMap="Solution">
-        SELECT * FROM solution
-        WHERE solution_type = 'TEST_CONTEST'
-          AND contest_id = #{contestId}
-        ORDER BY id DESC
-        LIMIT #{pageSize}
-        OFFSET #{offset}
     </select>
 
     <select id="selectSolutionById" resultMap="Solution">
-        SELECT * FROM solution
+        SELECT *
+        FROM solution
         WHERE id = #{id}
     </select>
 
     <select id="selectLastSolutionByUserIdAndProblemId" resultMap="Solution">
-        SELECT * FROM solution
+        SELECT *
+        FROM solution
         WHERE user_id = #{userId}
-         AND problem_id = #{problemId}
+          AND solution_type = 'PUBLIC'
+          AND problem_id = #{problemId}
         ORDER BY id DESC
         LIMIT 1
     </select>
 
     <select id="selectLastSolutionByUserIdAndProblemIdAndContestId" resultMap="Solution">
-        SELECT * FROM solution
+        SELECT *
+        FROM solution
         WHERE user_id = #{userId}
-         AND solution_type = 'CONTEST'
-         AND problem_id = #{problemId}
-         AND contest_id = #{contestId}
+          AND solution_type = 'CONTEST'
+          AND problem_id = #{problemId}
+          AND contest_id = #{contestId}
         ORDER BY id DESC
         LIMIT 1
     </select>
 
     <insert id="insertSolution" useGeneratedKeys="true" keyProperty="id" parameterMap="Solution">
         INSERT INTO solution
-        (data_id, submit_time, user_id, problem_id, contest_id, language_type, status, solution_type, time_cost, memory_cost)
-        VALUES
-        (#{dataId}, #{submitTime}, #{userId}, #{problemId}, #{contestId}, #{languageType}, #{status}, #{solutionType}, #{timeCost}, #{memoryCost})
+        (data_id, submit_time, user_id, problem_id, contest_id, language_type, status, solution_type, time_cost,
+         memory_cost)
+        VALUES (#{dataId}, #{submitTime}, #{userId}, #{problemId}, #{contestId}, #{languageType}, #{status},
+                #{solutionType}, #{timeCost}, #{memoryCost})
     </insert>
 
     <update id="updateStatus">
@@ -131,9 +124,18 @@
 
     <update id="updateCostAndStatus">
         UPDATE solution
-        SET status = #{statusType},
-            time_cost = IF(ISNULL(time_cost), #{timeCost}, GREATEST(time_cost, #{timeCost})),
+        SET status      = #{statusType},
+            time_cost   = IF(ISNULL(time_cost), #{timeCost}, GREATEST(time_cost, #{timeCost})),
             memory_cost = IF(ISNULL(memory_cost), #{memoryCost}, GREATEST(memory_cost, #{memoryCost}))
         WHERE id = #{id}
+    </update>
+
+    <update id="updateAllStatus">
+        UPDATE solution
+        SET status = #{toStatus}
+        WHERE status IN
+        <foreach collection="fromStatus" item="type" open="(" close=")">
+            #{type}
+        </foreach>
     </update>
 </mapper>
