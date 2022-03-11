@@ -47,7 +47,7 @@ public class SolutionManagerImpl implements SolutionManager {
 
     @Override
     public List<Solution> selectSolutionByPage(Integer pageSize, Integer offset, SolutionType solutionType, Long userId, Long contestId, Long problemId, SolutionStatusType statusType) {
-        return solutionMapper.selectSolutionByPage(pageSize, offset, solutionType, userId, contestId, problemId, Collections.singletonList(statusType));
+        return solutionMapper.selectSolutionByPage(pageSize, offset, solutionType, userId, contestId, problemId, statusType == null ? null : Collections.singletonList(statusType));
     }
 
     @Override
