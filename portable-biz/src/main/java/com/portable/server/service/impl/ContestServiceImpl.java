@@ -178,10 +178,14 @@ public class ContestServiceImpl implements ContestService {
         }
 
         SolutionListQueryRequest queryData = pageRequest.getQueryData();
-        queryData.setProblemId(contestPackage.getContestData()
-                .getProblemList()
-                .get(Math.toIntExact(queryData.getProblemId()))
-                .getProblemId());
+
+        if (queryData.getProblemId() != null) {
+            queryData.setProblemId(contestPackage.getContestData()
+                    .getProblemList()
+                    .get(Math.toIntExact(queryData.getProblemId()))
+                    .getProblemId());
+        }
+
         Integer solutionCount = solutionManager.countSolution(
                 SolutionType.CONTEST,
                 queryData.getUserId(),
@@ -250,10 +254,13 @@ public class ContestServiceImpl implements ContestService {
         }
 
         SolutionListQueryRequest queryData = pageRequest.getQueryData();
-        queryData.setProblemId(contestPackage.getContestData()
-                .getProblemList()
-                .get(Math.toIntExact(queryData.getProblemId()))
-                .getProblemId());
+
+        if (queryData.getProblemId() != null) {
+            queryData.setProblemId(contestPackage.getContestData()
+                    .getProblemList()
+                    .get(Math.toIntExact(queryData.getProblemId()))
+                    .getProblemId());
+        }
 
         Integer solutionCount = solutionManager.countSolution(
                 SolutionType.TEST_CONTEST,
