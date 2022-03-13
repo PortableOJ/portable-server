@@ -66,11 +66,11 @@ public class CaptchaSupportImpl implements CaptchaSupport {
                 .map(File::getName)
                 .collect(Collectors.toList());
         curPoint = 0;
+        maxPoint = cacheCaptcha.size();
         updateCaptcha = cacheCaptcha.size() % maxCaptchaSize;
         for (int i = cacheCaptcha.size(); i < initCaptchaSize; i++) {
             reduceImage();
         }
-        maxPoint = cacheCaptcha.size();
     }
 
     @Override
@@ -113,17 +113,17 @@ public class CaptchaSupportImpl implements CaptchaSupport {
         } catch (IOException e) {
             throw PortableException.of("S-01-003");
         }
-        if (Objects.equals(updateCaptcha, maxPoint)) {
+        if (!Objects.equals(maxPoint, maxCaptchaSize)) {
             cacheCaptcha.add(name);
             maxPoint++;
         } else {
             String lastName = cacheCaptcha.get(updateCaptcha);
             cacheCaptcha.set(updateCaptcha, name);
             fileKit.deleteFileIfExist(getCaptchaPath(lastName));
-        }
-        updateCaptcha++;
-        if (Objects.equals(updateCaptcha, maxCaptchaSize)) {
-            updateCaptcha = 0;
+            updateCaptcha++;
+            if (Objects.equals(updateCaptcha, maxCaptchaSize)) {
+                updateCaptcha = 0;
+            }
         }
     }
 
