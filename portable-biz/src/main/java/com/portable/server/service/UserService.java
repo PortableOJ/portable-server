@@ -3,6 +3,7 @@ package com.portable.server.service;
 import com.portable.server.exception.PortableException;
 import com.portable.server.model.request.user.LoginRequest;
 import com.portable.server.model.request.user.RegisterRequest;
+import com.portable.server.model.request.user.UpdatePasswordRequest;
 import com.portable.server.model.response.user.NormalUserInfoResponse;
 import com.portable.server.model.response.user.UserBasicInfoResponse;
 import com.portable.server.type.OrganizationType;
@@ -89,4 +90,10 @@ public interface UserService {
      */
     void uploadAvatar(InputStream inputStream, String name, String contentType) throws PortableException;
 
+    /**
+     * 更新用户的密码
+     * @param updatePasswordRequest 密码
+     * @throws PortableException 密码错误则抛出
+     */
+    void updatePassword(UpdatePasswordRequest updatePasswordRequest) throws PortableException;
 }

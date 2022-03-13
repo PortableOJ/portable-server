@@ -7,6 +7,7 @@ import com.portable.server.manager.UserDataManager;
 import com.portable.server.manager.UserManager;
 import com.portable.server.model.request.user.LoginRequest;
 import com.portable.server.model.request.user.RegisterRequest;
+import com.portable.server.model.request.user.UpdatePasswordRequest;
 import com.portable.server.model.response.user.NormalUserInfoResponse;
 import com.portable.server.model.response.user.UserBasicInfoResponse;
 import com.portable.server.model.user.NormalUserData;
@@ -175,6 +176,19 @@ public class UserServiceImpl implements UserService {
         String fileId = gridFsManager.uploadAvatar(normalUserData.getAvatar(), inputStream, name, contentType);
         normalUserData.setAvatar(fileId);
         userDataManager.updateNormalUserData(normalUserData);
+    }
+
+    @Override
+    public void updatePassword(UpdatePasswordRequest updatePasswordRequest) throws PortableException {
+        UserContext userContext = UserContext.ctx();
+        User user = userManager.getAccountById(userContext.getId());
+        if (!AccountType.NORMAL.equals(user.getType())) {
+            throw PortableException.of("A-01-011");
+        }
+        if (!bCryptEncoder.match(updatePasswordRequest.getOldPassword(), user.getPassword())) {
+            throw PortableException.of("A-01-002");
+        }
+        userManager.updatePassword(user.getId(), updatePasswordRequest.getNewPassword());
     }
 
     private NormalUserData organizationCheck(Long target) throws PortableException {

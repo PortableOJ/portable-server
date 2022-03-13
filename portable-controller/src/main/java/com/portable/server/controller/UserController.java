@@ -8,6 +8,7 @@ import com.portable.server.model.request.user.LoginRequest;
 import com.portable.server.model.request.user.OrganizationChangeRequest;
 import com.portable.server.model.request.user.PermissionRequest;
 import com.portable.server.model.request.user.RegisterRequest;
+import com.portable.server.model.request.user.UpdatePasswordRequest;
 import com.portable.server.model.response.Response;
 import com.portable.server.model.response.user.NormalUserInfoResponse;
 import com.portable.server.model.response.user.UserBasicInfoResponse;
@@ -125,5 +126,12 @@ public class UserController {
         } catch (IOException e) {
             throw PortableException.of("S-01-003");
         }
+    }
+
+    @NeedLogin
+    @PostMapping("/changePassword")
+    public Response<Void> changePassword(@NotNull(message = "A-00-001") @RequestBody UpdatePasswordRequest updatePasswordRequest) throws PortableException {
+        userService.updatePassword(updatePasswordRequest);
+        return Response.ofOk();
     }
 }
