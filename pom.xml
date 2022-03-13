@@ -36,6 +36,8 @@
         <mockito.version>4.0.0</mockito.version>
         <jackson.version>2.13.1</jackson.version>
         <validator.version>2.6.4</validator.version>
+        <thumbnailator.version>0.4.17</thumbnailator.version>
+        <ostermiller.version>1.07.00</ostermiller.version>
     </properties>
 
     <modules>
@@ -185,6 +187,16 @@
                 <groupId>com.fasterxml.jackson.core</groupId>
                 <artifactId>jackson-annotations</artifactId>
                 <version>${jackson.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>net.coobird</groupId>
+                <artifactId>thumbnailator</artifactId>
+                <version>${thumbnailator.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.ostermiller</groupId>
+                <artifactId>utils</artifactId>
+                <version>${ostermiller.version}</version>
             </dependency>
         </dependencies>
     </dependencyManagement>
