@@ -29,7 +29,10 @@ public class FileKitImpl implements FileKit {
 
     @PostConstruct
     private void init() throws PortableException {
-        createDirIfNotExist(homeDir);
+        File file = new File(homeDir);
+        if (!file.exists() && !file.mkdirs()) {
+            throw PortableException.of("S-04-001");
+        }
     }
 
     @Override
