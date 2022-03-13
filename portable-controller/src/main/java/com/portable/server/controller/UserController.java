@@ -112,12 +112,20 @@ public class UserController {
 
     @NeedLogin(normal = true)
     @PostMapping("/avatar")
-    public Response<Void> uploadAvatar(@NotNull(message = "A-01-010") MultipartFile fileData) throws PortableException {
+    public Response<Void> uploadAvatar(@NotNull(message = "A-01-010") MultipartFile fileData,
+                                       @NotNull(message = "A-00-001") Integer left,
+                                       @NotNull(message = "A-00-001") Integer top,
+                                       @NotNull(message = "A-00-001") Integer width,
+                                       @NotNull(message = "A-00-001") Integer height) throws PortableException {
         if (IMAGE_FILE_MAX_SIZE.compareTo(fileData.getSize()) < 0) {
             throw PortableException.of("A-09-002", IMAGE_FILE_MAX_SIZE);
         }
         try {
-            userService.uploadAvatar(fileData.getInputStream(), fileData.getOriginalFilename(), fileData.getContentType());
+            userService.uploadAvatar(fileData.getInputStream(),
+                    fileData.getOriginalFilename(),
+                    fileData.getContentType(),
+                    left, top, width, height
+            );
             return Response.ofOk();
         } catch (IOException e) {
             throw PortableException.of("S-01-003");

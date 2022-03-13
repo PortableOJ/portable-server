@@ -16,6 +16,7 @@ import com.portable.server.service.UserService;
 import com.portable.server.type.AccountType;
 import com.portable.server.type.OrganizationType;
 import com.portable.server.type.PermissionType;
+import com.portable.server.util.ImageUtils;
 import com.portable.server.util.UserContext;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -167,13 +168,20 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public void uploadAvatar(InputStream inputStream, String name, String contentType) throws PortableException {
+    public void uploadAvatar(InputStream inputStream,
+                             String name,
+                             String contentType,
+                             Integer left,
+                             Integer top,
+                             Integer width,
+                             Integer height) throws PortableException {
         UserContext userContext = UserContext.ctx();
         if (!AccountType.NORMAL.equals(userContext.getType())) {
             throw PortableException.of("A-02-008", UserContext.ctx().getType());
         }
         NormalUserData normalUserData = userDataManager.getNormalUserDataById(userContext.getDataId());
-        String fileId = gridFsManager.uploadAvatar(normalUserData.getAvatar(), inputStream, name, contentType);
+        InputStream avatarStream = ImageUtils.cut(inputStream, left, top, width, height);
+        String fileId = gridFsManager.uploadAvatar(normalUserData.getAvatar(), avatarStream, name, contentType);
         normalUserData.setAvatar(fileId);
         userDataManager.updateNormalUserData(normalUserData);
     }
