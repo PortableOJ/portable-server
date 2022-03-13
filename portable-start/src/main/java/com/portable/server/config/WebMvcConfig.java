@@ -1,5 +1,6 @@
 package com.portable.server.config;
 
+import com.portable.server.interceptor.CaptchaInterceptor;
 import com.portable.server.interceptor.NeedLoginInterceptor;
 import com.portable.server.interceptor.PermissionInterceptor;
 import com.portable.server.util.UserContext;
@@ -30,6 +31,7 @@ public class WebMvcConfig implements WebMvcConfigurer {
     public void addInterceptors(InterceptorRegistry registry) {
         registry.addInterceptor(needLoginInterceptor()).addPathPatterns("/api/**");
         registry.addInterceptor(permissionInterceptor()).addPathPatterns("/api/**");
+        registry.addInterceptor(captchaInterceptor()).addPathPatterns("/api/**");
     }
 
     @Bean
@@ -42,8 +44,14 @@ public class WebMvcConfig implements WebMvcConfigurer {
         return new PermissionInterceptor();
     }
 
+    @Bean
+    public CaptchaInterceptor captchaInterceptor() {
+        return new CaptchaInterceptor();
+    }
+
     /**
      * 用于获取 redis 的模版注入，不需要使用此 bean
+     *
      * @return ignore
      */
     @Bean
@@ -53,6 +61,7 @@ public class WebMvcConfig implements WebMvcConfigurer {
 
     /**
      * 设置 GridFs 的桶
+     *
      * @param dbFactory bean
      * @param converter bean
      * @return bean

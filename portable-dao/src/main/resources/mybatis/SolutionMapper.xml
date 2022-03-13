@@ -142,7 +142,7 @@
         UPDATE solution
         SET status = #{toStatus}
         WHERE status IN
-        <foreach collection="fromStatus" item="type" open="(" close=")">
+        <foreach collection="fromStatus" item="type" open="(" separator="," close=")">
             #{type}
         </foreach>
     </update>

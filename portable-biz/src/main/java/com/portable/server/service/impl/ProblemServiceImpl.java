@@ -2,11 +2,11 @@ package com.portable.server.service.impl;
 
 import com.portable.server.exception.PortableException;
 import com.portable.server.manager.ContestManager;
-import com.portable.server.manager.UserDataManager;
 import com.portable.server.manager.ProblemDataManager;
 import com.portable.server.manager.ProblemManager;
 import com.portable.server.manager.SolutionDataManager;
 import com.portable.server.manager.SolutionManager;
+import com.portable.server.manager.UserDataManager;
 import com.portable.server.manager.UserManager;
 import com.portable.server.model.contest.Contest;
 import com.portable.server.model.problem.Problem;
@@ -37,7 +37,6 @@ import com.portable.server.type.ProblemStatusType;
 import com.portable.server.type.SolutionStatusType;
 import com.portable.server.type.SolutionType;
 import com.portable.server.util.StreamUtils;
-import com.portable.server.util.Switch;
 import com.portable.server.util.UserContext;
 import lombok.Builder;
 import lombok.Data;
@@ -136,9 +135,6 @@ public class ProblemServiceImpl implements ProblemService {
         }
     }
 
-    @Value("${portable.problem.test.show.limit}")
-    private Integer maxTestShowLen;
-
     @Resource
     private ProblemManager problemManager;
 
@@ -165,6 +161,12 @@ public class ProblemServiceImpl implements ProblemService {
 
     @Resource
     private JudgeSupport judgeSupport;
+
+    @Value("${portable.problem.test.show.limit}")
+    private Integer maxTestShowLen;
+
+    @Value("${portable.service.search.size}")
+    private Integer searchPageSize;
 
     @Override
     public PageResponse<ProblemListResponse, Void> getProblemList(PageRequest<Void> pageRequest) {
@@ -195,7 +197,7 @@ public class ProblemServiceImpl implements ProblemService {
         boolean isLogin = UserContext.ctx().isLogin();
         boolean viewHiddenProblem = isLogin && UserContext.ctx().getPermissionTypeSet().contains(PermissionType.VIEW_HIDDEN_PROBLEM);
         List<ProblemAccessType> problemAccessTypeList = viewHiddenProblem ? Arrays.asList(ProblemAccessType.PUBLIC, ProblemAccessType.HIDDEN) : Collections.singletonList(ProblemAccessType.PUBLIC);
-        List<Problem> problemList = problemManager.searchRecentProblemByTypedAndKeyword(problemAccessTypeList, keyword, Switch.searchPageSize);
+        List<Problem> problemList = problemManager.searchRecentProblemByTypedAndKeyword(problemAccessTypeList, keyword, searchPageSize);
         return problemList.stream()
                 .map(problem -> ProblemListResponse.of(problem, null))
                 .collect(Collectors.toList());
@@ -203,7 +205,7 @@ public class ProblemServiceImpl implements ProblemService {
 
     @Override
     public List<ProblemListResponse> searchPrivateProblemList(String keyword) {
-        List<Problem> problemList = problemManager.searchRecentProblemByOwnerIdAndKeyword(UserContext.ctx().getId(), keyword, Switch.searchPageSize);
+        List<Problem> problemList = problemManager.searchRecentProblemByOwnerIdAndKeyword(UserContext.ctx().getId(), keyword, searchPageSize);
         return problemList.stream()
                 .map(problem -> ProblemListResponse.of(problem, null))
                 .collect(Collectors.toList());
