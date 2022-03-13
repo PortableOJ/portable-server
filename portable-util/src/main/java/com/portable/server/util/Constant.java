@@ -15,6 +15,11 @@ public class Constant {
     public static final String ARIAL = "Arial";
 
     /**
+     * 验证码的内容标识
+     */
+    public static final String CAPTCHA_CONTENT_TYPE = "image/png";
+
+    /**
      * 单个字节流 BUFFER 长度
      */
     public static final Integer BUFFER_LEN = 4096;

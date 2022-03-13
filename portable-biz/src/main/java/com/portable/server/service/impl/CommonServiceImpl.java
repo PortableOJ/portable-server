@@ -3,10 +3,13 @@ package com.portable.server.service.impl;
 import com.alibaba.fastjson.JSONObject;
 import com.portable.server.exception.PortableException;
 import com.portable.server.service.CommonService;
+import com.portable.server.support.CaptchaSupport;
 import com.portable.server.util.DateTime;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
+import javax.annotation.Resource;
+import java.io.OutputStream;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -31,6 +34,9 @@ public class CommonServiceImpl implements CommonService {
     private String version;
 
     private Map<String, Map<String, JSONObject>> enumDescMap;
+
+    @Resource
+    private CaptchaSupport captchaSupport;
 
     @PostConstruct
     public void init() {
@@ -93,5 +99,10 @@ public class CommonServiceImpl implements CommonService {
             e.printStackTrace();
         }
         throw PortableException.of("A-06-001", name);
+    }
+
+    @Override
+    public String getCaptcha(OutputStream outputStream) throws PortableException {
+        return captchaSupport.getCaptcha(outputStream);
     }
 }

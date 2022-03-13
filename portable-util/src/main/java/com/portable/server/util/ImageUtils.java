@@ -42,7 +42,7 @@ public class ImageUtils {
     }
 
     public static InputStream cut(InputStream inputStream, Integer left, Integer top, Integer width, Integer height) throws PortableException {
-        CircularByteBuffer circularByteBuffer = new CircularByteBuffer();
+        CircularByteBuffer circularByteBuffer = new CircularByteBuffer(CircularByteBuffer.INFINITE_SIZE);
         try {
             Thumbnails.of(inputStream)
                     .sourceRegion(left, top, width, height)
