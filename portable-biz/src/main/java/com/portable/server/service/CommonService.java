@@ -3,6 +3,7 @@ package com.portable.server.service;
 import com.alibaba.fastjson.JSONObject;
 import com.portable.server.exception.PortableException;
 
+import java.io.OutputStream;
 import java.util.Map;
 
 /**
@@ -25,4 +26,12 @@ public interface CommonService {
      * @throws PortableException 找不到类则抛出
      */
     Map<String, JSONObject> getEnumDesc(String name) throws PortableException;
+
+    /**
+     * 获取验证码
+     * @param outputStream 验证码写入
+     * @return 验证码的值
+     * @throws PortableException 获取失败则抛出
+     */
+    String getCaptcha(OutputStream outputStream) throws PortableException;
 }

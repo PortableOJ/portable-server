@@ -34,7 +34,6 @@ import com.portable.server.type.LanguageType;
 import com.portable.server.type.ProblemStatusType;
 import com.portable.server.type.SolutionStatusType;
 import com.portable.server.type.SolutionType;
-import com.portable.server.util.Switch;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
@@ -90,6 +89,9 @@ public class JudgeSupportImpl implements JudgeSupport {
 
     @Value("${portable.recover.judge}")
     private Integer recoverJudgeJob;
+
+    @Value("${portable.service.code.expire}")
+    private Integer serverCodeExpireTime;
 
     /**
      * 保存在 redis 中的服务器密钥的 key 值
@@ -269,9 +271,9 @@ public class JudgeSupportImpl implements JudgeSupport {
                     .build();
         }
         String code = UUID.randomUUID().toString();
-        redisValueKit.set(SERVICE_CODE_KEY, "", code, Switch.serverCodeExpireTime);
+        redisValueKit.set(SERVICE_CODE_KEY, "", code, Long.valueOf(serverCodeExpireTime));
         Calendar calendar = Calendar.getInstance();
-        calendar.add(Calendar.SECOND, Switch.serverCodeExpireTime.intValue());
+        calendar.add(Calendar.SECOND, serverCodeExpireTime);
         return ServiceVerifyCode.builder()
                 .code(code)
                 .temporary(true)

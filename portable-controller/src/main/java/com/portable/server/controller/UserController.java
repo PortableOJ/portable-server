@@ -1,5 +1,6 @@
 package com.portable.server.controller;
 
+import com.portable.server.annotation.CheckCaptcha;
 import com.portable.server.annotation.NeedLogin;
 import com.portable.server.annotation.PermissionRequirement;
 import com.portable.server.exception.PortableException;
@@ -53,6 +54,7 @@ public class UserController {
         return Response.ofOk(userBasicInfoResponse);
     }
 
+    @CheckCaptcha
     @NeedLogin(false)
     @PostMapping("/register")
     public Response<NormalUserInfoResponse> register(HttpServletRequest request, @Valid @NotNull(message = "A-00-001") @RequestBody RegisterRequest registerRequest) throws PortableException {

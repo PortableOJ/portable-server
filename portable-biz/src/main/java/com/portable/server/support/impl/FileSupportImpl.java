@@ -3,7 +3,6 @@ package com.portable.server.support.impl;
 import com.portable.server.exception.PortableException;
 import com.portable.server.kit.FileKit;
 import com.portable.server.support.FileSupport;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
@@ -17,37 +16,30 @@ import java.io.InputStream;
 @Component
 public class FileSupportImpl implements FileSupport {
 
-    @Value("${portable.home}")
-    private String homeDir;
-
     private static final String PROBLEM_DIR_NAME = "problem";
-
-    private static String problemDir;
 
     @Resource
     private FileKit fileKit;
 
     @PostConstruct
     private void init() throws PortableException {
-        problemDir = homeDir + File.separator + PROBLEM_DIR_NAME;
-        fileKit.createDirIfNotExist(homeDir);
-        fileKit.createDirIfNotExist(problemDir);
+        fileKit.createDirIfNotExist(PROBLEM_DIR_NAME);
     }
 
     @Override
     public void createProblem(Long problemId) throws PortableException {
-        String newProblemDir = problemDir + File.separator + problemId;
+        String newProblemDir = PROBLEM_DIR_NAME + File.separator + problemId;
         fileKit.createDirIfNotExist(newProblemDir);
     }
 
     @Override
     public InputStream getTestInput(Long problemId, String testName) throws PortableException {
-        return fileKit.getFile(getProblemInput(problemId, testName));
+        return fileKit.getFileInput(getProblemInput(problemId, testName));
     }
 
     @Override
     public InputStream getTestOutput(Long problemId, String testName) throws PortableException {
-        return fileKit.getFile(getProblemOutput(problemId, testName));
+        return fileKit.getFileInput(getProblemOutput(problemId, testName));
     }
 
     @Override
@@ -77,10 +69,10 @@ public class FileSupportImpl implements FileSupport {
     }
 
     private String getProblemInput(Long problemId, String testName) {
-        return String.format("%s%s%d%s%s.in", problemDir, File.separator, problemId, File.separator, testName);
+        return String.format("%s%s%d%s%s.in", PROBLEM_DIR_NAME, File.separator, problemId, File.separator, testName);
     }
 
     private String getProblemOutput(Long problemId, String testName) {
-        return String.format("%s%s%d%s%s.out", problemDir, File.separator, problemId, File.separator, testName);
+        return String.format("%s%s%d%s%s.out", PROBLEM_DIR_NAME, File.separator, problemId, File.separator, testName);
     }
 }
