@@ -35,14 +35,13 @@ public class JudgeController {
     @Resource
     private JudgeService judgeService;
 
-    @NeedLogin
+    @NeedLogin(normal = true)
     @GetMapping("/serverCode")
     @PermissionRequirement(PermissionType.MANAGER_JUDGE)
     public Response<ServiceVerifyCode> getServerCode() {
         return Response.ofOk(judgeService.getServerCode());
     }
 
-    @NeedLogin(false)
     @GetMapping("/initCode")
     public void getServerCodeFirst(HttpServletResponse response) {
         String code = judgeService.getTheServerCodeFirstTime();
@@ -57,14 +56,14 @@ public class JudgeController {
         }
     }
 
-    @NeedLogin
+    @NeedLogin(normal = true)
     @GetMapping("/judgeList")
     @PermissionRequirement(PermissionType.MANAGER_JUDGE)
     public Response<List<JudgeContainer>> getJudgeContainerList() {
         return Response.ofOk(judgeService.getJudgeContainerList());
     }
 
-    @NeedLogin
+    @NeedLogin(normal = true)
     @PostMapping("/updateJudge")
     @PermissionRequirement(PermissionType.MANAGER_JUDGE)
     public Response<Void> updateJudgeContainer(@RequestBody UpdateJudgeContainer updateJudgeContainer) throws PortableException {
@@ -72,7 +71,7 @@ public class JudgeController {
         return Response.ofOk();
     }
 
-    @NeedLogin
+    @NeedLogin(normal = true)
     @PostMapping("/killJudge")
     @PermissionRequirement(PermissionType.MANAGER_JUDGE)
     public Response<Void> killJudge(@RequestBody IdRequest idRequest) {
@@ -80,7 +79,7 @@ public class JudgeController {
         return Response.ofOk();
     }
 
-    @NeedLogin
+    @NeedLogin(normal = true)
     @PostMapping("/killTest")
     @PermissionRequirement(PermissionType.MANAGER_JUDGE)
     public Response<Void> killTest(@RequestBody IdRequest idRequest) {

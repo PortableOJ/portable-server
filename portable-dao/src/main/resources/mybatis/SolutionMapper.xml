@@ -29,7 +29,6 @@
         <parameter property="memoryCost" javaType="java.lang.Integer" jdbcType="INTEGER"/>
     </parameterMap>
 
-
     <select id="countSolution" resultType="java.lang.Integer">
         SELECT count(*)
         FROM solution

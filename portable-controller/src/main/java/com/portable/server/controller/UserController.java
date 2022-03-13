@@ -45,7 +45,6 @@ public class UserController {
 
     private static final Long IMAGE_FILE_MAX_SIZE = 1024 * 1024 * 10L;
 
-    @NeedLogin(false)
     @PostMapping("/login")
     public Response<UserBasicInfoResponse> login(HttpServletRequest request, @Valid @NotNull(message = "A-00-001") @RequestBody LoginRequest loginRequest) throws PortableException {
         UserContext.set(UserContext.getNullUser());
@@ -56,7 +55,6 @@ public class UserController {
     }
 
     @CheckCaptcha
-    @NeedLogin(false)
     @PostMapping("/register")
     public Response<NormalUserInfoResponse> register(HttpServletRequest request, @Valid @NotNull(message = "A-00-001") @RequestBody RegisterRequest registerRequest) throws PortableException {
         UserContext.set(UserContext.getNullUser());
@@ -75,7 +73,6 @@ public class UserController {
         return Response.ofOk();
     }
 
-    @NeedLogin(false)
     @GetMapping("/check")
     public Response<UserBasicInfoResponse> check() throws PortableException {
         if (!UserContext.ctx().isLogin()) {
@@ -84,13 +81,12 @@ public class UserController {
         return Response.ofOk(userService.getUserInfo(UserContext.ctx().getId()));
     }
 
-    @NeedLogin(false)
     @GetMapping("/getUserInfo")
     public Response<UserBasicInfoResponse> getUserInfo(@NotBlank(message = "A-01-006") String handle) throws PortableException {
         return Response.ofOk(userService.getUserInfo(handle));
     }
 
-    @NeedLogin
+    @NeedLogin(normal = true)
     @PostMapping("/changeOrganization")
     @PermissionRequirement(PermissionType.CHANGE_ORGANIZATION)
     public Response<Void> changeOrganization(@Valid @NotNull(message = "A-00-001") @RequestBody OrganizationChangeRequest organizationChangeRequest) throws PortableException {
@@ -98,7 +94,7 @@ public class UserController {
         return Response.ofOk();
     }
 
-    @NeedLogin
+    @NeedLogin(normal = true)
     @PostMapping("/addPermission")
     @PermissionRequirement(PermissionType.GRANT)
     public Response<Void> addPermission(@Valid @NotNull(message = "A-00-001") @RequestBody PermissionRequest permissionRequest) throws PortableException {
@@ -106,7 +102,7 @@ public class UserController {
         return Response.ofOk();
     }
 
-    @NeedLogin
+    @NeedLogin(normal = true)
     @PostMapping("/removePermission")
     @PermissionRequirement(PermissionType.GRANT)
     public Response<Void> removePermission(@Valid @NotNull(message = "A-00-001") @RequestBody PermissionRequest permissionRequest) throws PortableException {
@@ -114,7 +110,7 @@ public class UserController {
         return Response.ofOk();
     }
 
-    @NeedLogin
+    @NeedLogin(normal = true)
     @PostMapping("/avatar")
     public Response<Void> uploadAvatar(@NotNull(message = "A-01-010") MultipartFile fileData) throws PortableException {
         if (IMAGE_FILE_MAX_SIZE.compareTo(fileData.getSize()) < 0) {
@@ -128,7 +124,7 @@ public class UserController {
         }
     }
 
-    @NeedLogin
+    @NeedLogin(normal = true)
     @PostMapping("/changePassword")
     public Response<Void> changePassword(@NotNull(message = "A-00-001") @RequestBody UpdatePasswordRequest updatePasswordRequest) throws PortableException {
         userService.updatePassword(updatePasswordRequest);
