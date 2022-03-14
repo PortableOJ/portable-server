@@ -27,6 +27,9 @@ public class ImageUtils {
 
     private static final Random RANDOM;
 
+    private static final Integer AVATAR_WIDTH = 300;
+    private static final Integer AVATAR_HEIGHT = 300;
+
     private static final Integer CAPTCHA_WIDTH = 150;
     private static final Integer CAPTCHA_HEIGHT = 40;
     private static final Integer CAPTCHA_CHAR_ROTATE = 5;
@@ -46,7 +49,7 @@ public class ImageUtils {
         try {
             Thumbnails.of(inputStream)
                     .sourceRegion(left, top, width, height)
-                    .size(width, height)
+                    .size(AVATAR_WIDTH, AVATAR_HEIGHT)
                     .keepAspectRatio(false)
                     .toOutputStream(circularByteBuffer.getOutputStream());
         } catch (IOException e) {
