@@ -168,7 +168,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public void uploadAvatar(InputStream inputStream,
+    public String uploadAvatar(InputStream inputStream,
                              String name,
                              String contentType,
                              Integer left,
@@ -184,6 +184,7 @@ public class UserServiceImpl implements UserService {
         String fileId = gridFsManager.uploadAvatar(normalUserData.getAvatar(), avatarStream, name, contentType);
         normalUserData.setAvatar(fileId);
         userDataManager.updateNormalUserData(normalUserData);
+        return fileId;
     }
 
     @Override
@@ -196,7 +197,7 @@ public class UserServiceImpl implements UserService {
         if (!bCryptEncoder.match(updatePasswordRequest.getOldPassword(), user.getPassword())) {
             throw PortableException.of("A-01-002");
         }
-        userManager.updatePassword(user.getId(), updatePasswordRequest.getNewPassword());
+        userManager.updatePassword(user.getId(), bCryptEncoder.encoder(updatePasswordRequest.getNewPassword()));
     }
 
     private NormalUserData organizationCheck(Long target) throws PortableException {

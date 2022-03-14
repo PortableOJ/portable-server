@@ -91,9 +91,10 @@ public interface UserService {
      * @param top         上侧边距
      * @param width       宽度
      * @param height      长度
+     * @return 返回新的头像 id
      * @throws PortableException 类型不匹配则抛出
      */
-    void uploadAvatar(InputStream inputStream,
+    String uploadAvatar(InputStream inputStream,
                       String name,
                       String contentType,
                       Integer left,

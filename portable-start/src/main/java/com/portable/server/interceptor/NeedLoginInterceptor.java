@@ -29,6 +29,23 @@ public class NeedLoginInterceptor implements HandlerInterceptor {
             request.getRequestDispatcher(ExceptionConstant.NOT_FOUND).forward(request, response);
             return false;
         }
+        HttpSession httpSession = request.getSession();
+        Object idObject = httpSession.getAttribute(RequestSessionConstant.USER_ID);
+        Boolean isNormal = null;
+        if (idObject instanceof Long) {
+            // 已经有登录的 id 了，尝试还原数据
+            Long id = (Long) idObject;
+            if (!UserContext.restore(id)) {
+                throw PortableException.of("A-02-001");
+            }
+            isNormal = AccountType.NORMAL.equals(UserContext.ctx().getType());
+        }
+
+        // 已经登录且为标准用户
+        if (Boolean.TRUE.equals(isNormal)) {
+            return true;
+        }
+
         HandlerMethod handlerMethod = (HandlerMethod) handler;
         NeedLogin classRequirement = handlerMethod.getMethod().getDeclaringClass().getAnnotation(NeedLogin.class);
         NeedLogin methodRequirement = handlerMethod.getMethodAnnotation(NeedLogin.class);
@@ -38,23 +55,8 @@ public class NeedLoginInterceptor implements HandlerInterceptor {
             return true;
         }
 
-        HttpSession httpSession = request.getSession();
-        Object idObject = httpSession.getAttribute(RequestSessionConstant.USER_ID);
-        if (idObject instanceof Long) {
-            // 已经有登录的 id 了，尝试还原数据
-            Long id = (Long) idObject;
-            if (!UserContext.restore(id)) {
-                throw PortableException.of("A-02-001");
-            }
-        } else {
-            // 没有登录
-            throw PortableException.of("A-02-001");
-        }
-        // 校验是不是标准用户
+        // 不可能是标准用户时
         if (checkNormal(classRequirement) || checkNormal(methodRequirement)) {
-            if (AccountType.NORMAL.equals(UserContext.ctx().getType())) {
-                return true;
-            }
             throw PortableException.of("A-01-011");
         }
         return true;
