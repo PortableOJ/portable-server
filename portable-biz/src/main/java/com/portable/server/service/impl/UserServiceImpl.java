@@ -91,6 +91,7 @@ public class UserServiceImpl implements UserService {
                 }
                 UserContext.set(normalUserData);
                 return NormalUserInfoResponse.of(user, normalUserData);
+            case LOCKED_NORMAL:
             case TEMPORARY:
             default:
                 throw PortableException.of("S-02-002", user.getType());
