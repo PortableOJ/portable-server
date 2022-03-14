@@ -55,6 +55,10 @@ public class NeedLoginInterceptor implements HandlerInterceptor {
             return true;
         }
 
+        if (isNormal == null) {
+            throw PortableException.of("A-02-001");
+        }
+
         // 不可能是标准用户时
         if (checkNormal(classRequirement) || checkNormal(methodRequirement)) {
             throw PortableException.of("A-01-011");
