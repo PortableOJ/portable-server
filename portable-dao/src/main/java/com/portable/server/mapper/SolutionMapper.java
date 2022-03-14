@@ -51,6 +51,16 @@ public interface SolutionMapper {
                                         @Param("statusType") List<SolutionStatusType> statusType);
 
     /**
+     * 过滤不是此用户的提交
+     *
+     * @param num    数量
+     * @param userId 用户 ID，表示不是此用户的提交
+     * @return 提交列表
+     */
+    List<Solution> selectNotUserSolution(@Param("num") Integer num,
+                                         @Param("userId") Long userId);
+
+    /**
      * 根据提交的 id 获取提交信息
      *
      * @param id 提交 id

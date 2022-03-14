@@ -52,6 +52,11 @@ public class ImageUtils {
         } catch (IOException e) {
             throw PortableException.of("B-01-001");
         }
+        try {
+            circularByteBuffer.getOutputStream().close();
+        } catch (IOException e) {
+            throw PortableException.of("B-01-001");
+        }
 
         return circularByteBuffer.getInputStream();
     }

@@ -29,7 +29,6 @@
         <parameter property="memoryCost" javaType="java.lang.Integer" jdbcType="INTEGER"/>
     </parameterMap>
 
-
     <select id="countSolution" resultType="java.lang.Integer">
         SELECT count(*)
         FROM solution
@@ -76,10 +75,17 @@
                 </foreach>
             </if>
         </where>
-        ORDER BY id
-        DESC
+        ORDER BY id DESC
         LIMIT #{pageSize}
         OFFSET #{offset}
+    </select>
+
+    <select id="selectNotUserSolution" resultMap="Solution">
+        SELECT *
+        FROM solution
+        WHERE user_id != #{userId}
+        ORDER BY id DESC
+        LIMIT #{num}
     </select>
 
     <select id="selectSolutionById" resultMap="Solution">

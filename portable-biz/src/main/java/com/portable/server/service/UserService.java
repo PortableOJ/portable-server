@@ -3,6 +3,7 @@ package com.portable.server.service;
 import com.portable.server.exception.PortableException;
 import com.portable.server.model.request.user.LoginRequest;
 import com.portable.server.model.request.user.RegisterRequest;
+import com.portable.server.model.request.user.UpdatePasswordRequest;
 import com.portable.server.model.response.user.NormalUserInfoResponse;
 import com.portable.server.model.response.user.UserBasicInfoResponse;
 import com.portable.server.type.OrganizationType;
@@ -82,11 +83,30 @@ public interface UserService {
 
     /**
      * 上传头像
+     *
      * @param inputStream 头像文件流
-     * @param name 文件名
+     * @param name        文件名
      * @param contentType 文件类型
+     * @param left        左侧边距
+     * @param top         上侧边距
+     * @param width       宽度
+     * @param height      长度
+     * @return 返回新的头像 id
      * @throws PortableException 类型不匹配则抛出
      */
-    void uploadAvatar(InputStream inputStream, String name, String contentType) throws PortableException;
+    String uploadAvatar(InputStream inputStream,
+                      String name,
+                      String contentType,
+                      Integer left,
+                      Integer top,
+                      Integer width,
+                      Integer height) throws PortableException;
 
+    /**
+     * 更新用户的密码
+     *
+     * @param updatePasswordRequest 密码
+     * @throws PortableException 密码错误则抛出
+     */
+    void updatePassword(UpdatePasswordRequest updatePasswordRequest) throws PortableException;
 }

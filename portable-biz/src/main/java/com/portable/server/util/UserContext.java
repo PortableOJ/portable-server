@@ -92,7 +92,7 @@ public class UserContext implements AutoCloseable {
     /**
      * 用户信息一级缓存过期时间(s)
      */
-    private static final Integer USER_CONTEXT_EXPIRE_AFTER_ACCESS = 3600;
+    private static final Integer USER_CONTEXT_EXPIRE_AFTER_ACCESS = 600;
 
     /**
      * 用户信息二级缓存过期时间(m)

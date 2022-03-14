@@ -45,7 +45,6 @@ public class ContestController {
     @Resource
     private ContestService contestService;
 
-    @NeedLogin(false)
     @GetMapping("/getList")
     public Response<PageResponse<ContestListResponse, Void>> getContestList(Integer pageNum,
                                                                             Integer pageSize) {
@@ -69,7 +68,7 @@ public class ContestController {
         return Response.ofOk(contestService.getContestData(contestId));
     }
 
-    @NeedLogin
+    @NeedLogin(normal = true)
     @GetMapping("/getAdmin")
     public Response<ContestAdminDetailResponse> getContestAdminData(@NotNull(message = "A-08-002") @Min(value = 1, message = "A-08-002") Long contestId) throws PortableException {
         return Response.ofOk(contestService.getContestAdminData(contestId));
@@ -110,7 +109,7 @@ public class ContestController {
         return Response.ofOk(contestService.getContestSolution(solutionId));
     }
 
-    @NeedLogin
+    @NeedLogin(normal = true)
     @GetMapping("/testStatus")
     public Response<PageResponse<SolutionListResponse, Void>> getContestTestStatusList(@NotNull(message = "A-08-002") @Min(value = 1, message = "A-08-002") Long contestId,
                                                                                        Integer pageNum,
@@ -133,7 +132,7 @@ public class ContestController {
         return Response.ofOk(contestService.getContestTestStatusList(contestId, pageRequest));
     }
 
-    @NeedLogin
+    @NeedLogin(normal = true)
     @GetMapping("/testStatusDetail")
     public Response<SolutionDetailResponse> getContestTestSolution(@NotNull(message = "A-08-002") @Min(value = 1, message = "A-05-001") Long solutionId) throws PortableException {
         return Response.ofOk(contestService.getContestTestSolution(solutionId));
@@ -158,14 +157,14 @@ public class ContestController {
         return Response.ofOk(contestService.submit(submitSolutionRequest));
     }
 
-    @NeedLogin
+    @NeedLogin(normal = true)
     @PostMapping("/newContest")
     @PermissionRequirement(PermissionType.CREATE_AND_EDIT_CONTEST)
     public Response<Long> createContest(@Valid @NotNull(message = "A-00-001") @RequestBody ContestContentRequest contestContentRequest) throws PortableException {
         return Response.ofOk(contestService.createContest(contestContentRequest));
     }
 
-    @NeedLogin
+    @NeedLogin(normal = true)
     @PostMapping("/updateContest")
     @PermissionRequirement(PermissionType.CREATE_AND_EDIT_CONTEST)
     public Response<Void> updateContest(@Valid @NotNull(message = "A-00-001") @RequestBody ContestContentRequest contestContentRequest) throws PortableException {
@@ -174,7 +173,7 @@ public class ContestController {
 
     }
 
-    @NeedLogin
+    @NeedLogin(normal = true)
     @PostMapping("/addProblem")
     public Response<Void> addContestProblem(@Valid @NotNull(message = "A-00-001") @RequestBody ContestAddProblem contestAddProblem) throws PortableException {
         contestService.addContestProblem(contestAddProblem);

@@ -14,17 +14,6 @@ import java.io.InputStream;
 public interface GridFsManager {
 
     /**
-     * 上传头像
-     * @param lastId 上一次的头像 id
-     * @param inputStream 头像文件流
-     * @param name 文件名
-     * @param contentType 文件类型
-     * @return 头像的 id
-     * @throws PortableException 文件类型不匹配则抛出
-     */
-    String uploadAvatar(String lastId, InputStream inputStream, String name, String contentType) throws PortableException;
-
-    /**
      * 上传图片
      * @param inputStream 图片的文件流
      * @param name 文件名
@@ -33,6 +22,17 @@ public interface GridFsManager {
      * @throws PortableException 文件类型不匹配则抛出
      */
     String uploadImage(InputStream inputStream, String name, String contentType) throws PortableException;
+
+    /**
+     * 上传并移除图片
+     * @param removeId 上一次的头像 id
+     * @param inputStream 头像文件流
+     * @param name 文件名
+     * @param contentType 文件类型
+     * @return 头像的 id
+     * @throws PortableException 文件类型不匹配则抛出
+     */
+    String uploadAvatar(String removeId, InputStream inputStream, String name, String contentType) throws PortableException;
 
     /**
      * 获取文件

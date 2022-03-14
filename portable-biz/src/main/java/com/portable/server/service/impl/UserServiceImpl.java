@@ -7,6 +7,7 @@ import com.portable.server.manager.UserDataManager;
 import com.portable.server.manager.UserManager;
 import com.portable.server.model.request.user.LoginRequest;
 import com.portable.server.model.request.user.RegisterRequest;
+import com.portable.server.model.request.user.UpdatePasswordRequest;
 import com.portable.server.model.response.user.NormalUserInfoResponse;
 import com.portable.server.model.response.user.UserBasicInfoResponse;
 import com.portable.server.model.user.NormalUserData;
@@ -15,6 +16,7 @@ import com.portable.server.service.UserService;
 import com.portable.server.type.AccountType;
 import com.portable.server.type.OrganizationType;
 import com.portable.server.type.PermissionType;
+import com.portable.server.util.ImageUtils;
 import com.portable.server.util.UserContext;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -166,15 +168,36 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public void uploadAvatar(InputStream inputStream, String name, String contentType) throws PortableException {
+    public String uploadAvatar(InputStream inputStream,
+                             String name,
+                             String contentType,
+                             Integer left,
+                             Integer top,
+                             Integer width,
+                             Integer height) throws PortableException {
         UserContext userContext = UserContext.ctx();
         if (!AccountType.NORMAL.equals(userContext.getType())) {
             throw PortableException.of("A-02-008", UserContext.ctx().getType());
         }
         NormalUserData normalUserData = userDataManager.getNormalUserDataById(userContext.getDataId());
-        String fileId = gridFsManager.uploadAvatar(normalUserData.getAvatar(), inputStream, name, contentType);
+        InputStream avatarStream = ImageUtils.cut(inputStream, left, top, width, height);
+        String fileId = gridFsManager.uploadAvatar(normalUserData.getAvatar(), avatarStream, name, contentType);
         normalUserData.setAvatar(fileId);
         userDataManager.updateNormalUserData(normalUserData);
+        return fileId;
+    }
+
+    @Override
+    public void updatePassword(UpdatePasswordRequest updatePasswordRequest) throws PortableException {
+        UserContext userContext = UserContext.ctx();
+        User user = userManager.getAccountById(userContext.getId());
+        if (!AccountType.NORMAL.equals(user.getType())) {
+            throw PortableException.of("A-01-011");
+        }
+        if (!bCryptEncoder.match(updatePasswordRequest.getOldPassword(), user.getPassword())) {
+            throw PortableException.of("A-01-002");
+        }
+        userManager.updatePassword(user.getId(), bCryptEncoder.encoder(updatePasswordRequest.getNewPassword()));
     }
 
     private NormalUserData organizationCheck(Long target) throws PortableException {

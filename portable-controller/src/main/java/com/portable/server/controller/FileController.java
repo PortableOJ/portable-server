@@ -29,7 +29,7 @@ public class FileController {
 
     private static final Long IMAGE_FILE_MAX_SIZE = 1024 * 1024 * 20L;
 
-    @NeedLogin
+    @NeedLogin(normal = true)
     @PostMapping("/image")
     public Response<String> uploadImage(MultipartFile fileData) throws PortableException {
         if (IMAGE_FILE_MAX_SIZE.compareTo(fileData.getSize()) < 0) {

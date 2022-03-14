@@ -13,5 +13,13 @@ import java.lang.annotation.Target;
 @Target({ElementType.METHOD, ElementType.TYPE})
 public @interface NeedLogin {
 
+    /**
+     * 是否是必须登录
+     */
     boolean value() default true;
+
+    /**
+     * 强制要求标准用户
+     */
+    boolean normal() default false;
 }
