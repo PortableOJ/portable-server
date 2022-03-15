@@ -1,5 +1,6 @@
 package com.portable.server.util;
 
+import com.portable.server.constant.Constant;
 import com.portable.server.exception.PortableException;
 
 import java.io.ByteArrayOutputStream;

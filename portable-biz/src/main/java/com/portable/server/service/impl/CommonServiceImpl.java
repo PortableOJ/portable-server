@@ -4,7 +4,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.portable.server.exception.PortableException;
 import com.portable.server.service.CommonService;
 import com.portable.server.support.CaptchaSupport;
-import com.portable.server.util.DateTime;
+import com.portable.server.util.DateTimeUtils;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
@@ -41,7 +41,7 @@ public class CommonServiceImpl implements CommonService {
     @PostConstruct
     public void init() {
         byte[] timeByte = new byte[LONG_BYTE_SIZE];
-        long time = DateTime.formatLong(new Date());
+        long time = DateTimeUtils.formatLong(new Date());
         for (int i = 0; i < LONG_BYTE_SIZE; i++) {
             timeByte[i] = (byte) (time & 0xff);
         }

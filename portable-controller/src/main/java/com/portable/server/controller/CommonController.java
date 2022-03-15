@@ -1,10 +1,10 @@
 package com.portable.server.controller;
 
 import com.alibaba.fastjson.JSONObject;
+import com.portable.server.constant.Constant;
 import com.portable.server.exception.PortableException;
 import com.portable.server.model.response.Response;
 import com.portable.server.service.CommonService;
-import com.portable.server.util.Constant;
 import com.portable.server.util.RequestSessionConstant;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
