@@ -170,12 +170,12 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public String uploadAvatar(InputStream inputStream,
-                             String name,
-                             String contentType,
-                             Integer left,
-                             Integer top,
-                             Integer width,
-                             Integer height) throws PortableException {
+                               String name,
+                               String contentType,
+                               Integer left,
+                               Integer top,
+                               Integer width,
+                               Integer height) throws PortableException {
         UserContext userContext = UserContext.ctx();
         if (!AccountType.NORMAL.equals(userContext.getType())) {
             throw PortableException.of("A-02-008", UserContext.ctx().getType());
