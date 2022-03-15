@@ -2,7 +2,7 @@ package com.portable.server.manager.impl;
 
 import com.portable.server.manager.UserDataManager;
 import com.portable.server.model.user.NormalUserData;
-import com.portable.server.repo.NormalUserDataRepo;
+import com.portable.server.repo.UserDataRepo;
 import com.portable.server.type.OrganizationType;
 import com.portable.server.type.PermissionType;
 import org.springframework.stereotype.Component;
@@ -16,7 +16,7 @@ import javax.annotation.Resource;
 public class UserDataManagerImpl implements UserDataManager {
 
     @Resource
-    private NormalUserDataRepo normalUserDataRepo;
+    private UserDataRepo userDataRepo;
 
     @Override
     public NormalUserData newNormalUserData() {
@@ -33,16 +33,16 @@ public class UserDataManagerImpl implements UserDataManager {
 
     @Override
     public NormalUserData getNormalUserDataById(String dataId) {
-        return normalUserDataRepo.getUserDataById(dataId);
+        return userDataRepo.getNormalUserDataById(dataId);
     }
 
     @Override
     public void insertNormalUserData(NormalUserData normalUserData) {
-        normalUserDataRepo.insertUserData(normalUserData);
+        userDataRepo.insertUserData(normalUserData);
     }
 
     @Override
     public void updateNormalUserData(NormalUserData normalUserData) {
-        normalUserDataRepo.saveUserData(normalUserData);
+        userDataRepo.saveUserData(normalUserData);
     }
 }

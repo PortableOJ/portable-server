@@ -8,9 +8,6 @@ import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
 import java.util.Collection;
-import java.util.List;
-import java.util.Set;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 /**
@@ -30,6 +27,17 @@ public class UserManagerImpl implements UserManager {
                 .handle(null)
                 .password(null)
                 .type(AccountType.NORMAL)
+                .build();
+    }
+
+    @Override
+    public User newBatchAccount() {
+        return User.builder()
+                .id(null)
+                .dataId(null)
+                .handle(null)
+                .password(null)
+                .type(AccountType.BATCH)
                 .build();
     }
 
