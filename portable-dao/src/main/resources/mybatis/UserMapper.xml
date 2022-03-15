@@ -46,4 +46,10 @@
         WHERE id = #{id}
     </update>
 
+    <update id="updateUserType">
+        UPDATE user
+        SET type = #{newStatus}
+        WHERE id = #{id}
+    </update>
+
 </mapper>

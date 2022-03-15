@@ -8,9 +8,6 @@ import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
 import java.util.Collection;
-import java.util.List;
-import java.util.Set;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 /**
@@ -65,5 +62,10 @@ public class UserManagerImpl implements UserManager {
     @Override
     public void updatePassword(Long id, String password) {
         userMapper.updatePassword(id, password);
+    }
+
+    @Override
+    public void updateUserType(Long id, AccountType accountType) {
+        userMapper.updateUserType(id, accountType);
     }
 }

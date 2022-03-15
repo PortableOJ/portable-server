@@ -1,6 +1,8 @@
 package com.portable.server.manager;
 
 import com.portable.server.model.user.User;
+import com.portable.server.type.AccountType;
+import org.apache.ibatis.annotations.Param;
 
 import java.util.Collection;
 import java.util.stream.Stream;
@@ -56,4 +58,12 @@ public interface UserManager {
      * @param password 用户的密码
      */
     void updatePassword(Long id, String password);
+
+    /**
+     * 更新用户类型
+     *
+     * @param id          用户的 ID
+     * @param accountType 账号类型
+     */
+    void updateUserType(@Param("id") Long id, @Param("newStatus") AccountType accountType);
 }
