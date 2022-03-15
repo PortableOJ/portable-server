@@ -7,22 +7,21 @@ import lombok.Getter;
  * @author shiroha
  */
 @Getter
-public enum AccountType implements ExceptionTextType {
+public enum BatchStatusType implements ExceptionTextType {
 
     /**
-     * 标准的账号类型
+     * 正常状态，可以登录
      */
-    NORMAL("标准账号"),
+    NORMAL("正常"),
 
     /**
-     * 批量账号类型
+     * 禁止登录状态，不再可以登录此账号
      */
-    BATCH("批量账号"),
-    ;
+    DISABLE("禁止登录");
 
     private final String text;
 
-    AccountType(String text) {
+    BatchStatusType(String text) {
         this.text = text;
     }
 }
