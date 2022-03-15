@@ -16,11 +16,11 @@ public class BCryptEncoder {
         B_CRYPT_PASSWORD_ENCODER = new BCryptPasswordEncoder();
     }
 
-    public String encoder(String password) {
+    public static String encoder(String password) {
         return B_CRYPT_PASSWORD_ENCODER.encode(password);
     }
 
-    public Boolean match(String inputPassword, String password) {
+    public static Boolean match(String inputPassword, String password) {
         return B_CRYPT_PASSWORD_ENCODER.matches(inputPassword, password);
     }
 }

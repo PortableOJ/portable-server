@@ -40,9 +40,6 @@ public class UserServiceImpl implements UserService {
     private UserDataManager userDataManager;
 
     @Resource
-    private BCryptEncoder bCryptEncoder;
-
-    @Resource
     private GridFsManager gridFsManager;
 
     @Value("${ROOT_NAME}")
@@ -63,7 +60,7 @@ public class UserServiceImpl implements UserService {
 
             rootUser = userManager.newNormalAccount();
             rootUser.setHandle(rootName);
-            rootUser.setPassword(bCryptEncoder.encoder(rootPassword));
+            rootUser.setPassword(BCryptEncoder.encoder(rootPassword));
             rootUser.setDataId(normalUserData.get_id());
             userManager.insertAccount(rootUser);
         } else {
@@ -79,7 +76,7 @@ public class UserServiceImpl implements UserService {
         if (user == null) {
             throw PortableException.of("A-01-001");
         }
-        if (!bCryptEncoder.match(loginRequest.getPassword(), user.getPassword())) {
+        if (!BCryptEncoder.match(loginRequest.getPassword(), user.getPassword())) {
             throw PortableException.of("A-01-002");
         }
         UserContext.set(user);
@@ -91,7 +88,7 @@ public class UserServiceImpl implements UserService {
                 }
                 UserContext.set(normalUserData);
                 return NormalUserInfoResponse.of(user, normalUserData);
-            case TEMPORARY:
+            case BATCH:
             default:
                 throw PortableException.of("S-02-002", user.getType());
         }
@@ -109,7 +106,7 @@ public class UserServiceImpl implements UserService {
 
         user = userManager.newNormalAccount();
         user.setHandle(registerRequest.getHandle());
-        user.setPassword(bCryptEncoder.encoder(registerRequest.getPassword()));
+        user.setPassword(BCryptEncoder.encoder(registerRequest.getPassword()));
         user.setDataId(normalUserData.get_id());
         userManager.insertAccount(user);
 
@@ -194,10 +191,10 @@ public class UserServiceImpl implements UserService {
         if (!AccountType.NORMAL.equals(user.getType())) {
             throw PortableException.of("A-01-011");
         }
-        if (!bCryptEncoder.match(updatePasswordRequest.getOldPassword(), user.getPassword())) {
+        if (!BCryptEncoder.match(updatePasswordRequest.getOldPassword(), user.getPassword())) {
             throw PortableException.of("A-01-002");
         }
-        userManager.updatePassword(user.getId(), bCryptEncoder.encoder(updatePasswordRequest.getNewPassword()));
+        userManager.updatePassword(user.getId(), BCryptEncoder.encoder(updatePasswordRequest.getNewPassword()));
     }
 
     private NormalUserData organizationCheck(Long target) throws PortableException {
@@ -228,7 +225,7 @@ public class UserServiceImpl implements UserService {
                     throw PortableException.of("S-02-001");
                 }
                 return NormalUserInfoResponse.of(user, normalUserData);
-            case TEMPORARY:
+            case BATCH:
             default:
                 throw PortableException.of("S-02-002", user.getType());
         }
