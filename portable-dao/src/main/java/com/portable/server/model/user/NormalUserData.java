@@ -2,9 +2,10 @@ package com.portable.server.model.user;
 
 import com.portable.server.type.OrganizationType;
 import com.portable.server.type.PermissionType;
-import lombok.Builder;
 import lombok.Data;
-import org.springframework.data.annotation.Id;
+import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
+import lombok.experimental.SuperBuilder;
 
 import java.util.Set;
 
@@ -12,15 +13,10 @@ import java.util.Set;
  * @author shiroha
  */
 @Data
-@Builder
-public class NormalUserData {
-
-    /**
-     * 数据库主键
-     */
-    @Id
-    @SuppressWarnings("AlibabaAvoidStartWithDollarAndUnderLineNaming")
-    private String _id;
+@SuperBuilder
+@NoArgsConstructor
+@EqualsAndHashCode(callSuper = true)
+public class NormalUserData extends BaseUserData {
 
     /**
      * 头像
