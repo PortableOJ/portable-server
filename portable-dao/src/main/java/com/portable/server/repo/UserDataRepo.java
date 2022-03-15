@@ -14,7 +14,7 @@ import javax.annotation.Resource;
 @Component
 public class NormalUserDataRepo {
 
-    private static final String COLLECTION_NAME = "normalUser";
+    private static final String COLLECTION_NAME = "userData";
 
     @Resource
     private MongoTemplate mongoTemplate;
