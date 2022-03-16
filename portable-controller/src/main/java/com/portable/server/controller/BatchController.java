@@ -47,14 +47,14 @@ public class BatchController {
     @NeedLogin
     @PostMapping("/new")
     @PermissionRequirement(PermissionType.CREATE_AND_EDIT_BATCH)
-    public Response<CreateBatchResponse> create(@RequestBody BatchRequest batchRequest) throws PortableException {
+    public Response<CreateBatchResponse> create(@Validated @RequestBody BatchRequest batchRequest) throws PortableException {
         return Response.ofOk(batchService.create(batchRequest));
     }
 
     @NeedLogin
     @PostMapping("/updateStatus")
     @PermissionRequirement(PermissionType.CREATE_AND_EDIT_BATCH)
-    public Response<Void> updateStatus(@RequestBody BatchStatusUpdateRequest request) throws PortableException {
+    public Response<Void> updateStatus(@Validated @RequestBody BatchStatusUpdateRequest request) throws PortableException {
         batchService.changeStatus(request.getId(), request.getNewStatus());
         return Response.ofOk();
     }

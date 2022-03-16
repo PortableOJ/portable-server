@@ -66,7 +66,7 @@ public class JudgeController {
     @NeedLogin(normal = true)
     @PostMapping("/updateJudge")
     @PermissionRequirement(PermissionType.MANAGER_JUDGE)
-    public Response<Void> updateJudgeContainer(@RequestBody UpdateJudgeContainer updateJudgeContainer) throws PortableException {
+    public Response<Void> updateJudgeContainer(@Validated @RequestBody UpdateJudgeContainer updateJudgeContainer) throws PortableException {
         judgeService.updateJudgeContainer(updateJudgeContainer);
         return Response.ofOk();
     }
@@ -74,7 +74,7 @@ public class JudgeController {
     @NeedLogin(normal = true)
     @PostMapping("/killJudge")
     @PermissionRequirement(PermissionType.MANAGER_JUDGE)
-    public Response<Void> killJudge(@RequestBody IdRequest idRequest) {
+    public Response<Void> killJudge(@Validated @RequestBody IdRequest idRequest) {
         judgeService.killJudge(idRequest.getId());
         return Response.ofOk();
     }
@@ -82,7 +82,7 @@ public class JudgeController {
     @NeedLogin(normal = true)
     @PostMapping("/killTest")
     @PermissionRequirement(PermissionType.MANAGER_JUDGE)
-    public Response<Void> killTest(@RequestBody IdRequest idRequest) {
+    public Response<Void> killTest(@Validated @RequestBody IdRequest idRequest) {
         judgeService.killTest(idRequest.getId());
         return Response.ofOk();
     }

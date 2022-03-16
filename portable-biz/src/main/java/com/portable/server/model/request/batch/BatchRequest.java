@@ -17,7 +17,7 @@ public class BatchRequest {
      * 批量用户的前缀词
      */
     @NotNull(message = "A-10-003")
-    @Pattern(message = "A-01-004", regexp = "^[a-zA-Z0-9_\\-]{3,10}$")
+    @Pattern(message = "A-10-003", regexp = "^[a-zA-Z0-9_\\-]{3,10}$")
     private String prefix;
 
     /**
