@@ -23,11 +23,11 @@ public class BatchManagerImpl implements BatchManager {
         return Batch.builder()
                 .id(null)
                 .owner(null)
-                .contest(null)
+                .contestId(null)
                 .prefix("")
                 .count(0)
                 .ipLock(false)
-                .type(BatchStatusType.DISABLE)
+                .status(BatchStatusType.DISABLE)
                 .build();
     }
 
@@ -39,6 +39,11 @@ public class BatchManagerImpl implements BatchManager {
     @Override
     public List<Batch> selectBatchByPage(Long ownerId, Integer pageSize, Integer offset) {
         return batchMapper.selectBatchByPage(ownerId, pageSize, offset);
+    }
+
+    @Override
+    public Batch selectBatchById(Long id) {
+        return batchMapper.selectBatchById(id);
     }
 
     @Override

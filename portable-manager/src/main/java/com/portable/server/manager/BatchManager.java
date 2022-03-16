@@ -38,6 +38,14 @@ public interface BatchManager {
                                   Integer offset);
 
     /**
+     * 基于批量用户 id 查找批量用户
+     *
+     * @param id 批量用户 ID
+     * @return 批量用户
+     */
+    Batch selectBatchById(Long id);
+
+    /**
      * 基于公共前缀查找批量用户
      *
      * @param prefix 前缀

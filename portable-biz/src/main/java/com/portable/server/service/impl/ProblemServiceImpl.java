@@ -520,7 +520,7 @@ public class ProblemServiceImpl implements ProblemService {
         problemManager.updateProblemCount(submitSolutionRequest.getProblemId(), 1, 0);
         NormalUserData normalUserData = userDataManager.getNormalUserDataById(userContext.getDataId());
         normalUserData.setSubmission(normalUserData.getSubmission() + 1);
-        userDataManager.updateNormalUserData(normalUserData);
+        userDataManager.updateUserData(normalUserData);
 
         // 创建提交信息
         SolutionData solutionData = solutionDataManager.newSolutionData(problemPackage.getProblemData());

@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.portable.server.mapper.BatchMapper">
+    <resultMap id="Batch" type="com.portable.server.model.batch.Batch">
+        <id column="id" jdbcType="BIGINT" property="id"/>
+        <result column="owner" jdbcType="BIGINT" property="owner"/>
+        <result column="contest_id" jdbcType="BIGINT" property="contestId"/>
+        <result column="prefix" jdbcType="VARCHAR" property="prefix"/>
+        <result column="count" jdbcType="INTEGER" property="count"/>
+        <result column="ip_lock" jdbcType="BOOLEAN" property="ipLock"/>
+        <result column="status" jdbcType="VARCHAR" property="status"/>
+    </resultMap>
+
+    <parameterMap id="Batch" type="com.portable.server.model.batch.Batch">
+        <parameter property="id" javaType="java.lang.Long" jdbcType="BIGINT"/>
+        <parameter property="owner" javaType="java.lang.Long" jdbcType="BIGINT"/>
+        <parameter property="contestId" javaType="java.lang.Long" jdbcType="BIGINT"/>
+        <parameter property="prefix" javaType="java.lang.String" jdbcType="VARCHAR"/>
+        <parameter property="count" javaType="java.lang.Integer" jdbcType="INTEGER"/>
+        <parameter property="ipLock" javaType="java.lang.Boolean" jdbcType="BOOLEAN"/>
+        <parameter property="status" javaType="java.lang.Enum" jdbcType="VARCHAR"/>
+    </parameterMap>
+
+    <select id="countBatchListByOwnerId" resultType="java.lang.Integer">
+        SELECT count(*)
+        FROM batch
+        WHERE owner = #{ownerId}
+    </select>
+
+    <select id="selectBatchByPage" resultMap="Batch">
+        SELECT *
+        FROM batch
+        WHERE owner = #{ownerId}
+        ORDER BY id
+        LIMIT #{pageSize} OFFSET #{offset}
+    </select>
+
+    <select id="selectBatchById" resultMap="Batch">
+        SELECT *
+        FROM batch
+        WHERE id = #{id}
+    </select>
+
+    <select id="selectBatchByPrefix" resultMap="Batch">
+        SELECT *
+        FROM batch
+        WHERE prefix = #{prefix}
+    </select>
+
+    <insert id="insertBatch" useGeneratedKeys="true" keyProperty="id" parameterMap="Batch">
+        INSERT INTO batch (owner, contest_id, prefix, count, ip_lock, status)
+        VALUES (#{owner}, #{contestId}, #{prefix}, #{count}, #{ipLock}, #{status})
+    </insert>
+
+    <update id="updateBatchStatus">
+        UPDATE batch
+        SET status = #{newStatus}
+        WHERE id = #{id}
+    </update>
+
+</mapper>

@@ -68,6 +68,11 @@ public enum PermissionType implements ExceptionTextType {
     EDIT_NOT_OWNER_CONTEST("管理其他人拥有的比赛内容"),
 
     /**
+     * 创建和管理批量用户的权利
+     */
+    CREATE_AND_EDIT_BATCH("创建和管理批量用户"),
+
+    /**
      * 管理 Judge 系统的权利
      */
     MANAGER_JUDGE("管理 Judge 系统的权利"),
