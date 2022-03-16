@@ -6,8 +6,10 @@ import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * @author shiroha
@@ -23,6 +25,11 @@ public class BatchUserData extends BaseUserData {
      */
     private List<IpRecord> ipList;
 
+    /**
+     * 批量用户组的 ID
+     */
+    private Long batchId;
+
     @Data
     @Builder
     public static class IpRecord {
@@ -36,5 +43,19 @@ public class BatchUserData extends BaseUserData {
          * 时间
          */
         Date date;
+    }
+
+    public Boolean addIpRecord(String ip) {
+        if (this.ipList == null) {
+            this.ipList = new ArrayList<>();
+        }
+        if (!this.ipList.isEmpty() && Objects.equals(this.ipList.get(this.ipList.size() - 1).ip, ip)) {
+            return false;
+        }
+        this.ipList.add(IpRecord.builder()
+                .ip(ip)
+                .date(new Date())
+                .build());
+        return true;
     }
 }

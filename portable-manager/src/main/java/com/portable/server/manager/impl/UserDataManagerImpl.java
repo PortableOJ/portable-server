@@ -1,6 +1,8 @@
 package com.portable.server.manager.impl;
 
 import com.portable.server.manager.UserDataManager;
+import com.portable.server.model.user.BaseUserData;
+import com.portable.server.model.user.BatchUserData;
 import com.portable.server.model.user.NormalUserData;
 import com.portable.server.repo.UserDataRepo;
 import com.portable.server.type.OrganizationType;
@@ -8,6 +10,7 @@ import com.portable.server.type.PermissionType;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
+import java.util.ArrayList;
 
 /**
  * @author shiroha
@@ -32,17 +35,30 @@ public class UserDataManagerImpl implements UserDataManager {
     }
 
     @Override
+    public BatchUserData newBatchUserData() {
+        return BatchUserData.builder()
+                ._id(null)
+                .ipList(new ArrayList<>())
+                .build();
+    }
+
+    @Override
     public NormalUserData getNormalUserDataById(String dataId) {
         return userDataRepo.getNormalUserDataById(dataId);
     }
 
     @Override
-    public void insertNormalUserData(NormalUserData normalUserData) {
-        userDataRepo.insertUserData(normalUserData);
+    public BatchUserData getBatchUserDataById(String dataId) {
+        return userDataRepo.getBatchUserDataById(dataId);
     }
 
     @Override
-    public void updateNormalUserData(NormalUserData normalUserData) {
-        userDataRepo.saveUserData(normalUserData);
+    public void insertUserData(BaseUserData baseUserData) {
+        userDataRepo.insertUserData(baseUserData);
+    }
+
+    @Override
+    public void updateUserData(BaseUserData baseUserData) {
+        userDataRepo.saveUserData(baseUserData);
     }
 }

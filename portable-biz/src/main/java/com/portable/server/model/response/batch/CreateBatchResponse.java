@@ -10,7 +10,7 @@ import java.util.List;
  * @author shiroha
  */
 @Data
-public class BatchResponse {
+public class CreateBatchResponse {
 
     /**
      * 批量用户 ID
@@ -45,7 +45,7 @@ public class BatchResponse {
         }
     }
 
-    BatchResponse(Long id) {
+    CreateBatchResponse(Long id) {
         this.id = id;
         this.batchUserList = new ArrayList<>();
     }
@@ -54,7 +54,7 @@ public class BatchResponse {
         this.batchUserList.add(BatchUser.of(user));
     }
 
-    public static BatchResponse of(Long id) {
-        return new BatchResponse(id);
+    public static CreateBatchResponse of(Long id) {
+        return new CreateBatchResponse(id);
     }
 }

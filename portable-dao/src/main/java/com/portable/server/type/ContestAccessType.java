@@ -23,6 +23,11 @@ public enum ContestAccessType implements ExceptionTextType {
      * 邀请制的
      */
     PRIVATE("邀请制的"),
+
+    /**
+     * 提供账号的
+     */
+    BATCH("提供账号的")
     ;
 
     private final String text;

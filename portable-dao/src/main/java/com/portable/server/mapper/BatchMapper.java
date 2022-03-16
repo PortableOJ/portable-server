@@ -34,6 +34,13 @@ public interface BatchMapper {
                                   @Param("offset") Integer offset);
 
     /**
+     * 基于批量用户 id 查找批量用户
+     * @param id 批量用户 ID
+     * @return 批量用户
+     */
+    Batch selectBatchById(@Param("id") Long id);
+
+    /**
      * 基于公共前缀查找批量用户
      *
      * @param prefix 前缀
@@ -55,4 +62,13 @@ public interface BatchMapper {
      * @param newStatus 新状态
      */
     void updateBatchStatus(@Param("id") Long id, @Param("newStatus") BatchStatusType newStatus);
+
+    /**
+     * 更新批量用户绑定至的比赛
+     *
+     * @param id        用户 ID
+     * @param newContest 新比赛
+     */
+    void updateBatchContest(@Param("id") Long id, @Param("newContest") Long newContest);
+
 }

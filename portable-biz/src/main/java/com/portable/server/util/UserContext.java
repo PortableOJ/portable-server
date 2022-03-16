@@ -5,6 +5,7 @@ import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
 import com.portable.server.exception.PortableException;
 import com.portable.server.kit.RedisValueKit;
+import com.portable.server.model.batch.Batch;
 import com.portable.server.model.user.NormalUserData;
 import com.portable.server.model.user.User;
 import com.portable.server.type.AccountType;
@@ -63,6 +64,11 @@ public class UserContext implements AutoCloseable {
      * 当前用户的权限集合
      */
     private Set<PermissionType> permissionTypeSet;
+
+    /**
+     * 批量用户绑定至的比赛 ID
+     */
+    private Long contestId;
 
     /**
      * 用户验证过的比赛情况
@@ -169,6 +175,15 @@ public class UserContext implements AutoCloseable {
         set(userContext);
     }
 
+    public static void set(Batch batch) throws PortableException {
+        if (batch == null) {
+            throw PortableException.of("A-02-001");
+        }
+
+        UserContext userContext = ctx();
+        userContext.setContestId(batch.getContestId());
+        set(userContext);
+    }
     public static void addCurUserContestVisit(Long contestId, ContestVisitPermission contestVisitPermission) {
         UserContext userContext = ctx();
         userContext.addContestVisit(contestId, contestVisitPermission);
@@ -186,6 +201,7 @@ public class UserContext implements AutoCloseable {
         userContext.setOrganization(null);
         userContext.setPermissionTypeSet(new HashSet<>());
         userContext.setContestVisitPermissionMap(new HashMap<>(0));
+        userContext.setContestId(null);
         return userContext;
     }
 

@@ -8,6 +8,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.MessageSource;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.core.annotation.Order;
+import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -82,6 +83,14 @@ public class ExceptionAdvice {
         Response<Void> response = Response.ofFail(violation.getMessage(), getMessage(violation.getMessage(), violation.getInvalidValue()));
         logInfo(response.getMsg(), httpServletRequest);
         return response;
+    }
+
+    @Order(2)
+    @ResponseBody
+    @ExceptionHandler(value = HttpMessageNotReadableException.class)
+    public Response<Void> exceptionHttpMessageNotReadableHandler(HttpServletRequest httpServletRequest, HttpMessageNotReadableException e) {
+        logInfo(e.getClass().getName(), httpServletRequest);
+        return getResponse(PortableException.userInputNullException());
     }
 
     @Order(3)

@@ -2,6 +2,7 @@ package com.portable.server.model.request.contest;
 
 import com.portable.server.exception.PortableException;
 import com.portable.server.model.contest.BaseContestData;
+import com.portable.server.model.contest.BatchContestData;
 import com.portable.server.model.contest.Contest;
 import com.portable.server.model.contest.PasswordContestData;
 import com.portable.server.model.contest.PrivateContestData;
@@ -67,6 +68,11 @@ public class ContestContentRequest {
      * 访问权限的配置邀请用户
      */
     private Set<String> inviteUserSet;
+
+    /**
+     * 访问权限的配置批量用户组
+     */
+    private Long batchId;
 
     /**
      * 题目列表
@@ -140,6 +146,10 @@ public class ContestContentRequest {
                 }
                 PrivateContestData privateContestData = (PrivateContestData) contestData;
                 privateContestData.setInviteUserSet(inviteUserIdSet);
+                break;
+            case BATCH:
+                BatchContestData batchContestData = (BatchContestData) contestData;
+                batchContestData.setBatchId(this.batchId);
                 break;
             default:
                 throw PortableException.of("A-08-001", this.accessType);

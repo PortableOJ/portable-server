@@ -1,11 +1,11 @@
 package com.portable.server.service;
 
 import com.portable.server.exception.PortableException;
-import com.portable.server.model.batch.Batch;
 import com.portable.server.model.request.PageRequest;
 import com.portable.server.model.request.batch.BatchRequest;
 import com.portable.server.model.response.PageResponse;
-import com.portable.server.model.response.batch.BatchResponse;
+import com.portable.server.model.response.batch.BatchListResponse;
+import com.portable.server.model.response.batch.CreateBatchResponse;
 import com.portable.server.type.BatchStatusType;
 
 /**
@@ -19,7 +19,7 @@ public interface BatchService {
      * @param pageRequest 分页配置
      * @return 批量用户列表
      */
-    PageResponse<Batch, Void> getList(PageRequest<Void> pageRequest);
+    PageResponse<BatchListResponse, Void> getList(PageRequest<Void> pageRequest);
 
     /**
      * 创建批量用户
@@ -28,7 +28,7 @@ public interface BatchService {
      * @return 创建的用户信息
      * @throws PortableException 已经存在则抛出错误
      */
-    BatchResponse create(BatchRequest request) throws PortableException;
+    CreateBatchResponse create(BatchRequest request) throws PortableException;
 
     /**
      * 更新批量用户的状态
@@ -38,4 +38,12 @@ public interface BatchService {
      * @throws PortableException 无权限则抛出
      */
     void changeStatus(Long id, BatchStatusType statusType) throws PortableException;
+
+    /**
+     * 查找自己拥有的批量用户组
+     * @param id 用户组 ID
+     * @return 用户组信息
+     * @throws PortableException 无权限则抛出
+     */
+    BatchListResponse getBatch(Long id) throws PortableException;
 }

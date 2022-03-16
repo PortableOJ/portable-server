@@ -3,6 +3,7 @@ package com.portable.server.manager.impl;
 import com.portable.server.exception.PortableException;
 import com.portable.server.manager.ContestDataManager;
 import com.portable.server.model.contest.BaseContestData;
+import com.portable.server.model.contest.BatchContestData;
 import com.portable.server.model.contest.PasswordContestData;
 import com.portable.server.model.contest.PrivateContestData;
 import com.portable.server.model.contest.PublicContestData;
@@ -52,6 +53,15 @@ public class ContestDataManagerImpl implements ContestDataManager {
                         .penaltyTime(0)
                         .inviteUserSet(new HashSet<>())
                         .build();
+            case BATCH:
+                return BatchContestData.builder()
+                        .problemList(new ArrayList<>())
+                        .coAuthor(new HashSet<>())
+                        .freezeTime(0)
+                        .announcement("")
+                        .penaltyTime(0)
+                        .batchId(null)
+                        .build();
             default:
                 throw PortableException.of("A-08-001", accessType);
         }
@@ -66,6 +76,8 @@ public class ContestDataManagerImpl implements ContestDataManager {
                 return getPasswordContestDataById(datId);
             case PRIVATE:
                 return getPrivateContestDataById(datId);
+            case BATCH:
+                return getBatchContestDataById(datId);
             default:
                 throw PortableException.of("A-08-001", accessType);
         }
@@ -84,6 +96,11 @@ public class ContestDataManagerImpl implements ContestDataManager {
     @Override
     public PrivateContestData getPrivateContestDataById(String datId) {
         return contestDataRepo.getPrivateContestDataById(datId);
+    }
+
+    @Override
+    public BatchContestData getBatchContestDataById(String datId) {
+        return contestDataRepo.getBatchContestDataById(datId);
     }
 
     @Override

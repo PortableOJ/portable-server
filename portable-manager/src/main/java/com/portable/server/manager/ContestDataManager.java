@@ -2,6 +2,7 @@ package com.portable.server.manager;
 
 import com.portable.server.exception.PortableException;
 import com.portable.server.model.contest.BaseContestData;
+import com.portable.server.model.contest.BatchContestData;
 import com.portable.server.model.contest.PasswordContestData;
 import com.portable.server.model.contest.PrivateContestData;
 import com.portable.server.model.contest.PublicContestData;
@@ -49,6 +50,13 @@ public interface ContestDataManager {
      * @return 比赛信息
      */
     PrivateContestData getPrivateContestDataById(String datId);
+
+    /**
+     * 获取提供账号邀请制的比赛信息
+     * @param datId 比赛的 id
+     * @return 比赛信息
+     */
+    BatchContestData getBatchContestDataById(String datId);
 
     /**
      * 新建比赛

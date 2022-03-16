@@ -30,7 +30,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
-import javax.validation.Valid;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 
@@ -58,7 +57,7 @@ public class ContestController {
 
     @NeedLogin
     @PostMapping("/auth")
-    public Response<ContestVisitPermission> authorizeContest(@Valid @NotNull(message = "A-00-001") @RequestBody ContestAuth contestAuth) throws PortableException {
+    public Response<ContestVisitPermission> authorizeContest(@Validated @RequestBody ContestAuth contestAuth) throws PortableException {
         return Response.ofOk(contestService.authorizeContest(contestAuth));
     }
 
@@ -153,21 +152,21 @@ public class ContestController {
 
     @NeedLogin
     @PostMapping("/submit")
-    public Response<Long> submit(@Valid @NotNull(message = "A-00-001") @RequestBody SubmitSolutionRequest submitSolutionRequest) throws PortableException {
+    public Response<Long> submit(@Validated @RequestBody SubmitSolutionRequest submitSolutionRequest) throws PortableException {
         return Response.ofOk(contestService.submit(submitSolutionRequest));
     }
 
     @NeedLogin(normal = true)
     @PostMapping("/newContest")
     @PermissionRequirement(PermissionType.CREATE_AND_EDIT_CONTEST)
-    public Response<Long> createContest(@Valid @NotNull(message = "A-00-001") @RequestBody ContestContentRequest contestContentRequest) throws PortableException {
+    public Response<Long> createContest(@Validated @RequestBody ContestContentRequest contestContentRequest) throws PortableException {
         return Response.ofOk(contestService.createContest(contestContentRequest));
     }
 
     @NeedLogin(normal = true)
     @PostMapping("/updateContest")
     @PermissionRequirement(PermissionType.CREATE_AND_EDIT_CONTEST)
-    public Response<Void> updateContest(@Valid @NotNull(message = "A-00-001") @RequestBody ContestContentRequest contestContentRequest) throws PortableException {
+    public Response<Void> updateContest(@Validated @RequestBody ContestContentRequest contestContentRequest) throws PortableException {
         contestService.updateContest(contestContentRequest);
         return Response.ofOk();
 
@@ -175,7 +174,7 @@ public class ContestController {
 
     @NeedLogin(normal = true)
     @PostMapping("/addProblem")
-    public Response<Void> addContestProblem(@Valid @NotNull(message = "A-00-001") @RequestBody ContestAddProblem contestAddProblem) throws PortableException {
+    public Response<Void> addContestProblem(@Validated @RequestBody ContestAddProblem contestAddProblem) throws PortableException {
         contestService.addContestProblem(contestAddProblem);
         return Response.ofOk();
     }

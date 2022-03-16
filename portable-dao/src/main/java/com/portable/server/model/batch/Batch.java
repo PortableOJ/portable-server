@@ -24,7 +24,7 @@ public class Batch {
     /**
      * 批量用户所属的比赛
      */
-    private Long contest;
+    private Long contestId;
 
     /**
      * 批量用户的前缀词
@@ -44,5 +44,5 @@ public class Batch {
     /**
      * 批量用户的状态
      */
-    private BatchStatusType type;
+    private BatchStatusType status;
 }
