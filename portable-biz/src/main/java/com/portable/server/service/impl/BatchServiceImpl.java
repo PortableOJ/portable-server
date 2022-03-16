@@ -124,7 +124,10 @@ public class BatchServiceImpl implements BatchService {
     @Override
     public void changeStatus(Long id, BatchStatusType statusType) throws PortableException {
         Batch batch = batchManager.selectBatchById(id);
-        if (!Objects.equals(batch.getId(), UserContext.ctx().getId())) {
+        if (batch == null) {
+            throw PortableException.of("A-10-006", id);
+        }
+        if (!Objects.equals(batch.getOwner(), UserContext.ctx().getId())) {
             throw PortableException.of("A-10-002");
         }
         batchManager.updateBatchStatus(id, statusType);

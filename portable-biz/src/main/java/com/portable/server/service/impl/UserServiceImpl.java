@@ -18,6 +18,7 @@ import com.portable.server.model.user.NormalUserData;
 import com.portable.server.model.user.User;
 import com.portable.server.service.UserService;
 import com.portable.server.type.AccountType;
+import com.portable.server.type.BatchStatusType;
 import com.portable.server.type.OrganizationType;
 import com.portable.server.type.PermissionType;
 import com.portable.server.util.ImageUtils;
@@ -98,9 +99,13 @@ public class UserServiceImpl implements UserService {
             case BATCH:
                 BatchUserData batchUserData = userDataManager.getBatchUserDataById(user.getDataId());
                 Batch batch = batchMapper.selectBatchById(batchUserData.getBatchId());
+                if (!BatchStatusType.NORMAL.equals(batch.getStatus())) {
+                    throw PortableException.of("A-01-013");
+                }
                 Boolean isUpdateIp = batchUserData.addIpRecord(ip);
                 if (isUpdateIp) {
-                    if (batch.getIpLock()) {
+                    // 首先得是锁定着的，其次必须要不是第一个 IP
+                    if (batch.getIpLock() && batchUserData.getIpList().size() > 1) {
                         throw PortableException.of("A-01-012");
                     } else {
                         userDataManager.updateUserData(batchUserData);
