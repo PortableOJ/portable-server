@@ -27,7 +27,6 @@ import org.springframework.web.multipart.MultipartFile;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
-import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import java.io.IOException;
@@ -46,9 +45,9 @@ public class UserController {
     private static final Long IMAGE_FILE_MAX_SIZE = 1024 * 1024 * 10L;
 
     @PostMapping("/login")
-    public Response<UserBasicInfoResponse> login(HttpServletRequest request, @Valid @NotNull(message = "A-00-001") @RequestBody LoginRequest loginRequest) throws PortableException {
+    public Response<UserBasicInfoResponse> login(HttpServletRequest request, @RequestBody LoginRequest loginRequest) throws PortableException {
         UserContext.set(UserContext.getNullUser());
-        UserBasicInfoResponse userBasicInfoResponse = userService.login(loginRequest);
+        UserBasicInfoResponse userBasicInfoResponse = userService.login(loginRequest, request.getRemoteHost());
         HttpSession httpSession = request.getSession();
         httpSession.setAttribute(RequestSessionConstant.USER_ID, userBasicInfoResponse.getId());
         return Response.ofOk(userBasicInfoResponse);
@@ -56,7 +55,7 @@ public class UserController {
 
     @CheckCaptcha
     @PostMapping("/register")
-    public Response<NormalUserInfoResponse> register(HttpServletRequest request, @Valid @NotNull(message = "A-00-001") @RequestBody RegisterRequest registerRequest) throws PortableException {
+    public Response<NormalUserInfoResponse> register(HttpServletRequest request, @RequestBody RegisterRequest registerRequest) throws PortableException {
         UserContext.set(UserContext.getNullUser());
         NormalUserInfoResponse normalUserInfoResponse = userService.register(registerRequest);
         HttpSession httpSession = request.getSession();
@@ -89,7 +88,7 @@ public class UserController {
     @NeedLogin(normal = true)
     @PostMapping("/changeOrganization")
     @PermissionRequirement(PermissionType.CHANGE_ORGANIZATION)
-    public Response<Void> changeOrganization(@Valid @NotNull(message = "A-00-001") @RequestBody OrganizationChangeRequest organizationChangeRequest) throws PortableException {
+    public Response<Void> changeOrganization(@RequestBody OrganizationChangeRequest organizationChangeRequest) throws PortableException {
         userService.changeOrganization(organizationChangeRequest.getTargetId(), organizationChangeRequest.getNewOrganization());
         return Response.ofOk();
     }
@@ -97,7 +96,7 @@ public class UserController {
     @NeedLogin(normal = true)
     @PostMapping("/addPermission")
     @PermissionRequirement(PermissionType.GRANT)
-    public Response<Void> addPermission(@Valid @NotNull(message = "A-00-001") @RequestBody PermissionRequest permissionRequest) throws PortableException {
+    public Response<Void> addPermission(@RequestBody PermissionRequest permissionRequest) throws PortableException {
         userService.addPermission(permissionRequest.getTargetId(), permissionRequest.getPermissionType());
         return Response.ofOk();
     }
@@ -105,7 +104,7 @@ public class UserController {
     @NeedLogin(normal = true)
     @PostMapping("/removePermission")
     @PermissionRequirement(PermissionType.GRANT)
-    public Response<Void> removePermission(@Valid @NotNull(message = "A-00-001") @RequestBody PermissionRequest permissionRequest) throws PortableException {
+    public Response<Void> removePermission(@RequestBody PermissionRequest permissionRequest) throws PortableException {
         userService.removePermission(permissionRequest.getTargetId(), permissionRequest.getPermissionType());
         return Response.ofOk();
     }
@@ -134,7 +133,7 @@ public class UserController {
 
     @NeedLogin(normal = true)
     @PostMapping("/changePassword")
-    public Response<Void> changePassword(HttpServletRequest request, @NotNull(message = "A-00-001") @RequestBody UpdatePasswordRequest updatePasswordRequest) throws PortableException {
+    public Response<Void> changePassword(HttpServletRequest request, @RequestBody UpdatePasswordRequest updatePasswordRequest) throws PortableException {
         userService.updatePassword(updatePasswordRequest);
         UserContext.set(UserContext.getNullUser());
         HttpSession httpSession = request.getSession();
