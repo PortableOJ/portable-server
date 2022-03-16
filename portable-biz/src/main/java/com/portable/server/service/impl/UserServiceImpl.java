@@ -2,10 +2,10 @@ package com.portable.server.service.impl;
 
 import com.portable.server.encryption.BCryptEncoder;
 import com.portable.server.exception.PortableException;
+import com.portable.server.manager.BatchManager;
 import com.portable.server.manager.GridFsManager;
 import com.portable.server.manager.UserDataManager;
 import com.portable.server.manager.UserManager;
-import com.portable.server.mapper.BatchMapper;
 import com.portable.server.model.batch.Batch;
 import com.portable.server.model.request.user.LoginRequest;
 import com.portable.server.model.request.user.RegisterRequest;
@@ -45,7 +45,7 @@ public class UserServiceImpl implements UserService {
     private UserDataManager userDataManager;
 
     @Resource
-    private BatchMapper batchMapper;
+    private BatchManager batchManager;
 
     @Resource
     private GridFsManager gridFsManager;
@@ -98,7 +98,7 @@ public class UserServiceImpl implements UserService {
                 return NormalUserInfoResponse.of(user, normalUserData);
             case BATCH:
                 BatchUserData batchUserData = userDataManager.getBatchUserDataById(user.getDataId());
-                Batch batch = batchMapper.selectBatchById(batchUserData.getBatchId());
+                Batch batch = batchManager.selectBatchById(batchUserData.getBatchId());
                 if (!BatchStatusType.NORMAL.equals(batch.getStatus())) {
                     throw PortableException.of("A-01-013");
                 }
@@ -111,6 +111,7 @@ public class UserServiceImpl implements UserService {
                         userDataManager.updateUserData(batchUserData);
                     }
                 }
+                UserContext.set(batch);
                 return BatchUserInfoResponse.of(user, batchUserData);
             default:
                 throw PortableException.of("S-02-002", user.getType());

@@ -58,4 +58,10 @@
         WHERE id = #{id}
     </update>
 
+    <update id="updateBatchContest">
+        UPDATE batch
+        SET contest_id = #{newContest}
+        WHERE id = #{id}
+    </update>
+
 </mapper>

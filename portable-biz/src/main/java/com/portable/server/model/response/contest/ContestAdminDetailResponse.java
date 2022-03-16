@@ -2,6 +2,7 @@ package com.portable.server.model.response.contest;
 
 import com.portable.server.exception.PortableException;
 import com.portable.server.model.contest.BaseContestData;
+import com.portable.server.model.contest.BatchContestData;
 import com.portable.server.model.contest.Contest;
 import com.portable.server.model.contest.PasswordContestData;
 import com.portable.server.model.response.problem.ProblemListResponse;
@@ -32,6 +33,11 @@ public class ContestAdminDetailResponse extends ContestDetailResponse {
     private Set<String> inviteUserSet;
 
     /**
+     * 批量用户组 ID
+     */
+    private Long batchId;
+
+    /**
      * 题目是否是锁定的
      */
     private List<Boolean> problemLock;
@@ -58,6 +64,10 @@ public class ContestAdminDetailResponse extends ContestDetailResponse {
                 break;
             case PRIVATE:
                 this.inviteUserSet = inviteUserSet;
+                break;
+            case BATCH:
+                BatchContestData batchContestData = (BatchContestData) contestData;
+                this.batchId = batchContestData.getBatchId();
                 break;
             default:
                 throw PortableException.of("A-08-001", contest.getAccessType());

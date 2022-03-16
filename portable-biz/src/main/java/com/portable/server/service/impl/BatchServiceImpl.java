@@ -132,4 +132,20 @@ public class BatchServiceImpl implements BatchService {
         }
         batchManager.updateBatchStatus(id, statusType);
     }
+
+    @Override
+    public BatchListResponse getBatch(Long id) throws PortableException {
+        Batch batch = batchManager.selectBatchById(id);
+        if (batch == null) {
+            throw PortableException.of("A-10-006", id);
+        }
+        if (!Objects.equals(batch.getOwner(), UserContext.ctx().getId())) {
+            throw PortableException.of("A-10-002");
+        }
+        Contest contest = null;
+        if (batch.getContestId() != null) {
+            contest = contestManager.getContestById(batch.getContestId());
+        }
+        return BatchListResponse.of(batch, contest);
+    }
 }

@@ -38,4 +38,12 @@ public interface BatchService {
      * @throws PortableException 无权限则抛出
      */
     void changeStatus(Long id, BatchStatusType statusType) throws PortableException;
+
+    /**
+     * 查找自己拥有的批量用户组
+     * @param id 用户组 ID
+     * @return 用户组信息
+     * @throws PortableException 无权限则抛出
+     */
+    BatchListResponse getBatch(Long id) throws PortableException;
 }

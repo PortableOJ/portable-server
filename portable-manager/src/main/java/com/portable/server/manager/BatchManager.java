@@ -67,4 +67,12 @@ public interface BatchManager {
      * @param newStatus 新状态
      */
     void updateBatchStatus(Long id, BatchStatusType newStatus);
+
+    /**
+     * 更新批量用户绑定至的比赛
+     *
+     * @param id        用户 ID
+     * @param newContest 新比赛
+     */
+    void updateBatchContest(Long id, Long newContest);
 }

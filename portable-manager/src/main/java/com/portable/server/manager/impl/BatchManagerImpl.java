@@ -60,4 +60,9 @@ public class BatchManagerImpl implements BatchManager {
     public void updateBatchStatus(Long id, BatchStatusType newStatus) {
         batchMapper.updateBatchStatus(id, newStatus);
     }
+
+    @Override
+    public void updateBatchContest(Long id, Long newContest) {
+        batchMapper.updateBatchContest(id, newContest);
+    }
 }
