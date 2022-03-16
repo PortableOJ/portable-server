@@ -96,7 +96,7 @@ public class UserController {
     @NeedLogin(normal = true)
     @PostMapping("/addPermission")
     @PermissionRequirement(PermissionType.GRANT)
-    public Response<Void> addPermission(@RequestBody PermissionRequest permissionRequest) throws PortableException {
+    public Response<Void> grantPermission(@RequestBody PermissionRequest permissionRequest) throws PortableException {
         userService.addPermission(permissionRequest.getTargetId(), permissionRequest.getPermissionType());
         return Response.ofOk();
     }
