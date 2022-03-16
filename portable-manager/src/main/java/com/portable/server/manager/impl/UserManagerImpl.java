@@ -74,4 +74,9 @@ public class UserManagerImpl implements UserManager {
     public void updatePassword(Long id, String password) {
         userMapper.updatePassword(id, password);
     }
+
+    @Override
+    public void updateUserType(Long id, AccountType accountType) {
+        userMapper.updateUserType(id, accountType);
+    }
 }

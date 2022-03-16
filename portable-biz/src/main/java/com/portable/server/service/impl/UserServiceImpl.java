@@ -87,9 +87,13 @@ public class UserServiceImpl implements UserService {
         if (!BCryptEncoder.match(loginRequest.getPassword(), user.getPassword())) {
             throw PortableException.of("A-01-002");
         }
-        UserContext.set(user);
         switch (user.getType()) {
+            case LOCKED_NORMAL:
+                user.setType(AccountType.NORMAL);
+                userManager.updateUserType(user.getId(), AccountType.NORMAL);
+                // 锁定的账号只需要修改用户的状态后，剩下的和正常账号完全相同
             case NORMAL:
+                UserContext.set(user);
                 NormalUserData normalUserData = userDataManager.getNormalUserDataById(user.getDataId());
                 if (normalUserData == null) {
                     throw PortableException.of("S-02-001");
