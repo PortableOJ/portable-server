@@ -1,6 +1,7 @@
 package com.portable.server.repo;
 
 import com.portable.server.model.contest.BaseContestData;
+import com.portable.server.model.contest.BatchContestData;
 import com.portable.server.model.contest.PasswordContestData;
 import com.portable.server.model.contest.PrivateContestData;
 import com.portable.server.model.contest.PublicContestData;
@@ -32,6 +33,10 @@ public class ContestDataRepo {
 
     public PrivateContestData getPrivateContestDataById(String datId) {
         return mongoTemplate.findOne(new Query(Criteria.where("_id").is(datId)), PrivateContestData.class, COLLECTION_NAME);
+    }
+
+    public BatchContestData getBatchContestDataById(String datId) {
+        return mongoTemplate.findOne(new Query(Criteria.where("_id").is(datId)), BatchContestData.class, COLLECTION_NAME);
     }
 
     public void insertContestData(BaseContestData contestData) {

@@ -1,6 +1,7 @@
 package com.portable.server.util;
 
 import com.Ostermiller.util.CircularByteBuffer;
+import com.portable.server.constant.Constant;
 import com.portable.server.exception.PortableException;
 import net.coobird.thumbnailator.Thumbnails;
 

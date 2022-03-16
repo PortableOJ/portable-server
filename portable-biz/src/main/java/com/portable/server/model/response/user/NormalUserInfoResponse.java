@@ -4,9 +4,8 @@ import com.portable.server.model.user.NormalUserData;
 import com.portable.server.model.user.User;
 import com.portable.server.type.OrganizationType;
 import com.portable.server.type.PermissionType;
+import lombok.Data;
 import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.Setter;
 
 import java.util.Set;
 
@@ -15,8 +14,7 @@ import java.util.Set;
  *
  * @author shiroha
  */
-@Getter
-@Setter
+@Data
 @EqualsAndHashCode(callSuper = true)
 public class NormalUserInfoResponse extends UserBasicInfoResponse {
 

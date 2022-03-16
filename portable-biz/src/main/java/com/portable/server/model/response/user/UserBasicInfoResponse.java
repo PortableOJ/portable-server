@@ -2,16 +2,16 @@ package com.portable.server.model.response.user;
 
 import com.portable.server.model.user.User;
 import com.portable.server.type.AccountType;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 /**
  * 用户基本信息类
  *
  * @author shiroha
  */
-@Getter
-@Setter
+@Data
+@NoArgsConstructor
 public abstract class UserBasicInfoResponse {
 
     /**
@@ -29,7 +29,7 @@ public abstract class UserBasicInfoResponse {
      */
     private AccountType type;
 
-    public UserBasicInfoResponse(User user) {
+    UserBasicInfoResponse(User user) {
         this.id = user.getId();
         this.handle = user.getHandle();
         this.type = user.getType();

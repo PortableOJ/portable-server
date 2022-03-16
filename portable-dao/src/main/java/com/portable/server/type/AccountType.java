@@ -20,9 +20,9 @@ public enum AccountType implements ExceptionTextType {
     LOCKED_NORMAL("锁定的标准账号"),
 
     /**
-     * 临时账号类型
+     * 批量账号类型
      */
-    TEMPORARY("临时账号"),
+    BATCH("批量账号"),
     ;
 
     private final String text;

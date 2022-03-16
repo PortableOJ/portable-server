@@ -30,7 +30,6 @@ import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletResponse;
-import javax.validation.Valid;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
@@ -145,7 +144,7 @@ public class ProblemController {
     @NeedLogin(normal = true)
     @PostMapping("/newProblem")
     @PermissionRequirement(PermissionType.CREATE_AND_EDIT_PROBLEM)
-    public Response<Long> newProblem(@Valid @NotNull(message = "A-00-001") @RequestBody ProblemContentRequest problemContentRequest) throws PortableException {
+    public Response<Long> newProblem(@Validated @RequestBody ProblemContentRequest problemContentRequest) throws PortableException {
         Problem problem = problemService.newProblem(problemContentRequest);
         return Response.ofOk(problem.getId());
     }
@@ -153,7 +152,7 @@ public class ProblemController {
     @NeedLogin(normal = true)
     @PostMapping("/updateContent")
     @PermissionRequirement(PermissionType.CREATE_AND_EDIT_PROBLEM)
-    public Response<Void> updateContent(@Valid @NotNull(message = "A-00-001") @RequestBody ProblemContentRequest problemContentRequest) throws PortableException {
+    public Response<Void> updateContent(@Validated @RequestBody ProblemContentRequest problemContentRequest) throws PortableException {
         problemService.updateProblemContent(problemContentRequest);
         return Response.ofOk();
     }
@@ -161,7 +160,7 @@ public class ProblemController {
     @NeedLogin(normal = true)
     @PostMapping("/updateSetting")
     @PermissionRequirement(PermissionType.CREATE_AND_EDIT_PROBLEM)
-    public Response<Void> updateSetting(@Valid @NotNull(message = "A-00-001") @RequestBody ProblemSettingRequest problemSettingRequest) throws PortableException {
+    public Response<Void> updateSetting(@Validated @RequestBody ProblemSettingRequest problemSettingRequest) throws PortableException {
         problemService.updateProblemSetting(problemSettingRequest);
         return Response.ofOk();
     }
@@ -169,7 +168,7 @@ public class ProblemController {
     @NeedLogin(normal = true)
     @PostMapping("/updateJudge")
     @PermissionRequirement(PermissionType.CREATE_AND_EDIT_PROBLEM)
-    public Response<Void> updateJudge(@Valid @NotNull(message = "A-00-001") @RequestBody ProblemJudgeRequest problemJudgeRequest) throws PortableException {
+    public Response<Void> updateJudge(@Validated @RequestBody ProblemJudgeRequest problemJudgeRequest) throws PortableException {
         problemService.updateProblemJudge(problemJudgeRequest);
         return Response.ofOk();
     }
@@ -193,7 +192,7 @@ public class ProblemController {
     @NeedLogin(normal = true)
     @PostMapping("/removeTest")
     @PermissionRequirement(PermissionType.CREATE_AND_EDIT_PROBLEM)
-    public Response<Void> removeTest(@Valid @NotNull(message = "A-00-001") @RequestBody ProblemNameRequest problemNameRequest) throws PortableException {
+    public Response<Void> removeTest(@Validated @RequestBody ProblemNameRequest problemNameRequest) throws PortableException {
         problemService.removeProblemTest(problemNameRequest);
         return Response.ofOk();
     }
@@ -208,7 +207,7 @@ public class ProblemController {
     @NeedLogin(normal = true)
     @PostMapping("/updateStdCode")
     @PermissionRequirement(PermissionType.CREATE_AND_EDIT_PROBLEM)
-    public Response<Void> updateStdCode(@Valid @NotNull(message = "A-00-001") @RequestBody ProblemCodeRequest problemCodeRequest) throws PortableException {
+    public Response<Void> updateStdCode(@Validated @RequestBody ProblemCodeRequest problemCodeRequest) throws PortableException {
         problemService.updateProblemStdCode(problemCodeRequest);
         return Response.ofOk();
     }
@@ -216,7 +215,7 @@ public class ProblemController {
     @NeedLogin(normal = true)
     @PostMapping("/addTestCode")
     @PermissionRequirement(PermissionType.CREATE_AND_EDIT_PROBLEM)
-    public Response<Void> addTestCode(@Valid @NotNull(message = "A-00-001") @RequestBody ProblemCodeRequest problemCodeRequest) throws PortableException {
+    public Response<Void> addTestCode(@Validated @RequestBody ProblemCodeRequest problemCodeRequest) throws PortableException {
         problemService.addProblemTestCode(problemCodeRequest);
         return Response.ofOk();
     }
@@ -224,7 +223,7 @@ public class ProblemController {
     @NeedLogin(normal = true)
     @PostMapping("/removeTestCode")
     @PermissionRequirement(PermissionType.CREATE_AND_EDIT_PROBLEM)
-    public Response<Void> removeTestCode(@Valid @NotNull(message = "A-00-001") @RequestBody ProblemNameRequest problemNameRequest) throws PortableException {
+    public Response<Void> removeTestCode(@Validated @RequestBody ProblemNameRequest problemNameRequest) throws PortableException {
         problemService.removeProblemTestCode(problemNameRequest);
         return Response.ofOk();
     }
@@ -278,14 +277,14 @@ public class ProblemController {
     @NeedLogin(normal = true)
     @PostMapping("/treatAndCheckProblem")
     @PermissionRequirement(PermissionType.CREATE_AND_EDIT_PROBLEM)
-    public Response<Void> treatAndCheckProblem(@Valid @NotNull(message = "A-00-001") @RequestBody IdRequest idRequest) throws PortableException {
+    public Response<Void> treatAndCheckProblem(@Validated @RequestBody IdRequest idRequest) throws PortableException {
         problemService.treatAndCheckProblem(idRequest.getId());
         return Response.ofOk();
     }
 
     @NeedLogin(normal = true)
     @PostMapping("/submit")
-    public Response<Long> submit(@Valid @NotNull(message = "A-00-001") @RequestBody SubmitSolutionRequest submitSolutionRequest) throws PortableException {
+    public Response<Long> submit(@Validated @RequestBody SubmitSolutionRequest submitSolutionRequest) throws PortableException {
         return Response.ofOk(problemService.submit(submitSolutionRequest));
     }
 }

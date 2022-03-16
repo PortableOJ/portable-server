@@ -1,12 +1,10 @@
 package com.portable.server.socket.model;
 
-import com.portable.server.exception.PortableException;
-
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.channels.SocketChannel;
 
-import static com.portable.server.util.Constant.RETURN_BYTE;
+import static com.portable.server.constant.Constant.RETURN_BYTE;
 
 /**
  * @author shiroha

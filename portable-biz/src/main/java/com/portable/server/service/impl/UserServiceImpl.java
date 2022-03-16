@@ -2,18 +2,23 @@ package com.portable.server.service.impl;
 
 import com.portable.server.encryption.BCryptEncoder;
 import com.portable.server.exception.PortableException;
+import com.portable.server.manager.BatchManager;
 import com.portable.server.manager.GridFsManager;
 import com.portable.server.manager.UserDataManager;
 import com.portable.server.manager.UserManager;
+import com.portable.server.model.batch.Batch;
 import com.portable.server.model.request.user.LoginRequest;
 import com.portable.server.model.request.user.RegisterRequest;
 import com.portable.server.model.request.user.UpdatePasswordRequest;
+import com.portable.server.model.response.user.BatchUserInfoResponse;
 import com.portable.server.model.response.user.NormalUserInfoResponse;
 import com.portable.server.model.response.user.UserBasicInfoResponse;
+import com.portable.server.model.user.BatchUserData;
 import com.portable.server.model.user.NormalUserData;
 import com.portable.server.model.user.User;
 import com.portable.server.service.UserService;
 import com.portable.server.type.AccountType;
+import com.portable.server.type.BatchStatusType;
 import com.portable.server.type.OrganizationType;
 import com.portable.server.type.PermissionType;
 import com.portable.server.util.ImageUtils;
@@ -40,7 +45,7 @@ public class UserServiceImpl implements UserService {
     private UserDataManager userDataManager;
 
     @Resource
-    private BCryptEncoder bCryptEncoder;
+    private BatchManager batchManager;
 
     @Resource
     private GridFsManager gridFsManager;
@@ -59,27 +64,27 @@ public class UserServiceImpl implements UserService {
             NormalUserData normalUserData = userDataManager.newNormalUserData();
             normalUserData.setOrganization(OrganizationType.ADMIN);
             normalUserData.setPermissionTypeSet(Arrays.stream(PermissionType.values()).collect(Collectors.toSet()));
-            userDataManager.insertNormalUserData(normalUserData);
+            userDataManager.insertUserData(normalUserData);
 
             rootUser = userManager.newNormalAccount();
             rootUser.setHandle(rootName);
-            rootUser.setPassword(bCryptEncoder.encoder(rootPassword));
+            rootUser.setPassword(BCryptEncoder.encoder(rootPassword));
             rootUser.setDataId(normalUserData.get_id());
             userManager.insertAccount(rootUser);
         } else {
             NormalUserData normalUserData = userDataManager.getNormalUserDataById(rootUser.getDataId());
             normalUserData.setPermissionTypeSet(Arrays.stream(PermissionType.values()).collect(Collectors.toSet()));
-            userDataManager.updateNormalUserData(normalUserData);
+            userDataManager.updateUserData(normalUserData);
         }
     }
 
     @Override
-    public UserBasicInfoResponse login(LoginRequest loginRequest) throws PortableException {
+    public UserBasicInfoResponse login(LoginRequest loginRequest, String ip) throws PortableException {
         User user = userManager.getAccountByHandle(loginRequest.getHandle());
         if (user == null) {
             throw PortableException.of("A-01-001");
         }
-        if (!bCryptEncoder.match(loginRequest.getPassword(), user.getPassword())) {
+        if (!BCryptEncoder.match(loginRequest.getPassword(), user.getPassword())) {
             throw PortableException.of("A-01-002");
         }
         switch (user.getType()) {
@@ -95,7 +100,23 @@ public class UserServiceImpl implements UserService {
                 }
                 UserContext.set(normalUserData);
                 return NormalUserInfoResponse.of(user, normalUserData);
-            case TEMPORARY:
+            case BATCH:
+                BatchUserData batchUserData = userDataManager.getBatchUserDataById(user.getDataId());
+                Batch batch = batchManager.selectBatchById(batchUserData.getBatchId());
+                if (!BatchStatusType.NORMAL.equals(batch.getStatus())) {
+                    throw PortableException.of("A-01-013");
+                }
+                Boolean isUpdateIp = batchUserData.addIpRecord(ip);
+                if (isUpdateIp) {
+                    // 首先得是锁定着的，其次必须要不是第一个 IP
+                    if (batch.getIpLock() && batchUserData.getIpList().size() > 1) {
+                        throw PortableException.of("A-01-012");
+                    } else {
+                        userDataManager.updateUserData(batchUserData);
+                    }
+                }
+                UserContext.set(batch);
+                return BatchUserInfoResponse.of(user, batch);
             default:
                 throw PortableException.of("S-02-002", user.getType());
         }
@@ -109,11 +130,11 @@ public class UserServiceImpl implements UserService {
         }
 
         NormalUserData normalUserData = userDataManager.newNormalUserData();
-        userDataManager.insertNormalUserData(normalUserData);
+        userDataManager.insertUserData(normalUserData);
 
         user = userManager.newNormalAccount();
         user.setHandle(registerRequest.getHandle());
-        user.setPassword(bCryptEncoder.encoder(registerRequest.getPassword()));
+        user.setPassword(BCryptEncoder.encoder(registerRequest.getPassword()));
         user.setDataId(normalUserData.get_id());
         userManager.insertAccount(user);
 
@@ -148,7 +169,7 @@ public class UserServiceImpl implements UserService {
             throw PortableException.of("A-03-002", newOrganization);
         }
         targetUserData.setOrganization(newOrganization);
-        userDataManager.updateNormalUserData(targetUserData);
+        userDataManager.updateUserData(targetUserData);
     }
 
     @Override
@@ -158,7 +179,7 @@ public class UserServiceImpl implements UserService {
             throw PortableException.of("A-02-007", newPermission);
         }
         targetUserData.getPermissionTypeSet().add(newPermission);
-        userDataManager.updateNormalUserData(targetUserData);
+        userDataManager.updateUserData(targetUserData);
     }
 
     @Override
@@ -168,7 +189,7 @@ public class UserServiceImpl implements UserService {
             throw PortableException.of("A-02-007", permission);
         }
         targetUserData.getPermissionTypeSet().remove(permission);
-        userDataManager.updateNormalUserData(targetUserData);
+        userDataManager.updateUserData(targetUserData);
     }
 
     @Override
@@ -187,7 +208,7 @@ public class UserServiceImpl implements UserService {
         InputStream avatarStream = ImageUtils.cut(inputStream, left, top, width, height);
         String fileId = gridFsManager.uploadAvatar(normalUserData.getAvatar(), avatarStream, name, contentType);
         normalUserData.setAvatar(fileId);
-        userDataManager.updateNormalUserData(normalUserData);
+        userDataManager.updateUserData(normalUserData);
         return fileId;
     }
 
@@ -198,10 +219,10 @@ public class UserServiceImpl implements UserService {
         if (!AccountType.NORMAL.equals(user.getType())) {
             throw PortableException.of("A-01-011");
         }
-        if (!bCryptEncoder.match(updatePasswordRequest.getOldPassword(), user.getPassword())) {
+        if (!BCryptEncoder.match(updatePasswordRequest.getOldPassword(), user.getPassword())) {
             throw PortableException.of("A-01-002");
         }
-        userManager.updatePassword(user.getId(), bCryptEncoder.encoder(updatePasswordRequest.getNewPassword()));
+        userManager.updatePassword(user.getId(), BCryptEncoder.encoder(updatePasswordRequest.getNewPassword()));
     }
 
     private NormalUserData organizationCheck(Long target) throws PortableException {
@@ -232,7 +253,13 @@ public class UserServiceImpl implements UserService {
                     throw PortableException.of("S-02-001");
                 }
                 return NormalUserInfoResponse.of(user, normalUserData);
-            case TEMPORARY:
+            case BATCH:
+                BatchUserData batchUserData = userDataManager.getBatchUserDataById(user.getDataId());
+                if (batchUserData == null) {
+                    throw PortableException.of("S-02-001");
+                }
+                Batch batch = batchManager.selectBatchById(batchUserData.getBatchId());
+                return BatchUserInfoResponse.of(user, batch);
             default:
                 throw PortableException.of("S-02-002", user.getType());
         }

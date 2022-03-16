@@ -18,7 +18,7 @@ public class PortableException extends Exception {
     private final Object[] objects;
 
     public static final String SYSTEM_CODE = "S-00-000";
-    public static final String USER_CODE = "A-00-000";
+    public static final String USER_INPUT_NULL = "A-00-001";
     public static final String THIRD_PART_CODE = "B-00-000";
 
     public PortableException(String code, Object... objects) {
@@ -33,6 +33,10 @@ public class PortableException extends Exception {
 
     public static PortableException systemDefaultException() {
         return new PortableException(SYSTEM_CODE);
+    }
+
+    public static PortableException userInputNullException() {
+        return new PortableException(USER_INPUT_NULL);
     }
 
     public static PortableException of(String code, Object... objects) {

@@ -1,10 +1,9 @@
 package com.portable.server.socket;
 
-import com.portable.server.exception.PortableException;
+import com.portable.server.constant.Constant;
 import com.portable.server.socket.annotation.EpollMethod;
 import com.portable.server.socket.annotation.EpollParam;
 import com.portable.server.socket.model.MethodDescribe;
-import com.portable.server.util.Constant;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Component;

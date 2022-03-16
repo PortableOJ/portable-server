@@ -31,6 +31,17 @@ public class UserManagerImpl implements UserManager {
     }
 
     @Override
+    public User newBatchAccount() {
+        return User.builder()
+                .id(null)
+                .dataId(null)
+                .handle(null)
+                .password(null)
+                .type(AccountType.BATCH)
+                .build();
+    }
+
+    @Override
     public User getAccountByHandle(String handle) {
         return userMapper.selectAccountByHandle(handle);
     }

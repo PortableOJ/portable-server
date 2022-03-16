@@ -19,6 +19,12 @@ public interface UserManager {
     User newNormalAccount();
 
     /**
+     * 创建一个新的批量账号（不插入数据库）
+     * @return 新的用户信息
+     */
+    User newBatchAccount();
+
+    /**
      * 根据用户的 handle 获取账号
      * @param handle 用户 handle
      * @return 用户信息

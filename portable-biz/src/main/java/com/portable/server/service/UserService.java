@@ -22,10 +22,11 @@ public interface UserService {
      * 登陆用户
      *
      * @param loginRequest 登陆信息
+     * @param ip           本次登录的 IP
      * @return 用户的信息
      * @throws PortableException 遇到意外情况抛出错误
      */
-    UserBasicInfoResponse login(LoginRequest loginRequest) throws PortableException;
+    UserBasicInfoResponse login(LoginRequest loginRequest, String ip) throws PortableException;
 
     /**
      * 注册普通用户
@@ -95,12 +96,12 @@ public interface UserService {
      * @throws PortableException 类型不匹配则抛出
      */
     String uploadAvatar(InputStream inputStream,
-                      String name,
-                      String contentType,
-                      Integer left,
-                      Integer top,
-                      Integer width,
-                      Integer height) throws PortableException;
+                        String name,
+                        String contentType,
+                        Integer left,
+                        Integer top,
+                        Integer width,
+                        Integer height) throws PortableException;
 
     /**
      * 更新用户的密码

@@ -1,4 +1,4 @@
-package com.portable.server.util;
+package com.portable.server.constant;
 
 /**
  * @author shiroha

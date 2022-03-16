@@ -15,6 +15,7 @@ public class OrganizationChangeRequest {
     /**
      * 目标用户的 ID
      */
+    @NotNull(message = "A-01-001")
     @Positive(message = "A-01-001")
     private Long targetId;
 
