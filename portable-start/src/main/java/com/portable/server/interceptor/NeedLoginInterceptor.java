@@ -39,6 +39,8 @@ public class NeedLoginInterceptor implements HandlerInterceptor {
                 throw PortableException.of("A-02-001");
             }
             isNormal = AccountType.NORMAL.equals(UserContext.ctx().getType());
+        } else {
+            UserContext.set(UserContext.getNullUser());
         }
 
         // 已经登录且为标准用户
@@ -51,7 +53,6 @@ public class NeedLoginInterceptor implements HandlerInterceptor {
         NeedLogin methodRequirement = handlerMethod.getMethodAnnotation(NeedLogin.class);
         if (!checkLogin(classRequirement) && !checkLogin(methodRequirement)) {
             // 不需要登录
-            UserContext.set(UserContext.getNullUser());
             return true;
         }
 

@@ -1,6 +1,6 @@
 package com.portable.server.model.response.user;
 
-import com.portable.server.model.user.BatchUserData;
+import com.portable.server.model.batch.Batch;
 import com.portable.server.model.user.User;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -17,12 +17,12 @@ public class BatchUserInfoResponse extends UserBasicInfoResponse {
      */
     private Long contestId;
 
-    BatchUserInfoResponse(User user, BatchUserData userData) {
+    BatchUserInfoResponse(User user, Batch batch) {
         super(user);
-        this.contestId = userData.getBatchId();
+        this.contestId = batch.getContestId();
     }
 
-    public static BatchUserInfoResponse of(User user, BatchUserData userData) {
-        return new BatchUserInfoResponse(user, userData);
+    public static BatchUserInfoResponse of(User user, Batch batch) {
+        return new BatchUserInfoResponse(user, batch);
     }
 }
