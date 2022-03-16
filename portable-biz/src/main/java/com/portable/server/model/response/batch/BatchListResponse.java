@@ -17,6 +17,11 @@ public class BatchListResponse {
     private Long id;
 
     /**
+     * 批量用户所属的比赛 ID
+     */
+    private Long contestId;
+
+    /**
      * 批量用户所属的比赛
      */
     private String contestTitle;
@@ -39,15 +44,16 @@ public class BatchListResponse {
     /**
      * 批量用户的状态
      */
-    private BatchStatusType type;
+    private BatchStatusType status;
 
     BatchListResponse(Batch batch, Contest contest) {
         this.id = batch.getId();
+        this.contestId = contest == null ? null : contest.getId();
         this.contestTitle = contest == null ? "暂无锁定比赛" : contest.getTitle();
         this.prefix = batch.getPrefix();
         this.count = batch.getCount();
         this.ipLock = batch.getIpLock();
-        this.type = batch.getStatus();
+        this.status = batch.getStatus();
     }
 
     public static BatchListResponse of(Batch batch, Contest contest) {

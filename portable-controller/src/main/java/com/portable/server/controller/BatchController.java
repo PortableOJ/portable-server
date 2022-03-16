@@ -58,4 +58,11 @@ public class BatchController {
         batchService.changeStatus(request.getId(), request.getNewStatus());
         return Response.ofOk();
     }
+
+    @NeedLogin
+    @GetMapping("/check")
+    @PermissionRequirement(PermissionType.CREATE_AND_EDIT_BATCH)
+    public Response<BatchListResponse> getBatch(Long id) throws PortableException {
+        return Response.ofOk(batchService.getBatch(id));
+    }
 }
