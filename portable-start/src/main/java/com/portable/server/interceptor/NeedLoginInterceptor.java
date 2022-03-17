@@ -35,10 +35,11 @@ public class NeedLoginInterceptor implements HandlerInterceptor {
         if (idObject instanceof Long) {
             // 已经有登录的 id 了，尝试还原数据
             Long id = (Long) idObject;
-            if (!UserContext.restore(id)) {
-                throw PortableException.of("A-02-001");
+            if (UserContext.restore(id)) {
+                isNormal = AccountType.NORMAL.equals(UserContext.ctx().getType());
+            } else {
+                UserContext.set(UserContext.getNullUser());
             }
-            isNormal = AccountType.NORMAL.equals(UserContext.ctx().getType());
         } else {
             UserContext.set(UserContext.getNullUser());
         }
