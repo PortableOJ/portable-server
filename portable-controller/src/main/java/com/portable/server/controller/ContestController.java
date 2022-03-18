@@ -13,6 +13,7 @@ import com.portable.server.model.response.PageResponse;
 import com.portable.server.model.response.Response;
 import com.portable.server.model.response.contest.ContestAdminDetailResponse;
 import com.portable.server.model.response.contest.ContestDetailResponse;
+import com.portable.server.model.response.contest.ContestInfoResponse;
 import com.portable.server.model.response.contest.ContestListResponse;
 import com.portable.server.model.response.contest.ContestRankListResponse;
 import com.portable.server.model.response.problem.ProblemDetailResponse;
@@ -22,6 +23,8 @@ import com.portable.server.service.ContestService;
 import com.portable.server.type.ContestVisitPermission;
 import com.portable.server.type.PermissionType;
 import com.portable.server.type.SolutionStatusType;
+import com.portable.server.validation.Insert;
+import com.portable.server.validation.Update;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -59,6 +62,12 @@ public class ContestController {
     @PostMapping("/auth")
     public Response<ContestVisitPermission> authorizeContest(@Validated @RequestBody ContestAuth contestAuth) throws PortableException {
         return Response.ofOk(contestService.authorizeContest(contestAuth));
+    }
+
+    @NeedLogin
+    @GetMapping("/getInfo")
+    public Response<ContestInfoResponse> getContestInfo(@NotNull(message = "A-08-002") @Min(value = 1, message = "A-08-002") Long contestId) throws PortableException {
+        return Response.ofOk(contestService.getContestInfo(contestId));
     }
 
     @NeedLogin
@@ -159,14 +168,14 @@ public class ContestController {
     @NeedLogin(normal = true)
     @PostMapping("/newContest")
     @PermissionRequirement(PermissionType.CREATE_AND_EDIT_CONTEST)
-    public Response<Long> createContest(@Validated @RequestBody ContestContentRequest contestContentRequest) throws PortableException {
+    public Response<Long> createContest(@Validated({Insert.class}) @RequestBody ContestContentRequest contestContentRequest) throws PortableException {
         return Response.ofOk(contestService.createContest(contestContentRequest));
     }
 
     @NeedLogin(normal = true)
     @PostMapping("/updateContest")
     @PermissionRequirement(PermissionType.CREATE_AND_EDIT_CONTEST)
-    public Response<Void> updateContest(@Validated @RequestBody ContestContentRequest contestContentRequest) throws PortableException {
+    public Response<Void> updateContest(@Validated({Update.class}) @RequestBody ContestContentRequest contestContentRequest) throws PortableException {
         contestService.updateContest(contestContentRequest);
         return Response.ofOk();
 

@@ -7,6 +7,8 @@ import com.portable.server.model.contest.Contest;
 import com.portable.server.model.contest.PasswordContestData;
 import com.portable.server.model.contest.PrivateContestData;
 import com.portable.server.type.ContestAccessType;
+import com.portable.server.validation.Insert;
+import com.portable.server.validation.Update;
 import lombok.Data;
 import org.hibernate.validator.constraints.Range;
 
@@ -35,28 +37,28 @@ public class ContestContentRequest {
     /**
      * 比赛标题
      */
-    @NotBlank(message = "A-08-022")
-    @Size(max = 60, message = "A-08-022")
+    @NotBlank(message = "A-08-022", groups = {Insert.class, Update.class})
+    @Size(max = 60, message = "A-08-022", groups = {Insert.class, Update.class})
     private String title;
 
     /**
      * 开始时间
      */
-    @NotNull(message = "A-08-023")
-    @Future(message = "A-08-024")
+    @NotNull(message = "A-08-023", groups = {Insert.class, Update.class})
+    @Future(message = "A-08-024", groups = {Insert.class})
     private Date startTime;
 
     /**
      * 持续时间（分钟）
      */
-    @NotNull(message = "A-08-025")
-    @Range(min = 4, max = 10080, message = "A-08-026")
+    @NotNull(message = "A-08-025", groups = {Insert.class, Update.class})
+    @Range(min = 4, max = 10080, message = "A-08-026", groups = {Insert.class, Update.class})
     private Integer duration;
 
     /**
      * 访问权限
      */
-    @NotNull(message = "A-08-027")
+    @NotNull(message = "A-08-027", groups = {Insert.class, Update.class})
     private ContestAccessType accessType;
 
     /**
@@ -77,21 +79,21 @@ public class ContestContentRequest {
     /**
      * 题目列表
      */
-    @NotNull(message = "A-08-028")
-    @Size(min = 1, max = 100, message = "A-08-028")
+    @NotNull(message = "A-08-028", groups = {Insert.class, Update.class})
+    @Size(min = 1, max = 100, message = "A-08-028", groups = {Insert.class, Update.class})
     private List<Long> problemList;
 
     /**
      * 共同的出题人的昵称
      */
-    @NotNull(message = "A-08-029")
+    @NotNull(message = "A-08-029", groups = {Insert.class, Update.class})
     private Set<String> coAuthor;
 
     /**
      * 封榜时长
      */
-    @NotNull(message = "A-08-030")
-    @Range(min = 0, max = 10080, message = "A-08-031")
+    @NotNull(message = "A-08-030", groups = {Insert.class, Update.class})
+    @Range(min = 0, max = 10080, message = "A-08-031", groups = {Insert.class, Update.class})
     private Integer freezeTime;
 
     /**
@@ -102,8 +104,8 @@ public class ContestContentRequest {
     /**
      * 惩罚时间（分钟）
      */
-    @NotNull(message = "A-08-032")
-    @Range(min = 0, max = 10080, message = "A-08-033")
+    @NotNull(message = "A-08-032", groups = {Insert.class, Update.class})
+    @Range(min = 0, max = 10080, message = "A-08-033", groups = {Insert.class, Update.class})
     private Integer penaltyTime;
 
     public void toContest(Contest contest) {
