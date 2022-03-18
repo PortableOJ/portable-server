@@ -5,6 +5,7 @@ import com.portable.server.type.LanguageType;
 import com.portable.server.type.ProblemAccessType;
 import com.portable.server.type.ProblemType;
 import lombok.Data;
+import org.hibernate.validator.constraints.Range;
 
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
@@ -41,14 +42,14 @@ public class ProblemSettingRequest {
      * 默认的耗时限制，单位（s）
      */
     @NotNull(message = "A-04-022")
-    @Size(min = 1, max = 30, message = "A-04-022")
+    @Range(min = 1, max = 30, message = "A-04-022")
     private Integer defaultTimeLimit;
 
     /**
      * 默认的内存限制，单位（mb）
      */
     @NotNull(message = "A-04-023")
-    @Size(min = 10, max = 1024, message = "A-04-023")
+    @Range(min = 10, max = 1024, message = "A-04-023")
     private Integer defaultMemoryLimit;
 
     /**
