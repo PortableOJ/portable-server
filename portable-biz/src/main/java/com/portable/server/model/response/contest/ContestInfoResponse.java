@@ -1,0 +1,85 @@
+package com.portable.server.model.response.contest;
+
+import com.portable.server.model.contest.BaseContestData;
+import com.portable.server.model.contest.Contest;
+import com.portable.server.type.ContestAccessType;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+import java.util.Date;
+import java.util.Set;
+
+/**
+ * @author shiroha
+ */
+@Data
+@NoArgsConstructor
+public class ContestInfoResponse {
+
+    /**
+     * 数据库主键
+     */
+    private Long id;
+
+    /**
+     * 比赛标题
+     */
+    private String title;
+
+    /**
+     * 开始时间
+     */
+    private Date startTime;
+
+    /**
+     * 持续时间（分钟）
+     */
+    private Integer duration;
+
+    /**
+     * 访问权限
+     */
+    private ContestAccessType accessType;
+
+    /**
+     * 作者 handle
+     */
+    private String ownerHandle;
+
+    /**
+     * 共同的出题人的昵称
+     */
+    private Set<String> coAuthor;
+
+    /**
+     * 封榜时长
+     */
+    private Integer freezeTime;
+
+    /**
+     * 惩罚时间（分钟）
+     */
+    private Integer penaltyTime;
+
+    /**
+     * 公告
+     */
+    private String announcement;
+
+    ContestInfoResponse(Contest contest, BaseContestData contestData, String ownerHandle, Set<String> coAuthor) {
+        this.id = contest.getId();
+        this.title = contest.getTitle();
+        this.startTime = contest.getStartTime();
+        this.duration = contest.getDuration();
+        this.accessType = contest.getAccessType();
+        this.ownerHandle = ownerHandle;
+        this.coAuthor = coAuthor;
+        this.freezeTime = contestData.getFreezeTime();
+        this.penaltyTime = contestData.getPenaltyTime();
+        this.announcement = contestData.getAnnouncement();
+    }
+
+    public static ContestInfoResponse of(Contest contest, BaseContestData contestData, String ownerHandle, Set<String> coAuthor) {
+        return new ContestInfoResponse(contest, contestData, ownerHandle, coAuthor);
+    }
+}
