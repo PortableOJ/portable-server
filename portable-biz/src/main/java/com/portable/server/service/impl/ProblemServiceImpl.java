@@ -273,14 +273,6 @@ public class ProblemServiceImpl implements ProblemService {
         ProblemPackage problemPackage = getForEditProblem(problemContentRequest.getId());
         problemContentRequest.toProblemData(problemPackage.getProblemData());
 
-        // 校验题目关联的比赛是否已经结束
-        if (problemPackage.getProblemData().getContestId() != null) {
-            Contest contest = contestManager.getContestById(problemPackage.getProblemData().getContestId());
-            if (!contest.isEnd()) {
-                throw PortableException.of("A-04-014", problemPackage.getProblemData().getContestId());
-            }
-        }
-
         problemManager.updateProblemTitle(problemContentRequest.getId(), problemContentRequest.getTitle());
         problemDataManager.updateProblemData(problemPackage.getProblemData());
     }
@@ -292,10 +284,19 @@ public class ProblemServiceImpl implements ProblemService {
             throw PortableException.of("A-04-007");
         }
 
-        // 保护私有题目，若从私有题目转为公开/隐藏题目后，则不能再转为私有题目
-        if (!ProblemAccessType.PRIVATE.equals(problemPackage.getProblem().getAccessType())
-            && ProblemAccessType.PRIVATE.equals(problemSettingRequest.getAccessType())) {
-            throw PortableException.of("A-04-015");
+        // 发生比赛访问权限更新
+        if (!Objects.equals(problemPackage.getProblem().getAccessType(), problemSettingRequest.getAccessType())) {
+            // 从公开转私有 => 拒绝
+            if (ProblemAccessType.PRIVATE.equals(problemSettingRequest.getAccessType())) {
+                throw PortableException.of("A-04-015");
+            }
+            // 其他任何转换 => 不允许在比赛期间发生
+            if (problemPackage.getProblemData().getContestId() != null) {
+                Contest contest = contestManager.getContestById(problemPackage.getProblemData().getContestId());
+                if (!contest.isEnd()) {
+                    throw PortableException.of("A-04-014", problemPackage.getProblemData().getContestId());
+                }
+            }
         }
 
         boolean isChecked = problemPackage.getProblem().getStatusType().getChecked();

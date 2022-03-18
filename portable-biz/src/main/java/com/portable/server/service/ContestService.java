@@ -1,7 +1,6 @@
 package com.portable.server.service;
 
 import com.portable.server.exception.PortableException;
-import com.portable.server.type.ContestVisitPermission;
 import com.portable.server.model.request.PageRequest;
 import com.portable.server.model.request.contest.ContestAddProblem;
 import com.portable.server.model.request.contest.ContestAuth;
@@ -11,11 +10,13 @@ import com.portable.server.model.request.solution.SubmitSolutionRequest;
 import com.portable.server.model.response.PageResponse;
 import com.portable.server.model.response.contest.ContestAdminDetailResponse;
 import com.portable.server.model.response.contest.ContestDetailResponse;
+import com.portable.server.model.response.contest.ContestInfoResponse;
 import com.portable.server.model.response.contest.ContestListResponse;
 import com.portable.server.model.response.contest.ContestRankListResponse;
 import com.portable.server.model.response.problem.ProblemDetailResponse;
 import com.portable.server.model.response.solution.SolutionDetailResponse;
 import com.portable.server.model.response.solution.SolutionListResponse;
+import com.portable.server.type.ContestVisitPermission;
 
 /**
  * @author shiroha
@@ -36,6 +37,14 @@ public interface ContestService {
      * @return 访问权限
      */
     ContestVisitPermission authorizeContest(ContestAuth contestAuth) throws PortableException;
+
+    /**
+     * 获取比赛的简介
+     * @param contestId 比赛的 id
+     * @throws PortableException 比赛不存在或者无权访问则抛出错误
+     * @return 比赛的详情
+     */
+    ContestInfoResponse getContestInfo(Long contestId) throws PortableException;
 
     /**
      * 获取比赛的详情

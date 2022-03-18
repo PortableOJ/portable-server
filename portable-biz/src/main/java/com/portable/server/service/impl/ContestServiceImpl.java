@@ -27,6 +27,7 @@ import com.portable.server.model.request.solution.SubmitSolutionRequest;
 import com.portable.server.model.response.PageResponse;
 import com.portable.server.model.response.contest.ContestAdminDetailResponse;
 import com.portable.server.model.response.contest.ContestDetailResponse;
+import com.portable.server.model.response.contest.ContestInfoResponse;
 import com.portable.server.model.response.contest.ContestListResponse;
 import com.portable.server.model.response.contest.ContestRankListResponse;
 import com.portable.server.model.response.problem.ProblemDetailResponse;
@@ -144,13 +145,18 @@ public class ContestServiceImpl implements ContestService {
     }
 
     @Override
+    public ContestInfoResponse getContestInfo(Long contestId) throws PortableException {
+        return getContestDetail(contestId, true, false);
+    }
+
+    @Override
     public ContestDetailResponse getContestData(Long contestId) throws PortableException {
-        return getContestDetail(contestId, false);
+        return (ContestDetailResponse) getContestDetail(contestId, false, false);
     }
 
     @Override
     public ContestAdminDetailResponse getContestAdminData(Long contestId) throws PortableException {
-        return (ContestAdminDetailResponse) getContestDetail(contestId, true);
+        return (ContestAdminDetailResponse) getContestDetail(contestId, false, true);
     }
 
     @Override
@@ -441,14 +447,8 @@ public class ContestServiceImpl implements ContestService {
             contestDataManager.saveContestData(contestData);
             updateContestLock(contestPackage, contestContentRequest.getProblemList());
         } else if (contest.isStarted() && !contest.isEnd()) {
-            /*
-             已经开始但未结束，可以
-                修改持续时间至当前时间之后
-                添加题目
-                修改封榜时长
-                修改公告
-                修改惩罚时间
-             */
+            // 已经开始的比赛不允许修改比赛开始时间
+            contestContentRequest.setStartTime(contest.getStartTime());
             // 检查新的比赛结束时间是否已经超过当前时间了
             contestContentRequest.toContest(contest);
             if (contest.isEnd()) {
@@ -526,20 +526,26 @@ public class ContestServiceImpl implements ContestService {
      * 验证题目的访问权限，并获取题目信息
      *
      * @param contestId 比赛 id
+     * @param info      只需要比赛简介，不需要详情
      * @param admin     是否是管理员查看
      * @return 比赛详情
      * @throws PortableException 出现非法访问则抛出错误
      */
-    public ContestDetailResponse getContestDetail(Long contestId, Boolean admin) throws PortableException {
+    public ContestInfoResponse getContestDetail(Long contestId, Boolean info, Boolean admin) throws PortableException {
         ContestPackage contestPackage = getContestPackage(contestId);
         ContestVisitPermission contestVisitPermission = checkPermission(contestPackage);
         boolean noAdminPermission = admin && !ContestVisitPermission.CO_AUTHOR.approve(contestVisitPermission);
         if (noAdminPermission || !ContestVisitPermission.VISIT.approve(contestVisitPermission)) {
             throw PortableException.of("A-08-004", contestId);
         }
-        if (!ContestVisitPermission.CO_AUTHOR.approve(contestVisitPermission) && !contestPackage.getContest().isStarted()) {
-            throw PortableException.of("A-08-019", contestId);
+
+        // 校验比赛是否开始
+        if (!info) {
+            if (!ContestVisitPermission.CO_AUTHOR.approve(contestVisitPermission) && !contestPackage.getContest().isStarted()) {
+                throw PortableException.of("A-08-019", contestId);
+            }
         }
+
         // 获取主办方和出题人的名称
         User owner = userManager.getAccountById(contestPackage.getContest().getOwner());
         Set<String> coAuthor = contestPackage.getContestData().getCoAuthor().stream()
@@ -553,29 +559,36 @@ public class ContestServiceImpl implements ContestService {
         // 获取题目信息
         UserContext userContext = UserContext.ctx();
         List<Boolean> problemLock = new ArrayList<>();
-        List<ProblemListResponse> problemListResponses = IntStream.range(0, contestPackage.getContestData().getProblemList().size())
-                .mapToObj(i -> {
-                    BaseContestData.ContestProblemData contestProblemData = contestPackage.getContestData().getProblemList().get(i);
-                    Problem problem = problemManager.getProblemById(contestProblemData.getProblemId());
-                    if (problem == null) {
-                        return null;
-                    }
-                    Solution solution = solutionManager.selectLastSolutionByUserIdAndProblemIdAndContestId(userContext.getId(), problem.getId(), contestId);
-                    ProblemListResponse problemListResponse = ProblemListResponse.of(problem, solution);
-                    problemListResponse.setAcceptCount(contestProblemData.getAcceptCount());
-                    problemListResponse.setSubmissionCount(contestProblemData.getSubmissionCount());
 
-                    // 将每道题目的序号设置为比赛中的序号
-                    problemListResponse.setId((long) i);
-                    if (admin) {
-                        ProblemData problemData = problemDataManager.getProblemData(problem.getDataId());
-                        problemLock.add(Objects.equals(problemData.getContestId(), contestId));
-                    }
-                    return problemListResponse;
-                })
-                .collect(Collectors.toList());
-        if (problemListResponses.contains(null)) {
-            throw PortableException.of("S-07-001", contestId);
+        List<ProblemListResponse> problemListResponses = null;
+        if (!info) {
+            problemListResponses = IntStream.range(0, contestPackage.getContestData().getProblemList().size())
+                    .mapToObj(i -> {
+                        BaseContestData.ContestProblemData contestProblemData = contestPackage.getContestData().getProblemList().get(i);
+                        Problem problem = problemManager.getProblemById(contestProblemData.getProblemId());
+                        if (problem == null) {
+                            return null;
+                        }
+                        Solution solution = solutionManager.selectLastSolutionByUserIdAndProblemIdAndContestId(userContext.getId(), problem.getId(), contestId);
+                        ProblemListResponse problemListResponse = ProblemListResponse.of(problem, solution);
+                        problemListResponse.setAcceptCount(contestProblemData.getAcceptCount());
+                        problemListResponse.setSubmissionCount(contestProblemData.getSubmissionCount());
+
+                        // 将每道题目的序号设置为比赛中的序号
+                        problemListResponse.setId((long) i);
+                        if (admin) {
+                            ProblemData problemData = problemDataManager.getProblemData(problem.getDataId());
+                            problemLock.add(Objects.equals(problemData.getContestId(), contestId));
+                        }
+                        return problemListResponse;
+                    })
+                    .collect(Collectors.toList());
+            if (problemListResponses.contains(null)) {
+                throw PortableException.of("S-07-001", contestId);
+            }
+        }
+        if (info) {
+            return ContestInfoResponse.of(contestPackage.getContest(), contestPackage.getContestData(), owner.getHandle(), coAuthor);
         }
         if (admin) {
             return getContestDetailAdmin(contestPackage, owner, problemListResponses, problemLock, coAuthor);

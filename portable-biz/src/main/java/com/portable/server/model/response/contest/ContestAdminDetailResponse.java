@@ -6,9 +6,9 @@ import com.portable.server.model.contest.BatchContestData;
 import com.portable.server.model.contest.Contest;
 import com.portable.server.model.contest.PasswordContestData;
 import com.portable.server.model.response.problem.ProblemListResponse;
+import lombok.Data;
 import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.NoArgsConstructor;
 
 import java.util.List;
 import java.util.Set;
@@ -17,8 +17,8 @@ import java.util.stream.Collectors;
 /**
  * @author shiroha
  */
-@Getter
-@Setter
+@Data
+@NoArgsConstructor
 @EqualsAndHashCode(callSuper = true)
 public class ContestAdminDetailResponse extends ContestDetailResponse {
 
