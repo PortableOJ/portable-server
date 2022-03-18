@@ -101,6 +101,7 @@ public class UserServiceImpl implements UserService {
                 UserContext.set(normalUserData);
                 return NormalUserInfoResponse.of(user, normalUserData);
             case BATCH:
+                UserContext.set(user);
                 BatchUserData batchUserData = userDataManager.getBatchUserDataById(user.getDataId());
                 Batch batch = batchManager.selectBatchById(batchUserData.getBatchId());
                 if (!BatchStatusType.NORMAL.equals(batch.getStatus())) {
