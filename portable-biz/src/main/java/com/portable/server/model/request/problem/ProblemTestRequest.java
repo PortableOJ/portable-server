@@ -2,7 +2,6 @@ package com.portable.server.model.request.problem;
 
 import lombok.Builder;
 import lombok.Data;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.io.InputStream;
 
@@ -21,7 +20,7 @@ public class ProblemTestRequest {
     /**
      * 测试文件流
      */
-    private MultipartFile fileData;
+    private InputStream inputStream;
 
     /**
      * 测试名称
