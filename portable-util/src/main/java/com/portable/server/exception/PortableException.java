@@ -3,6 +3,8 @@ package com.portable.server.exception;
 import lombok.Getter;
 import lombok.ToString;
 
+import java.util.function.Supplier;
+
 /**
  * Portable 异常
  *
@@ -41,5 +43,9 @@ public class PortableException extends Exception {
 
     public static PortableException of(String code, Object... objects) {
         return new PortableException(code, objects);
+    }
+
+    public static Supplier<PortableException> from(String code, Object... objects) {
+        return () -> new PortableException(code, objects);
     }
 }

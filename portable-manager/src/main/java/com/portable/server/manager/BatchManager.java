@@ -4,6 +4,7 @@ import com.portable.server.model.batch.Batch;
 import com.portable.server.type.BatchStatusType;
 
 import java.util.List;
+import java.util.Optional;
 
 /**
  * @author shiroha
@@ -43,7 +44,7 @@ public interface BatchManager {
      * @param id 批量用户 ID
      * @return 批量用户
      */
-    Batch selectBatchById(Long id);
+    Optional<Batch> selectBatchById(Long id);
 
     /**
      * 基于公共前缀查找批量用户

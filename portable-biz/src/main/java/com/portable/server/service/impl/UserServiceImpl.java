@@ -93,17 +93,20 @@ public class UserServiceImpl implements UserService {
                 userManager.updateUserType(user.getId(), AccountType.NORMAL);
                 // 锁定的账号只需要修改用户的状态后，剩下的和正常账号完全相同
             case NORMAL:
-                UserContext.set(user);
                 NormalUserData normalUserData = userDataManager.getNormalUserDataById(user.getDataId());
                 if (normalUserData == null) {
                     throw PortableException.of("S-02-001");
                 }
+                UserContext.set(user);
                 UserContext.set(normalUserData);
                 return NormalUserInfoResponse.of(user, normalUserData);
             case BATCH:
-                UserContext.set(user);
                 BatchUserData batchUserData = userDataManager.getBatchUserDataById(user.getDataId());
-                Batch batch = batchManager.selectBatchById(batchUserData.getBatchId());
+                if (batchUserData == null) {
+                    throw PortableException.of("S-02-001");
+                }
+                Batch batch = batchManager.selectBatchById(batchUserData.getBatchId())
+                        .orElseThrow(PortableException.from("A-10-006", batchUserData.getBatchId()));
                 if (!BatchStatusType.NORMAL.equals(batch.getStatus())) {
                     throw PortableException.of("A-01-013");
                 }
@@ -116,6 +119,7 @@ public class UserServiceImpl implements UserService {
                         userDataManager.updateUserData(batchUserData);
                     }
                 }
+                UserContext.set(user);
                 UserContext.set(batch);
                 return BatchUserInfoResponse.of(user, batch);
             default:
@@ -259,7 +263,8 @@ public class UserServiceImpl implements UserService {
                 if (batchUserData == null) {
                     throw PortableException.of("S-02-001");
                 }
-                Batch batch = batchManager.selectBatchById(batchUserData.getBatchId());
+                Batch batch = batchManager.selectBatchById(batchUserData.getBatchId())
+                        .orElseThrow(PortableException.from("A-10-006", batchUserData.getBatchId()));
                 return BatchUserInfoResponse.of(user, batch);
             default:
                 throw PortableException.of("S-02-002", user.getType());
