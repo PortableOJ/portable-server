@@ -8,6 +8,7 @@ import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
 import java.util.Collection;
+import java.util.Optional;
 import java.util.stream.Stream;
 
 /**
@@ -42,8 +43,8 @@ public class UserManagerImpl implements UserManager {
     }
 
     @Override
-    public User getAccountByHandle(String handle) {
-        return userMapper.selectAccountByHandle(handle);
+    public Optional<User> getAccountByHandle(String handle) {
+        return Optional.of(userMapper.selectAccountByHandle(handle));
     }
 
     @Override
@@ -56,8 +57,8 @@ public class UserManagerImpl implements UserManager {
     }
 
     @Override
-    public User getAccountById(Long id) {
-        return userMapper.selectAccountById(id);
+    public Optional<User> getAccountById(Long id) {
+        return Optional.of(userMapper.selectAccountById(id));
     }
 
     @Override

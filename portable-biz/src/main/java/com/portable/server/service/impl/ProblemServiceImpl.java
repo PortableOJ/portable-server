@@ -214,7 +214,7 @@ public class ProblemServiceImpl implements ProblemService {
     @Override
     public ProblemDetailResponse getProblem(Long id) throws PortableException {
         ProblemPackage problemPackage = getForViewProblem(id);
-        User user = userManager.getAccountById(problemPackage.getProblem().getOwner());
+        User user = userManager.getAccountById(problemPackage.getProblem().getOwner()).orElse(null);
         return ProblemDetailResponse.of(problemPackage.getProblem(), problemPackage.getProblemData(), user);
     }
 
@@ -576,8 +576,7 @@ public class ProblemServiceImpl implements ProblemService {
         if (accessType.getEditProblem()) {
             return problemPackage;
         }
-        User user = userManager.getAccountById(problemPackage.getProblem().getOwner());
-        throw PortableException.of("A-02-005", id, user.getHandle());
+        throw PortableException.of("A-02-005", id);
     }
 
     private ProblemPackage getProblemPackage(Long id) throws PortableException {

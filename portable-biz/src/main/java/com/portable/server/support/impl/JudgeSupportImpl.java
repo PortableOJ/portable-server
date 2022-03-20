@@ -218,9 +218,9 @@ public class JudgeSupportImpl implements JudgeSupport {
             case PUBLIC:
                 problemManager.updateProblemCount(solutionJudgeWork.getProblemId(), 0, 1);
 
-                User user = userManager.getAccountById(solution.getUserId());
-                if (user != null && AccountType.NORMAL.equals(user.getType())) {
-                    NormalUserData normalUserData = userDataManager.getNormalUserDataById(user.getDataId());
+                Optional<User> userOptional = userManager.getAccountById(solution.getUserId());
+                if (userOptional.isPresent() && AccountType.NORMAL.equals(userOptional.get().getType())) {
+                    NormalUserData normalUserData = userDataManager.getNormalUserDataById(userOptional.get().getDataId());
                     normalUserData.setAccept(normalUserData.getAccept() + 1);
                     userDataManager.updateUserData(normalUserData);
                 }

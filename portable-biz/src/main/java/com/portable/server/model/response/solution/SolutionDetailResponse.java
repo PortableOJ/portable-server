@@ -1,7 +1,6 @@
 package com.portable.server.model.response.solution;
 
 import com.portable.server.model.problem.Problem;
-import com.portable.server.model.problem.ProblemData;
 import com.portable.server.model.solution.Solution;
 import com.portable.server.model.solution.SolutionData;
 import com.portable.server.model.user.User;
@@ -9,6 +8,8 @@ import com.portable.server.type.LanguageType;
 import com.portable.server.type.SolutionStatusType;
 import com.portable.server.type.SolutionType;
 import lombok.Data;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.Date;
 import java.util.Map;
@@ -94,11 +95,15 @@ public class SolutionDetailResponse {
      */
     private Map<String, SolutionData.JudgeReportMsg> judgeReportMsgMap;
 
-    private SolutionDetailResponse(Solution solution, SolutionData solutionData, User user, Problem problem, Boolean shareJudgeMsg) {
+    private SolutionDetailResponse(@NotNull Solution solution,
+                                   @NotNull SolutionData solutionData,
+                                   @Nullable User user,
+                                   @NotNull Problem problem,
+                                   @NotNull Boolean shareJudgeMsg) {
         this.id = solution.getId();
         this.submitTime = solution.getSubmitTime();
         this.userId = solution.getUserId();
-        this.userHandle = user.getHandle();
+        this.userHandle = user == null ? "" : user.getHandle();
         this.problemId = solution.getProblemId();
         this.problemTitle = problem.getTitle();
         this.contestId = solution.getContestId();
@@ -112,7 +117,11 @@ public class SolutionDetailResponse {
         this.judgeReportMsgMap = shareJudgeMsg ? solutionData.getRunningMsg() : null;
     }
 
-    public static SolutionDetailResponse of(Solution solution, SolutionData solutionData, User user, Problem problem, Boolean shareJudgeMsg) {
+    public static SolutionDetailResponse of(@NotNull Solution solution,
+                                            @NotNull SolutionData solutionData,
+                                            @Nullable User user,
+                                            @NotNull Problem problem,
+                                            @NotNull Boolean shareJudgeMsg) {
         return new SolutionDetailResponse(solution, solutionData, user, problem, shareJudgeMsg);
     }
 }

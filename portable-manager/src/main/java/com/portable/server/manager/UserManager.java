@@ -5,6 +5,7 @@ import com.portable.server.type.AccountType;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.Collection;
+import java.util.Optional;
 import java.util.stream.Stream;
 
 /**
@@ -29,7 +30,7 @@ public interface UserManager {
      * @param handle 用户 handle
      * @return 用户信息
      */
-    User getAccountByHandle(String handle);
+    Optional<User> getAccountByHandle(String handle);
 
     /**
      * 批量转换用户的昵称为用户的 id
@@ -43,7 +44,7 @@ public interface UserManager {
      * @param id 用户 id
      * @return 用户信息
      */
-    User getAccountById(Long id);
+    Optional<User> getAccountById(Long id);
 
     /**
      * 新增一个账号

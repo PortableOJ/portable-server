@@ -2,6 +2,7 @@ package com.portable.server.model.response.contest;
 
 import com.portable.server.model.contest.ContestRankItem;
 import com.portable.server.model.contest.ContestRankProblemStatus;
+import com.portable.server.model.user.User;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -39,15 +40,15 @@ public class ContestRankListResponse {
      */
     private Map<Integer, ContestRankProblemStatus> submitStatus;
 
-    ContestRankListResponse(ContestRankItem contestRankItem, String userHandle) {
+    ContestRankListResponse(ContestRankItem contestRankItem, User user) {
         this.rank = contestRankItem.getRank();
-        this.userHandle = userHandle;
+        this.userHandle = user == null ? "" : user.getHandle();
         this.totalCost = contestRankItem.getTotalCost();
         this.totalSolve = contestRankItem.getTotalSolve();
         this.submitStatus = contestRankItem.getSubmitStatus();
     }
 
-    public static ContestRankListResponse of(ContestRankItem contestRankItem, String userHandle) {
-        return new ContestRankListResponse(contestRankItem, userHandle);
+    public static ContestRankListResponse of(ContestRankItem contestRankItem, User user) {
+        return new ContestRankListResponse(contestRankItem, user);
     }
 }

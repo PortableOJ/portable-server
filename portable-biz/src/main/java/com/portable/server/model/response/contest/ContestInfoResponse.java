@@ -2,12 +2,15 @@ package com.portable.server.model.response.contest;
 
 import com.portable.server.model.contest.BaseContestData;
 import com.portable.server.model.contest.Contest;
+import com.portable.server.model.user.User;
 import com.portable.server.type.ContestAccessType;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.util.Date;
+import java.util.Objects;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * @author shiroha
@@ -66,20 +69,24 @@ public class ContestInfoResponse {
      */
     private String announcement;
 
-    ContestInfoResponse(Contest contest, BaseContestData contestData, String ownerHandle, Set<String> coAuthor) {
+    ContestInfoResponse(Contest contest, BaseContestData contestData, User owner, Set<User> coAuthor) {
         this.id = contest.getId();
         this.title = contest.getTitle();
         this.startTime = contest.getStartTime();
         this.duration = contest.getDuration();
         this.accessType = contest.getAccessType();
-        this.ownerHandle = ownerHandle;
-        this.coAuthor = coAuthor;
+        this.ownerHandle = owner == null ? "" : owner.getHandle();
+        this.coAuthor = coAuthor.stream()
+                .parallel()
+                .filter(user -> !Objects.isNull(user))
+                .map(User::getHandle)
+                .collect(Collectors.toSet());
         this.freezeTime = contestData.getFreezeTime();
         this.penaltyTime = contestData.getPenaltyTime();
         this.announcement = contestData.getAnnouncement();
     }
 
-    public static ContestInfoResponse of(Contest contest, BaseContestData contestData, String ownerHandle, Set<String> coAuthor) {
-        return new ContestInfoResponse(contest, contestData, ownerHandle, coAuthor);
+    public static ContestInfoResponse of(Contest contest, BaseContestData contestData, User owner, Set<User> coAuthor) {
+        return new ContestInfoResponse(contest, contestData, owner, coAuthor);
     }
 }
