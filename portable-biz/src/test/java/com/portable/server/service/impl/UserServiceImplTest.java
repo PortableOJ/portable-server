@@ -8,6 +8,7 @@ import com.portable.server.manager.impl.UserDataManagerImpl;
 import com.portable.server.manager.impl.UserManagerImpl;
 import com.portable.server.model.batch.Batch;
 import com.portable.server.model.request.user.LoginRequest;
+import com.portable.server.model.request.user.RegisterRequest;
 import com.portable.server.model.response.user.BatchUserInfoResponse;
 import com.portable.server.model.response.user.NormalUserInfoResponse;
 import com.portable.server.model.user.BatchUserData;
@@ -528,7 +529,6 @@ class UserServiceImplTest {
 
         user.setType(AccountType.BATCH);
 
-
         batchUserData.setIpList(new ArrayList<BatchUserData.IpRecord>() {{
             add(BatchUserData.IpRecord.builder()
                     .date(new Date())
@@ -585,7 +585,71 @@ class UserServiceImplTest {
     }
 
     @Test
-    void register() {
+    void testRegisterWithHasHandle() {
+        RegisterRequest registerRequest = new RegisterRequest();
+        registerRequest.setHandle(MOCKED_HANDLE);
+        registerRequest.setPassword(MOCKED_INPUT_PASSWORD);
+
+        Mockito.when(userManager.getAccountByHandle(MOCKED_HANDLE)).thenReturn(user);
+
+        try {
+            userService.register(registerRequest);
+            Assertions.fail();
+        } catch (PortableException e) {
+            Assertions.assertEquals("A-01-003", e.getCode());
+        }
+    }
+
+    @Test
+    void testRegisterWithSuccess() throws PortableException {
+        RegisterRequest registerRequest = new RegisterRequest();
+        registerRequest.setHandle(MOCKED_HANDLE);
+        registerRequest.setPassword(MOCKED_INPUT_PASSWORD);
+
+        Mockito.when(userManager.getAccountByHandle(MOCKED_HANDLE)).thenReturn(null);
+        Mockito.when(userDataManager.newNormalUserData()).thenAnswer(invocationOnMock -> normalUserData);
+        Mockito.when(userManager.newNormalAccount()).thenAnswer(invocationOnMock -> user);
+        bCryptEncoderMockedStatic.when(() -> BCryptEncoder.encoder(MOCKED_INPUT_PASSWORD)).thenReturn(MOCKED_ROOT_PASSWORD_ENCODED);
+        normalUserInfoResponseMockedStatic.when(() -> NormalUserInfoResponse.of(Mockito.any(), Mockito.any())).thenCallRealMethod();
+
+        Mockito.doAnswer(invocationOnMock -> {
+            NormalUserData userData = invocationOnMock.getArgument(0);
+            userData.set_id(MOCKED_MONGO_ID);
+            return null;
+        }).when(userDataManager).insertUserData(Mockito.any());
+        Mockito.doAnswer(invocationOnMock -> {
+            User user = invocationOnMock.getArgument(0);
+            user.setId(MOCKED_ID);
+            return null;
+        }).when(userManager).insertAccount(Mockito.any());
+
+        NormalUserInfoResponse retVal = userService.register(registerRequest);
+
+        /// region 校验返回值是否正确
+
+        Assertions.assertEquals(MOCKED_HANDLE, retVal.getHandle());
+        Assertions.assertEquals(AccountType.NORMAL, retVal.getType());
+
+        /// endregion
+
+        /// region 校验写入的用户是否正确
+
+        ArgumentCaptor<User> userArgumentCaptor = ArgumentCaptor.forClass(User.class);
+        Mockito.verify(userManager).insertAccount(userArgumentCaptor.capture());
+        User userCP = userArgumentCaptor.getValue();
+        Assertions.assertEquals(MOCKED_HANDLE, userCP.getHandle());
+        Assertions.assertEquals(MOCKED_ROOT_PASSWORD_ENCODED, userCP.getPassword());
+        Assertions.assertEquals(AccountType.NORMAL, userCP.getType());
+
+        /// endregion
+        /// region 校验写入的用户数据是否正确
+        
+        ArgumentCaptor<NormalUserData> normalUserDataArgumentCaptor = ArgumentCaptor.forClass(NormalUserData.class);
+        Mockito.verify(userDataManager).insertUserData(normalUserDataArgumentCaptor.capture());
+        NormalUserData normalUserDataCP = normalUserDataArgumentCaptor.getValue();
+        Assertions.assertEquals(userCP.getDataId(), normalUserDataCP.get_id());
+
+        /// endregion
     }
 
     @Test
