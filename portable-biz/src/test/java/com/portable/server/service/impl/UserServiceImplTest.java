@@ -642,6 +642,7 @@ class UserServiceImplTest {
         Assertions.assertEquals(AccountType.NORMAL, userCP.getType());
 
         /// endregion
+
         /// region 校验写入的用户数据是否正确
         
         ArgumentCaptor<NormalUserData> normalUserDataArgumentCaptor = ArgumentCaptor.forClass(NormalUserData.class);
