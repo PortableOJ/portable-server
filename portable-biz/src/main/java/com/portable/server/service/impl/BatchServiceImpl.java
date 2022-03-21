@@ -123,10 +123,8 @@ public class BatchServiceImpl implements BatchService {
 
     @Override
     public void changeStatus(Long id, BatchStatusType statusType) throws PortableException {
-        Batch batch = batchManager.selectBatchById(id);
-        if (batch == null) {
-            throw PortableException.of("A-10-006", id);
-        }
+        Batch batch = batchManager.selectBatchById(id)
+                .orElseThrow(() -> PortableException.of("A-10-006", id));
         if (!Objects.equals(batch.getOwner(), UserContext.ctx().getId())) {
             throw PortableException.of("A-10-002");
         }
@@ -135,10 +133,8 @@ public class BatchServiceImpl implements BatchService {
 
     @Override
     public BatchListResponse getBatch(Long id) throws PortableException {
-        Batch batch = batchManager.selectBatchById(id);
-        if (batch == null) {
-            throw PortableException.of("A-10-006", id);
-        }
+        Batch batch = batchManager.selectBatchById(id)
+                .orElseThrow(() -> PortableException.of("A-10-006", id));
         if (!Objects.equals(batch.getOwner(), UserContext.ctx().getId())) {
             throw PortableException.of("A-10-002");
         }

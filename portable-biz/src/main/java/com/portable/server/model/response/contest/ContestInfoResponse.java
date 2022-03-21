@@ -6,6 +6,8 @@ import com.portable.server.model.user.User;
 import com.portable.server.type.ContestAccessType;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.Date;
 import java.util.Objects;
@@ -69,7 +71,10 @@ public class ContestInfoResponse {
      */
     private String announcement;
 
-    ContestInfoResponse(Contest contest, BaseContestData contestData, User owner, Set<User> coAuthor) {
+    ContestInfoResponse(@NotNull Contest contest,
+                        @NotNull BaseContestData contestData,
+                        @Nullable User owner,
+                        @NotNull Set<User> coAuthor) {
         this.id = contest.getId();
         this.title = contest.getTitle();
         this.startTime = contest.getStartTime();
@@ -86,7 +91,10 @@ public class ContestInfoResponse {
         this.announcement = contestData.getAnnouncement();
     }
 
-    public static ContestInfoResponse of(Contest contest, BaseContestData contestData, User owner, Set<User> coAuthor) {
+    public static ContestInfoResponse of(@NotNull Contest contest,
+                                         @NotNull BaseContestData contestData,
+                                         @Nullable User owner,
+                                         @NotNull Set<User> coAuthor) {
         return new ContestInfoResponse(contest, contestData, owner, coAuthor);
     }
 }

@@ -10,6 +10,8 @@ import com.portable.server.model.user.User;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 import java.util.Objects;
@@ -49,13 +51,13 @@ public class ContestAdminDetailResponse extends ContestDetailResponse {
      */
     private List<Long> problemRealId;
 
-    ContestAdminDetailResponse(Contest contest,
-                               BaseContestData contestData,
-                               User owner,
-                               List<ProblemListResponse> problemList,
-                               Set<User> coAuthor,
-                               List<Boolean> problemLock,
-                               Set<User> inviteUserSet) throws PortableException {
+    ContestAdminDetailResponse(@NotNull Contest contest,
+                               @NotNull BaseContestData contestData,
+                               @Nullable User owner,
+                               @NotNull List<ProblemListResponse> problemList,
+                               @NotNull Set<User> coAuthor,
+                               @NotNull List<Boolean> problemLock,
+                               @NotNull Set<User> inviteUserSet) throws PortableException {
         super(contest, contestData, owner, problemList, coAuthor);
         switch (contest.getAccessType()) {
             case PUBLIC:

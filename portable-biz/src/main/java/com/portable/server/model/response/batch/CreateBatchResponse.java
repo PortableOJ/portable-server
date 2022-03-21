@@ -36,12 +36,12 @@ public class CreateBatchResponse {
          */
         private String password;
 
-        BatchUser(User user) {
+        BatchUser(@NotNull User user) {
             this.handle = user.getHandle();
             this.password = user.getPassword();
         }
 
-        public static BatchUser of(User user) {
+        public static BatchUser of(@NotNull User user) {
             return new BatchUser(user);
         }
     }

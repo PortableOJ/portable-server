@@ -702,10 +702,8 @@ public class ContestServiceImpl implements ContestService {
         Long lastBatchId = null;
         // 校验批量用户组是否存在
         if (ContestAccessType.BATCH.equals(contestContentRequest.getAccessType()) && contestContentRequest.getBatchId() != null) {
-            Batch batch = batchManager.selectBatchById(contestContentRequest.getBatchId());
-            if (batch == null) {
-                throw PortableException.of("A-10-006", contestContentRequest.getBatchId());
-            }
+            Batch batch = batchManager.selectBatchById(contestContentRequest.getBatchId())
+                    .orElseThrow(() -> PortableException.of("A-10-006", contestContentRequest.getBatchId()));
             if (!Objects.equals(batch.getOwner(), UserContext.ctx().getId())) {
                 throw PortableException.of("A-10-008");
             }
