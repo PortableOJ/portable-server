@@ -44,6 +44,7 @@ public interface UserService {
      * @return 用户信息
      * @throws PortableException 不存在则抛出错误
      */
+    @Deprecated
     UserBasicInfoResponse getUserInfo(Long userId) throws PortableException;
 
     /**
@@ -62,6 +63,7 @@ public interface UserService {
      * @param newOrganization 被修改至的组织
      * @throws PortableException 遇到意外情况抛出错误
      */
+    @Deprecated
     void changeOrganization(Long targetId, OrganizationType newOrganization) throws PortableException;
 
     /**
@@ -71,6 +73,7 @@ public interface UserService {
      * @param newPermission 新增加的权限
      * @throws PortableException 遇到意外情况抛出错误
      */
+    @Deprecated
     void addPermission(Long targetId, PermissionType newPermission) throws PortableException;
 
     /**
@@ -80,6 +83,7 @@ public interface UserService {
      * @param permission 移除的权限
      * @throws PortableException 遇到意外情况抛出错误
      */
+    @Deprecated
     void removePermission(Long targetId, PermissionType permission) throws PortableException;
 
     /**

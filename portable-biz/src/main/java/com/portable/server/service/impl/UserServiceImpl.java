@@ -170,9 +170,6 @@ public class UserServiceImpl implements UserService {
     @Override
     public void changeOrganization(Long targetId, OrganizationType newOrganization) throws PortableException {
         NormalUserData targetUserData = organizationCheck(targetId);
-        if (!UserContext.ctx().getOrganization().isDominate(newOrganization)) {
-            throw PortableException.of("A-03-002", newOrganization);
-        }
         targetUserData.setOrganization(newOrganization);
         userDataManager.updateUserData(targetUserData);
     }
@@ -206,7 +203,7 @@ public class UserServiceImpl implements UserService {
                                Integer width,
                                Integer height) throws PortableException {
         UserContext userContext = UserContext.ctx();
-        if (!AccountType.NORMAL.equals(userContext.getType())) {
+        if (!userContext.getType().getIsNormal()) {
             throw PortableException.of("A-02-008", UserContext.ctx().getType());
         }
         NormalUserData normalUserData = userDataManager.getNormalUserDataById(userContext.getDataId());
@@ -221,7 +218,7 @@ public class UserServiceImpl implements UserService {
     public void updatePassword(UpdatePasswordRequest updatePasswordRequest) throws PortableException {
         UserContext userContext = UserContext.ctx();
         User user = userManager.getAccountById(userContext.getId());
-        if (!AccountType.NORMAL.equals(user.getType())) {
+        if (!user.getType().getIsNormal()) {
             throw PortableException.of("A-01-011");
         }
         if (!BCryptEncoder.match(updatePasswordRequest.getOldPassword(), user.getPassword())) {
@@ -235,7 +232,7 @@ public class UserServiceImpl implements UserService {
         if (user == null) {
             throw PortableException.of("A-01-001");
         }
-        if (!AccountType.NORMAL.equals(user.getType())) {
+        if (!user.getType().getIsNormal()) {
             throw PortableException.of("A-02-003");
         }
 
@@ -245,13 +242,17 @@ public class UserServiceImpl implements UserService {
         }
 
         if (!UserContext.ctx().getOrganization().isDominate(targetUserData.getOrganization())) {
-            throw PortableException.of("A-03-001", user.getHandle(), targetUserData.getOrganization(), UserContext.ctx().getOrganization());
+            throw PortableException.of("A-03-001",
+                    user.getHandle(),
+                    targetUserData.getOrganization(),
+                    UserContext.ctx().getOrganization());
         }
         return targetUserData;
     }
 
     private UserBasicInfoResponse getUserBasicInfoResponse(User user) throws PortableException {
         switch (user.getType()) {
+            case LOCKED_NORMAL:
             case NORMAL:
                 NormalUserData normalUserData = userDataManager.getNormalUserDataById(user.getDataId());
                 if (normalUserData == null) {

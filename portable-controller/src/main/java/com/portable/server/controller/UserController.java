@@ -72,6 +72,7 @@ public class UserController {
         return Response.ofOk();
     }
 
+    @Deprecated
     @GetMapping("/check")
     public Response<UserBasicInfoResponse> check() throws PortableException {
         if (!UserContext.ctx().isLogin()) {

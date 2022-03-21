@@ -2,7 +2,6 @@ package com.portable.server.interceptor;
 
 import com.portable.server.annotation.NeedLogin;
 import com.portable.server.exception.PortableException;
-import com.portable.server.type.AccountType;
 import com.portable.server.util.ExceptionConstant;
 import com.portable.server.util.RequestSessionConstant;
 import com.portable.server.util.UserContext;
@@ -36,7 +35,7 @@ public class NeedLoginInterceptor implements HandlerInterceptor {
             // 已经有登录的 id 了，尝试还原数据
             Long id = (Long) idObject;
             if (UserContext.restore(id)) {
-                isNormal = AccountType.NORMAL.equals(UserContext.ctx().getType());
+                isNormal = UserContext.ctx().getType().getIsNormal();
             } else {
                 UserContext.set(UserContext.getNullUser());
             }

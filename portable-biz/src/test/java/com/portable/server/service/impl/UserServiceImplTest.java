@@ -11,6 +11,7 @@ import com.portable.server.model.request.user.LoginRequest;
 import com.portable.server.model.request.user.RegisterRequest;
 import com.portable.server.model.response.user.BatchUserInfoResponse;
 import com.portable.server.model.response.user.NormalUserInfoResponse;
+import com.portable.server.model.response.user.UserBasicInfoResponse;
 import com.portable.server.model.user.BatchUserData;
 import com.portable.server.model.user.NormalUserData;
 import com.portable.server.model.user.User;
@@ -59,8 +60,6 @@ class UserServiceImplTest {
 
     private static MockedStatic<BCryptEncoder> bCryptEncoderMockedStatic;
     private static MockedStatic<UserContext> userContextMockedStatic;
-    private static MockedStatic<NormalUserInfoResponse> normalUserInfoResponseMockedStatic;
-    private static MockedStatic<BatchUserInfoResponse> batchUserInfoResponseMockedStatic;
 
     private static final String MOCKED_ROOT_NAME = "MOCKED_ROOT_NAME";
     private static final String MOCKED_ROOT_PASSWORD = "MOCKED_ROOT_PASSWORD";
@@ -75,16 +74,12 @@ class UserServiceImplTest {
     private static final Long MOCKED_CONTEST_ID = 2L;
 
     private static User user;
+    private static UserContext userContext;
     private static NormalUserData normalUserData;
     private static BatchUserData batchUserData;
 
     @BeforeEach
     void setUp() {
-        bCryptEncoderMockedStatic = Mockito.mockStatic(BCryptEncoder.class);
-        userContextMockedStatic = Mockito.mockStatic(UserContext.class);
-        normalUserInfoResponseMockedStatic = Mockito.mockStatic(NormalUserInfoResponse.class);
-        batchUserInfoResponseMockedStatic = Mockito.mockStatic(BatchUserInfoResponse.class);
-
         user = User.builder()
                 .id(MOCKED_ID)
                 .dataId(MOCKED_MONGO_ID)
@@ -99,14 +94,16 @@ class UserServiceImplTest {
                 ._id(MOCKED_MONGO_ID)
                 .batchId(MOCKED_BATCH_ID)
                 .build();
+        userContext = new UserContext();
+
+        bCryptEncoderMockedStatic = Mockito.mockStatic(BCryptEncoder.class);
+        userContextMockedStatic = Mockito.mockStatic(UserContext.class);
     }
 
     @AfterEach
     void tearDown() {
         bCryptEncoderMockedStatic.close();
         userContextMockedStatic.close();
-        normalUserInfoResponseMockedStatic.close();
-        batchUserInfoResponseMockedStatic.close();
     }
 
     @Test
@@ -283,7 +280,6 @@ class UserServiceImplTest {
         Mockito.when(userManager.getAccountByHandle(MOCKED_HANDLE)).thenReturn(user);
         bCryptEncoderMockedStatic.when(() -> BCryptEncoder.match(MOCKED_INPUT_PASSWORD, MOCKED_ROOT_PASSWORD_ENCODED)).thenReturn(true);
         Mockito.when(userDataManager.getNormalUserDataById(MOCKED_MONGO_ID)).thenReturn(normalUserData);
-        normalUserInfoResponseMockedStatic.when(() -> NormalUserInfoResponse.of(Mockito.any(), Mockito.any())).thenCallRealMethod();
 
         // DO
         NormalUserInfoResponse retVal = (NormalUserInfoResponse) userService.login(loginRequest, MOCKED_IP);
@@ -376,7 +372,6 @@ class UserServiceImplTest {
         bCryptEncoderMockedStatic.when(() -> BCryptEncoder.match(MOCKED_INPUT_PASSWORD, MOCKED_ROOT_PASSWORD_ENCODED)).thenReturn(true);
         Mockito.when(userDataManager.getBatchUserDataById(MOCKED_MONGO_ID)).thenReturn(batchUserData);
         Mockito.when(batchManager.selectBatchById(MOCKED_BATCH_ID)).thenReturn(Optional.of(batch));
-        batchUserInfoResponseMockedStatic.when(() -> BatchUserInfoResponse.of(Mockito.any(), Mockito.any())).thenCallRealMethod();
 
         // DO
 
@@ -424,7 +419,6 @@ class UserServiceImplTest {
         bCryptEncoderMockedStatic.when(() -> BCryptEncoder.match(MOCKED_INPUT_PASSWORD, MOCKED_ROOT_PASSWORD_ENCODED)).thenReturn(true);
         Mockito.when(userDataManager.getBatchUserDataById(MOCKED_MONGO_ID)).thenReturn(batchUserData);
         Mockito.when(batchManager.selectBatchById(MOCKED_BATCH_ID)).thenReturn(Optional.of(batch));
-        batchUserInfoResponseMockedStatic.when(() -> BatchUserInfoResponse.of(Mockito.any(), Mockito.any())).thenCallRealMethod();
 
         // DO
 
@@ -483,7 +477,6 @@ class UserServiceImplTest {
         bCryptEncoderMockedStatic.when(() -> BCryptEncoder.match(MOCKED_INPUT_PASSWORD, MOCKED_ROOT_PASSWORD_ENCODED)).thenReturn(true);
         Mockito.when(userDataManager.getBatchUserDataById(MOCKED_MONGO_ID)).thenReturn(batchUserData);
         Mockito.when(batchManager.selectBatchById(MOCKED_BATCH_ID)).thenReturn(Optional.of(batch));
-        batchUserInfoResponseMockedStatic.when(() -> BatchUserInfoResponse.of(Mockito.any(), Mockito.any())).thenCallRealMethod();
 
         // DO
 
@@ -546,7 +539,6 @@ class UserServiceImplTest {
         bCryptEncoderMockedStatic.when(() -> BCryptEncoder.match(MOCKED_INPUT_PASSWORD, MOCKED_ROOT_PASSWORD_ENCODED)).thenReturn(true);
         Mockito.when(userDataManager.getBatchUserDataById(MOCKED_MONGO_ID)).thenReturn(batchUserData);
         Mockito.when(batchManager.selectBatchById(MOCKED_BATCH_ID)).thenReturn(Optional.of(batch));
-        batchUserInfoResponseMockedStatic.when(() -> BatchUserInfoResponse.of(Mockito.any(), Mockito.any())).thenCallRealMethod();
 
         // DO
 
@@ -610,7 +602,6 @@ class UserServiceImplTest {
         Mockito.when(userDataManager.newNormalUserData()).thenAnswer(invocationOnMock -> normalUserData);
         Mockito.when(userManager.newNormalAccount()).thenAnswer(invocationOnMock -> user);
         bCryptEncoderMockedStatic.when(() -> BCryptEncoder.encoder(MOCKED_INPUT_PASSWORD)).thenReturn(MOCKED_ROOT_PASSWORD_ENCODED);
-        normalUserInfoResponseMockedStatic.when(() -> NormalUserInfoResponse.of(Mockito.any(), Mockito.any())).thenCallRealMethod();
 
         Mockito.doAnswer(invocationOnMock -> {
             NormalUserData userData = invocationOnMock.getArgument(0);
@@ -644,7 +635,7 @@ class UserServiceImplTest {
         /// endregion
 
         /// region 校验写入的用户数据是否正确
-        
+
         ArgumentCaptor<NormalUserData> normalUserDataArgumentCaptor = ArgumentCaptor.forClass(NormalUserData.class);
         Mockito.verify(userDataManager).insertUserData(normalUserDataArgumentCaptor.capture());
         NormalUserData normalUserDataCP = normalUserDataArgumentCaptor.getValue();
@@ -654,15 +645,219 @@ class UserServiceImplTest {
     }
 
     @Test
-    void getUserInfo() {
+    void testGetUserInfoWithNoUser() {
+        Mockito.when(userManager.getAccountByHandle(MOCKED_HANDLE)).thenReturn(null);
+
+        try {
+            userService.getUserInfo(MOCKED_HANDLE);
+            Assertions.fail();
+        } catch (PortableException e) {
+            Assertions.assertEquals("A-01-001", e.getCode());
+        }
     }
 
     @Test
-    void testGetUserInfo() {
+    void testGetUserInfoWithLockNormalNoUserData() {
+        user.setDataId(MOCKED_MONGO_ID);
+        user.setType(AccountType.LOCKED_NORMAL);
+
+        Mockito.when(userManager.getAccountByHandle(MOCKED_HANDLE)).thenReturn(user);
+        Mockito.when(userDataManager.getNormalUserDataById(MOCKED_MONGO_ID)).thenReturn(null);
+
+        try {
+            userService.getUserInfo(MOCKED_HANDLE);
+            Assertions.fail();
+        } catch (PortableException e) {
+            Assertions.assertEquals("S-02-001", e.getCode());
+        }
     }
 
     @Test
-    void changeOrganization() {
+    void testGetUserInfoWithLockNormalSuccess() throws PortableException {
+        user.setDataId(MOCKED_MONGO_ID);
+        user.setType(AccountType.LOCKED_NORMAL);
+
+        Mockito.when(userManager.getAccountByHandle(MOCKED_HANDLE)).thenReturn(user);
+        Mockito.when(userDataManager.getNormalUserDataById(MOCKED_MONGO_ID)).thenReturn(normalUserData);
+
+        UserBasicInfoResponse userBasicInfoResponse = userService.getUserInfo(MOCKED_HANDLE);
+
+        /// region 校验用户的数据信息
+
+        NormalUserInfoResponse normalUserInfoResponse = (NormalUserInfoResponse) userBasicInfoResponse;
+        Assertions.assertEquals(user.getHandle(), normalUserInfoResponse.getHandle());
+        Assertions.assertEquals(AccountType.LOCKED_NORMAL, user.getType());
+        Assertions.assertEquals(normalUserData.getAvatar(), normalUserInfoResponse.getAvatar());
+        Assertions.assertEquals(normalUserData.getOrganization(), normalUserInfoResponse.getOrganizationType());
+        Assertions.assertEquals(normalUserData.getPermissionTypeSet(), normalUserInfoResponse.getPermissionTypeSet());
+
+        /// endregion
+    }
+
+    @Test
+    void testGetUserInfoWithNormalNoUserData() {
+        user.setDataId(MOCKED_MONGO_ID);
+        user.setType(AccountType.NORMAL);
+
+        Mockito.when(userManager.getAccountByHandle(MOCKED_HANDLE)).thenReturn(user);
+        Mockito.when(userDataManager.getNormalUserDataById(MOCKED_MONGO_ID)).thenReturn(null);
+
+        try {
+            userService.getUserInfo(MOCKED_HANDLE);
+            Assertions.fail();
+        } catch (PortableException e) {
+            Assertions.assertEquals("S-02-001", e.getCode());
+        }
+    }
+
+    @Test
+    void testGetUserInfoWithNormalSuccess() throws PortableException {
+        user.setDataId(MOCKED_MONGO_ID);
+        user.setType(AccountType.NORMAL);
+
+        Mockito.when(userManager.getAccountByHandle(MOCKED_HANDLE)).thenReturn(user);
+        Mockito.when(userDataManager.getNormalUserDataById(MOCKED_MONGO_ID)).thenReturn(normalUserData);
+
+        UserBasicInfoResponse userBasicInfoResponse = userService.getUserInfo(MOCKED_HANDLE);
+
+        /// region 校验用户的数据信息
+
+        NormalUserInfoResponse normalUserInfoResponse = (NormalUserInfoResponse) userBasicInfoResponse;
+        Assertions.assertEquals(user.getHandle(), normalUserInfoResponse.getHandle());
+        Assertions.assertEquals(AccountType.NORMAL, user.getType());
+        Assertions.assertEquals(normalUserData.getAvatar(), normalUserInfoResponse.getAvatar());
+        Assertions.assertEquals(normalUserData.getOrganization(), normalUserInfoResponse.getOrganizationType());
+        Assertions.assertEquals(normalUserData.getPermissionTypeSet(), normalUserInfoResponse.getPermissionTypeSet());
+
+        /// endregion
+    }
+
+    @Test
+    void testGetUserInfoWithBatchNoUserData() {
+        user.setDataId(MOCKED_MONGO_ID);
+        user.setType(AccountType.BATCH);
+
+        Mockito.when(userManager.getAccountByHandle(MOCKED_HANDLE)).thenReturn(user);
+        Mockito.when(userDataManager.getBatchUserDataById(MOCKED_MONGO_ID)).thenReturn(null);
+
+        try {
+            userService.getUserInfo(MOCKED_HANDLE);
+            Assertions.fail();
+        } catch (PortableException e) {
+            Assertions.assertEquals("S-02-001", e.getCode());
+        }
+    }
+
+    @Test
+    void testGetUserInfoWithBatchNoBatch() {
+        user.setDataId(MOCKED_MONGO_ID);
+        user.setType(AccountType.BATCH);
+
+        Mockito.when(userManager.getAccountByHandle(MOCKED_HANDLE)).thenReturn(user);
+        Mockito.when(userDataManager.getBatchUserDataById(MOCKED_MONGO_ID)).thenReturn(batchUserData);
+        Mockito.when(batchManager.selectBatchById(MOCKED_BATCH_ID)).thenReturn(Optional.empty());
+
+        try {
+            userService.getUserInfo(MOCKED_HANDLE);
+            Assertions.fail();
+        } catch (PortableException e) {
+            Assertions.assertEquals("A-10-006", e.getCode());
+        }
+    }
+
+    @Test
+    void testGetUserInfoWithBatch() throws PortableException {
+        Batch batch = Batch.builder()
+                .contestId(MOCKED_CONTEST_ID)
+                .build();
+        user.setDataId(MOCKED_MONGO_ID);
+        user.setType(AccountType.BATCH);
+
+        Mockito.when(userManager.getAccountByHandle(MOCKED_HANDLE)).thenReturn(user);
+        Mockito.when(userDataManager.getBatchUserDataById(MOCKED_MONGO_ID)).thenReturn(batchUserData);
+        Mockito.when(batchManager.selectBatchById(MOCKED_BATCH_ID)).thenReturn(Optional.of(batch));
+
+        UserBasicInfoResponse userBasicInfoResponse = userService.getUserInfo(MOCKED_HANDLE);
+
+        BatchUserInfoResponse batchUserInfoResponse = (BatchUserInfoResponse) userBasicInfoResponse;
+
+        Assertions.assertEquals(user.getHandle(), batchUserInfoResponse.getHandle());
+        Assertions.assertEquals(AccountType.BATCH, batchUserInfoResponse.getType());
+        Assertions.assertEquals(MOCKED_CONTEST_ID, batchUserInfoResponse.getContestId());
+    }
+
+    @Test
+    void testChangeOrganizationWithNoUser() {
+        Mockito.when(userManager.getAccountById(MOCKED_ID)).thenReturn(null);
+
+        try {
+            userService.changeOrganization(MOCKED_ID, OrganizationType.STUDENT);
+            Assertions.fail();
+        } catch (PortableException e) {
+            Assertions.assertEquals("A-01-001", e.getCode());
+        }
+    }
+
+    @Test
+    void testChangeOrganizationWithNotNormal() {
+        user.setType(AccountType.BATCH);
+        Mockito.when(userManager.getAccountById(MOCKED_ID)).thenReturn(user);
+
+        try {
+            userService.changeOrganization(MOCKED_ID, OrganizationType.STUDENT);
+            Assertions.fail();
+        } catch (PortableException e) {
+            Assertions.assertEquals("A-02-003", e.getCode());
+        }
+    }
+
+    @Test
+    void testChangeOrganizationWithNotUserData() {
+        user.setType(AccountType.LOCKED_NORMAL);
+        Mockito.when(userManager.getAccountById(MOCKED_ID)).thenReturn(user);
+        Mockito.when(userDataManager.getNormalUserDataById(MOCKED_MONGO_ID)).thenReturn(null);
+
+        try {
+            userService.changeOrganization(MOCKED_ID, OrganizationType.STUDENT);
+            Assertions.fail();
+        } catch (PortableException e) {
+            Assertions.assertEquals("S-02-001", e.getCode());
+        }
+    }
+
+    @Test
+    void testChangeOrganizationWithNotDominate() {
+        user.setType(AccountType.LOCKED_NORMAL);
+        userContext.setOrganization(OrganizationType.TEACHER);
+        normalUserData.setOrganization(OrganizationType.ACMER);
+        Mockito.when(userManager.getAccountById(MOCKED_ID)).thenReturn(user);
+        Mockito.when(userDataManager.getNormalUserDataById(MOCKED_MONGO_ID)).thenReturn(normalUserData);
+        userContextMockedStatic.when(UserContext::ctx).thenReturn(userContext);
+
+        try {
+            userService.changeOrganization(MOCKED_ID, OrganizationType.STUDENT);
+            Assertions.fail();
+        } catch (PortableException e) {
+            Assertions.assertEquals("A-03-001", e.getCode());
+        }
+    }
+
+    @Test
+    void testChangeOrganizationWithSuccess() throws PortableException {
+        user.setType(AccountType.LOCKED_NORMAL);
+        userContext.setOrganization(OrganizationType.ACMER);
+        normalUserData.setOrganization(OrganizationType.STUDENT);
+        Mockito.when(userManager.getAccountById(MOCKED_ID)).thenReturn(user);
+        Mockito.when(userDataManager.getNormalUserDataById(MOCKED_MONGO_ID)).thenReturn(normalUserData);
+        userContextMockedStatic.when(UserContext::ctx).thenReturn(userContext);
+
+        userService.changeOrganization(MOCKED_ID, OrganizationType.SPECIAL_STUDENT);
+
+        ArgumentCaptor<NormalUserData> normalUserDataArgumentCaptor = ArgumentCaptor.forClass(NormalUserData.class);
+        Mockito.verify(userDataManager).updateUserData(normalUserDataArgumentCaptor.capture());
+        NormalUserData normalUserDataCP = normalUserDataArgumentCaptor.getValue();
+        Assertions.assertEquals(MOCKED_MONGO_ID, normalUserData.get_id());
+        Assertions.assertEquals(OrganizationType.SPECIAL_STUDENT, normalUserDataCP.getOrganization());
     }
 
     @Test
