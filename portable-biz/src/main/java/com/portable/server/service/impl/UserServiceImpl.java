@@ -30,6 +30,7 @@ import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
 import java.io.InputStream;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.stream.Collectors;
 
 /**
@@ -179,6 +180,9 @@ public class UserServiceImpl implements UserService {
         NormalUserData targetUserData = organizationCheck(targetId);
         if (!UserContext.ctx().getPermissionTypeSet().contains(newPermission)) {
             throw PortableException.of("A-02-007", newPermission);
+        }
+        if (targetUserData.getPermissionTypeSet() == null) {
+            targetUserData.setPermissionTypeSet(new HashSet<>());
         }
         targetUserData.getPermissionTypeSet().add(newPermission);
         userDataManager.updateUserData(targetUserData);
