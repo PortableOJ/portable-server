@@ -9,9 +9,9 @@ import com.portable.server.manager.impl.UserManagerImpl;
 import com.portable.server.model.batch.Batch;
 import com.portable.server.model.request.user.LoginRequest;
 import com.portable.server.model.request.user.RegisterRequest;
+import com.portable.server.model.response.user.BaseUserInfoResponse;
 import com.portable.server.model.response.user.BatchUserInfoResponse;
 import com.portable.server.model.response.user.NormalUserInfoResponse;
-import com.portable.server.model.response.user.UserBasicInfoResponse;
 import com.portable.server.model.user.BatchUserData;
 import com.portable.server.model.user.NormalUserData;
 import com.portable.server.model.user.User;
@@ -680,11 +680,11 @@ class UserServiceImplTest {
         Mockito.when(userManager.getAccountByHandle(MOCKED_HANDLE)).thenReturn(user);
         Mockito.when(userDataManager.getNormalUserDataById(MOCKED_MONGO_ID)).thenReturn(normalUserData);
 
-        UserBasicInfoResponse userBasicInfoResponse = userService.getUserInfo(MOCKED_HANDLE);
+        BaseUserInfoResponse baseUserInfoResponse = userService.getUserInfo(MOCKED_HANDLE);
 
         /// region 校验用户的数据信息
 
-        NormalUserInfoResponse normalUserInfoResponse = (NormalUserInfoResponse) userBasicInfoResponse;
+        NormalUserInfoResponse normalUserInfoResponse = (NormalUserInfoResponse) baseUserInfoResponse;
         Assertions.assertEquals(user.getHandle(), normalUserInfoResponse.getHandle());
         Assertions.assertEquals(AccountType.LOCKED_NORMAL, user.getType());
         Assertions.assertEquals(normalUserData.getAvatar(), normalUserInfoResponse.getAvatar());
@@ -718,11 +718,11 @@ class UserServiceImplTest {
         Mockito.when(userManager.getAccountByHandle(MOCKED_HANDLE)).thenReturn(user);
         Mockito.when(userDataManager.getNormalUserDataById(MOCKED_MONGO_ID)).thenReturn(normalUserData);
 
-        UserBasicInfoResponse userBasicInfoResponse = userService.getUserInfo(MOCKED_HANDLE);
+        BaseUserInfoResponse baseUserInfoResponse = userService.getUserInfo(MOCKED_HANDLE);
 
         /// region 校验用户的数据信息
 
-        NormalUserInfoResponse normalUserInfoResponse = (NormalUserInfoResponse) userBasicInfoResponse;
+        NormalUserInfoResponse normalUserInfoResponse = (NormalUserInfoResponse) baseUserInfoResponse;
         Assertions.assertEquals(user.getHandle(), normalUserInfoResponse.getHandle());
         Assertions.assertEquals(AccountType.NORMAL, user.getType());
         Assertions.assertEquals(normalUserData.getAvatar(), normalUserInfoResponse.getAvatar());
@@ -777,9 +777,9 @@ class UserServiceImplTest {
         Mockito.when(userDataManager.getBatchUserDataById(MOCKED_MONGO_ID)).thenReturn(batchUserData);
         Mockito.when(batchManager.selectBatchById(MOCKED_BATCH_ID)).thenReturn(Optional.of(batch));
 
-        UserBasicInfoResponse userBasicInfoResponse = userService.getUserInfo(MOCKED_HANDLE);
+        BaseUserInfoResponse baseUserInfoResponse = userService.getUserInfo(MOCKED_HANDLE);
 
-        BatchUserInfoResponse batchUserInfoResponse = (BatchUserInfoResponse) userBasicInfoResponse;
+        BatchUserInfoResponse batchUserInfoResponse = (BatchUserInfoResponse) baseUserInfoResponse;
 
         Assertions.assertEquals(user.getHandle(), batchUserInfoResponse.getHandle());
         Assertions.assertEquals(AccountType.BATCH, batchUserInfoResponse.getType());

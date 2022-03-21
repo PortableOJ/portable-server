@@ -10,8 +10,8 @@ import com.portable.server.model.request.user.PermissionRequest;
 import com.portable.server.model.request.user.RegisterRequest;
 import com.portable.server.model.request.user.UpdatePasswordRequest;
 import com.portable.server.model.response.Response;
+import com.portable.server.model.response.user.BaseUserInfoResponse;
 import com.portable.server.model.response.user.NormalUserInfoResponse;
-import com.portable.server.model.response.user.UserBasicInfoResponse;
 import com.portable.server.service.UserService;
 import com.portable.server.type.PermissionType;
 import com.portable.server.util.RequestSessionConstant;
@@ -45,12 +45,12 @@ public class UserController {
     private static final Long IMAGE_FILE_MAX_SIZE = 1024 * 1024 * 10L;
 
     @PostMapping("/login")
-    public Response<UserBasicInfoResponse> login(HttpServletRequest request, @Validated @RequestBody LoginRequest loginRequest) throws PortableException {
+    public Response<BaseUserInfoResponse> login(HttpServletRequest request, @Validated @RequestBody LoginRequest loginRequest) throws PortableException {
         UserContext.set(UserContext.getNullUser());
-        UserBasicInfoResponse userBasicInfoResponse = userService.login(loginRequest, request.getRemoteHost());
+        BaseUserInfoResponse baseUserInfoResponse = userService.login(loginRequest, request.getRemoteHost());
         HttpSession httpSession = request.getSession();
-        httpSession.setAttribute(RequestSessionConstant.USER_ID, userBasicInfoResponse.getId());
-        return Response.ofOk(userBasicInfoResponse);
+        httpSession.setAttribute(RequestSessionConstant.USER_ID, baseUserInfoResponse.getId());
+        return Response.ofOk(baseUserInfoResponse);
     }
 
     @CheckCaptcha
@@ -74,7 +74,7 @@ public class UserController {
 
     @Deprecated
     @GetMapping("/check")
-    public Response<UserBasicInfoResponse> check() throws PortableException {
+    public Response<BaseUserInfoResponse> check() throws PortableException {
         if (!UserContext.ctx().isLogin()) {
             return Response.ofOk();
         }
@@ -82,7 +82,7 @@ public class UserController {
     }
 
     @GetMapping("/getUserInfo")
-    public Response<UserBasicInfoResponse> getUserInfo(@NotBlank(message = "A-01-006") String handle) throws PortableException {
+    public Response<BaseUserInfoResponse> getUserInfo(@NotBlank(message = "A-01-006") String handle) throws PortableException {
         return Response.ofOk(userService.getUserInfo(handle));
     }
 

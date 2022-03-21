@@ -10,9 +10,9 @@ import com.portable.server.model.batch.Batch;
 import com.portable.server.model.request.user.LoginRequest;
 import com.portable.server.model.request.user.RegisterRequest;
 import com.portable.server.model.request.user.UpdatePasswordRequest;
+import com.portable.server.model.response.user.BaseUserInfoResponse;
 import com.portable.server.model.response.user.BatchUserInfoResponse;
 import com.portable.server.model.response.user.NormalUserInfoResponse;
-import com.portable.server.model.response.user.UserBasicInfoResponse;
 import com.portable.server.model.user.BatchUserData;
 import com.portable.server.model.user.NormalUserData;
 import com.portable.server.model.user.User;
@@ -79,7 +79,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public UserBasicInfoResponse login(LoginRequest loginRequest, String ip) throws PortableException {
+    public BaseUserInfoResponse login(LoginRequest loginRequest, String ip) throws PortableException {
         User user = userManager.getAccountByHandle(loginRequest.getHandle());
         if (user == null) {
             throw PortableException.of("A-01-001");
@@ -150,7 +150,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public UserBasicInfoResponse getUserInfo(Long userId) throws PortableException {
+    public BaseUserInfoResponse getUserInfo(Long userId) throws PortableException {
         User user = userManager.getAccountById(userId);
         if (user == null) {
             throw PortableException.of("A-01-001");
@@ -159,7 +159,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public UserBasicInfoResponse getUserInfo(String handle) throws PortableException {
+    public BaseUserInfoResponse getUserInfo(String handle) throws PortableException {
         User user = userManager.getAccountByHandle(handle);
         if (user == null) {
             throw PortableException.of("A-01-001");
@@ -250,7 +250,7 @@ public class UserServiceImpl implements UserService {
         return targetUserData;
     }
 
-    private UserBasicInfoResponse getUserBasicInfoResponse(User user) throws PortableException {
+    private BaseUserInfoResponse getUserBasicInfoResponse(User user) throws PortableException {
         switch (user.getType()) {
             case LOCKED_NORMAL:
             case NORMAL:

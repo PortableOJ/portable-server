@@ -4,8 +4,8 @@ import com.portable.server.exception.PortableException;
 import com.portable.server.model.request.user.LoginRequest;
 import com.portable.server.model.request.user.RegisterRequest;
 import com.portable.server.model.request.user.UpdatePasswordRequest;
+import com.portable.server.model.response.user.BaseUserInfoResponse;
 import com.portable.server.model.response.user.NormalUserInfoResponse;
-import com.portable.server.model.response.user.UserBasicInfoResponse;
 import com.portable.server.type.OrganizationType;
 import com.portable.server.type.PermissionType;
 
@@ -26,7 +26,7 @@ public interface UserService {
      * @return 用户的信息
      * @throws PortableException 遇到意外情况抛出错误
      */
-    UserBasicInfoResponse login(LoginRequest loginRequest, String ip) throws PortableException;
+    BaseUserInfoResponse login(LoginRequest loginRequest, String ip) throws PortableException;
 
     /**
      * 注册普通用户
@@ -45,7 +45,7 @@ public interface UserService {
      * @throws PortableException 不存在则抛出错误
      */
     @Deprecated
-    UserBasicInfoResponse getUserInfo(Long userId) throws PortableException;
+    BaseUserInfoResponse getUserInfo(Long userId) throws PortableException;
 
     /**
      * 根据用户的 handle 获取用户的信息
@@ -54,7 +54,7 @@ public interface UserService {
      * @return 用户信息
      * @throws PortableException 不存在则抛出错误
      */
-    UserBasicInfoResponse getUserInfo(String handle) throws PortableException;
+    BaseUserInfoResponse getUserInfo(String handle) throws PortableException;
 
     /**
      * 修改用户所在组织

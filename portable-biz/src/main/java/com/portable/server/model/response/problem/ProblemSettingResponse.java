@@ -8,6 +8,9 @@ import lombok.Data;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * @author shiroha
+ */
 @Data
 public class ProblemSettingResponse {
 

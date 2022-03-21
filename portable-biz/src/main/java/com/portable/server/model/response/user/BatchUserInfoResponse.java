@@ -10,7 +10,7 @@ import lombok.EqualsAndHashCode;
  */
 @Data
 @EqualsAndHashCode(callSuper = true)
-public class BatchUserInfoResponse extends UserBasicInfoResponse {
+public class BatchUserInfoResponse extends BaseUserInfoResponse {
 
     /**
      * 绑定至的比赛 ID
