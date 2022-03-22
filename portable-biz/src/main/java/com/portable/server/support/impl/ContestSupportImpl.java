@@ -98,6 +98,7 @@ public class ContestSupportImpl implements ContestSupport {
         CACHED_RANK = Collections.synchronizedMap(CACHED_RANK.entrySet().stream()
                 .sequential()
                 .map(longDateEntry -> {
+                    // 超过了更新时间，则清理缓存
                     if (longDateEntry.getValue().before(now)) {
                         redisListKit.clear(RANK_LIST_PREFIX, longDateEntry.getKey());
                         redisHashKit.clear(RANK_HASH_PREFIX, longDateEntry.getKey());
