@@ -35,6 +35,7 @@ public interface BatchMapper {
 
     /**
      * 基于批量用户 id 查找批量用户
+     *
      * @param id 批量用户 ID
      * @return 批量用户
      */
@@ -66,9 +67,16 @@ public interface BatchMapper {
     /**
      * 更新批量用户绑定至的比赛
      *
-     * @param id        用户 ID
+     * @param id         用户 ID
      * @param newContest 新比赛
      */
     void updateBatchContest(@Param("id") Long id, @Param("newContest") Long newContest);
 
+    /**
+     * 修改批量用户组的 IP 锁状态
+     *
+     * @param id     用户组 ID
+     * @param ipLock 新的锁状态
+     */
+    void updateBatchIpLock(@Param("id") Long id, @Param("ipLock") Boolean ipLock);
 }

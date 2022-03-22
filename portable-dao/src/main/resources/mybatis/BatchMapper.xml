@@ -64,4 +64,10 @@
         WHERE id = #{id}
     </update>
 
+    <update id="updateBatchIpLock">
+        UPDATE batch
+        SET ip_lock = #{ipLock}
+        WHERE id = #{id}
+    </update>
+
 </mapper>

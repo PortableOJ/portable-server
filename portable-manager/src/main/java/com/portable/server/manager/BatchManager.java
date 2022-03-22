@@ -76,4 +76,6 @@ public interface BatchManager {
      * @param newContest 新比赛
      */
     void updateBatchContest(Long id, Long newContest);
+
+    // TODO: update ip lock
 }
