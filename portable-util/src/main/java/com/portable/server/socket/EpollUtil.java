@@ -66,6 +66,8 @@ public class EpollUtil {
         DDOS_IP = CacheBuilder.newBuilder()
                 .maximumSize(DDOS_CACHE_SIZE)
                 .build(new CacheLoader<String, Integer>() {
+
+                    @NonNull
                     @Override
                     public Integer load(@NonNull String s) {
                         return 0;

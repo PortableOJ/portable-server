@@ -14,6 +14,7 @@ public enum ProblemStatusType implements ExceptionTextType {
      * 正常
      */
     NORMAL("正常", false, true, true) {
+
         @Override
         public ProblemStatusType toUntreated() {
             return UNTREATED;
@@ -34,6 +35,7 @@ public enum ProblemStatusType implements ExceptionTextType {
      * 没有处理过的题目
      */
     UNTREATED("未处理", false, false, false) {
+
         @Override
         public ProblemStatusType toUntreated() {
             return UNTREATED;
@@ -53,47 +55,18 @@ public enum ProblemStatusType implements ExceptionTextType {
     /**
      * 等待处理
      */
-    PENDING("等待处理", true, false, false) {
-        @Override
-        public ProblemStatusType toUntreated() throws PortableException {
-            throw PortableException.of("S-01-004", TREATING, "toUntreated");
-        }
-
-        @Override
-        public ProblemStatusType toUncheck() throws PortableException {
-            throw PortableException.of("S-01-004", TREATING, "toUncheck");
-        }
-
-        @Override
-        public ProblemStatusType toBuild() throws PortableException {
-            throw PortableException.of("S-01-004", TREATING, "toBuild");
-        }
-    },
+    PENDING("等待处理", true, false, false),
 
     /**
      * 处理中
      */
-    TREATING("处理中", true, false, false) {
-        @Override
-        public ProblemStatusType toUntreated() throws PortableException {
-            throw PortableException.of("S-01-004", TREATING, "toUntreated");
-        }
-
-        @Override
-        public ProblemStatusType toUncheck() throws PortableException {
-            throw PortableException.of("S-01-004", TREATING, "toUncheck");
-        }
-
-        @Override
-        public ProblemStatusType toBuild() throws PortableException {
-            throw PortableException.of("S-01-004", TREATING, "toBuild");
-        }
-    },
+    TREATING("处理中", true, false, false),
 
     /**
      * 未校验
      */
     UNCHECK("未校验", false, true, false) {
+
         @Override
         public ProblemStatusType toUntreated() {
             return UNTREATED;
@@ -113,22 +86,7 @@ public enum ProblemStatusType implements ExceptionTextType {
     /**
      * 校验中
      */
-    CHECKING("校验中", true, true, false) {
-        @Override
-        public ProblemStatusType toUntreated() throws PortableException {
-            throw PortableException.of("S-01-004", CHECKING, "toUntreated");
-        }
-
-        @Override
-        public ProblemStatusType toUncheck() throws PortableException {
-            throw PortableException.of("S-01-004", CHECKING, "toUncheck");
-        }
-
-        @Override
-        public ProblemStatusType toBuild() throws PortableException {
-            throw PortableException.of("S-01-004", CHECKING, "toBuild");
-        }
-    },
+    CHECKING("校验中", true, true, false),
 
     /**
      * 处理失败
@@ -183,9 +141,15 @@ public enum ProblemStatusType implements ExceptionTextType {
         this.checked = checked;
     }
 
-    public abstract ProblemStatusType toUntreated() throws PortableException;
+    public ProblemStatusType toUntreated() throws PortableException {
+        throw PortableException.of("S-01-004", this, "toUntreated");
+    }
 
-    public abstract ProblemStatusType toUncheck() throws PortableException;
+    public ProblemStatusType toUncheck() throws PortableException {
+        throw PortableException.of("S-01-004", this, "toUncheck");
+    }
 
-    public abstract ProblemStatusType toBuild() throws PortableException;
+    public ProblemStatusType toBuild() throws PortableException {
+        throw PortableException.of("S-01-004", this, "toBuild");
+    }
 }
