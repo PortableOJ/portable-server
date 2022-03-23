@@ -14,7 +14,6 @@ import com.portable.server.model.response.user.BaseUserInfoResponse;
 import com.portable.server.model.response.user.BatchAdminUserInfoResponse;
 import com.portable.server.model.response.user.BatchUserInfoResponse;
 import com.portable.server.model.response.user.NormalUserInfoResponse;
-import com.portable.server.model.response.user.UserBasicInfoResponse;
 import com.portable.server.model.user.BatchUserData;
 import com.portable.server.model.user.NormalUserData;
 import com.portable.server.model.user.User;
@@ -87,7 +86,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public BaseUserInfoResponse login(LoginRequest loginRequest, String ip) throws PortableException {
         User user = userManager.getAccountByHandle(loginRequest.getHandle())
-                .orElseThrow(() -> PortableException.of("A-01-001"));
+                .orElseThrow(PortableException.from("A-01-001"));
         if (!BCryptEncoder.match(loginRequest.getPassword(), user.getPassword())) {
             throw PortableException.of("A-01-002");
         }
@@ -133,8 +132,10 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public synchronized NormalUserInfoResponse register(RegisterRequest registerRequest) throws PortableException {
-        userManager.getAccountByHandle(registerRequest.getHandle())
-                .orElseThrow(() -> PortableException.of("A-01-003"));
+        Optional<User> userOptional = userManager.getAccountByHandle(registerRequest.getHandle());
+        if (userOptional.isPresent()) {
+            throw PortableException.of("A-01-003");
+        }
 
         NormalUserData normalUserData = userDataManager.newNormalUserData();
         userDataManager.insertUserData(normalUserData);
@@ -153,22 +154,20 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public BaseUserInfoResponse getUserInfo(Long userId) throws PortableException {
-        User user = userManager.getAccountById(userId).orElseThrow(() -> PortableException.of("A-01-001"));
+        User user = userManager.getAccountById(userId).orElseThrow(PortableException.from("A-01-001"));
         return getUserBasicInfoResponse(user);
     }
 
+    @Override
     public BaseUserInfoResponse getUserInfo(String handle) throws PortableException {
         User user = userManager.getAccountByHandle(handle)
-                .orElseThrow(() -> PortableException.of("A-01-001"));
+                .orElseThrow(PortableException.from("A-01-001"));
         return getUserBasicInfoResponse(user);
     }
 
     @Override
     public BatchAdminUserInfoResponse getBatchUserInfo(String handle) throws PortableException {
-        User user = userManager.getAccountByHandle(handle);
-        if (user == null) {
-            throw PortableException.of("A-01-001");
-        }
+        User user = userManager.getAccountByHandle(handle).orElseThrow(PortableException.from("A-01-001"));
         if (!AccountType.BATCH.equals(user.getType())) {
             throw PortableException.of("A-01-014");
         }
@@ -239,7 +238,7 @@ public class UserServiceImpl implements UserService {
     public void updatePassword(UpdatePasswordRequest updatePasswordRequest) throws PortableException {
         UserContext userContext = UserContext.ctx();
         User user = userManager.getAccountById(userContext.getId())
-                .orElseThrow(() -> PortableException.of("A-01-001"));
+                .orElseThrow(PortableException.from("A-01-001"));
         if (!user.getType().getIsNormal()) {
             throw PortableException.of("A-01-011");
         }
@@ -251,10 +250,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public void clearBatchUserIpList(String handle) throws PortableException {
-        User user = userManager.getAccountByHandle(handle);
-        if (user == null) {
-            throw PortableException.of("A-01-001");
-        }
+        User user = userManager.getAccountByHandle(handle).orElseThrow(PortableException.from("A-01-001"));
         if (!AccountType.BATCH.equals(user.getType())) {
             throw PortableException.of("A-01-014");
         }
@@ -274,7 +270,7 @@ public class UserServiceImpl implements UserService {
 
     private NormalUserData organizationCheck(Long target) throws PortableException {
         User user = userManager.getAccountById(target)
-                .orElseThrow(() -> PortableException.of("A-01-001"));
+                .orElseThrow(PortableException.from("A-01-001"));
         if (!user.getType().getIsNormal()) {
             throw PortableException.of("A-02-003");
         }
