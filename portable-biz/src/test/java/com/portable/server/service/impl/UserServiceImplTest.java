@@ -776,6 +776,7 @@ class UserServiceImplTest {
         Mockito.when(userManager.getAccountByHandle(MOCKED_HANDLE)).thenReturn(user);
         Mockito.when(userDataManager.getBatchUserDataById(MOCKED_MONGO_ID)).thenReturn(batchUserData);
         Mockito.when(batchManager.selectBatchById(MOCKED_BATCH_ID)).thenReturn(Optional.of(batch));
+        userContextMockedStatic.when(UserContext::ctx).thenReturn(userContext);
 
         BaseUserInfoResponse baseUserInfoResponse = userService.getUserInfo(MOCKED_HANDLE);
 
