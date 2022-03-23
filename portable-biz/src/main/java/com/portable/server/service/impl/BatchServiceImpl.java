@@ -144,4 +144,14 @@ public class BatchServiceImpl implements BatchService {
         }
         return BatchListResponse.of(batch, contest);
     }
+
+    @Override
+    public void changeBatchIpLock(Long id, Boolean ipLock) throws PortableException {
+        Batch batch = batchManager.selectBatchById(id)
+                .orElseThrow(PortableException.from("A-10-006", id));
+        if (!Objects.equals(batch.getOwner(), UserContext.ctx().getId())) {
+            throw PortableException.of("A-10-002");
+        }
+        batchManager.updateBatchIpLock(id, ipLock);
+    }
 }

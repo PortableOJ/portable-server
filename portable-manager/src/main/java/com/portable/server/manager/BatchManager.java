@@ -72,10 +72,16 @@ public interface BatchManager {
     /**
      * 更新批量用户绑定至的比赛
      *
-     * @param id        用户 ID
+     * @param id         用户 ID
      * @param newContest 新比赛
      */
     void updateBatchContest(Long id, Long newContest);
 
-    // TODO: update ip lock
+    /**
+     * 更新批量用户组的 ip 锁状态
+     *
+     * @param id     用户组的 ID
+     * @param ipLock 新的锁状态
+     */
+    void updateBatchIpLock(Long id, Boolean ipLock);
 }

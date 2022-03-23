@@ -4,6 +4,7 @@ import com.portable.server.annotation.NeedLogin;
 import com.portable.server.annotation.PermissionRequirement;
 import com.portable.server.exception.PortableException;
 import com.portable.server.model.request.PageRequest;
+import com.portable.server.model.request.batch.BatchIpLockUpdateRequest;
 import com.portable.server.model.request.batch.BatchRequest;
 import com.portable.server.model.request.batch.BatchStatusUpdateRequest;
 import com.portable.server.model.response.PageResponse;
@@ -64,5 +65,13 @@ public class BatchController {
     @PermissionRequirement(PermissionType.CREATE_AND_EDIT_BATCH)
     public Response<BatchListResponse> getBatch(Long id) throws PortableException {
         return Response.ofOk(batchService.getBatch(id));
+    }
+
+    @NeedLogin
+    @PostMapping("/updateStatus")
+    @PermissionRequirement(PermissionType.CREATE_AND_EDIT_BATCH)
+    public Response<Void> updateIpLock(@Validated @RequestBody BatchIpLockUpdateRequest request) throws PortableException {
+        batchService.changeBatchIpLock(request.getId(), request.getIpLock());
+        return Response.ofOk();
     }
 }

@@ -41,9 +41,19 @@ public interface BatchService {
 
     /**
      * 查找自己拥有的批量用户组
+     *
      * @param id 用户组 ID
      * @return 用户组信息
      * @throws PortableException 无权限则抛出
      */
     BatchListResponse getBatch(Long id) throws PortableException;
+
+    /**
+     * 更新批量用户组的 ip 锁状态
+     *
+     * @param id     用户组的 ID
+     * @param ipLock 新的锁状态
+     * @throws PortableException 不存在此组则抛出
+     */
+    void changeBatchIpLock(Long id, Boolean ipLock) throws PortableException;
 }

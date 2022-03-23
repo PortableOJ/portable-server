@@ -66,4 +66,9 @@ public class BatchManagerImpl implements BatchManager {
     public void updateBatchContest(Long id, Long newContest) {
         batchMapper.updateBatchContest(id, newContest);
     }
+
+    @Override
+    public void updateBatchIpLock(Long id, Boolean ipLock) {
+        batchMapper.updateBatchIpLock(id, ipLock);
+    }
 }
