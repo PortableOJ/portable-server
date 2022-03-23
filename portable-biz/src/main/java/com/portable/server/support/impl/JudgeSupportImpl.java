@@ -27,7 +27,6 @@ import com.portable.server.model.user.User;
 import com.portable.server.socket.EpollManager;
 import com.portable.server.support.FileSupport;
 import com.portable.server.support.JudgeSupport;
-import com.portable.server.type.AccountType;
 import com.portable.server.type.JudgeCodeType;
 import com.portable.server.type.JudgeWorkType;
 import com.portable.server.type.LanguageType;
@@ -219,7 +218,7 @@ public class JudgeSupportImpl implements JudgeSupport {
                 problemManager.updateProblemCount(solutionJudgeWork.getProblemId(), 0, 1);
 
                 User user = userManager.getAccountById(solution.getUserId());
-                if (user != null && AccountType.NORMAL.equals(user.getType())) {
+                if (user != null && user.getType().getIsNormal()) {
                     NormalUserData normalUserData = userDataManager.getNormalUserDataById(user.getDataId());
                     normalUserData.setAccept(normalUserData.getAccept() + 1);
                     userDataManager.updateUserData(normalUserData);

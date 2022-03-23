@@ -12,7 +12,7 @@ import lombok.NoArgsConstructor;
  */
 @Data
 @NoArgsConstructor
-public abstract class UserBasicInfoResponse {
+public abstract class BaseUserInfoResponse {
 
     /**
      * 用户 id
@@ -29,7 +29,7 @@ public abstract class UserBasicInfoResponse {
      */
     private AccountType type;
 
-    UserBasicInfoResponse(User user) {
+    BaseUserInfoResponse(User user) {
         this.id = user.getId();
         this.handle = user.getHandle();
         this.type = user.getType();

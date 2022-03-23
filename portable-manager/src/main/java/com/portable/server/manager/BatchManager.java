@@ -4,6 +4,7 @@ import com.portable.server.model.batch.Batch;
 import com.portable.server.type.BatchStatusType;
 
 import java.util.List;
+import java.util.Optional;
 
 /**
  * @author shiroha
@@ -43,7 +44,7 @@ public interface BatchManager {
      * @param id 批量用户 ID
      * @return 批量用户
      */
-    Batch selectBatchById(Long id);
+    Optional<Batch> selectBatchById(Long id);
 
     /**
      * 基于公共前缀查找批量用户
@@ -71,8 +72,16 @@ public interface BatchManager {
     /**
      * 更新批量用户绑定至的比赛
      *
-     * @param id        用户 ID
+     * @param id         用户 ID
      * @param newContest 新比赛
      */
     void updateBatchContest(Long id, Long newContest);
+
+    /**
+     * 更新批量用户组的 ip 锁状态
+     *
+     * @param id     用户组的 ID
+     * @param ipLock 新的锁状态
+     */
+    void updateBatchIpLock(Long id, Boolean ipLock);
 }

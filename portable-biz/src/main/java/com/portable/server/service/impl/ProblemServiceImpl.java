@@ -45,7 +45,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
-import java.io.IOException;
 import java.io.OutputStream;
 import java.util.Arrays;
 import java.util.Collections;
@@ -341,11 +340,7 @@ public class ProblemServiceImpl implements ProblemService {
             problemPackage.getProblemData().getTestName().add(problemTestRequest.getName());
         }
 
-        try {
-            fileSupport.saveTestInput(problemTestRequest.getId(), problemTestRequest.getName(), problemTestRequest.getFileData().getInputStream());
-        } catch (IOException e) {
-            throw PortableException.of("A-04-005");
-        }
+        fileSupport.saveTestInput(problemTestRequest.getId(), problemTestRequest.getName(), problemTestRequest.getInputStream());
 
         if (problemPackage.getProblem().getStatusType().getTreated()) {
             problemPackage.getProblemData().nextVersion();

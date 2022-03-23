@@ -8,6 +8,7 @@ import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * @author shiroha
@@ -42,8 +43,8 @@ public class BatchManagerImpl implements BatchManager {
     }
 
     @Override
-    public Batch selectBatchById(Long id) {
-        return batchMapper.selectBatchById(id);
+    public Optional<Batch> selectBatchById(Long id) {
+        return Optional.of(batchMapper.selectBatchById(id));
     }
 
     @Override
@@ -64,5 +65,10 @@ public class BatchManagerImpl implements BatchManager {
     @Override
     public void updateBatchContest(Long id, Long newContest) {
         batchMapper.updateBatchContest(id, newContest);
+    }
+
+    @Override
+    public void updateBatchIpLock(Long id, Boolean ipLock) {
+        batchMapper.updateBatchIpLock(id, ipLock);
     }
 }

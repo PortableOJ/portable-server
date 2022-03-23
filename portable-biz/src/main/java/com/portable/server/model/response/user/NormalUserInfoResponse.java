@@ -16,7 +16,7 @@ import java.util.Set;
  */
 @Data
 @EqualsAndHashCode(callSuper = true)
-public class NormalUserInfoResponse extends UserBasicInfoResponse {
+public class NormalUserInfoResponse extends BaseUserInfoResponse {
 
     /**
      * 所属组织

@@ -179,13 +179,17 @@ public class ProblemController {
     public Response<Void> addTest(@NotNull(message = "A-04-001") @Min(value = 1, message = "A-04-001") Long id,
                                   @NotNull(message = "A-04-001") @Pattern(regexp = "^[a-zA-Z0-9_\\-]{1,15}$", message = "A-04-012") String name,
                                   @NotNull(message = "A-04-005") MultipartFile fileData) throws PortableException {
-        problemService.addProblemTest(
-                ProblemTestRequest.builder()
-                        .id(id)
-                        .fileData(fileData)
-                        .name(name)
-                        .build()
-        );
+        try {
+            problemService.addProblemTest(
+                    ProblemTestRequest.builder()
+                            .id(id)
+                            .inputStream(fileData.getInputStream())
+                            .name(name)
+                            .build()
+            );
+        } catch (IOException e) {
+            throw PortableException.of("A-04-005");
+        }
         return Response.ofOk();
     }
 

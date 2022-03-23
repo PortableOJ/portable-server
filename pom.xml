@@ -16,10 +16,18 @@
     <packaging>pom</packaging>
     <name>portable-server</name>
 
+    <developers>
+        <developer>
+            <id>Shiroha</id>
+            <name>Naruse Shiroha</name>
+            <email>keqing.hu@icloud.com</email>
+        </developer>
+    </developers>
+
     <properties>
         <java.version>1.8</java.version>
         <security.version>5.5.1</security.version>
-        <spring.version>2.5.4</spring.version>
+        <spring.version>2.6.4</spring.version>
         <lombok.version>1.18.20</lombok.version>
         <commons.version>2.5</commons.version>
         <guava.version>30.1.1-jre</guava.version>
@@ -82,96 +90,90 @@
                 <version>${project.version}</version>
             </dependency>
 
-<!--            <dependency>-->
-<!--                <groupId>org.springframework.boot</groupId>-->
-<!--                <artifactId>spring-boot-starter</artifactId>-->
-<!--            </dependency>-->
+            <!--spring 密码加密模块-->
             <dependency>
                 <groupId>org.springframework.security</groupId>
                 <artifactId>spring-security-core</artifactId>
                 <version>${security.version}</version>
             </dependency>
+            <!--spring web 启动-->
             <dependency>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-starter-web</artifactId>
                 <version>${spring.version}</version>
             </dependency>
+            <!--lombok-->
             <dependency>
                 <groupId>org.projectlombok</groupId>
                 <artifactId>lombok</artifactId>
                 <version>${lombok.version}</version>
             </dependency>
-<!--            <dependency>-->
-<!--                <groupId>org.springframework.boot</groupId>-->
-<!--                <artifactId>spring-boot-starter-test</artifactId>-->
-<!--                <scope>test</scope>-->
-<!--            </dependency>-->
-<!--            <dependency>-->
-<!--                <groupId>commons-lang</groupId>-->
-<!--                <artifactId>commons-lang</artifactId>-->
-<!--                <version>${commons.version}</version>-->
-<!--            </dependency>-->
+            <!--google guava-->
             <dependency>
                 <groupId>com.google.guava</groupId>
                 <artifactId>guava</artifactId>
                 <version>${guava.version}</version>
             </dependency>
+            <!--fastjson-->
             <dependency>
                 <groupId>com.alibaba</groupId>
                 <artifactId>fastjson</artifactId>
                 <version>${fastjson.version}</version>
             </dependency>
+            <!--mongo-->
             <dependency>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-starter-data-mongodb</artifactId>
                 <version>${mongo.version}</version>
             </dependency>
+            <!--mybatis-->
             <dependency>
                 <groupId>org.mybatis.spring.boot</groupId>
                 <artifactId>mybatis-spring-boot-starter</artifactId>
                 <version>${mybatis.version}</version>
             </dependency>
+            <!--mysql-->
             <dependency>
                 <groupId>mysql</groupId>
                 <artifactId>mysql-connector-java</artifactId>
                 <version>${mysql.version}</version>
                 <scope>runtime</scope>
             </dependency>
+            <!--redis-->
             <dependency>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-starter-data-redis</artifactId>
                 <version>${redis.version}</version>
             </dependency>
+            <!--tomcat-->
             <dependency>
                 <groupId>org.apache.tomcat.embed</groupId>
                 <artifactId>tomcat-embed-core</artifactId>
                 <version>${tomcat.version}</version>
                 <scope>compile</scope>
             </dependency>
-            <dependency>
-                <groupId>org.testng</groupId>
-                <artifactId>testng</artifactId>
-                <version>${testng.version}</version>
-                <scope>test</scope>
-            </dependency>
-            <dependency>
-                <groupId>org.springframework.boot</groupId>
-                <artifactId>spring-boot-test</artifactId>
-                <version>${spring.test.version}</version>
-                <scope>test</scope>
-            </dependency>
-            <dependency>
-                <groupId>junit</groupId>
-                <artifactId>junit</artifactId>
-                <version>${junit.version}</version>
-                <scope>test</scope>
-            </dependency>
+            <!--Mockito static 需要使用的-->
             <dependency>
                 <groupId>org.mockito</groupId>
                 <artifactId>mockito-inline</artifactId>
                 <version>${mockito.version}</version>
                 <scope>test</scope>
             </dependency>
+            <!--Mockito + junit 5-->
+            <dependency>
+                <groupId>org.mockito</groupId>
+                <artifactId>mockito-junit-jupiter</artifactId>
+                <version>${mockito.version}</version>
+                <scope>test</scope>
+            </dependency>
+            <!--测试使用，ReflectionTestUtils 等-->
+            <dependency>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-starter-test</artifactId>
+                <version>${spring.version}</version>
+                <scope>test</scope>
+            </dependency>
+            <!--swagger-->
             <dependency>
                 <groupId>io.springfox</groupId>
                 <artifactId>springfox-boot-starter</artifactId>
@@ -183,16 +185,19 @@
                 <artifactId>spring-boot-starter-validation</artifactId>
                 <version>${validator.version}</version>
             </dependency>
+            <!--JSON ignore 注解-->
             <dependency>
                 <groupId>com.fasterxml.jackson.core</groupId>
                 <artifactId>jackson-annotations</artifactId>
                 <version>${jackson.version}</version>
             </dependency>
+            <!--图片处理-->
             <dependency>
                 <groupId>net.coobird</groupId>
                 <artifactId>thumbnailator</artifactId>
                 <version>${thumbnailator.version}</version>
             </dependency>
+            <!--循环流-->
             <dependency>
                 <groupId>org.ostermiller</groupId>
                 <artifactId>utils</artifactId>
