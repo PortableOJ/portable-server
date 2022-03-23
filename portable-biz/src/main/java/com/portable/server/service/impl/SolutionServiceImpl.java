@@ -66,7 +66,7 @@ public class SolutionServiceImpl implements SolutionService {
         List<SolutionListResponse> solutionListResponseList = solutionList.stream()
                 .parallel()
                 .map(solution -> {
-                    User user = userManager.getAccountById(solution.getUserId());
+                    User user = userManager.getAccountById(solution.getUserId()).orElse(null);
                     Problem problem = problemManager.getProblemById(solution.getProblemId());
                     return SolutionListResponse.of(solution, user, problem);
                 })
@@ -94,7 +94,7 @@ public class SolutionServiceImpl implements SolutionService {
         if (solutionData == null) {
             throw PortableException.of("S-05-001");
         }
-        User user = userManager.getAccountById(solution.getUserId());
+        User user = userManager.getAccountById(solution.getUserId()).orElse(null);
         Problem problem = problemManager.getProblemById(solution.getProblemId());
         boolean shareJudgeMsg = Objects.equals(problem.getOwner(), userContext.getId())
                 || userContext.getPermissionTypeSet().contains(PermissionType.VIEW_SOLUTION_MESSAGE);

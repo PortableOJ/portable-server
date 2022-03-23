@@ -4,6 +4,8 @@ import com.portable.server.model.batch.Batch;
 import com.portable.server.model.contest.Contest;
 import com.portable.server.type.BatchStatusType;
 import lombok.Data;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * @author shiroha
@@ -46,7 +48,7 @@ public class BatchListResponse {
      */
     private BatchStatusType status;
 
-    BatchListResponse(Batch batch, Contest contest) {
+    BatchListResponse(@NotNull Batch batch, @Nullable Contest contest) {
         this.id = batch.getId();
         this.contestId = contest == null ? null : contest.getId();
         this.contestTitle = contest == null ? "暂无锁定比赛" : contest.getTitle();
@@ -56,7 +58,7 @@ public class BatchListResponse {
         this.status = batch.getStatus();
     }
 
-    public static BatchListResponse of(Batch batch, Contest contest) {
+    public static BatchListResponse of(@NotNull Batch batch, @Nullable Contest contest) {
         return new BatchListResponse(batch, contest);
     }
 }

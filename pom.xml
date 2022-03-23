@@ -46,6 +46,7 @@
         <validator.version>2.6.4</validator.version>
         <thumbnailator.version>0.4.17</thumbnailator.version>
         <ostermiller.version>1.07.00</ostermiller.version>
+        <jetbrains.version>23.0.0</jetbrains.version>
     </properties>
 
     <modules>
@@ -202,6 +203,11 @@
                 <groupId>org.ostermiller</groupId>
                 <artifactId>utils</artifactId>
                 <version>${ostermiller.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.jetbrains</groupId>
+                <artifactId>annotations</artifactId>
+                <version>${jetbrains.version}</version>
             </dependency>
         </dependencies>
     </dependencyManagement>

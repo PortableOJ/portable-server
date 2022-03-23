@@ -6,11 +6,15 @@ import com.portable.server.model.contest.BatchContestData;
 import com.portable.server.model.contest.Contest;
 import com.portable.server.model.contest.PasswordContestData;
 import com.portable.server.model.response.problem.ProblemListResponse;
+import com.portable.server.model.user.User;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -47,14 +51,14 @@ public class ContestAdminDetailResponse extends ContestDetailResponse {
      */
     private List<Long> problemRealId;
 
-    ContestAdminDetailResponse(Contest contest,
-                               BaseContestData contestData,
-                               String ownerHandle,
-                               List<ProblemListResponse> problemList,
-                               Set<String> coAuthor,
-                               List<Boolean> problemLock,
-                               Set<String> inviteUserSet) throws PortableException {
-        super(contest, contestData, ownerHandle, problemList, coAuthor);
+    ContestAdminDetailResponse(@NotNull Contest contest,
+                               @NotNull BaseContestData contestData,
+                               @Nullable User owner,
+                               @NotNull List<ProblemListResponse> problemList,
+                               @NotNull Set<User> coAuthor,
+                               @NotNull List<Boolean> problemLock,
+                               @NotNull Set<User> inviteUserSet) throws PortableException {
+        super(contest, contestData, owner, problemList, coAuthor);
         switch (contest.getAccessType()) {
             case PUBLIC:
                 break;
@@ -63,7 +67,11 @@ public class ContestAdminDetailResponse extends ContestDetailResponse {
                 this.password = passwordContestData.getPassword();
                 break;
             case PRIVATE:
-                this.inviteUserSet = inviteUserSet;
+                this.inviteUserSet = inviteUserSet.stream()
+                        .parallel()
+                        .filter(user -> !Objects.isNull(user))
+                        .map(User::getHandle)
+                        .collect(Collectors.toSet());
                 break;
             case BATCH:
                 BatchContestData batchContestData = (BatchContestData) contestData;
@@ -80,14 +88,14 @@ public class ContestAdminDetailResponse extends ContestDetailResponse {
 
     public static ContestAdminDetailResponse of(Contest contest,
                                                 BaseContestData contestData,
-                                                String ownerHandle,
+                                                User owner,
                                                 List<ProblemListResponse> problemList,
-                                                Set<String> coAuthor,
+                                                Set<User> coAuthor,
                                                 List<Boolean> problemLock,
-                                                Set<String> inviteUserSet) throws PortableException {
+                                                Set<User> inviteUserSet) throws PortableException {
         return new ContestAdminDetailResponse(contest,
                 contestData,
-                ownerHandle,
+                owner,
                 problemList,
                 coAuthor,
                 problemLock,
