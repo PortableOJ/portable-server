@@ -4,11 +4,13 @@ import com.portable.server.model.batch.Batch;
 import com.portable.server.model.user.User;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
 
 /**
  * @author shiroha
  */
 @Data
+@NoArgsConstructor
 @EqualsAndHashCode(callSuper = true)
 public class BatchUserInfoResponse extends BaseUserInfoResponse {
 

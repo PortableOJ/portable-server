@@ -68,7 +68,7 @@ public class BatchController {
     }
 
     @NeedLogin
-    @PostMapping("/updateStatus")
+    @PostMapping("/updateIpLock")
     @PermissionRequirement(PermissionType.CREATE_AND_EDIT_BATCH)
     public Response<Void> updateIpLock(@Validated @RequestBody BatchIpLockUpdateRequest request) throws PortableException {
         batchService.changeBatchIpLock(request.getId(), request.getIpLock());

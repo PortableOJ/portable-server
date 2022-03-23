@@ -5,6 +5,7 @@ import com.portable.server.model.request.user.LoginRequest;
 import com.portable.server.model.request.user.RegisterRequest;
 import com.portable.server.model.request.user.UpdatePasswordRequest;
 import com.portable.server.model.response.user.BaseUserInfoResponse;
+import com.portable.server.model.response.user.BatchAdminUserInfoResponse;
 import com.portable.server.model.response.user.NormalUserInfoResponse;
 import com.portable.server.type.OrganizationType;
 import com.portable.server.type.PermissionType;
@@ -55,6 +56,15 @@ public interface UserService {
      * @throws PortableException 不存在则抛出错误
      */
     BaseUserInfoResponse getUserInfo(String handle) throws PortableException;
+
+    /**
+     * 根据用户的 handle 获取批量用户的管理员级别信息
+     *
+     * @param handle 用户的 handle
+     * @return 用户信息
+     * @throws PortableException 不存在则抛出错误
+     */
+    BatchAdminUserInfoResponse getBatchUserInfo(String handle) throws PortableException;
 
     /**
      * 修改用户所在组织
@@ -114,4 +124,12 @@ public interface UserService {
      * @throws PortableException 密码错误则抛出
      */
     void updatePassword(UpdatePasswordRequest updatePasswordRequest) throws PortableException;
+
+    /**
+     * 清理批量用户的 IP 记录（这会导致之前的 IP 记录被清理）
+     *
+     * @param handle 用户的 handle
+     * @throws PortableException 用户不是批量用户时抛出
+     */
+    void clearBatchUserIpList(String handle) throws PortableException;
 }

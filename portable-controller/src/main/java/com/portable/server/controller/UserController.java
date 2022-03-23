@@ -4,6 +4,7 @@ import com.portable.server.annotation.CheckCaptcha;
 import com.portable.server.annotation.NeedLogin;
 import com.portable.server.annotation.PermissionRequirement;
 import com.portable.server.exception.PortableException;
+import com.portable.server.model.request.NameRequest;
 import com.portable.server.model.request.user.LoginRequest;
 import com.portable.server.model.request.user.OrganizationChangeRequest;
 import com.portable.server.model.request.user.PermissionRequest;
@@ -30,6 +31,7 @@ import javax.servlet.http.HttpSession;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import java.io.IOException;
+import java.util.Optional;
 
 /**
  * @author shiroha
@@ -47,7 +49,7 @@ public class UserController {
     @PostMapping("/login")
     public Response<BaseUserInfoResponse> login(HttpServletRequest request, @Validated @RequestBody LoginRequest loginRequest) throws PortableException {
         UserContext.set(UserContext.getNullUser());
-        BaseUserInfoResponse baseUserInfoResponse = userService.login(loginRequest, request.getRemoteHost());
+        BaseUserInfoResponse baseUserInfoResponse = userService.login(loginRequest, getIp(request));
         HttpSession httpSession = request.getSession();
         httpSession.setAttribute(RequestSessionConstant.USER_ID, baseUserInfoResponse.getId());
         return Response.ofOk(baseUserInfoResponse);
@@ -84,6 +86,13 @@ public class UserController {
     @GetMapping("/getUserInfo")
     public Response<BaseUserInfoResponse> getUserInfo(@NotBlank(message = "A-01-006") String handle) throws PortableException {
         return Response.ofOk(userService.getUserInfo(handle));
+    }
+
+    @NeedLogin(normal = true)
+    @GetMapping("/getBatchUserAdminInfo")
+    @PermissionRequirement(PermissionType.CREATE_AND_EDIT_BATCH)
+    public Response<BaseUserInfoResponse> getBatchUserAdminInfo(@NotBlank(message = "A-01-006") String handle) throws PortableException {
+        return Response.ofOk(userService.getBatchUserInfo(handle));
     }
 
     @NeedLogin(normal = true)
@@ -140,5 +149,18 @@ public class UserController {
         HttpSession httpSession = request.getSession();
         httpSession.removeAttribute(RequestSessionConstant.USER_ID);
         return Response.ofOk();
+    }
+
+    @NeedLogin(normal = true)
+    @PostMapping("/clearIpList")
+    @PermissionRequirement(PermissionType.CREATE_AND_EDIT_BATCH)
+    public Response<Void> clearBatchUserIpList(@Validated @RequestBody NameRequest nameRequest) throws PortableException {
+        userService.clearBatchUserIpList(nameRequest.getName());
+        return Response.ofOk();
+    }
+
+    private String getIp(HttpServletRequest servletRequest) {
+        return Optional.ofNullable(servletRequest.getHeader("X-FORWARDED-FOR"))
+                .orElseGet(servletRequest::getRemoteAddr);
     }
 }

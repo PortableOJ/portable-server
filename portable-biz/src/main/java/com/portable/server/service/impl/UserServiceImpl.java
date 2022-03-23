@@ -11,6 +11,7 @@ import com.portable.server.model.request.user.LoginRequest;
 import com.portable.server.model.request.user.RegisterRequest;
 import com.portable.server.model.request.user.UpdatePasswordRequest;
 import com.portable.server.model.response.user.BaseUserInfoResponse;
+import com.portable.server.model.response.user.BatchAdminUserInfoResponse;
 import com.portable.server.model.response.user.BatchUserInfoResponse;
 import com.portable.server.model.response.user.NormalUserInfoResponse;
 import com.portable.server.model.user.BatchUserData;
@@ -29,8 +30,10 @@ import org.springframework.stereotype.Component;
 import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 /**
@@ -169,6 +172,28 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public BatchAdminUserInfoResponse getBatchUserInfo(String handle) throws PortableException {
+        User user = userManager.getAccountByHandle(handle);
+        if (user == null) {
+            throw PortableException.of("A-01-001");
+        }
+        if (!AccountType.BATCH.equals(user.getType())) {
+            throw PortableException.of("A-01-014");
+        }
+        BatchUserData batchUserData = userDataManager.getBatchUserDataById(user.getDataId());
+        if (batchUserData == null) {
+            throw PortableException.of("S-02-001");
+        }
+        Batch batch = batchManager.selectBatchById(batchUserData.getBatchId())
+                .orElseThrow(PortableException.from("A-10-006", batchUserData.getBatchId()));
+        // 校验是否是自己的
+        if (!Objects.equals(UserContext.ctx().getId(), batch.getOwner())) {
+            throw PortableException.of("A-10-002");
+        }
+        return BatchAdminUserInfoResponse.of(user, batchUserData, batch);
+    }
+
+    @Override
     public void changeOrganization(Long targetId, OrganizationType newOrganization) throws PortableException {
         NormalUserData targetUserData = organizationCheck(targetId);
         targetUserData.setOrganization(newOrganization);
@@ -229,6 +254,29 @@ public class UserServiceImpl implements UserService {
             throw PortableException.of("A-01-002");
         }
         userManager.updatePassword(user.getId(), BCryptEncoder.encoder(updatePasswordRequest.getNewPassword()));
+    }
+
+    @Override
+    public void clearBatchUserIpList(String handle) throws PortableException {
+        User user = userManager.getAccountByHandle(handle);
+        if (user == null) {
+            throw PortableException.of("A-01-001");
+        }
+        if (!AccountType.BATCH.equals(user.getType())) {
+            throw PortableException.of("A-01-014");
+        }
+        BatchUserData batchUserData = userDataManager.getBatchUserDataById(user.getDataId());
+        if (batchUserData == null) {
+            throw PortableException.of("S-02-001");
+        }
+        Batch batch = batchManager.selectBatchById(batchUserData.getBatchId())
+                .orElseThrow(PortableException.from("A-10-006", batchUserData.getBatchId()));
+        // 校验是否是自己的
+        if (!Objects.equals(UserContext.ctx().getId(), batch.getOwner())) {
+            throw PortableException.of("A-10-002");
+        }
+        batchUserData.setIpList(new ArrayList<>());
+        userDataManager.updateUserData(batchUserData);
     }
 
     private NormalUserData organizationCheck(Long target) throws PortableException {
