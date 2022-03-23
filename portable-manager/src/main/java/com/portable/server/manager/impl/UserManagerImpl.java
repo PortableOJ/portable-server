@@ -44,7 +44,7 @@ public class UserManagerImpl implements UserManager {
 
     @Override
     public Optional<User> getAccountByHandle(String handle) {
-        return Optional.of(userMapper.selectAccountByHandle(handle));
+        return Optional.ofNullable(userMapper.selectAccountByHandle(handle));
     }
 
     @Override
@@ -58,7 +58,7 @@ public class UserManagerImpl implements UserManager {
 
     @Override
     public Optional<User> getAccountById(Long id) {
-        return Optional.of(userMapper.selectAccountById(id));
+        return Optional.ofNullable(userMapper.selectAccountById(id));
     }
 
     @Override

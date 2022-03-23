@@ -44,7 +44,7 @@ public class BatchManagerImpl implements BatchManager {
 
     @Override
     public Optional<Batch> selectBatchById(Long id) {
-        return Optional.of(batchMapper.selectBatchById(id));
+        return Optional.ofNullable(batchMapper.selectBatchById(id));
     }
 
     @Override
