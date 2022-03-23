@@ -17,12 +17,12 @@ public class BatchAdminUserInfoResponse extends BatchUserInfoResponse {
 
     private List<BatchUserData.IpRecord> ipRecordList;
 
-    BatchAdminUserInfoResponse(User user, BatchUserData userData, Batch batch) {
-        super(user, batch);
+    BatchAdminUserInfoResponse(User user, BatchUserData userData, Batch batch, Boolean isOwner) {
+        super(user, batch, isOwner);
         this.ipRecordList = userData.getIpList();
     }
 
-    public static BatchAdminUserInfoResponse of(User user, BatchUserData userData, Batch batch) {
-        return new BatchAdminUserInfoResponse(user, userData, batch);
+    public static BatchAdminUserInfoResponse of(User user, BatchUserData userData, Batch batch, Boolean isOwner) {
+        return new BatchAdminUserInfoResponse(user, userData, batch, isOwner);
     }
 }

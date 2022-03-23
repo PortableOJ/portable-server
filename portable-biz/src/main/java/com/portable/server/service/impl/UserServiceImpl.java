@@ -125,7 +125,7 @@ public class UserServiceImpl implements UserService {
                 }
                 UserContext.set(user);
                 UserContext.set(batch);
-                return BatchUserInfoResponse.of(user, batch);
+                return BatchUserInfoResponse.of(user, batch, false);
             default:
                 throw PortableException.of("S-02-002", user.getType());
         }
@@ -190,7 +190,7 @@ public class UserServiceImpl implements UserService {
         if (!Objects.equals(UserContext.ctx().getId(), batch.getOwner())) {
             throw PortableException.of("A-10-002");
         }
-        return BatchAdminUserInfoResponse.of(user, batchUserData, batch);
+        return BatchAdminUserInfoResponse.of(user, batchUserData, batch, true);
     }
 
     @Override
@@ -318,7 +318,7 @@ public class UserServiceImpl implements UserService {
                 }
                 Batch batch = batchManager.selectBatchById(batchUserData.getBatchId())
                         .orElseThrow(PortableException.from("A-10-006", batchUserData.getBatchId()));
-                return BatchUserInfoResponse.of(user, batch);
+                return BatchUserInfoResponse.of(user, batch, Objects.equals(UserContext.ctx().getId(), batch.getOwner()));
             default:
                 throw PortableException.of("S-02-002", user.getType());
         }
