@@ -188,6 +188,9 @@ public class ContestSupportImpl implements ContestSupport {
         if (contestData == null) {
             throw PortableException.of("S-07-002", contestId);
         }
+        // 删除之前记录的通过数量
+        contestData.getProblemList().forEach(BaseContestData.ContestProblemData::init);
+
         Calendar calendar = Calendar.getInstance();
         calendar.setTime(contest.getStartTime());
         calendar.add(Calendar.MINUTE, contest.getDuration() - contestData.getFreezeTime());

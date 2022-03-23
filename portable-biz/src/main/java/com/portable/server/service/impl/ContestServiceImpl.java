@@ -176,7 +176,7 @@ public class ContestServiceImpl implements ContestService {
         BaseContestData.ContestProblemData contestProblemData = contestPackage.getContestData().getProblemList().get(problemIndex);
         Problem problem = problemManager.getProblemById(contestProblemData.getProblemId());
         ProblemData problemData = problemDataManager.getProblemData(problem.getDataId());
-        User user = userManager.getAccountById(problem.getOwner());
+        User user = userManager.getAccountById(problem.getOwner()).orElse(null);
         ProblemDetailResponse problemDetailResponse = ProblemDetailResponse.of(problem, problemData, user);
         problemDetailResponse.setId(Long.valueOf(problemIndex));
         return problemDetailResponse;
@@ -220,7 +220,7 @@ public class ContestServiceImpl implements ContestService {
         Map<Long, Integer> problemIdToProblemIndexMap = contestPackage.getContestData().idToIndex();
         List<SolutionListResponse> solutionListResponseList = solutionList.stream()
                 .map(solution -> {
-                    User user = userManager.getAccountById(solution.getUserId());
+                    User user = userManager.getAccountById(solution.getUserId()).orElse(null);
                     Problem problem = problemManager.getProblemById(solution.getProblemId());
                     SolutionListResponse solutionListResponse = SolutionListResponse.of(solution, user, problem);
                     solutionListResponse.setProblemId(Long.valueOf(problemIdToProblemIndexMap.get(problem.getId())));
@@ -249,7 +249,7 @@ public class ContestServiceImpl implements ContestService {
                 || contestPackage.getContestData().getCoAuthor().contains(curUserId);
         if (endContest || self || admin) {
             SolutionData solutionData = solutionDataManager.getSolutionData(solution.getDataId());
-            User user = userManager.getAccountById(solution.getUserId());
+            User user = userManager.getAccountById(solution.getUserId()).orElse(null);
             Problem problem = problemManager.getProblemById(solution.getProblemId());
             SolutionDetailResponse solutionDetailResponse = SolutionDetailResponse.of(solution, solutionData, user, problem, admin);
             solutionDetailResponse.setProblemId(Long.valueOf(problemIdToProblemIndexMap.get(problem.getId())));
@@ -296,7 +296,7 @@ public class ContestServiceImpl implements ContestService {
         Map<Long, Integer> problemIdToProblemIndexMap = contestPackage.getContestData().idToIndex();
         List<SolutionListResponse> solutionListResponseList = solutionList.stream()
                 .map(solution -> {
-                    User user = userManager.getAccountById(solution.getUserId());
+                    User user = userManager.getAccountById(solution.getUserId()).orElse(null);
                     Problem problem = problemManager.getProblemById(solution.getProblemId());
                     SolutionListResponse solutionListResponse = SolutionListResponse.of(solution, user, problem);
                     solutionListResponse.setProblemId(Long.valueOf(problemIdToProblemIndexMap.get(problem.getId())));
@@ -318,7 +318,7 @@ public class ContestServiceImpl implements ContestService {
 
         Map<Long, Integer> problemIdToProblemIndexMap = contestPackage.getContestData().idToIndex();
         SolutionData solutionData = solutionDataManager.getSolutionData(solution.getDataId());
-        User user = userManager.getAccountById(solution.getUserId());
+        User user = userManager.getAccountById(solution.getUserId()).orElse(null);
         Problem problem = problemManager.getProblemById(solution.getProblemId());
         SolutionDetailResponse solutionDetailResponse = SolutionDetailResponse.of(solution, solutionData, user, problem, true);
         solutionDetailResponse.setProblemId(Long.valueOf(problemIdToProblemIndexMap.get(problem.getId())));
@@ -338,18 +338,16 @@ public class ContestServiceImpl implements ContestService {
         List<ContestRankItem> contestRankItemList = contestSupport.getContestRank(contestId, response.getPageSize(), response.offset());
         List<ContestRankListResponse> contestRankListResponseList = contestRankItemList.stream()
                 .map(contestRankItem -> {
-                    User user = userManager.getAccountById(contestRankItem.getUserId());
-                    if (user == null) {
-                        return ContestRankListResponse.of(contestRankItem, "");
-                    }
-                    return ContestRankListResponse.of(contestRankItem, user.getHandle());
+                    User user = userManager.getAccountById(contestRankItem.getUserId()).orElse(null);
+                    return ContestRankListResponse.of(contestRankItem, user);
                 })
                 .collect(Collectors.toList());
         UserContext userContext = UserContext.ctx();
         ContestRankItem userItem = contestSupport.getContestByUserId(contestId, userContext.getId());
         ContestRankListResponse metaData = null;
         if (userItem != null) {
-            metaData = ContestRankListResponse.of(userItem, userContext.getHandle());
+            metaData = ContestRankListResponse.of(userItem, null);
+            metaData.setUserHandle(userContext.getHandle());
         }
         response.setData(contestRankListResponseList);
         response.setMetaData(metaData);
@@ -547,13 +545,10 @@ public class ContestServiceImpl implements ContestService {
         }
 
         // 获取主办方和出题人的名称
-        User owner = userManager.getAccountById(contestPackage.getContest().getOwner());
-        Set<String> coAuthor = contestPackage.getContestData().getCoAuthor().stream()
+        User owner = userManager.getAccountById(contestPackage.getContest().getOwner()).orElse(null);
+        Set<User> coAuthor = contestPackage.getContestData().getCoAuthor().stream()
                 .parallel()
-                .map(aLong -> {
-                    User author = userManager.getAccountById(aLong);
-                    return author == null ? "" : author.getHandle();
-                })
+                .map(aLong -> userManager.getAccountById(aLong).orElse(null))
                 .collect(Collectors.toSet());
 
         // 获取题目信息
@@ -588,14 +583,14 @@ public class ContestServiceImpl implements ContestService {
             }
         }
         if (info) {
-            return ContestInfoResponse.of(contestPackage.getContest(), contestPackage.getContestData(), owner.getHandle(), coAuthor);
+            return ContestInfoResponse.of(contestPackage.getContest(), contestPackage.getContestData(), owner, coAuthor);
         }
         if (admin) {
             return getContestDetailAdmin(contestPackage, owner, problemListResponses, problemLock, coAuthor);
         }
         return ContestAdminDetailResponse.of(contestPackage.getContest(),
                 contestPackage.getContestData(),
-                owner.getHandle(),
+                owner,
                 problemListResponses,
                 coAuthor);
     }
@@ -604,8 +599,8 @@ public class ContestServiceImpl implements ContestService {
                                                        User owner,
                                                        List<ProblemListResponse> problemListResponses,
                                                        List<Boolean> problemLock,
-                                                       Set<String> coAuthor) throws PortableException {
-        Set<String> inviteUserSet = null;
+                                                       Set<User> coAuthor) throws PortableException {
+        Set<User> inviteUserSet = null;
         switch (contestPackage.getContest().getAccessType()) {
             case PUBLIC:
             case PASSWORD:
@@ -614,14 +609,7 @@ public class ContestServiceImpl implements ContestService {
             case PRIVATE:
                 PrivateContestData privateContestData = (PrivateContestData) contestPackage.getContestData();
                 inviteUserSet = privateContestData.getInviteUserSet().stream()
-                        .map(aLong -> {
-                            User user = userManager.getAccountById(aLong);
-                            if (user == null) {
-                                return null;
-                            }
-                            return user.getHandle();
-                        })
-                        .filter(s -> !Objects.isNull(s))
+                        .map(aLong -> userManager.getAccountById(aLong).orElse(null))
                         .collect(Collectors.toSet());
                 break;
             default:
@@ -629,7 +617,7 @@ public class ContestServiceImpl implements ContestService {
         }
         return ContestAdminDetailResponse.of(contestPackage.getContest(),
                 contestPackage.getContestData(),
-                owner.getHandle(),
+                owner,
                 problemListResponses,
                 coAuthor,
                 problemLock,

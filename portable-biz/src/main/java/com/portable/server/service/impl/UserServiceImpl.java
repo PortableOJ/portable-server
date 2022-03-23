@@ -14,6 +14,7 @@ import com.portable.server.model.response.user.BaseUserInfoResponse;
 import com.portable.server.model.response.user.BatchAdminUserInfoResponse;
 import com.portable.server.model.response.user.BatchUserInfoResponse;
 import com.portable.server.model.response.user.NormalUserInfoResponse;
+import com.portable.server.model.response.user.UserBasicInfoResponse;
 import com.portable.server.model.user.BatchUserData;
 import com.portable.server.model.user.NormalUserData;
 import com.portable.server.model.user.User;
@@ -34,6 +35,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
@@ -63,31 +65,29 @@ public class UserServiceImpl implements UserService {
     @PostConstruct
     public void init() {
         // 创建 root 账户
-        User rootUser = userManager.getAccountByHandle(rootName);
-        if (rootUser == null) {
+        Optional<User> rootUser = userManager.getAccountByHandle(rootName);
+        if (rootUser.isPresent()) {
+            NormalUserData normalUserData = userDataManager.getNormalUserDataById(rootUser.get().getDataId());
+            normalUserData.setPermissionTypeSet(Arrays.stream(PermissionType.values()).collect(Collectors.toSet()));
+            userDataManager.updateUserData(normalUserData);
+        } else {
             NormalUserData normalUserData = userDataManager.newNormalUserData();
             normalUserData.setOrganization(OrganizationType.ADMIN);
             normalUserData.setPermissionTypeSet(Arrays.stream(PermissionType.values()).collect(Collectors.toSet()));
             userDataManager.insertUserData(normalUserData);
 
-            rootUser = userManager.newNormalAccount();
-            rootUser.setHandle(rootName);
-            rootUser.setPassword(BCryptEncoder.encoder(rootPassword));
-            rootUser.setDataId(normalUserData.get_id());
-            userManager.insertAccount(rootUser);
-        } else {
-            NormalUserData normalUserData = userDataManager.getNormalUserDataById(rootUser.getDataId());
-            normalUserData.setPermissionTypeSet(Arrays.stream(PermissionType.values()).collect(Collectors.toSet()));
-            userDataManager.updateUserData(normalUserData);
+            User user = userManager.newNormalAccount();
+            user.setHandle(rootName);
+            user.setPassword(BCryptEncoder.encoder(rootPassword));
+            user.setDataId(normalUserData.get_id());
+            userManager.insertAccount(user);
         }
     }
 
     @Override
     public BaseUserInfoResponse login(LoginRequest loginRequest, String ip) throws PortableException {
-        User user = userManager.getAccountByHandle(loginRequest.getHandle());
-        if (user == null) {
-            throw PortableException.of("A-01-001");
-        }
+        User user = userManager.getAccountByHandle(loginRequest.getHandle())
+                .orElseThrow(() -> PortableException.of("A-01-001"));
         if (!BCryptEncoder.match(loginRequest.getPassword(), user.getPassword())) {
             throw PortableException.of("A-01-002");
         }
@@ -133,15 +133,13 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public synchronized NormalUserInfoResponse register(RegisterRequest registerRequest) throws PortableException {
-        User user = userManager.getAccountByHandle(registerRequest.getHandle());
-        if (user != null) {
-            throw PortableException.of("A-01-003");
-        }
+        userManager.getAccountByHandle(registerRequest.getHandle())
+                .orElseThrow(() -> PortableException.of("A-01-003"));
 
         NormalUserData normalUserData = userDataManager.newNormalUserData();
         userDataManager.insertUserData(normalUserData);
 
-        user = userManager.newNormalAccount();
+        User user = userManager.newNormalAccount();
         user.setHandle(registerRequest.getHandle());
         user.setPassword(BCryptEncoder.encoder(registerRequest.getPassword()));
         user.setDataId(normalUserData.get_id());
@@ -155,19 +153,13 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public BaseUserInfoResponse getUserInfo(Long userId) throws PortableException {
-        User user = userManager.getAccountById(userId);
-        if (user == null) {
-            throw PortableException.of("A-01-001");
-        }
+        User user = userManager.getAccountById(userId).orElseThrow(() -> PortableException.of("A-01-001"));
         return getUserBasicInfoResponse(user);
     }
 
-    @Override
     public BaseUserInfoResponse getUserInfo(String handle) throws PortableException {
-        User user = userManager.getAccountByHandle(handle);
-        if (user == null) {
-            throw PortableException.of("A-01-001");
-        }
+        User user = userManager.getAccountByHandle(handle)
+                .orElseThrow(() -> PortableException.of("A-01-001"));
         return getUserBasicInfoResponse(user);
     }
 
@@ -246,7 +238,8 @@ public class UserServiceImpl implements UserService {
     @Override
     public void updatePassword(UpdatePasswordRequest updatePasswordRequest) throws PortableException {
         UserContext userContext = UserContext.ctx();
-        User user = userManager.getAccountById(userContext.getId());
+        User user = userManager.getAccountById(userContext.getId())
+                .orElseThrow(() -> PortableException.of("A-01-001"));
         if (!user.getType().getIsNormal()) {
             throw PortableException.of("A-01-011");
         }
@@ -280,10 +273,8 @@ public class UserServiceImpl implements UserService {
     }
 
     private NormalUserData organizationCheck(Long target) throws PortableException {
-        User user = userManager.getAccountById(target);
-        if (user == null) {
-            throw PortableException.of("A-01-001");
-        }
+        User user = userManager.getAccountById(target)
+                .orElseThrow(() -> PortableException.of("A-01-001"));
         if (!user.getType().getIsNormal()) {
             throw PortableException.of("A-02-003");
         }

@@ -2,6 +2,7 @@ package com.portable.server.model.response.batch;
 
 import com.portable.server.model.user.User;
 import lombok.Data;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -35,12 +36,12 @@ public class CreateBatchResponse {
          */
         private String password;
 
-        BatchUser(User user) {
+        BatchUser(@NotNull User user) {
             this.handle = user.getHandle();
             this.password = user.getPassword();
         }
 
-        public static BatchUser of(User user) {
+        public static BatchUser of(@NotNull User user) {
             return new BatchUser(user);
         }
     }
@@ -50,11 +51,11 @@ public class CreateBatchResponse {
         this.batchUserList = new ArrayList<>();
     }
 
-    public void add(User user) {
+    public void add(@NotNull User user) {
         this.batchUserList.add(BatchUser.of(user));
     }
 
-    public static CreateBatchResponse of(Long id) {
+    public static CreateBatchResponse of(@NotNull Long id) {
         return new CreateBatchResponse(id);
     }
 }
