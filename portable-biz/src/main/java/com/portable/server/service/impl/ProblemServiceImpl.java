@@ -345,7 +345,6 @@ public class ProblemServiceImpl implements ProblemService {
 
         if (problemPackage.getProblem().getStatusType().getTreated()) {
             problemPackage.getProblemData().nextVersion();
-            judgeSupport.removeProblemCache(problemTestRequest.getId());
         }
 
         problemPackage.getProblem().toUntreated();
@@ -405,7 +404,6 @@ public class ProblemServiceImpl implements ProblemService {
         problemPackage.getProblemData().getStdCode().setExpectResultType(SolutionStatusType.ACCEPT);
         if (problemPackage.getProblem().getStatusType().getTreated()) {
             problemPackage.getProblemData().nextVersion();
-            judgeSupport.removeProblemCache(problemCodeRequest.getId());
         }
 
         problemPackage.getProblem().toUntreated();
@@ -489,10 +487,10 @@ public class ProblemServiceImpl implements ProblemService {
         }
         // 只需要 check 时
         if (problemPackage.getProblem().getStatusType().getTreated()) {
+            judgeSupport.removeProblemJudge(id);
             judgeSupport.reportTestOver(id);
         } else {
             // 校验是否满足能够 treat 的条件
-
             ProblemData.StdCode stdCode = problemPackage.getProblemData().getStdCode();
             if (stdCode.getCode() == null && stdCode.getLanguageType() == null) {
                 throw PortableException.of("A-04-009");
@@ -501,6 +499,8 @@ public class ProblemServiceImpl implements ProblemService {
                 throw PortableException.of("A-04-010");
             }
 
+            judgeSupport.removeProblemJudge(id);
+            judgeSupport.removeProblemCache(id);
             judgeSupport.addTestTask(id);
         }
     }

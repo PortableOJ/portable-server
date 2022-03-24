@@ -70,6 +70,12 @@ public interface JudgeSupport {
     void removeProblemCache(Long problemId);
 
     /**
+     * 删除所有判题容器中的问题的判题代码缓存
+     * @param problemId 问题 ID
+     */
+    void removeProblemJudge(Long problemId);
+
+    /**
      * 关闭一个 judge
      * @param judgeCode 关闭一个 judge
      */

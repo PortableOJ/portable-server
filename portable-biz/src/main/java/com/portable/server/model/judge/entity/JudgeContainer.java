@@ -89,6 +89,11 @@ public class JudgeContainer {
     private List<Long> needDeleteProblemCacheIdList;
 
     /**
+     * 需要删除的问题 judge 列表
+     */
+    private List<Long> needDeleteProblemJudgeIdList;
+
+    /**
      * 关闭此 judge
      */
     private Boolean terminal;
@@ -97,8 +102,14 @@ public class JudgeContainer {
         needDeleteProblemCacheIdList.add(problemId);
     }
 
-    public synchronized void dumpDeleteProblemCacheId(HeartbeatResponse heartbeatResponse) {
+    public synchronized void addDeleteProblemJudgeId(Long problemId) {
+        needDeleteProblemJudgeIdList.add(problemId);
+    }
+
+    public synchronized void dump(HeartbeatResponse heartbeatResponse) {
         needDeleteProblemCacheIdList.forEach(heartbeatResponse::addCleanProblem);
         needDeleteProblemCacheIdList.clear();
+        needDeleteProblemJudgeIdList.forEach(heartbeatResponse::addCleanJudge);
+        needDeleteProblemJudgeIdList.clear();
     }
 }
