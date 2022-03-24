@@ -3,10 +3,6 @@ package com.portable.server.type;
 import com.portable.server.exception.ExceptionTextType;
 import lombok.Getter;
 
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-
 /**
  * 题目的访问权限
  *
@@ -62,9 +58,5 @@ public enum ProblemAccessType implements ExceptionTextType {
 
     ProblemAccessType(String text) {
         this.text = text;
-    }
-
-    public static List<ProblemAccessType> showToAllAccess() {
-        return Collections.singletonList(PUBLIC);
     }
 }
