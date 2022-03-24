@@ -1,5 +1,6 @@
 package com.portable.server.model.request.user;
 
+import lombok.Builder;
 import lombok.Data;
 
 import javax.validation.constraints.NotBlank;
@@ -9,6 +10,7 @@ import javax.validation.constraints.Pattern;
  * @author shiroha
  */
 @Data
+@Builder
 public class UpdatePasswordRequest {
 
     /**

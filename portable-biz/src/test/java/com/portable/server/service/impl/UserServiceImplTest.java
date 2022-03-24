@@ -9,6 +9,7 @@ import com.portable.server.manager.impl.UserManagerImpl;
 import com.portable.server.model.batch.Batch;
 import com.portable.server.model.request.user.LoginRequest;
 import com.portable.server.model.request.user.RegisterRequest;
+import com.portable.server.model.request.user.UpdatePasswordRequest;
 import com.portable.server.model.response.user.BaseUserInfoResponse;
 import com.portable.server.model.response.user.BatchAdminUserInfoResponse;
 import com.portable.server.model.response.user.BatchUserInfoResponse;
@@ -20,6 +21,7 @@ import com.portable.server.type.AccountType;
 import com.portable.server.type.BatchStatusType;
 import com.portable.server.type.OrganizationType;
 import com.portable.server.type.PermissionType;
+import com.portable.server.util.ImageUtils;
 import com.portable.server.util.UserContext;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
@@ -34,6 +36,7 @@ import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.test.util.ReflectionTestUtils;
 
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
@@ -59,9 +62,6 @@ class UserServiceImplTest {
     @Mock
     private GridFsManagerImpl gridFsManager;
 
-    private static MockedStatic<BCryptEncoder> bCryptEncoderMockedStatic;
-    private static MockedStatic<UserContext> userContextMockedStatic;
-
     private static final String MOCKED_ROOT_NAME = "MOCKED_ROOT_NAME";
     private static final String MOCKED_ROOT_PASSWORD = "MOCKED_ROOT_PASSWORD";
     private static final String MOCKED_ROOT_PASSWORD_ENCODED = "MOCKED_ROOT_PASSWORD_ENCODED";
@@ -79,6 +79,10 @@ class UserServiceImplTest {
     private static UserContext userContext;
     private static NormalUserData normalUserData;
     private static BatchUserData batchUserData;
+
+    private static MockedStatic<BCryptEncoder> bCryptEncoderMockedStatic;
+    private static MockedStatic<UserContext> userContextMockedStatic;
+    private static MockedStatic<ImageUtils> imageUtilsMockedStatic;
 
     @BeforeEach
     void setUp() {
@@ -105,12 +109,14 @@ class UserServiceImplTest {
 
         bCryptEncoderMockedStatic = Mockito.mockStatic(BCryptEncoder.class);
         userContextMockedStatic = Mockito.mockStatic(UserContext.class);
+        imageUtilsMockedStatic = Mockito.mockStatic(ImageUtils.class);
     }
 
     @AfterEach
     void tearDown() {
         bCryptEncoderMockedStatic.close();
         userContextMockedStatic.close();
+        imageUtilsMockedStatic.close();
     }
 
     @Test
@@ -1161,10 +1167,266 @@ class UserServiceImplTest {
     }
 
     @Test
-    void uploadAvatar() {
+    void testUploadAvatarWithNotNormal() {
+        userContext.setType(AccountType.BATCH);
+        userContextMockedStatic.when(UserContext::ctx).thenReturn(userContext);
+
+        InputStream inputStream = Mockito.mock(InputStream.class);
+
+        try {
+            userService.uploadAvatar(inputStream, MOCKED_HANDLE, MOCKED_MONGO_ID, 1, 2, 3, 4);
+            Assertions.fail();
+        } catch (PortableException e) {
+            Assertions.assertEquals("A-02-008", e.getCode());
+        }
     }
 
     @Test
-    void updatePassword() {
+    void testUploadAvatarWithNoUserData() {
+        userContext.setType(AccountType.NORMAL);
+        userContext.setDataId(MOCKED_MONGO_ID);
+        userContextMockedStatic.when(UserContext::ctx).thenReturn(userContext);
+        Mockito.when(userDataManager.getNormalUserDataById(MOCKED_MONGO_ID)).thenReturn(Optional.empty());
+
+        InputStream inputStream = Mockito.mock(InputStream.class);
+
+        try {
+            userService.uploadAvatar(inputStream, MOCKED_HANDLE, MOCKED_MONGO_ID, 1, 2, 3, 4);
+            Assertions.fail();
+        } catch (PortableException e) {
+            Assertions.assertEquals("S-02-001", e.getCode());
+        }
+    }
+
+    @Test
+    void testUploadAvatarWithSuccess() throws PortableException {
+        userContext.setType(AccountType.NORMAL);
+        userContext.setDataId(MOCKED_MONGO_ID);
+        normalUserData.setAvatar(MOCKED_IP);
+
+        InputStream inputStream = Mockito.mock(InputStream.class);
+        InputStream cutInputStream = Mockito.mock(InputStream.class);
+
+        userContextMockedStatic.when(UserContext::ctx).thenReturn(userContext);
+        Mockito.when(userDataManager.getNormalUserDataById(MOCKED_MONGO_ID)).thenReturn(Optional.of(normalUserData));
+        imageUtilsMockedStatic.when(() -> ImageUtils.cut(inputStream, 1, 2, 3, 4)).thenReturn(cutInputStream);
+        Mockito.when(gridFsManager.uploadAvatar(MOCKED_IP, cutInputStream, MOCKED_HANDLE, MOCKED_MONGO_ID)).thenReturn(MOCKED_OTHER_IP);
+
+        String fileId = userService.uploadAvatar(inputStream, MOCKED_HANDLE, MOCKED_MONGO_ID, 1, 2, 3, 4);
+
+        Assertions.assertEquals(MOCKED_OTHER_IP, fileId);
+
+        /// region 校验头像是否写入了图库
+
+        ArgumentCaptor<NormalUserData> normalUserDataArgumentCaptor = ArgumentCaptor.forClass(NormalUserData.class);
+        Mockito.verify(userDataManager).updateUserData(normalUserDataArgumentCaptor.capture());
+        NormalUserData normalUserDataCP = normalUserDataArgumentCaptor.getValue();
+        Assertions.assertEquals(MOCKED_OTHER_IP, normalUserDataCP.getAvatar());
+
+        /// endregion
+    }
+
+    @Test
+    void testUpdatePasswordWithNotNormal() {
+        userContext.setType(AccountType.BATCH);
+
+        userContextMockedStatic.when(UserContext::ctx).thenReturn(userContext);
+
+        UpdatePasswordRequest updatePasswordRequest = UpdatePasswordRequest.builder()
+                .oldPassword(MOCKED_INPUT_PASSWORD)
+                .newPassword(MOCKED_ROOT_PASSWORD)
+                .build();
+
+        try {
+            userService.updatePassword(updatePasswordRequest);
+            Assertions.fail();
+        } catch (PortableException e) {
+            Assertions.assertEquals("A-01-011", e.getCode());
+        }
+    }
+
+    @Test
+    void testUpdatePasswordWithNoUser() {
+        userContext.setType(AccountType.NORMAL);
+        userContext.setId(MOCKED_ID);
+
+        userContextMockedStatic.when(UserContext::ctx).thenReturn(userContext);
+        Mockito.when(userManager.getAccountById(MOCKED_ID)).thenReturn(Optional.empty());
+
+        UpdatePasswordRequest updatePasswordRequest = UpdatePasswordRequest.builder()
+                .oldPassword(MOCKED_INPUT_PASSWORD)
+                .newPassword(MOCKED_ROOT_PASSWORD)
+                .build();
+
+        try {
+            userService.updatePassword(updatePasswordRequest);
+            Assertions.fail();
+        } catch (PortableException e) {
+            Assertions.assertEquals("A-01-001", e.getCode());
+        }
+    }
+
+    @Test
+    void testUpdatePasswordWithNotMatch() {
+        userContext.setType(AccountType.NORMAL);
+        userContext.setId(MOCKED_ID);
+        user.setPassword(MOCKED_ROOT_PASSWORD_ENCODED);
+
+        userContextMockedStatic.when(UserContext::ctx).thenReturn(userContext);
+        Mockito.when(userManager.getAccountById(MOCKED_ID)).thenReturn(Optional.of(user));
+        bCryptEncoderMockedStatic.when(() -> BCryptEncoder.match(MOCKED_INPUT_PASSWORD, MOCKED_ROOT_PASSWORD_ENCODED)).thenReturn(false);
+
+        UpdatePasswordRequest updatePasswordRequest = UpdatePasswordRequest.builder()
+                .oldPassword(MOCKED_INPUT_PASSWORD)
+                .newPassword(MOCKED_ROOT_PASSWORD)
+                .build();
+
+        try {
+            userService.updatePassword(updatePasswordRequest);
+            Assertions.fail();
+        } catch (PortableException e) {
+            Assertions.assertEquals("A-01-002", e.getCode());
+        }
+    }
+
+    @Test
+    void testUpdatePasswordWithNotSuccess() throws PortableException {
+        userContext.setType(AccountType.NORMAL);
+        userContext.setId(MOCKED_ID);
+        user.setPassword(MOCKED_ROOT_PASSWORD_ENCODED);
+
+        userContextMockedStatic.when(UserContext::ctx).thenReturn(userContext);
+        Mockito.when(userManager.getAccountById(MOCKED_ID)).thenReturn(Optional.of(user));
+        bCryptEncoderMockedStatic.when(() -> BCryptEncoder.match(MOCKED_INPUT_PASSWORD, MOCKED_ROOT_PASSWORD_ENCODED)).thenReturn(true);
+        bCryptEncoderMockedStatic.when(() -> BCryptEncoder.encoder(MOCKED_ROOT_PASSWORD)).thenReturn(MOCKED_ROOT_PASSWORD_ENCODED);
+
+        UpdatePasswordRequest updatePasswordRequest = UpdatePasswordRequest.builder()
+                .oldPassword(MOCKED_INPUT_PASSWORD)
+                .newPassword(MOCKED_ROOT_PASSWORD)
+                .build();
+
+        userService.updatePassword(updatePasswordRequest);
+
+        /// region 校验写入数据库的密码是否正确
+
+        Mockito.verify(userManager).updatePassword(MOCKED_ID, MOCKED_ROOT_PASSWORD_ENCODED);
+
+        /// endregion
+    }
+
+
+    @Test
+    void testclearBatchUserIpListWithNoUser() {
+        Mockito.when(userManager.getAccountByHandle(MOCKED_HANDLE)).thenReturn(Optional.empty());
+
+        try {
+            userService.clearBatchUserIpList(MOCKED_HANDLE);
+            Assertions.fail();
+        } catch (PortableException e) {
+            Assertions.assertEquals("A-01-001", e.getCode());
+        }
+    }
+
+    @Test
+    void testclearBatchUserIpListWithNotBatch() {
+        user.setDataId(MOCKED_MONGO_ID);
+        user.setType(AccountType.NORMAL);
+
+        Mockito.when(userManager.getAccountByHandle(MOCKED_HANDLE)).thenReturn(Optional.of(user));
+
+        try {
+            userService.clearBatchUserIpList(MOCKED_HANDLE);
+            Assertions.fail();
+        } catch (PortableException e) {
+            Assertions.assertEquals("A-01-014", e.getCode());
+        }
+    }
+
+    @Test
+    void testclearBatchUserIpListWithNoUserData() {
+        user.setDataId(MOCKED_MONGO_ID);
+        user.setType(AccountType.BATCH);
+
+        Mockito.when(userManager.getAccountByHandle(MOCKED_HANDLE)).thenReturn(Optional.of(user));
+        Mockito.when(userDataManager.getBatchUserDataById(MOCKED_MONGO_ID)).thenReturn(Optional.empty());
+
+        try {
+            userService.clearBatchUserIpList(MOCKED_HANDLE);
+            Assertions.fail();
+        } catch (PortableException e) {
+            Assertions.assertEquals("S-02-001", e.getCode());
+        }
+    }
+
+    @Test
+    void testclearBatchUserIpListWithNoBatch() {
+        user.setDataId(MOCKED_MONGO_ID);
+        user.setType(AccountType.BATCH);
+        batchUserData.setBatchId(MOCKED_BATCH_ID);
+
+        Mockito.when(userManager.getAccountByHandle(MOCKED_HANDLE)).thenReturn(Optional.of(user));
+        Mockito.when(userDataManager.getBatchUserDataById(MOCKED_MONGO_ID)).thenReturn(Optional.of(batchUserData));
+        Mockito.when(batchManager.selectBatchById(MOCKED_BATCH_ID)).thenReturn(Optional.empty());
+
+        try {
+            userService.clearBatchUserIpList(MOCKED_HANDLE);
+            Assertions.fail();
+        } catch (PortableException e) {
+            Assertions.assertEquals("A-10-006", e.getCode());
+        }
+    }
+
+    @Test
+    void testclearBatchUserIpListWithNotMine() {
+        user.setDataId(MOCKED_MONGO_ID);
+        user.setType(AccountType.BATCH);
+        batchUserData.setBatchId(MOCKED_BATCH_ID);
+        batch.setOwner(MOCKED_ID + 1);
+        userContext.setId(MOCKED_ID);
+
+        Mockito.when(userManager.getAccountByHandle(MOCKED_HANDLE)).thenReturn(Optional.of(user));
+        Mockito.when(userDataManager.getBatchUserDataById(MOCKED_MONGO_ID)).thenReturn(Optional.of(batchUserData));
+        Mockito.when(batchManager.selectBatchById(MOCKED_BATCH_ID)).thenReturn(Optional.of(batch));
+        userContextMockedStatic.when(UserContext::ctx).thenReturn(userContext);
+
+        try {
+            userService.clearBatchUserIpList(MOCKED_HANDLE);
+            Assertions.fail();
+        } catch (PortableException e) {
+            Assertions.assertEquals("A-10-002", e.getCode());
+        }
+    }
+
+    @Test
+    void testclearBatchUserIpListWithSuccess() throws PortableException {
+        user.setDataId(MOCKED_MONGO_ID);
+        user.setType(AccountType.BATCH);
+        batchUserData.setBatchId(MOCKED_BATCH_ID);
+        batchUserData.setIpList(new ArrayList<BatchUserData.IpRecord>() {{
+            add(BatchUserData.IpRecord.builder()
+                    .ip(MOCKED_IP)
+                    .date(new Date())
+                    .build());
+        }});
+        batch.setOwner(MOCKED_ID);
+        batch.setContestId(MOCKED_CONTEST_ID);
+        userContext.setId(MOCKED_ID);
+
+        Mockito.when(userManager.getAccountByHandle(MOCKED_HANDLE)).thenReturn(Optional.of(user));
+        Mockito.when(userDataManager.getBatchUserDataById(MOCKED_MONGO_ID)).thenReturn(Optional.of(batchUserData));
+        Mockito.when(batchManager.selectBatchById(MOCKED_BATCH_ID)).thenReturn(Optional.of(batch));
+        userContextMockedStatic.when(UserContext::ctx).thenReturn(userContext);
+
+        userService.clearBatchUserIpList(MOCKED_HANDLE);
+
+        /// region 校验写入数据库的信息是否存在 IP 列表
+
+        ArgumentCaptor<BatchUserData> batchUserDataArgumentCaptor = ArgumentCaptor.forClass(BatchUserData.class);
+        Mockito.verify(userDataManager).updateUserData(batchUserDataArgumentCaptor.capture());
+        BatchUserData batchUserDataCP = batchUserDataArgumentCaptor.getValue();
+        Assertions.assertEquals(new ArrayList<>(), batchUserDataCP.getIpList());
+
+        /// endregion
+
     }
 }

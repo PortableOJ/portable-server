@@ -235,11 +235,11 @@ public class UserServiceImpl implements UserService {
     @Override
     public void updatePassword(UpdatePasswordRequest updatePasswordRequest) throws PortableException {
         UserContext userContext = UserContext.ctx();
-        User user = userManager.getAccountById(userContext.getId())
-                .orElseThrow(PortableException.from("A-01-001"));
-        if (!user.getType().getIsNormal()) {
+        if (!userContext.getType().getIsNormal()) {
             throw PortableException.of("A-01-011");
         }
+        User user = userManager.getAccountById(userContext.getId())
+                .orElseThrow(PortableException.from("A-01-001"));
         if (!BCryptEncoder.match(updatePasswordRequest.getOldPassword(), user.getPassword())) {
             throw PortableException.of("A-01-002");
         }
