@@ -956,7 +956,99 @@ class UserServiceImplTest {
     }
 
     @Test
-    void removePermission() {
+    void testRemovePermissionWithNoUser() {
+        Mockito.when(userManager.getAccountById(MOCKED_ID)).thenReturn(Optional.empty());
+
+        try {
+            userService.removePermission(MOCKED_ID, PermissionType.GRANT);
+            Assertions.fail();
+        } catch (PortableException e) {
+            Assertions.assertEquals("A-01-001", e.getCode());
+        }
+    }
+
+    @Test
+    void testRemovePermissionWithNotNormal() {
+        user.setType(AccountType.BATCH);
+        Mockito.when(userManager.getAccountById(MOCKED_ID)).thenReturn(Optional.ofNullable(user));
+
+        try {
+            userService.removePermission(MOCKED_ID, PermissionType.GRANT);
+            Assertions.fail();
+        } catch (PortableException e) {
+            Assertions.assertEquals("A-02-003", e.getCode());
+        }
+    }
+
+    @Test
+    void testRemovePermissionWithNoUserData() {
+        user.setType(AccountType.LOCKED_NORMAL);
+        Mockito.when(userManager.getAccountById(MOCKED_ID)).thenReturn(Optional.ofNullable(user));
+        Mockito.when(userDataManager.getNormalUserDataById(MOCKED_MONGO_ID)).thenReturn(Optional.empty());
+
+        try {
+            userService.removePermission(MOCKED_ID, PermissionType.GRANT);
+            Assertions.fail();
+        } catch (PortableException e) {
+            Assertions.assertEquals("S-02-001", e.getCode());
+        }
+    }
+
+    @Test
+    void testRemovePermissionWithNotDominate() {
+        user.setType(AccountType.LOCKED_NORMAL);
+        userContext.setOrganization(OrganizationType.TEACHER);
+        normalUserData.setOrganization(OrganizationType.ACMER);
+        Mockito.when(userManager.getAccountById(MOCKED_ID)).thenReturn(Optional.ofNullable(user));
+        Mockito.when(userDataManager.getNormalUserDataById(MOCKED_MONGO_ID)).thenReturn(Optional.of(normalUserData));
+        userContextMockedStatic.when(UserContext::ctx).thenReturn(userContext);
+
+        try {
+            userService.removePermission(MOCKED_ID, PermissionType.GRANT);
+            Assertions.fail();
+        } catch (PortableException e) {
+            Assertions.assertEquals("A-03-001", e.getCode());
+        }
+    }
+
+    @Test
+    void testRemovePermissionWithNoPermission() {
+        user.setType(AccountType.LOCKED_NORMAL);
+        userContext.setOrganization(OrganizationType.ACMER);
+        userContext.getPermissionTypeSet().add(PermissionType.VIEW_SOLUTION_MESSAGE);
+        normalUserData.setOrganization(OrganizationType.STUDENT);
+        Mockito.when(userManager.getAccountById(MOCKED_ID)).thenReturn(Optional.ofNullable(user));
+        Mockito.when(userDataManager.getNormalUserDataById(MOCKED_MONGO_ID)).thenReturn(Optional.of(normalUserData));
+        userContextMockedStatic.when(UserContext::ctx).thenReturn(userContext);
+
+        try {
+            userService.removePermission(MOCKED_ID, PermissionType.GRANT);
+            Assertions.fail();
+        } catch (PortableException e) {
+            Assertions.assertEquals("A-02-007", e.getCode());
+        }
+    }
+
+    @Test
+    void testRemovePermissionWithSuccess() throws PortableException {
+        user.setType(AccountType.LOCKED_NORMAL);
+        userContext.setOrganization(OrganizationType.ACMER);
+        userContext.getPermissionTypeSet().add(PermissionType.GRANT);
+        normalUserData.setOrganization(OrganizationType.STUDENT);
+        normalUserData.setPermissionTypeSet(new HashSet<PermissionType>() {{
+            add(PermissionType.GRANT);
+        }});
+        Mockito.when(userManager.getAccountById(MOCKED_ID)).thenReturn(Optional.ofNullable(user));
+        Mockito.when(userDataManager.getNormalUserDataById(MOCKED_MONGO_ID)).thenReturn(Optional.of(normalUserData));
+        userContextMockedStatic.when(UserContext::ctx).thenReturn(userContext);
+
+        userService.removePermission(MOCKED_ID, PermissionType.GRANT);
+
+        ArgumentCaptor<NormalUserData> normalUserDataArgumentCaptor = ArgumentCaptor.forClass(NormalUserData.class);
+        Mockito.verify(userDataManager).updateUserData(normalUserDataArgumentCaptor.capture());
+        NormalUserData normalUserDataCP = normalUserDataArgumentCaptor.getValue();
+        Assertions.assertEquals(MOCKED_MONGO_ID, normalUserData.get_id());
+        Assertions.assertFalse(normalUserDataCP.getPermissionTypeSet().contains(PermissionType.GRANT));
     }
 
     @Test
