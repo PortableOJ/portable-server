@@ -11,6 +11,7 @@ import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
 import java.util.ArrayList;
+import java.util.Optional;
 
 /**
  * @author shiroha
@@ -43,13 +44,13 @@ public class UserDataManagerImpl implements UserDataManager {
     }
 
     @Override
-    public NormalUserData getNormalUserDataById(String dataId) {
-        return userDataRepo.getNormalUserDataById(dataId);
+    public Optional<NormalUserData> getNormalUserDataById(String dataId) {
+        return Optional.ofNullable(userDataRepo.getNormalUserDataById(dataId));
     }
 
     @Override
-    public BatchUserData getBatchUserDataById(String dataId) {
-        return userDataRepo.getBatchUserDataById(dataId);
+    public Optional<BatchUserData> getBatchUserDataById(String dataId) {
+        return Optional.ofNullable(userDataRepo.getBatchUserDataById(dataId));
     }
 
     @Override

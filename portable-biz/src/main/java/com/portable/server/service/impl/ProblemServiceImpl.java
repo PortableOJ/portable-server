@@ -51,6 +51,7 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
@@ -514,9 +515,12 @@ public class ProblemServiceImpl implements ProblemService {
 
         // 更新用户和题目的提交统计数量
         problemManager.updateProblemCount(submitSolutionRequest.getProblemId(), 1, 0);
-        NormalUserData normalUserData = userDataManager.getNormalUserDataById(userContext.getDataId());
-        normalUserData.setSubmission(normalUserData.getSubmission() + 1);
-        userDataManager.updateUserData(normalUserData);
+        Optional<NormalUserData> normalUserDataOptional = userDataManager.getNormalUserDataById(userContext.getDataId());
+        if (normalUserDataOptional.isPresent()) {
+            NormalUserData normalUserData = normalUserDataOptional.get();
+            normalUserData.setSubmission(normalUserData.getSubmission() + 1);
+            userDataManager.updateUserData(normalUserData);
+        }
 
         // 创建提交信息
         SolutionData solutionData = solutionDataManager.newSolutionData(problemPackage.getProblemData());

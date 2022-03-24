@@ -161,7 +161,7 @@ class UserServiceImplTest {
         ReflectionTestUtils.setField(userService, "rootName", MOCKED_ROOT_NAME);
 
         Mockito.when(userManager.getAccountByHandle(MOCKED_ROOT_NAME)).thenReturn(Optional.ofNullable(user));
-        Mockito.when(userDataManager.getNormalUserDataById(MOCKED_MONGO_ID)).thenReturn(normalUserData);
+        Mockito.when(userDataManager.getNormalUserDataById(MOCKED_MONGO_ID)).thenReturn(Optional.of(normalUserData));
 
         Mockito.doNothing().when(userDataManager).updateUserData(Mockito.any());
 
@@ -246,7 +246,7 @@ class UserServiceImplTest {
 
         Mockito.when(userManager.getAccountByHandle(MOCKED_HANDLE)).thenReturn(Optional.ofNullable(user));
         bCryptEncoderMockedStatic.when(() -> BCryptEncoder.match(MOCKED_INPUT_PASSWORD, MOCKED_ROOT_PASSWORD_ENCODED)).thenReturn(true);
-        Mockito.when(userDataManager.getNormalUserDataById(MOCKED_MONGO_ID)).thenReturn(null);
+        Mockito.when(userDataManager.getNormalUserDataById(MOCKED_MONGO_ID)).thenReturn(Optional.empty());
 
         // DO
         try {
@@ -279,7 +279,7 @@ class UserServiceImplTest {
 
         Mockito.when(userManager.getAccountByHandle(MOCKED_HANDLE)).thenReturn(Optional.ofNullable(user));
         bCryptEncoderMockedStatic.when(() -> BCryptEncoder.match(MOCKED_INPUT_PASSWORD, MOCKED_ROOT_PASSWORD_ENCODED)).thenReturn(true);
-        Mockito.when(userDataManager.getNormalUserDataById(MOCKED_MONGO_ID)).thenReturn(normalUserData);
+        Mockito.when(userDataManager.getNormalUserDataById(MOCKED_MONGO_ID)).thenReturn(Optional.of(normalUserData));
 
         // DO
         NormalUserInfoResponse retVal = (NormalUserInfoResponse) userService.login(loginRequest, MOCKED_IP);
@@ -326,7 +326,7 @@ class UserServiceImplTest {
 
         Mockito.when(userManager.getAccountByHandle(MOCKED_HANDLE)).thenReturn(Optional.ofNullable(user));
         bCryptEncoderMockedStatic.when(() -> BCryptEncoder.match(MOCKED_INPUT_PASSWORD, MOCKED_ROOT_PASSWORD_ENCODED)).thenReturn(true);
-        Mockito.when(userDataManager.getBatchUserDataById(MOCKED_MONGO_ID)).thenReturn(null);
+        Mockito.when(userDataManager.getBatchUserDataById(MOCKED_MONGO_ID)).thenReturn(Optional.empty());
 
         // DO
         try {
@@ -370,7 +370,7 @@ class UserServiceImplTest {
 
         Mockito.when(userManager.getAccountByHandle(MOCKED_HANDLE)).thenReturn(Optional.ofNullable(user));
         bCryptEncoderMockedStatic.when(() -> BCryptEncoder.match(MOCKED_INPUT_PASSWORD, MOCKED_ROOT_PASSWORD_ENCODED)).thenReturn(true);
-        Mockito.when(userDataManager.getBatchUserDataById(MOCKED_MONGO_ID)).thenReturn(batchUserData);
+        Mockito.when(userDataManager.getBatchUserDataById(MOCKED_MONGO_ID)).thenReturn(Optional.of(batchUserData));
         Mockito.when(batchManager.selectBatchById(MOCKED_BATCH_ID)).thenReturn(Optional.of(batch));
 
         // DO
@@ -417,7 +417,7 @@ class UserServiceImplTest {
 
         Mockito.when(userManager.getAccountByHandle(MOCKED_HANDLE)).thenReturn(Optional.ofNullable(user));
         bCryptEncoderMockedStatic.when(() -> BCryptEncoder.match(MOCKED_INPUT_PASSWORD, MOCKED_ROOT_PASSWORD_ENCODED)).thenReturn(true);
-        Mockito.when(userDataManager.getBatchUserDataById(MOCKED_MONGO_ID)).thenReturn(batchUserData);
+        Mockito.when(userDataManager.getBatchUserDataById(MOCKED_MONGO_ID)).thenReturn(Optional.of(batchUserData));
         Mockito.when(batchManager.selectBatchById(MOCKED_BATCH_ID)).thenReturn(Optional.of(batch));
 
         // DO
@@ -475,7 +475,7 @@ class UserServiceImplTest {
 
         Mockito.when(userManager.getAccountByHandle(MOCKED_HANDLE)).thenReturn(Optional.ofNullable(user));
         bCryptEncoderMockedStatic.when(() -> BCryptEncoder.match(MOCKED_INPUT_PASSWORD, MOCKED_ROOT_PASSWORD_ENCODED)).thenReturn(true);
-        Mockito.when(userDataManager.getBatchUserDataById(MOCKED_MONGO_ID)).thenReturn(batchUserData);
+        Mockito.when(userDataManager.getBatchUserDataById(MOCKED_MONGO_ID)).thenReturn(Optional.of(batchUserData));
         Mockito.when(batchManager.selectBatchById(MOCKED_BATCH_ID)).thenReturn(Optional.of(batch));
 
         // DO
@@ -537,7 +537,7 @@ class UserServiceImplTest {
 
         Mockito.when(userManager.getAccountByHandle(MOCKED_HANDLE)).thenReturn(Optional.ofNullable(user));
         bCryptEncoderMockedStatic.when(() -> BCryptEncoder.match(MOCKED_INPUT_PASSWORD, MOCKED_ROOT_PASSWORD_ENCODED)).thenReturn(true);
-        Mockito.when(userDataManager.getBatchUserDataById(MOCKED_MONGO_ID)).thenReturn(batchUserData);
+        Mockito.when(userDataManager.getBatchUserDataById(MOCKED_MONGO_ID)).thenReturn(Optional.of(batchUserData));
         Mockito.when(batchManager.selectBatchById(MOCKED_BATCH_ID)).thenReturn(Optional.of(batch));
 
         // DO
@@ -662,7 +662,7 @@ class UserServiceImplTest {
         user.setType(AccountType.LOCKED_NORMAL);
 
         Mockito.when(userManager.getAccountByHandle(MOCKED_HANDLE)).thenReturn(Optional.ofNullable(user));
-        Mockito.when(userDataManager.getNormalUserDataById(MOCKED_MONGO_ID)).thenReturn(null);
+        Mockito.when(userDataManager.getNormalUserDataById(MOCKED_MONGO_ID)).thenReturn(Optional.empty());
 
         try {
             userService.getUserInfo(MOCKED_HANDLE);
@@ -678,7 +678,7 @@ class UserServiceImplTest {
         user.setType(AccountType.LOCKED_NORMAL);
 
         Mockito.when(userManager.getAccountByHandle(MOCKED_HANDLE)).thenReturn(Optional.ofNullable(user));
-        Mockito.when(userDataManager.getNormalUserDataById(MOCKED_MONGO_ID)).thenReturn(normalUserData);
+        Mockito.when(userDataManager.getNormalUserDataById(MOCKED_MONGO_ID)).thenReturn(Optional.of(normalUserData));
 
         BaseUserInfoResponse baseUserInfoResponse = userService.getUserInfo(MOCKED_HANDLE);
 
@@ -700,7 +700,7 @@ class UserServiceImplTest {
         user.setType(AccountType.NORMAL);
 
         Mockito.when(userManager.getAccountByHandle(MOCKED_HANDLE)).thenReturn(Optional.ofNullable(user));
-        Mockito.when(userDataManager.getNormalUserDataById(MOCKED_MONGO_ID)).thenReturn(null);
+        Mockito.when(userDataManager.getNormalUserDataById(MOCKED_MONGO_ID)).thenReturn(Optional.empty());
 
         try {
             userService.getUserInfo(MOCKED_HANDLE);
@@ -716,7 +716,7 @@ class UserServiceImplTest {
         user.setType(AccountType.NORMAL);
 
         Mockito.when(userManager.getAccountByHandle(MOCKED_HANDLE)).thenReturn(Optional.ofNullable(user));
-        Mockito.when(userDataManager.getNormalUserDataById(MOCKED_MONGO_ID)).thenReturn(normalUserData);
+        Mockito.when(userDataManager.getNormalUserDataById(MOCKED_MONGO_ID)).thenReturn(Optional.of(normalUserData));
 
         BaseUserInfoResponse baseUserInfoResponse = userService.getUserInfo(MOCKED_HANDLE);
 
@@ -738,7 +738,7 @@ class UserServiceImplTest {
         user.setType(AccountType.BATCH);
 
         Mockito.when(userManager.getAccountByHandle(MOCKED_HANDLE)).thenReturn(Optional.ofNullable(user));
-        Mockito.when(userDataManager.getBatchUserDataById(MOCKED_MONGO_ID)).thenReturn(null);
+        Mockito.when(userDataManager.getBatchUserDataById(MOCKED_MONGO_ID)).thenReturn(Optional.empty());
 
         try {
             userService.getUserInfo(MOCKED_HANDLE);
@@ -754,7 +754,7 @@ class UserServiceImplTest {
         user.setType(AccountType.BATCH);
 
         Mockito.when(userManager.getAccountByHandle(MOCKED_HANDLE)).thenReturn(Optional.ofNullable(user));
-        Mockito.when(userDataManager.getBatchUserDataById(MOCKED_MONGO_ID)).thenReturn(batchUserData);
+        Mockito.when(userDataManager.getBatchUserDataById(MOCKED_MONGO_ID)).thenReturn(Optional.of(batchUserData));
         Mockito.when(batchManager.selectBatchById(MOCKED_BATCH_ID)).thenReturn(Optional.empty());
 
         try {
@@ -774,7 +774,7 @@ class UserServiceImplTest {
         user.setType(AccountType.BATCH);
 
         Mockito.when(userManager.getAccountByHandle(MOCKED_HANDLE)).thenReturn(Optional.ofNullable(user));
-        Mockito.when(userDataManager.getBatchUserDataById(MOCKED_MONGO_ID)).thenReturn(batchUserData);
+        Mockito.when(userDataManager.getBatchUserDataById(MOCKED_MONGO_ID)).thenReturn(Optional.of(batchUserData));
         Mockito.when(batchManager.selectBatchById(MOCKED_BATCH_ID)).thenReturn(Optional.of(batch));
         userContextMockedStatic.when(UserContext::ctx).thenReturn(userContext);
 
@@ -816,7 +816,7 @@ class UserServiceImplTest {
     void testChangeOrganizationWithNoUserData() {
         user.setType(AccountType.LOCKED_NORMAL);
         Mockito.when(userManager.getAccountById(MOCKED_ID)).thenReturn(Optional.ofNullable(user));
-        Mockito.when(userDataManager.getNormalUserDataById(MOCKED_MONGO_ID)).thenReturn(null);
+        Mockito.when(userDataManager.getNormalUserDataById(MOCKED_MONGO_ID)).thenReturn(Optional.empty());
 
         try {
             userService.changeOrganization(MOCKED_ID, OrganizationType.STUDENT);
@@ -832,7 +832,7 @@ class UserServiceImplTest {
         userContext.setOrganization(OrganizationType.TEACHER);
         normalUserData.setOrganization(OrganizationType.ACMER);
         Mockito.when(userManager.getAccountById(MOCKED_ID)).thenReturn(Optional.ofNullable(user));
-        Mockito.when(userDataManager.getNormalUserDataById(MOCKED_MONGO_ID)).thenReturn(normalUserData);
+        Mockito.when(userDataManager.getNormalUserDataById(MOCKED_MONGO_ID)).thenReturn(Optional.of(normalUserData));
         userContextMockedStatic.when(UserContext::ctx).thenReturn(userContext);
 
         try {
@@ -849,7 +849,7 @@ class UserServiceImplTest {
         userContext.setOrganization(OrganizationType.ACMER);
         normalUserData.setOrganization(OrganizationType.STUDENT);
         Mockito.when(userManager.getAccountById(MOCKED_ID)).thenReturn(Optional.ofNullable(user));
-        Mockito.when(userDataManager.getNormalUserDataById(MOCKED_MONGO_ID)).thenReturn(normalUserData);
+        Mockito.when(userDataManager.getNormalUserDataById(MOCKED_MONGO_ID)).thenReturn(Optional.of(normalUserData));
         userContextMockedStatic.when(UserContext::ctx).thenReturn(userContext);
 
         userService.changeOrganization(MOCKED_ID, OrganizationType.SPECIAL_STUDENT);
@@ -890,7 +890,7 @@ class UserServiceImplTest {
     void testAddPermissionWithNoUserData() {
         user.setType(AccountType.LOCKED_NORMAL);
         Mockito.when(userManager.getAccountById(MOCKED_ID)).thenReturn(Optional.ofNullable(user));
-        Mockito.when(userDataManager.getNormalUserDataById(MOCKED_MONGO_ID)).thenReturn(null);
+        Mockito.when(userDataManager.getNormalUserDataById(MOCKED_MONGO_ID)).thenReturn(Optional.empty());
 
         try {
             userService.addPermission(MOCKED_ID, PermissionType.GRANT);
@@ -906,7 +906,7 @@ class UserServiceImplTest {
         userContext.setOrganization(OrganizationType.TEACHER);
         normalUserData.setOrganization(OrganizationType.ACMER);
         Mockito.when(userManager.getAccountById(MOCKED_ID)).thenReturn(Optional.ofNullable(user));
-        Mockito.when(userDataManager.getNormalUserDataById(MOCKED_MONGO_ID)).thenReturn(normalUserData);
+        Mockito.when(userDataManager.getNormalUserDataById(MOCKED_MONGO_ID)).thenReturn(Optional.of(normalUserData));
         userContextMockedStatic.when(UserContext::ctx).thenReturn(userContext);
 
         try {
@@ -924,7 +924,7 @@ class UserServiceImplTest {
         userContext.getPermissionTypeSet().add(PermissionType.VIEW_SOLUTION_MESSAGE);
         normalUserData.setOrganization(OrganizationType.STUDENT);
         Mockito.when(userManager.getAccountById(MOCKED_ID)).thenReturn(Optional.ofNullable(user));
-        Mockito.when(userDataManager.getNormalUserDataById(MOCKED_MONGO_ID)).thenReturn(normalUserData);
+        Mockito.when(userDataManager.getNormalUserDataById(MOCKED_MONGO_ID)).thenReturn(Optional.of(normalUserData));
         userContextMockedStatic.when(UserContext::ctx).thenReturn(userContext);
 
         try {
@@ -943,7 +943,7 @@ class UserServiceImplTest {
         normalUserData.setOrganization(OrganizationType.STUDENT);
         normalUserData.setPermissionTypeSet(new HashSet<>());
         Mockito.when(userManager.getAccountById(MOCKED_ID)).thenReturn(Optional.ofNullable(user));
-        Mockito.when(userDataManager.getNormalUserDataById(MOCKED_MONGO_ID)).thenReturn(normalUserData);
+        Mockito.when(userDataManager.getNormalUserDataById(MOCKED_MONGO_ID)).thenReturn(Optional.of(normalUserData));
         userContextMockedStatic.when(UserContext::ctx).thenReturn(userContext);
 
         userService.addPermission(MOCKED_ID, PermissionType.GRANT);
