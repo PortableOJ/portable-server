@@ -148,10 +148,10 @@ public class EpollManager {
             return invoke(methodDescribe, paramMap);
         } catch (Exception e) {
             log.debug("method fail, method: {}, message: {}", method, e.getMessage());
+            return null;
         } finally {
             ADDRESS_THREAD_LOCAL.remove();
         }
-        return null;
     }
 
     private Object invoke(MethodDescribe methodDescribe, Map<String, List<Byte>> paramMap) throws InvocationTargetException, IllegalAccessException {
