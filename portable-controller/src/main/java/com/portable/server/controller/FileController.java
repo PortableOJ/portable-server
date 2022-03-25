@@ -45,7 +45,8 @@ public class FileController {
     @GetMapping("/get")
     public void get(String id, FileStoreType type, HttpServletResponse response) throws PortableException {
         try {
-            fileService.get(id, type, response.getOutputStream());
+            String fileType = fileService.get(id, type, response.getOutputStream());
+            response.setContentType(fileType);
         } catch (IOException e) {
             throw PortableException.of("S-01-002");
         }

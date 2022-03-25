@@ -35,14 +35,14 @@ public class PermissionInterceptor implements HandlerInterceptor {
 
         PermissionRequirement classRequirement = handlerMethod.getMethod().getDeclaringClass().getAnnotation(PermissionRequirement.class);
         PermissionRequirement methodRequirement = handlerMethod.getMethodAnnotation(PermissionRequirement.class);
-        String needPermission = checkPermission(classRequirement, request) + checkPermission(methodRequirement, request);
+        String needPermission = checkPermission(classRequirement) + checkPermission(methodRequirement);
         if (!Strings.isBlank(needPermission)) {
             throw PortableException.of("A-02-002", needPermission);
         }
         return true;
     }
 
-    private String checkPermission(PermissionRequirement permissionRequirement, HttpServletRequest request) {
+    private String checkPermission(PermissionRequirement permissionRequirement) {
         if (permissionRequirement == null) {
             return "";
         }

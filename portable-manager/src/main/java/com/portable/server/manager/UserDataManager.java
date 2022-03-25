@@ -4,6 +4,8 @@ import com.portable.server.model.user.BaseUserData;
 import com.portable.server.model.user.BatchUserData;
 import com.portable.server.model.user.NormalUserData;
 
+import java.util.Optional;
+
 /**
  * @author shiroha
  */
@@ -29,7 +31,7 @@ public interface UserDataManager {
      * @param dataId 用户的数据 id
      * @return 用户数据
      */
-    NormalUserData getNormalUserDataById(String dataId);
+    Optional<NormalUserData> getNormalUserDataById(String dataId);
 
     /**
      * 通过用户的数据 id 获取批量用户账号
@@ -37,7 +39,7 @@ public interface UserDataManager {
      * @param dataId 用户的数据 id
      * @return 用户数据
      */
-    BatchUserData getBatchUserDataById(String dataId);
+    Optional<BatchUserData> getBatchUserDataById(String dataId);
 
     /**
      * 新增一个普通用户数据

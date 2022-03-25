@@ -9,7 +9,6 @@ import com.portable.server.model.response.judge.SolutionInfoResponse;
 import com.portable.server.model.response.judge.TestInfoResponse;
 import com.portable.server.type.SolutionStatusType;
 
-import java.io.File;
 import java.io.InputStream;
 import java.util.List;
 
@@ -69,6 +68,12 @@ public interface JudgeSupport {
      * @param problemId 问题 ID
      */
     void removeProblemCache(Long problemId);
+
+    /**
+     * 删除所有判题容器中的问题的判题代码缓存
+     * @param problemId 问题 ID
+     */
+    void removeProblemJudge(Long problemId);
 
     /**
      * 关闭一个 judge
@@ -195,9 +200,8 @@ public interface JudgeSupport {
      * 获取默认的标准 testlib 代码
      *
      * @return testlib 代码
-     * @throws PortableException 找不到时抛出错误
      */
-    InputStream getTestLibCode() throws PortableException;
+    InputStream getTestLibCode();
 
     /**
      * 获取题目的标准输入文件

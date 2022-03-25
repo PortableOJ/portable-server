@@ -1,7 +1,6 @@
 package com.portable.server.type;
 
 import com.portable.server.exception.ExceptionTextType;
-import com.portable.server.model.user.NormalUserData;
 import lombok.Getter;
 
 import java.util.Objects;
@@ -65,9 +64,5 @@ public enum OrganizationType implements ExceptionTextType {
 
     public Boolean isDominate(OrganizationType organizationType) {
         return !Objects.equals(this, organizationType) && Integer.valueOf((this.code & organizationType.code)).equals(organizationType.getCode());
-    }
-
-    public static Boolean isDominate(NormalUserData fromUserData, NormalUserData toUserData) {
-        return fromUserData.getOrganization().isDominate(toUserData.getOrganization());
     }
 }
