@@ -4,6 +4,7 @@ import com.portable.server.exception.PortableException;
 import com.portable.server.model.user.BaseUserData;
 import com.portable.server.model.user.BatchUserData;
 import com.portable.server.model.user.NormalUserData;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * @author shiroha
@@ -15,6 +16,7 @@ public interface UserDataManager {
      *
      * @return 普通用户数据实体
      */
+    @NotNull
     NormalUserData newNormalUserData();
 
     /**
@@ -22,6 +24,7 @@ public interface UserDataManager {
      *
      * @return 普通用户数据实体
      */
+    @NotNull
     BatchUserData newBatchUserData();
 
     /**
@@ -31,6 +34,7 @@ public interface UserDataManager {
      * @return 用户数据
      * @throws PortableException ID 不存在时则抛出
      */
+    @NotNull
     NormalUserData getNormalUserDataById(String dataId) throws PortableException;
 
     /**
@@ -40,6 +44,7 @@ public interface UserDataManager {
      * @return 用户数据
      * @throws PortableException ID 不存在时则抛出
      */
+    @NotNull
     BatchUserData getBatchUserDataById(String dataId) throws PortableException;
 
     /**

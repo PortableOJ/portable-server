@@ -8,6 +8,7 @@ import com.portable.server.model.user.NormalUserData;
 import com.portable.server.repo.UserDataRepo;
 import com.portable.server.type.OrganizationType;
 import com.portable.server.type.PermissionType;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
@@ -24,7 +25,7 @@ public class UserDataManagerImpl implements UserDataManager {
     private UserDataRepo userDataRepo;
 
     @Override
-    public NormalUserData newNormalUserData() {
+    public @NotNull NormalUserData newNormalUserData() {
         return NormalUserData.builder()
                 ._id(null)
                 .organization(OrganizationType.STUDENT)
@@ -37,18 +38,20 @@ public class UserDataManagerImpl implements UserDataManager {
     }
 
     @Override
-    public BatchUserData newBatchUserData() {
+    public @NotNull BatchUserData newBatchUserData() {
         return BatchUserData.builder()
                 ._id(null)
                 .ipList(new ArrayList<>())
                 .build();
     }
 
+    @NotNull
     @Override
     public NormalUserData getNormalUserDataById(String dataId) throws PortableException {
         return Optional.ofNullable(userDataRepo.getNormalUserDataById(dataId)).orElseThrow(PortableException.from("S-02-001"));
     }
 
+    @NotNull
     @Override
     public BatchUserData getBatchUserDataById(String dataId) throws PortableException {
         return Optional.ofNullable(userDataRepo.getBatchUserDataById(dataId)).orElseThrow(PortableException.from("S-02-001"));

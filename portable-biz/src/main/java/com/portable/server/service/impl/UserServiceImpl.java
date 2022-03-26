@@ -24,6 +24,8 @@ import com.portable.server.type.OrganizationType;
 import com.portable.server.type.PermissionType;
 import com.portable.server.util.ImageUtils;
 import com.portable.server.util.UserContext;
+import lombok.Builder;
+import lombok.Data;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
@@ -60,6 +62,26 @@ public class UserServiceImpl implements UserService {
 
     @Value("${ROOT_PWD}")
     private String rootPassword;
+
+    @Data
+    @Builder
+    public static class BatchUserPackage {
+
+        /**
+         * 用户信息
+         */
+        private User user;
+
+        /**
+         * 用户属性
+         */
+        private BatchUserData userData;
+
+        /**
+         * 批量用户的信息
+         */
+        private Batch batch;
+    }
 
     @PostConstruct
     public void init() throws PortableException {
@@ -161,18 +183,8 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public BatchAdminUserInfoResponse getBatchUserInfo(String handle) throws PortableException {
-        User user = userManager.getAccountByHandle(handle).orElseThrow(PortableException.from("A-01-001"));
-        if (!AccountType.BATCH.equals(user.getType())) {
-            throw PortableException.of("A-01-014");
-        }
-        BatchUserData batchUserData = userDataManager.getBatchUserDataById(user.getDataId());
-        Batch batch = batchManager.selectBatchById(batchUserData.getBatchId())
-                .orElseThrow(PortableException.from("A-10-006", batchUserData.getBatchId()));
-        // 校验是否是自己的
-        if (!Objects.equals(UserContext.ctx().getId(), batch.getOwner())) {
-            throw PortableException.of("A-10-002");
-        }
-        return BatchAdminUserInfoResponse.of(user, batchUserData, batch, true);
+        BatchUserPackage batchUserPackage = checkBatchUser(handle);
+        return BatchAdminUserInfoResponse.of(batchUserPackage.getUser(), batchUserPackage.getUserData(), batchUserPackage.getBatch(), true);
     }
 
     @Override
@@ -241,19 +253,9 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public void clearBatchUserIpList(String handle) throws PortableException {
-        User user = userManager.getAccountByHandle(handle).orElseThrow(PortableException.from("A-01-001"));
-        if (!AccountType.BATCH.equals(user.getType())) {
-            throw PortableException.of("A-01-014");
-        }
-        BatchUserData batchUserData = userDataManager.getBatchUserDataById(user.getDataId());
-        Batch batch = batchManager.selectBatchById(batchUserData.getBatchId())
-                .orElseThrow(PortableException.from("A-10-006", batchUserData.getBatchId()));
-        // 校验是否是自己的
-        if (!Objects.equals(UserContext.ctx().getId(), batch.getOwner())) {
-            throw PortableException.of("A-10-002");
-        }
-        batchUserData.setIpList(new ArrayList<>());
-        userDataManager.updateUserData(batchUserData);
+        BatchUserPackage batchUserPackage = checkBatchUser(handle);
+        batchUserPackage.getUserData().setIpList(new ArrayList<>());
+        userDataManager.updateUserData(batchUserPackage.getUserData());
     }
 
     private NormalUserData organizationCheck(Long target) throws PortableException {
@@ -289,6 +291,25 @@ public class UserServiceImpl implements UserService {
             default:
                 throw PortableException.of("S-02-002", user.getType());
         }
+    }
+
+    private BatchUserPackage checkBatchUser(String handle) throws PortableException {
+        User user = userManager.getAccountByHandle(handle).orElseThrow(PortableException.from("A-01-001"));
+        if (!AccountType.BATCH.equals(user.getType())) {
+            throw PortableException.of("A-01-014");
+        }
+        BatchUserData batchUserData = userDataManager.getBatchUserDataById(user.getDataId());
+        Batch batch = batchManager.selectBatchById(batchUserData.getBatchId())
+                .orElseThrow(PortableException.from("A-10-006", batchUserData.getBatchId()));
+        // 校验是否是自己的
+        if (!Objects.equals(UserContext.ctx().getId(), batch.getOwner())) {
+            throw PortableException.of("A-10-002");
+        }
+        return BatchUserPackage.builder()
+                .user(user)
+                .userData(batchUserData)
+                .batch(batch)
+                .build();
     }
 
 }
