@@ -1,8 +1,7 @@
 package com.portable.server.manager;
 
+import com.portable.server.exception.PortableException;
 import com.portable.server.model.problem.ProblemData;
-
-import java.util.Optional;
 
 /**
  * @author shiroha
@@ -21,8 +20,9 @@ public interface ProblemDataManager {
      *
      * @param dataId 题目数据 ID
      * @return 题目数据
+     * @throws PortableException ID 不存在则抛出
      */
-    Optional<ProblemData> getProblemData(String dataId);
+    ProblemData getProblemData(String dataId) throws PortableException;
 
     /**
      * 新增题目数据

@@ -659,8 +659,7 @@ public class JudgeSupportImpl implements JudgeSupport {
         if (!problem.getStatusType().getTreated()) {
             throw PortableException.of("S-06-006", problemId);
         }
-        return problemDataManager.getProblemData(problem.getDataId())
-                .orElseThrow(PortableException.from("S-03-001"));
+        return problemDataManager.getProblemData(problem.getDataId());
     }
 
     private Problem getTestProblem(Long problemId) throws PortableException {
@@ -669,8 +668,7 @@ public class JudgeSupportImpl implements JudgeSupport {
     }
 
     private ProblemData getTestProblemData(Problem problem) throws PortableException {
-        return problemDataManager.getProblemData(problem.getDataId())
-                .orElseThrow(PortableException.from("S-03-001"));
+        return problemDataManager.getProblemData(problem.getDataId());
     }
 
     /**

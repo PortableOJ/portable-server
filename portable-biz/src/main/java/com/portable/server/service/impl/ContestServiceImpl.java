@@ -177,8 +177,7 @@ public class ContestServiceImpl implements ContestService {
         BaseContestData.ContestProblemData contestProblemData = contestPackage.getContestData().getProblemList().get(problemIndex);
         Problem problem = problemManager.getProblemById(contestProblemData.getProblemId())
                 .orElseThrow(PortableException.from("S-07-001", contestId));
-        ProblemData problemData = problemDataManager.getProblemData(problem.getDataId())
-                .orElseThrow(PortableException.from("S-03-001", contestId));
+        ProblemData problemData = problemDataManager.getProblemData(problem.getDataId());
         User user = userManager.getAccountById(problem.getOwner()).orElse(null);
         ProblemDetailResponse problemDetailResponse = ProblemDetailResponse.of(problem, problemData, user);
         problemDetailResponse.setId(Long.valueOf(problemIndex));
@@ -378,8 +377,7 @@ public class ContestServiceImpl implements ContestService {
 
         Problem problem = problemManager.getProblemById(contestProblemData.getProblemId())
                 .orElseThrow(PortableException.from("S-07-001", submitSolutionRequest.getContestId()));
-        ProblemData problemData = problemDataManager.getProblemData(problem.getDataId())
-                .orElseThrow(PortableException.from("S-03-001"));
+        ProblemData problemData = problemDataManager.getProblemData(problem.getDataId());
         submitSolutionRequest.setProblemId(contestProblemData.getProblemId());
 
         Solution solution = solutionManager.newSolution();
@@ -580,9 +578,13 @@ public class ContestServiceImpl implements ContestService {
                         // 将每道题目的序号设置为比赛中的序号
                         problemListResponse.setId((long) i);
                         if (admin) {
-                            Optional<ProblemData> problemDataOptional = problemDataManager.getProblemData(problem.getDataId());
-                            problemLock.add(problemDataOptional.isPresent()
-                                    && Objects.equals(problemDataOptional.get().getContestId(), contestId));
+                            try {
+                                ProblemData problemData = problemDataManager.getProblemData(problem.getDataId());
+                                problemLock.add(Objects.equals(problemData.getContestId(), contestId));
+                            } catch (PortableException e) {
+                                e.printStackTrace();
+                                problemLock.add(false);
+                            }
                         }
                         return problemListResponse;
                     })
@@ -726,20 +728,16 @@ public class ContestServiceImpl implements ContestService {
         contestContentRequest.toContestData(contestData, coAuthorIdSet, inviteUserIdSet);
 
         // 在数据完成输入后，再解除旧题目的锁定状态
-        lastProblemList.stream()
-                .parallel()
-                .forEach(aLong -> setProblemContestId(aLong, contestContentRequest.getId(), null));
+        setProblemContestId(lastProblemList, contestContentRequest.getId(), null);
 
         if (lastBatchId != null) {
             batchManager.updateBatchContest(lastBatchId, null);
         }
     }
 
-    private void updateContestLock(ContestPackage contestPackage, List<Long> problemIdList) {
+    private void updateContestLock(ContestPackage contestPackage, List<Long> problemIdList) throws PortableException {
         // 锁定题目状态
-        problemIdList.stream()
-                .parallel()
-                .forEach(aLong -> setProblemContestId(aLong, null, contestPackage.contest.getId()));
+        setProblemContestId(problemIdList, null, contestPackage.contest.getId());
         // 若为提供账号的比赛，则修改批量账号的绑定权限
         if (ContestAccessType.BATCH.equals(contestPackage.getContest().getAccessType())) {
             batchManager.updateBatchContest(
@@ -749,22 +747,28 @@ public class ContestServiceImpl implements ContestService {
         }
     }
 
-    private void setProblemContestId(Long problemId, Long fromContestId, Long toContestId) {
-        Optional<Problem> problemOptional = problemManager.getProblemById(problemId);
-        if (!problemOptional.isPresent()) {
-            return;
-        }
-        Problem problem = problemOptional.get();
+    private void setProblemContestId(List<Long> problemIdList, Long fromContestId, Long toContestId) throws PortableException {
+        problemIdList.stream()
+                .filter(problemId -> {
+                    Optional<Problem> problemOptional = problemManager.getProblemById(problemId);
+                    if (!problemOptional.isPresent()) {
+                        return true;
+                    }
+                    Problem problem = problemOptional.get();
 
-        Optional<ProblemData> problemDataOptional = problemDataManager.getProblemData(problem.getDataId());
-        if (!problemDataOptional.isPresent()) {
-            return;
-        }
-        ProblemData problemData = problemDataOptional.get();
-
-        if (Objects.equals(problemData.getContestId(), fromContestId)) {
-            problemData.setContestId(toContestId);
-            problemDataManager.updateProblemData(problemData);
-        }
+                    ProblemData problemData;
+                    try {
+                        problemData = problemDataManager.getProblemData(problem.getDataId());
+                    } catch (PortableException e) {
+                        return true;
+                    }
+                    if (Objects.equals(problemData.getContestId(), fromContestId)) {
+                        problemData.setContestId(toContestId);
+                        problemDataManager.updateProblemData(problemData);
+                    }
+                    return false;
+                })
+                .findAny()
+                .orElseThrow(PortableException.from("A-08-034"));
     }
 }

@@ -1,5 +1,6 @@
 package com.portable.server.manager.impl;
 
+import com.portable.server.exception.PortableException;
 import com.portable.server.manager.ProblemDataManager;
 import com.portable.server.model.problem.ProblemData;
 import com.portable.server.repo.ProblemDataRepo;
@@ -57,8 +58,9 @@ public class ProblemDataManagerImpl implements ProblemDataManager {
     }
 
     @Override
-    public Optional<ProblemData> getProblemData(String dataId) {
-        return Optional.ofNullable(problemDataRepo.getProblemData(dataId));
+    public ProblemData getProblemData(String dataId) throws PortableException {
+        return Optional.ofNullable(problemDataRepo.getProblemData(dataId))
+                .orElseThrow(PortableException.from("S-03-001"));
     }
 
     @Override
