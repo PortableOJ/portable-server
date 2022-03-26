@@ -58,6 +58,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -174,8 +175,10 @@ public class ContestServiceImpl implements ContestService {
             throw PortableException.of("A-08-018", contestId, problemIndex);
         }
         BaseContestData.ContestProblemData contestProblemData = contestPackage.getContestData().getProblemList().get(problemIndex);
-        Problem problem = problemManager.getProblemById(contestProblemData.getProblemId());
-        ProblemData problemData = problemDataManager.getProblemData(problem.getDataId());
+        Problem problem = problemManager.getProblemById(contestProblemData.getProblemId())
+                .orElseThrow(PortableException.from("S-07-001", contestId));
+        ProblemData problemData = problemDataManager.getProblemData(problem.getDataId())
+                .orElseThrow(PortableException.from("S-03-001", contestId));
         User user = userManager.getAccountById(problem.getOwner()).orElse(null);
         ProblemDetailResponse problemDetailResponse = ProblemDetailResponse.of(problem, problemData, user);
         problemDetailResponse.setId(Long.valueOf(problemIndex));
@@ -221,9 +224,9 @@ public class ContestServiceImpl implements ContestService {
         List<SolutionListResponse> solutionListResponseList = solutionList.stream()
                 .map(solution -> {
                     User user = userManager.getAccountById(solution.getUserId()).orElse(null);
-                    Problem problem = problemManager.getProblemById(solution.getProblemId());
+                    Problem problem = problemManager.getProblemById(solution.getProblemId()).orElse(null);
                     SolutionListResponse solutionListResponse = SolutionListResponse.of(solution, user, problem);
-                    solutionListResponse.setProblemId(Long.valueOf(problemIdToProblemIndexMap.get(problem.getId())));
+                    solutionListResponse.setProblemId(Long.valueOf(problemIdToProblemIndexMap.get(solution.getProblemId())));
                     return solutionListResponse;
                 })
                 .collect(Collectors.toList());
@@ -250,9 +253,9 @@ public class ContestServiceImpl implements ContestService {
         if (endContest || self || admin) {
             SolutionData solutionData = solutionDataManager.getSolutionData(solution.getDataId());
             User user = userManager.getAccountById(solution.getUserId()).orElse(null);
-            Problem problem = problemManager.getProblemById(solution.getProblemId());
+            Problem problem = problemManager.getProblemById(solution.getProblemId()).orElse(null);
             SolutionDetailResponse solutionDetailResponse = SolutionDetailResponse.of(solution, solutionData, user, problem, admin);
-            solutionDetailResponse.setProblemId(Long.valueOf(problemIdToProblemIndexMap.get(problem.getId())));
+            solutionDetailResponse.setProblemId(Long.valueOf(problemIdToProblemIndexMap.get(solution.getProblemId())));
             return solutionDetailResponse;
         }
         throw PortableException.of("A-08-005", solutionId);
@@ -297,9 +300,9 @@ public class ContestServiceImpl implements ContestService {
         List<SolutionListResponse> solutionListResponseList = solutionList.stream()
                 .map(solution -> {
                     User user = userManager.getAccountById(solution.getUserId()).orElse(null);
-                    Problem problem = problemManager.getProblemById(solution.getProblemId());
+                    Problem problem = problemManager.getProblemById(solution.getProblemId()).orElse(null);
                     SolutionListResponse solutionListResponse = SolutionListResponse.of(solution, user, problem);
-                    solutionListResponse.setProblemId(Long.valueOf(problemIdToProblemIndexMap.get(problem.getId())));
+                    solutionListResponse.setProblemId(Long.valueOf(problemIdToProblemIndexMap.get(solution.getProblemId())));
                     return solutionListResponse;
                 })
                 .collect(Collectors.toList());
@@ -319,9 +322,9 @@ public class ContestServiceImpl implements ContestService {
         Map<Long, Integer> problemIdToProblemIndexMap = contestPackage.getContestData().idToIndex();
         SolutionData solutionData = solutionDataManager.getSolutionData(solution.getDataId());
         User user = userManager.getAccountById(solution.getUserId()).orElse(null);
-        Problem problem = problemManager.getProblemById(solution.getProblemId());
+        Problem problem = problemManager.getProblemById(solution.getProblemId()).orElse(null);
         SolutionDetailResponse solutionDetailResponse = SolutionDetailResponse.of(solution, solutionData, user, problem, true);
-        solutionDetailResponse.setProblemId(Long.valueOf(problemIdToProblemIndexMap.get(problem.getId())));
+        solutionDetailResponse.setProblemId(Long.valueOf(problemIdToProblemIndexMap.get(solution.getProblemId())));
         return solutionDetailResponse;
     }
 
@@ -373,8 +376,10 @@ public class ContestServiceImpl implements ContestService {
                 .getProblemList()
                 .get(Math.toIntExact(submitSolutionRequest.getProblemId()));
 
-        Problem problem = problemManager.getProblemById(contestProblemData.getProblemId());
-        ProblemData problemData = problemDataManager.getProblemData(problem.getDataId());
+        Problem problem = problemManager.getProblemById(contestProblemData.getProblemId())
+                .orElseThrow(PortableException.from("S-07-001", submitSolutionRequest.getContestId()));
+        ProblemData problemData = problemDataManager.getProblemData(problem.getDataId())
+                .orElseThrow(PortableException.from("S-03-001"));
         submitSolutionRequest.setProblemId(contestProblemData.getProblemId());
 
         Solution solution = solutionManager.newSolution();
@@ -473,10 +478,9 @@ public class ContestServiceImpl implements ContestService {
             throw PortableException.of("A-08-014", contestAddProblem.getContestId());
         }
         // 仅允许添加自己拥有的，且为私有的题目
-        Problem problem = problemManager.getProblemById(contestAddProblem.getProblemId());
-        if (problem == null) {
-            throw PortableException.of("A-08-017");
-        }
+        Problem problem = problemManager.getProblemById(contestAddProblem.getProblemId())
+                .orElseThrow(PortableException.from("A-08-017"));
+
         if (!Objects.equals(problem.getOwner(), UserContext.ctx().getId())
                 || !ProblemAccessType.PRIVATE.equals(problem.getAccessType())) {
             throw PortableException.of("A-08-015");
@@ -560,10 +564,14 @@ public class ContestServiceImpl implements ContestService {
             problemListResponses = IntStream.range(0, contestPackage.getContestData().getProblemList().size())
                     .mapToObj(i -> {
                         BaseContestData.ContestProblemData contestProblemData = contestPackage.getContestData().getProblemList().get(i);
-                        Problem problem = problemManager.getProblemById(contestProblemData.getProblemId());
-                        if (problem == null) {
+                        Optional<Problem> problemOptional = problemManager.getProblemById(contestProblemData.getProblemId());
+
+                        if (!problemOptional.isPresent()) {
                             return null;
                         }
+
+                        Problem problem = problemOptional.get();
+
                         Solution solution = solutionManager.selectLastSolutionByUserIdAndProblemIdAndContestId(userContext.getId(), problem.getId(), contestId);
                         ProblemListResponse problemListResponse = ProblemListResponse.of(problem, solution);
                         problemListResponse.setAcceptCount(contestProblemData.getAcceptCount());
@@ -572,8 +580,9 @@ public class ContestServiceImpl implements ContestService {
                         // 将每道题目的序号设置为比赛中的序号
                         problemListResponse.setId((long) i);
                         if (admin) {
-                            ProblemData problemData = problemDataManager.getProblemData(problem.getDataId());
-                            problemLock.add(Objects.equals(problemData.getContestId(), contestId));
+                            Optional<ProblemData> problemDataOptional = problemDataManager.getProblemData(problem.getDataId());
+                            problemLock.add(problemDataOptional.isPresent()
+                                    && Objects.equals(problemDataOptional.get().getContestId(), contestId));
                         }
                         return problemListResponse;
                     })
@@ -719,15 +728,7 @@ public class ContestServiceImpl implements ContestService {
         // 在数据完成输入后，再解除旧题目的锁定状态
         lastProblemList.stream()
                 .parallel()
-                .forEach(aLong -> {
-                    // 已经校验过题目是否合法了
-                    Problem problem = problemManager.getProblemById(aLong);
-                    ProblemData problemData = problemDataManager.getProblemData(problem.getDataId());
-                    if (Objects.equals(problemData.getContestId(), contestContentRequest.getId())) {
-                        problemData.setContestId(null);
-                        problemDataManager.updateProblemData(problemData);
-                    }
-                });
+                .forEach(aLong -> setProblemContestId(aLong, contestContentRequest.getId(), null));
 
         if (lastBatchId != null) {
             batchManager.updateBatchContest(lastBatchId, null);
@@ -738,20 +739,32 @@ public class ContestServiceImpl implements ContestService {
         // 锁定题目状态
         problemIdList.stream()
                 .parallel()
-                .forEach(aLong -> {
-                    Problem problem = problemManager.getProblemById(aLong);
-                    ProblemData problemData = problemDataManager.getProblemData(problem.getDataId());
-                    if (problemData.getContestId() == null) {
-                        problemData.setContestId(contestPackage.contest.getId());
-                        problemDataManager.updateProblemData(problemData);
-                    }
-                });
+                .forEach(aLong -> setProblemContestId(aLong, null, contestPackage.contest.getId()));
         // 若为提供账号的比赛，则修改批量账号的绑定权限
         if (ContestAccessType.BATCH.equals(contestPackage.getContest().getAccessType())) {
             batchManager.updateBatchContest(
                     ((BatchContestData) contestPackage.getContestData()).getBatchId(),
                     contestPackage.getContest().getId()
             );
+        }
+    }
+
+    private void setProblemContestId(Long problemId, Long fromContestId, Long toContestId) {
+        Optional<Problem> problemOptional = problemManager.getProblemById(problemId);
+        if (!problemOptional.isPresent()) {
+            return;
+        }
+        Problem problem = problemOptional.get();
+
+        Optional<ProblemData> problemDataOptional = problemDataManager.getProblemData(problem.getDataId());
+        if (!problemDataOptional.isPresent()) {
+            return;
+        }
+        ProblemData problemData = problemDataOptional.get();
+
+        if (Objects.equals(problemData.getContestId(), fromContestId)) {
+            problemData.setContestId(toContestId);
+            problemDataManager.updateProblemData(problemData);
         }
     }
 }

@@ -654,34 +654,23 @@ public class JudgeSupportImpl implements JudgeSupport {
     }
 
     private ProblemData getProblemData(Long problemId) throws PortableException {
-        Problem problem = problemManager.getProblemById(problemId);
-        if (problem == null) {
-            throw PortableException.of("S-06-005", problemId);
-        }
+        Problem problem = problemManager.getProblemById(problemId)
+                .orElseThrow(PortableException.from("S-06-005", problemId));
         if (!problem.getStatusType().getTreated()) {
             throw PortableException.of("S-06-006", problemId);
         }
-        ProblemData problemData = problemDataManager.getProblemData(problem.getDataId());
-        if (problemData == null) {
-            throw PortableException.of("S-03-001");
-        }
-        return problemData;
+        return problemDataManager.getProblemData(problem.getDataId())
+                .orElseThrow(PortableException.from("S-03-001"));
     }
 
     private Problem getTestProblem(Long problemId) throws PortableException {
-        Problem problem = problemManager.getProblemById(problemId);
-        if (problem == null) {
-            throw PortableException.of("S-06-005", problemId);
-        }
-        return problem;
+        return problemManager.getProblemById(problemId)
+                .orElseThrow(PortableException.from("S-06-005", problemId));
     }
 
     private ProblemData getTestProblemData(Problem problem) throws PortableException {
-        ProblemData problemData = problemDataManager.getProblemData(problem.getDataId());
-        if (problemData == null) {
-            throw PortableException.of("S-03-001");
-        }
-        return problemData;
+        return problemDataManager.getProblemData(problem.getDataId())
+                .orElseThrow(PortableException.from("S-03-001"));
     }
 
     /**

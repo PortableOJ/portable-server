@@ -67,7 +67,7 @@ public class SolutionServiceImpl implements SolutionService {
                 .parallel()
                 .map(solution -> {
                     User user = userManager.getAccountById(solution.getUserId()).orElse(null);
-                    Problem problem = problemManager.getProblemById(solution.getProblemId());
+                    Problem problem = problemManager.getProblemById(solution.getProblemId()).orElse(null);
                     return SolutionListResponse.of(solution, user, problem);
                 })
                 .collect(Collectors.toList());
@@ -95,9 +95,9 @@ public class SolutionServiceImpl implements SolutionService {
             throw PortableException.of("S-05-001");
         }
         User user = userManager.getAccountById(solution.getUserId()).orElse(null);
-        Problem problem = problemManager.getProblemById(solution.getProblemId());
-        boolean shareJudgeMsg = Objects.equals(problem.getOwner(), userContext.getId())
-                || userContext.getPermissionTypeSet().contains(PermissionType.VIEW_SOLUTION_MESSAGE);
-        return SolutionDetailResponse.of(solution, solutionData, user, problem, shareJudgeMsg);
+        Problem problem = problemManager.getProblemById(solution.getProblemId()).orElse(null);
+        Boolean ownerProblem = problem != null && Objects.equals(problem.getOwner(), userContext.getId());
+        Boolean permissionMsg = userContext.getPermissionTypeSet().contains(PermissionType.VIEW_SOLUTION_MESSAGE);
+        return SolutionDetailResponse.of(solution, solutionData, user, problem, ownerProblem || permissionMsg);
     }
 }

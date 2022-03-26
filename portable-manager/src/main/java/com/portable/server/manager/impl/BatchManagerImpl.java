@@ -48,8 +48,8 @@ public class BatchManagerImpl implements BatchManager {
     }
 
     @Override
-    public Batch selectBatchByPrefix(String prefix) {
-        return batchMapper.selectBatchByPrefix(prefix);
+    public Optional<Batch> selectBatchByPrefix(String prefix) {
+        return Optional.ofNullable(batchMapper.selectBatchByPrefix(prefix));
     }
 
     @Override

@@ -579,14 +579,10 @@ public class ProblemServiceImpl implements ProblemService {
     }
 
     private ProblemPackage getProblemPackage(Long id) throws PortableException {
-        Problem problem = problemManager.getProblemById(id);
-        if (problem == null) {
-            throw PortableException.of("A-04-001", id);
-        }
-        ProblemData problemData = problemDataManager.getProblemData(problem.getDataId());
-        if (problemData == null) {
-            throw PortableException.of("S-07-001", id);
-        }
+        Problem problem = problemManager.getProblemById(id)
+                .orElseThrow(PortableException.from("A-04-001", id));
+        ProblemData problemData = problemDataManager.getProblemData(problem.getDataId())
+                .orElseThrow(PortableException.from("S-07-001", id));
         return ProblemPackage.builder()
                 .problem(problem)
                 .problemData(problemData)

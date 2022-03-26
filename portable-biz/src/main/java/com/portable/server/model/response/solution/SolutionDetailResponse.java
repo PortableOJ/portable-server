@@ -98,14 +98,14 @@ public class SolutionDetailResponse {
     private SolutionDetailResponse(@NotNull Solution solution,
                                    @NotNull SolutionData solutionData,
                                    @Nullable User user,
-                                   @NotNull Problem problem,
+                                   @Nullable Problem problem,
                                    @NotNull Boolean shareJudgeMsg) {
         this.id = solution.getId();
         this.submitTime = solution.getSubmitTime();
         this.userId = solution.getUserId();
         this.userHandle = user == null ? "" : user.getHandle();
         this.problemId = solution.getProblemId();
-        this.problemTitle = problem.getTitle();
+        this.problemTitle = problem == null ? "" : problem.getTitle();
         this.contestId = solution.getContestId();
         this.languageType = solution.getLanguageType();
         this.status = solution.getStatus();
@@ -120,7 +120,7 @@ public class SolutionDetailResponse {
     public static SolutionDetailResponse of(@NotNull Solution solution,
                                             @NotNull SolutionData solutionData,
                                             @Nullable User user,
-                                            @NotNull Problem problem,
+                                            @Nullable Problem problem,
                                             @NotNull Boolean shareJudgeMsg) {
         return new SolutionDetailResponse(solution, solutionData, user, problem, shareJudgeMsg);
     }

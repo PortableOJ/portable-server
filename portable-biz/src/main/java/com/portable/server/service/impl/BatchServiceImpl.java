@@ -23,6 +23,7 @@ import org.springframework.stereotype.Component;
 import javax.annotation.Resource;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Random;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -84,8 +85,8 @@ public class BatchServiceImpl implements BatchService {
     public CreateBatchResponse create(BatchRequest request) throws PortableException {
         Batch batch;
         synchronized (this) {
-            batch = batchManager.selectBatchByPrefix(request.getPrefix());
-            if (batch != null) {
+            Optional<Batch> batchOptional = batchManager.selectBatchByPrefix(request.getPrefix());
+            if (batchOptional.isPresent()) {
                 throw PortableException.of("A-10-001", request.getPrefix());
             }
             batch = batchManager.newBatch();

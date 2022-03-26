@@ -5,6 +5,7 @@ import com.portable.server.type.ProblemAccessType;
 import com.portable.server.type.ProblemStatusType;
 
 import java.util.List;
+import java.util.Optional;
 
 /**
  * @author shiroha
@@ -62,7 +63,7 @@ public interface ProblemManager {
      * @param id 题目的 ID
      * @return 题目内容
      */
-    Problem getProblemById(Long id);
+    Optional<Problem> getProblemById(Long id);
 
     /**
      * 校验题目列表是否存在

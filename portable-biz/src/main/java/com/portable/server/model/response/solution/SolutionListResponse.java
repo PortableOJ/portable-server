@@ -7,6 +7,7 @@ import com.portable.server.type.LanguageType;
 import com.portable.server.type.SolutionStatusType;
 import lombok.Data;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.Date;
 
@@ -66,7 +67,7 @@ public class SolutionListResponse {
      */
     private Integer memoryCost;
 
-    private SolutionListResponse(@NotNull Solution solution, User user, Problem problem) {
+    private SolutionListResponse(@NotNull Solution solution, @Nullable User user, @Nullable Problem problem) {
         this.id = solution.getId();
         this.submitTime = solution.getSubmitTime();
         this.userId = solution.getUserId();
@@ -79,7 +80,7 @@ public class SolutionListResponse {
         this.memoryCost = solution.getMemoryCost();
     }
 
-    public static SolutionListResponse of(@NotNull Solution solution, User user, Problem problem) {
+    public static SolutionListResponse of(@NotNull Solution solution, @Nullable User user, @Nullable Problem problem) {
         return new SolutionListResponse(solution, user, problem);
     }
 }

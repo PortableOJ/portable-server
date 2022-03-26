@@ -52,7 +52,7 @@ public interface BatchManager {
      * @param prefix 前缀
      * @return 批量用户信息
      */
-    Batch selectBatchByPrefix(String prefix);
+    Optional<Batch> selectBatchByPrefix(String prefix);
 
     /**
      * 新增一个批量用户

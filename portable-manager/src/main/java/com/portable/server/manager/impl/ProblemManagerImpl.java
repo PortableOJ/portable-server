@@ -10,6 +10,7 @@ import org.springframework.stereotype.Component;
 import javax.annotation.Resource;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
@@ -56,16 +57,16 @@ public class ProblemManagerImpl implements ProblemManager {
     }
 
     @Override
-    public Problem getProblemById(Long id) {
-        return problemMapper.selectProblemById(id);
+    public Optional<Problem> getProblemById(Long id) {
+        return Optional.ofNullable(problemMapper.selectProblemById(id));
     }
 
     @Override
     public List<Long> checkProblemListExist(List<Long> problemList) {
         return problemList.stream()
                 .map(aLong -> {
-                    Problem problem = getProblemById(aLong);
-                    return problem == null ? aLong : null;
+                    Optional<Problem> problem = getProblemById(aLong);
+                    return !problem.isPresent() ? aLong : null;
                 })
                 .filter(aLong -> !Objects.isNull(aLong))
                 .collect(Collectors.toList());

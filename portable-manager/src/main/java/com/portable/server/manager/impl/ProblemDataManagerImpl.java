@@ -13,6 +13,7 @@ import javax.annotation.Resource;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Optional;
 
 /**
  * @author shiroha
@@ -56,8 +57,8 @@ public class ProblemDataManagerImpl implements ProblemDataManager {
     }
 
     @Override
-    public ProblemData getProblemData(String dataId) {
-        return problemDataRepo.getProblemData(dataId);
+    public Optional<ProblemData> getProblemData(String dataId) {
+        return Optional.ofNullable(problemDataRepo.getProblemData(dataId));
     }
 
     @Override
