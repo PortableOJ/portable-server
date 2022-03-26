@@ -120,7 +120,7 @@ class UserServiceImplTest {
     }
 
     @Test
-    void testInitWithNoRoot() {
+    void testInitWithNoRoot() throws PortableException {
         ReflectionTestUtils.setField(userService, "rootName", MOCKED_ROOT_NAME);
         ReflectionTestUtils.setField(userService, "rootPassword", MOCKED_ROOT_PASSWORD);
 
@@ -168,13 +168,13 @@ class UserServiceImplTest {
     }
 
     @Test
-    void testInitWithRoot() {
+    void testInitWithRoot() throws PortableException {
         user.setDataId(MOCKED_MONGO_ID);
 
         ReflectionTestUtils.setField(userService, "rootName", MOCKED_ROOT_NAME);
 
         Mockito.when(userManager.getAccountByHandle(MOCKED_ROOT_NAME)).thenReturn(Optional.of(user));
-        Mockito.when(userDataManager.getNormalUserDataById(MOCKED_MONGO_ID)).thenReturn(Optional.of(normalUserData));
+        Mockito.when(userDataManager.getNormalUserDataById(MOCKED_MONGO_ID)).thenReturn(normalUserData);
 
         Mockito.doNothing().when(userDataManager).updateUserData(Mockito.any());
 
@@ -250,7 +250,7 @@ class UserServiceImplTest {
     }
 
     @Test
-    void testLoginWithNormalUserAndNoData() {
+    void testLoginWithNormalUserAndNoData() throws PortableException {
         LoginRequest loginRequest = new LoginRequest();
         loginRequest.setHandle(MOCKED_HANDLE);
         loginRequest.setPassword(MOCKED_INPUT_PASSWORD);
@@ -259,7 +259,7 @@ class UserServiceImplTest {
 
         Mockito.when(userManager.getAccountByHandle(MOCKED_HANDLE)).thenReturn(Optional.of(user));
         bCryptEncoderMockedStatic.when(() -> BCryptEncoder.match(MOCKED_INPUT_PASSWORD, MOCKED_ROOT_PASSWORD_ENCODED)).thenReturn(true);
-        Mockito.when(userDataManager.getNormalUserDataById(MOCKED_MONGO_ID)).thenReturn(Optional.empty());
+        Mockito.when(userDataManager.getNormalUserDataById(MOCKED_MONGO_ID)).thenReturn(null);
 
         // DO
         try {
@@ -292,7 +292,7 @@ class UserServiceImplTest {
 
         Mockito.when(userManager.getAccountByHandle(MOCKED_HANDLE)).thenReturn(Optional.of(user));
         bCryptEncoderMockedStatic.when(() -> BCryptEncoder.match(MOCKED_INPUT_PASSWORD, MOCKED_ROOT_PASSWORD_ENCODED)).thenReturn(true);
-        Mockito.when(userDataManager.getNormalUserDataById(MOCKED_MONGO_ID)).thenReturn(Optional.of(normalUserData));
+        Mockito.when(userDataManager.getNormalUserDataById(MOCKED_MONGO_ID)).thenReturn(normalUserData);
 
         // DO
         NormalUserInfoResponse retVal = (NormalUserInfoResponse) userService.login(loginRequest, MOCKED_IP);
@@ -330,7 +330,7 @@ class UserServiceImplTest {
     }
 
     @Test
-    void testLoginWithBatchUserAndNoData() {
+    void testLoginWithBatchUserAndNoData() throws PortableException {
         LoginRequest loginRequest = new LoginRequest();
         loginRequest.setHandle(MOCKED_HANDLE);
         loginRequest.setPassword(MOCKED_INPUT_PASSWORD);
@@ -339,7 +339,7 @@ class UserServiceImplTest {
 
         Mockito.when(userManager.getAccountByHandle(MOCKED_HANDLE)).thenReturn(Optional.of(user));
         bCryptEncoderMockedStatic.when(() -> BCryptEncoder.match(MOCKED_INPUT_PASSWORD, MOCKED_ROOT_PASSWORD_ENCODED)).thenReturn(true);
-        Mockito.when(userDataManager.getBatchUserDataById(MOCKED_MONGO_ID)).thenReturn(Optional.empty());
+        Mockito.when(userDataManager.getBatchUserDataById(MOCKED_MONGO_ID)).thenReturn(null);
 
         // DO
         try {
@@ -360,7 +360,7 @@ class UserServiceImplTest {
     }
 
     @Test
-    void testLoginWithBatchUserIPLockOtherIp() {
+    void testLoginWithBatchUserIPLockOtherIp() throws PortableException {
         LoginRequest loginRequest = new LoginRequest();
         loginRequest.setHandle(MOCKED_HANDLE);
         loginRequest.setPassword(MOCKED_INPUT_PASSWORD);
@@ -377,7 +377,7 @@ class UserServiceImplTest {
 
         Mockito.when(userManager.getAccountByHandle(MOCKED_HANDLE)).thenReturn(Optional.of(user));
         bCryptEncoderMockedStatic.when(() -> BCryptEncoder.match(MOCKED_INPUT_PASSWORD, MOCKED_ROOT_PASSWORD_ENCODED)).thenReturn(true);
-        Mockito.when(userDataManager.getBatchUserDataById(MOCKED_MONGO_ID)).thenReturn(Optional.of(batchUserData));
+        Mockito.when(userDataManager.getBatchUserDataById(MOCKED_MONGO_ID)).thenReturn(batchUserData);
         Mockito.when(batchManager.selectBatchById(MOCKED_BATCH_ID)).thenReturn(Optional.of(batch));
 
         // DO
@@ -424,7 +424,7 @@ class UserServiceImplTest {
 
         Mockito.when(userManager.getAccountByHandle(MOCKED_HANDLE)).thenReturn(Optional.of(user));
         bCryptEncoderMockedStatic.when(() -> BCryptEncoder.match(MOCKED_INPUT_PASSWORD, MOCKED_ROOT_PASSWORD_ENCODED)).thenReturn(true);
-        Mockito.when(userDataManager.getBatchUserDataById(MOCKED_MONGO_ID)).thenReturn(Optional.of(batchUserData));
+        Mockito.when(userDataManager.getBatchUserDataById(MOCKED_MONGO_ID)).thenReturn(batchUserData);
         Mockito.when(batchManager.selectBatchById(MOCKED_BATCH_ID)).thenReturn(Optional.of(batch));
 
         // DO
@@ -482,7 +482,7 @@ class UserServiceImplTest {
 
         Mockito.when(userManager.getAccountByHandle(MOCKED_HANDLE)).thenReturn(Optional.of(user));
         bCryptEncoderMockedStatic.when(() -> BCryptEncoder.match(MOCKED_INPUT_PASSWORD, MOCKED_ROOT_PASSWORD_ENCODED)).thenReturn(true);
-        Mockito.when(userDataManager.getBatchUserDataById(MOCKED_MONGO_ID)).thenReturn(Optional.of(batchUserData));
+        Mockito.when(userDataManager.getBatchUserDataById(MOCKED_MONGO_ID)).thenReturn(batchUserData);
         Mockito.when(batchManager.selectBatchById(MOCKED_BATCH_ID)).thenReturn(Optional.of(batch));
 
         // DO
@@ -544,7 +544,7 @@ class UserServiceImplTest {
 
         Mockito.when(userManager.getAccountByHandle(MOCKED_HANDLE)).thenReturn(Optional.of(user));
         bCryptEncoderMockedStatic.when(() -> BCryptEncoder.match(MOCKED_INPUT_PASSWORD, MOCKED_ROOT_PASSWORD_ENCODED)).thenReturn(true);
-        Mockito.when(userDataManager.getBatchUserDataById(MOCKED_MONGO_ID)).thenReturn(Optional.of(batchUserData));
+        Mockito.when(userDataManager.getBatchUserDataById(MOCKED_MONGO_ID)).thenReturn(batchUserData);
         Mockito.when(batchManager.selectBatchById(MOCKED_BATCH_ID)).thenReturn(Optional.of(batch));
 
         // DO
@@ -664,12 +664,12 @@ class UserServiceImplTest {
     }
 
     @Test
-    void testGetUserInfoWithLockNormalNoUserData() {
+    void testGetUserInfoWithLockNormalNoUserData() throws PortableException {
         user.setDataId(MOCKED_MONGO_ID);
         user.setType(AccountType.LOCKED_NORMAL);
 
         Mockito.when(userManager.getAccountByHandle(MOCKED_HANDLE)).thenReturn(Optional.of(user));
-        Mockito.when(userDataManager.getNormalUserDataById(MOCKED_MONGO_ID)).thenReturn(Optional.empty());
+        Mockito.when(userDataManager.getNormalUserDataById(MOCKED_MONGO_ID)).thenReturn(null);
 
         try {
             userService.getUserInfo(MOCKED_HANDLE);
@@ -685,7 +685,7 @@ class UserServiceImplTest {
         user.setType(AccountType.LOCKED_NORMAL);
 
         Mockito.when(userManager.getAccountByHandle(MOCKED_HANDLE)).thenReturn(Optional.of(user));
-        Mockito.when(userDataManager.getNormalUserDataById(MOCKED_MONGO_ID)).thenReturn(Optional.of(normalUserData));
+        Mockito.when(userDataManager.getNormalUserDataById(MOCKED_MONGO_ID)).thenReturn(normalUserData);
 
         BaseUserInfoResponse baseUserInfoResponse = userService.getUserInfo(MOCKED_HANDLE);
 
@@ -702,12 +702,12 @@ class UserServiceImplTest {
     }
 
     @Test
-    void testGetUserInfoWithNormalNoUserData() {
+    void testGetUserInfoWithNormalNoUserData() throws PortableException {
         user.setDataId(MOCKED_MONGO_ID);
         user.setType(AccountType.NORMAL);
 
         Mockito.when(userManager.getAccountByHandle(MOCKED_HANDLE)).thenReturn(Optional.of(user));
-        Mockito.when(userDataManager.getNormalUserDataById(MOCKED_MONGO_ID)).thenReturn(Optional.empty());
+        Mockito.when(userDataManager.getNormalUserDataById(MOCKED_MONGO_ID)).thenReturn(null);
 
         try {
             userService.getUserInfo(MOCKED_HANDLE);
@@ -723,7 +723,7 @@ class UserServiceImplTest {
         user.setType(AccountType.NORMAL);
 
         Mockito.when(userManager.getAccountByHandle(MOCKED_HANDLE)).thenReturn(Optional.of(user));
-        Mockito.when(userDataManager.getNormalUserDataById(MOCKED_MONGO_ID)).thenReturn(Optional.of(normalUserData));
+        Mockito.when(userDataManager.getNormalUserDataById(MOCKED_MONGO_ID)).thenReturn(normalUserData);
 
         BaseUserInfoResponse baseUserInfoResponse = userService.getUserInfo(MOCKED_HANDLE);
 
@@ -740,12 +740,12 @@ class UserServiceImplTest {
     }
 
     @Test
-    void testGetUserInfoWithBatchNoUserData() {
+    void testGetUserInfoWithBatchNoUserData() throws PortableException {
         user.setDataId(MOCKED_MONGO_ID);
         user.setType(AccountType.BATCH);
 
         Mockito.when(userManager.getAccountByHandle(MOCKED_HANDLE)).thenReturn(Optional.of(user));
-        Mockito.when(userDataManager.getBatchUserDataById(MOCKED_MONGO_ID)).thenReturn(Optional.empty());
+        Mockito.when(userDataManager.getBatchUserDataById(MOCKED_MONGO_ID)).thenReturn(null);
 
         try {
             userService.getUserInfo(MOCKED_HANDLE);
@@ -756,12 +756,12 @@ class UserServiceImplTest {
     }
 
     @Test
-    void testGetUserInfoWithBatchNoBatch() {
+    void testGetUserInfoWithBatchNoBatch() throws PortableException {
         user.setDataId(MOCKED_MONGO_ID);
         user.setType(AccountType.BATCH);
 
         Mockito.when(userManager.getAccountByHandle(MOCKED_HANDLE)).thenReturn(Optional.of(user));
-        Mockito.when(userDataManager.getBatchUserDataById(MOCKED_MONGO_ID)).thenReturn(Optional.of(batchUserData));
+        Mockito.when(userDataManager.getBatchUserDataById(MOCKED_MONGO_ID)).thenReturn(batchUserData);
         Mockito.when(batchManager.selectBatchById(MOCKED_BATCH_ID)).thenReturn(Optional.empty());
 
         try {
@@ -781,7 +781,7 @@ class UserServiceImplTest {
         user.setType(AccountType.BATCH);
 
         Mockito.when(userManager.getAccountByHandle(MOCKED_HANDLE)).thenReturn(Optional.of(user));
-        Mockito.when(userDataManager.getBatchUserDataById(MOCKED_MONGO_ID)).thenReturn(Optional.of(batchUserData));
+        Mockito.when(userDataManager.getBatchUserDataById(MOCKED_MONGO_ID)).thenReturn(batchUserData);
         Mockito.when(batchManager.selectBatchById(MOCKED_BATCH_ID)).thenReturn(Optional.of(batch));
         userContextMockedStatic.when(UserContext::ctx).thenReturn(userContext);
 
@@ -822,12 +822,12 @@ class UserServiceImplTest {
     }
 
     @Test
-    void testGetBatchUserInfoWithNoUserData() {
+    void testGetBatchUserInfoWithNoUserData() throws PortableException {
         user.setDataId(MOCKED_MONGO_ID);
         user.setType(AccountType.BATCH);
 
         Mockito.when(userManager.getAccountByHandle(MOCKED_HANDLE)).thenReturn(Optional.of(user));
-        Mockito.when(userDataManager.getBatchUserDataById(MOCKED_MONGO_ID)).thenReturn(Optional.empty());
+        Mockito.when(userDataManager.getBatchUserDataById(MOCKED_MONGO_ID)).thenReturn(null);
 
         try {
             userService.getBatchUserInfo(MOCKED_HANDLE);
@@ -838,13 +838,13 @@ class UserServiceImplTest {
     }
 
     @Test
-    void testGetBatchUserInfoWithNoBatch() {
+    void testGetBatchUserInfoWithNoBatch() throws PortableException {
         user.setDataId(MOCKED_MONGO_ID);
         user.setType(AccountType.BATCH);
         batchUserData.setBatchId(MOCKED_BATCH_ID);
 
         Mockito.when(userManager.getAccountByHandle(MOCKED_HANDLE)).thenReturn(Optional.of(user));
-        Mockito.when(userDataManager.getBatchUserDataById(MOCKED_MONGO_ID)).thenReturn(Optional.of(batchUserData));
+        Mockito.when(userDataManager.getBatchUserDataById(MOCKED_MONGO_ID)).thenReturn(batchUserData);
         Mockito.when(batchManager.selectBatchById(MOCKED_BATCH_ID)).thenReturn(Optional.empty());
 
         try {
@@ -856,7 +856,7 @@ class UserServiceImplTest {
     }
 
     @Test
-    void testGetBatchUserInfoWithNotMine() {
+    void testGetBatchUserInfoWithNotMine() throws PortableException {
         user.setDataId(MOCKED_MONGO_ID);
         user.setType(AccountType.BATCH);
         batchUserData.setBatchId(MOCKED_BATCH_ID);
@@ -864,7 +864,7 @@ class UserServiceImplTest {
         userContext.setId(MOCKED_ID);
 
         Mockito.when(userManager.getAccountByHandle(MOCKED_HANDLE)).thenReturn(Optional.of(user));
-        Mockito.when(userDataManager.getBatchUserDataById(MOCKED_MONGO_ID)).thenReturn(Optional.of(batchUserData));
+        Mockito.when(userDataManager.getBatchUserDataById(MOCKED_MONGO_ID)).thenReturn(batchUserData);
         Mockito.when(batchManager.selectBatchById(MOCKED_BATCH_ID)).thenReturn(Optional.of(batch));
         userContextMockedStatic.when(UserContext::ctx).thenReturn(userContext);
 
@@ -886,7 +886,7 @@ class UserServiceImplTest {
         userContext.setId(MOCKED_ID);
 
         Mockito.when(userManager.getAccountByHandle(MOCKED_HANDLE)).thenReturn(Optional.of(user));
-        Mockito.when(userDataManager.getBatchUserDataById(MOCKED_MONGO_ID)).thenReturn(Optional.of(batchUserData));
+        Mockito.when(userDataManager.getBatchUserDataById(MOCKED_MONGO_ID)).thenReturn(batchUserData);
         Mockito.when(batchManager.selectBatchById(MOCKED_BATCH_ID)).thenReturn(Optional.of(batch));
         userContextMockedStatic.when(UserContext::ctx).thenReturn(userContext);
 
@@ -928,10 +928,10 @@ class UserServiceImplTest {
     }
 
     @Test
-    void testChangeOrganizationWithNoUserData() {
+    void testChangeOrganizationWithNoUserData() throws PortableException {
         user.setType(AccountType.LOCKED_NORMAL);
         Mockito.when(userManager.getAccountById(MOCKED_ID)).thenReturn(Optional.of(user));
-        Mockito.when(userDataManager.getNormalUserDataById(MOCKED_MONGO_ID)).thenReturn(Optional.empty());
+        Mockito.when(userDataManager.getNormalUserDataById(MOCKED_MONGO_ID)).thenReturn(null);
 
         try {
             userService.changeOrganization(MOCKED_ID, OrganizationType.STUDENT);
@@ -942,12 +942,12 @@ class UserServiceImplTest {
     }
 
     @Test
-    void testChangeOrganizationWithNotDominate() {
+    void testChangeOrganizationWithNotDominate() throws PortableException {
         user.setType(AccountType.LOCKED_NORMAL);
         userContext.setOrganization(OrganizationType.TEACHER);
         normalUserData.setOrganization(OrganizationType.ACMER);
         Mockito.when(userManager.getAccountById(MOCKED_ID)).thenReturn(Optional.of(user));
-        Mockito.when(userDataManager.getNormalUserDataById(MOCKED_MONGO_ID)).thenReturn(Optional.of(normalUserData));
+        Mockito.when(userDataManager.getNormalUserDataById(MOCKED_MONGO_ID)).thenReturn(normalUserData);
         userContextMockedStatic.when(UserContext::ctx).thenReturn(userContext);
 
         try {
@@ -964,7 +964,7 @@ class UserServiceImplTest {
         userContext.setOrganization(OrganizationType.ACMER);
         normalUserData.setOrganization(OrganizationType.STUDENT);
         Mockito.when(userManager.getAccountById(MOCKED_ID)).thenReturn(Optional.of(user));
-        Mockito.when(userDataManager.getNormalUserDataById(MOCKED_MONGO_ID)).thenReturn(Optional.of(normalUserData));
+        Mockito.when(userDataManager.getNormalUserDataById(MOCKED_MONGO_ID)).thenReturn(normalUserData);
         userContextMockedStatic.when(UserContext::ctx).thenReturn(userContext);
 
         userService.changeOrganization(MOCKED_ID, OrganizationType.SPECIAL_STUDENT);
@@ -1002,10 +1002,10 @@ class UserServiceImplTest {
     }
 
     @Test
-    void testAddPermissionWithNoUserData() {
+    void testAddPermissionWithNoUserData() throws PortableException {
         user.setType(AccountType.LOCKED_NORMAL);
         Mockito.when(userManager.getAccountById(MOCKED_ID)).thenReturn(Optional.of(user));
-        Mockito.when(userDataManager.getNormalUserDataById(MOCKED_MONGO_ID)).thenReturn(Optional.empty());
+        Mockito.when(userDataManager.getNormalUserDataById(MOCKED_MONGO_ID)).thenReturn(null);
 
         try {
             userService.addPermission(MOCKED_ID, PermissionType.GRANT);
@@ -1016,12 +1016,12 @@ class UserServiceImplTest {
     }
 
     @Test
-    void testAddPermissionWithNotDominate() {
+    void testAddPermissionWithNotDominate() throws PortableException {
         user.setType(AccountType.LOCKED_NORMAL);
         userContext.setOrganization(OrganizationType.TEACHER);
         normalUserData.setOrganization(OrganizationType.ACMER);
         Mockito.when(userManager.getAccountById(MOCKED_ID)).thenReturn(Optional.of(user));
-        Mockito.when(userDataManager.getNormalUserDataById(MOCKED_MONGO_ID)).thenReturn(Optional.of(normalUserData));
+        Mockito.when(userDataManager.getNormalUserDataById(MOCKED_MONGO_ID)).thenReturn(normalUserData);
         userContextMockedStatic.when(UserContext::ctx).thenReturn(userContext);
 
         try {
@@ -1033,13 +1033,13 @@ class UserServiceImplTest {
     }
 
     @Test
-    void testAddPermissionWithNoPermission() {
+    void testAddPermissionWithNoPermission() throws PortableException {
         user.setType(AccountType.LOCKED_NORMAL);
         userContext.setOrganization(OrganizationType.ACMER);
         userContext.getPermissionTypeSet().add(PermissionType.VIEW_SOLUTION_MESSAGE);
         normalUserData.setOrganization(OrganizationType.STUDENT);
         Mockito.when(userManager.getAccountById(MOCKED_ID)).thenReturn(Optional.of(user));
-        Mockito.when(userDataManager.getNormalUserDataById(MOCKED_MONGO_ID)).thenReturn(Optional.of(normalUserData));
+        Mockito.when(userDataManager.getNormalUserDataById(MOCKED_MONGO_ID)).thenReturn(normalUserData);
         userContextMockedStatic.when(UserContext::ctx).thenReturn(userContext);
 
         try {
@@ -1058,7 +1058,7 @@ class UserServiceImplTest {
         normalUserData.setOrganization(OrganizationType.STUDENT);
         normalUserData.setPermissionTypeSet(new HashSet<>());
         Mockito.when(userManager.getAccountById(MOCKED_ID)).thenReturn(Optional.of(user));
-        Mockito.when(userDataManager.getNormalUserDataById(MOCKED_MONGO_ID)).thenReturn(Optional.of(normalUserData));
+        Mockito.when(userDataManager.getNormalUserDataById(MOCKED_MONGO_ID)).thenReturn(normalUserData);
         userContextMockedStatic.when(UserContext::ctx).thenReturn(userContext);
 
         userService.addPermission(MOCKED_ID, PermissionType.GRANT);
@@ -1096,10 +1096,10 @@ class UserServiceImplTest {
     }
 
     @Test
-    void testRemovePermissionWithNoUserData() {
+    void testRemovePermissionWithNoUserData() throws PortableException {
         user.setType(AccountType.LOCKED_NORMAL);
         Mockito.when(userManager.getAccountById(MOCKED_ID)).thenReturn(Optional.of(user));
-        Mockito.when(userDataManager.getNormalUserDataById(MOCKED_MONGO_ID)).thenReturn(Optional.empty());
+        Mockito.when(userDataManager.getNormalUserDataById(MOCKED_MONGO_ID)).thenReturn(null);
 
         try {
             userService.removePermission(MOCKED_ID, PermissionType.GRANT);
@@ -1110,12 +1110,12 @@ class UserServiceImplTest {
     }
 
     @Test
-    void testRemovePermissionWithNotDominate() {
+    void testRemovePermissionWithNotDominate() throws PortableException {
         user.setType(AccountType.LOCKED_NORMAL);
         userContext.setOrganization(OrganizationType.TEACHER);
         normalUserData.setOrganization(OrganizationType.ACMER);
         Mockito.when(userManager.getAccountById(MOCKED_ID)).thenReturn(Optional.of(user));
-        Mockito.when(userDataManager.getNormalUserDataById(MOCKED_MONGO_ID)).thenReturn(Optional.of(normalUserData));
+        Mockito.when(userDataManager.getNormalUserDataById(MOCKED_MONGO_ID)).thenReturn(normalUserData);
         userContextMockedStatic.when(UserContext::ctx).thenReturn(userContext);
 
         try {
@@ -1127,13 +1127,13 @@ class UserServiceImplTest {
     }
 
     @Test
-    void testRemovePermissionWithNoPermission() {
+    void testRemovePermissionWithNoPermission() throws PortableException {
         user.setType(AccountType.LOCKED_NORMAL);
         userContext.setOrganization(OrganizationType.ACMER);
         userContext.getPermissionTypeSet().add(PermissionType.VIEW_SOLUTION_MESSAGE);
         normalUserData.setOrganization(OrganizationType.STUDENT);
         Mockito.when(userManager.getAccountById(MOCKED_ID)).thenReturn(Optional.of(user));
-        Mockito.when(userDataManager.getNormalUserDataById(MOCKED_MONGO_ID)).thenReturn(Optional.of(normalUserData));
+        Mockito.when(userDataManager.getNormalUserDataById(MOCKED_MONGO_ID)).thenReturn(normalUserData);
         userContextMockedStatic.when(UserContext::ctx).thenReturn(userContext);
 
         try {
@@ -1154,7 +1154,7 @@ class UserServiceImplTest {
             add(PermissionType.GRANT);
         }});
         Mockito.when(userManager.getAccountById(MOCKED_ID)).thenReturn(Optional.of(user));
-        Mockito.when(userDataManager.getNormalUserDataById(MOCKED_MONGO_ID)).thenReturn(Optional.of(normalUserData));
+        Mockito.when(userDataManager.getNormalUserDataById(MOCKED_MONGO_ID)).thenReturn(normalUserData);
         userContextMockedStatic.when(UserContext::ctx).thenReturn(userContext);
 
         userService.removePermission(MOCKED_ID, PermissionType.GRANT);
@@ -1182,11 +1182,11 @@ class UserServiceImplTest {
     }
 
     @Test
-    void testUploadAvatarWithNoUserData() {
+    void testUploadAvatarWithNoUserData() throws PortableException {
         userContext.setType(AccountType.NORMAL);
         userContext.setDataId(MOCKED_MONGO_ID);
         userContextMockedStatic.when(UserContext::ctx).thenReturn(userContext);
-        Mockito.when(userDataManager.getNormalUserDataById(MOCKED_MONGO_ID)).thenReturn(Optional.empty());
+        Mockito.when(userDataManager.getNormalUserDataById(MOCKED_MONGO_ID)).thenReturn(null);
 
         InputStream inputStream = Mockito.mock(InputStream.class);
 
@@ -1208,7 +1208,7 @@ class UserServiceImplTest {
         InputStream cutInputStream = Mockito.mock(InputStream.class);
 
         userContextMockedStatic.when(UserContext::ctx).thenReturn(userContext);
-        Mockito.when(userDataManager.getNormalUserDataById(MOCKED_MONGO_ID)).thenReturn(Optional.of(normalUserData));
+        Mockito.when(userDataManager.getNormalUserDataById(MOCKED_MONGO_ID)).thenReturn(normalUserData);
         imageUtilsMockedStatic.when(() -> ImageUtils.cut(inputStream, 1, 2, 3, 4)).thenReturn(cutInputStream);
         Mockito.when(gridFsManager.uploadAvatar(MOCKED_IP, cutInputStream, MOCKED_HANDLE, MOCKED_MONGO_ID)).thenReturn(MOCKED_OTHER_IP);
 
@@ -1343,12 +1343,12 @@ class UserServiceImplTest {
     }
 
     @Test
-    void testclearBatchUserIpListWithNoUserData() {
+    void testclearBatchUserIpListWithNoUserData() throws PortableException {
         user.setDataId(MOCKED_MONGO_ID);
         user.setType(AccountType.BATCH);
 
         Mockito.when(userManager.getAccountByHandle(MOCKED_HANDLE)).thenReturn(Optional.of(user));
-        Mockito.when(userDataManager.getBatchUserDataById(MOCKED_MONGO_ID)).thenReturn(Optional.empty());
+        Mockito.when(userDataManager.getBatchUserDataById(MOCKED_MONGO_ID)).thenReturn(null);
 
         try {
             userService.clearBatchUserIpList(MOCKED_HANDLE);
@@ -1359,13 +1359,13 @@ class UserServiceImplTest {
     }
 
     @Test
-    void testclearBatchUserIpListWithNoBatch() {
+    void testclearBatchUserIpListWithNoBatch() throws PortableException {
         user.setDataId(MOCKED_MONGO_ID);
         user.setType(AccountType.BATCH);
         batchUserData.setBatchId(MOCKED_BATCH_ID);
 
         Mockito.when(userManager.getAccountByHandle(MOCKED_HANDLE)).thenReturn(Optional.of(user));
-        Mockito.when(userDataManager.getBatchUserDataById(MOCKED_MONGO_ID)).thenReturn(Optional.of(batchUserData));
+        Mockito.when(userDataManager.getBatchUserDataById(MOCKED_MONGO_ID)).thenReturn(batchUserData);
         Mockito.when(batchManager.selectBatchById(MOCKED_BATCH_ID)).thenReturn(Optional.empty());
 
         try {
@@ -1377,7 +1377,7 @@ class UserServiceImplTest {
     }
 
     @Test
-    void testclearBatchUserIpListWithNotMine() {
+    void testclearBatchUserIpListWithNotMine() throws PortableException {
         user.setDataId(MOCKED_MONGO_ID);
         user.setType(AccountType.BATCH);
         batchUserData.setBatchId(MOCKED_BATCH_ID);
@@ -1385,7 +1385,7 @@ class UserServiceImplTest {
         userContext.setId(MOCKED_ID);
 
         Mockito.when(userManager.getAccountByHandle(MOCKED_HANDLE)).thenReturn(Optional.of(user));
-        Mockito.when(userDataManager.getBatchUserDataById(MOCKED_MONGO_ID)).thenReturn(Optional.of(batchUserData));
+        Mockito.when(userDataManager.getBatchUserDataById(MOCKED_MONGO_ID)).thenReturn(batchUserData);
         Mockito.when(batchManager.selectBatchById(MOCKED_BATCH_ID)).thenReturn(Optional.of(batch));
         userContextMockedStatic.when(UserContext::ctx).thenReturn(userContext);
 
@@ -1413,7 +1413,7 @@ class UserServiceImplTest {
         userContext.setId(MOCKED_ID);
 
         Mockito.when(userManager.getAccountByHandle(MOCKED_HANDLE)).thenReturn(Optional.of(user));
-        Mockito.when(userDataManager.getBatchUserDataById(MOCKED_MONGO_ID)).thenReturn(Optional.of(batchUserData));
+        Mockito.when(userDataManager.getBatchUserDataById(MOCKED_MONGO_ID)).thenReturn(batchUserData);
         Mockito.when(batchManager.selectBatchById(MOCKED_BATCH_ID)).thenReturn(Optional.of(batch));
         userContextMockedStatic.when(UserContext::ctx).thenReturn(userContext);
 

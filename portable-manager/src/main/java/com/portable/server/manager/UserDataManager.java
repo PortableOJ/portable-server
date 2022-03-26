@@ -1,10 +1,9 @@
 package com.portable.server.manager;
 
+import com.portable.server.exception.PortableException;
 import com.portable.server.model.user.BaseUserData;
 import com.portable.server.model.user.BatchUserData;
 import com.portable.server.model.user.NormalUserData;
-
-import java.util.Optional;
 
 /**
  * @author shiroha
@@ -30,16 +29,18 @@ public interface UserDataManager {
      *
      * @param dataId 用户的数据 id
      * @return 用户数据
+     * @throws PortableException ID 不存在时则抛出
      */
-    Optional<NormalUserData> getNormalUserDataById(String dataId);
+    NormalUserData getNormalUserDataById(String dataId) throws PortableException;
 
     /**
      * 通过用户的数据 id 获取批量用户账号
      *
      * @param dataId 用户的数据 id
      * @return 用户数据
+     * @throws PortableException ID 不存在时则抛出
      */
-    Optional<BatchUserData> getBatchUserDataById(String dataId);
+    BatchUserData getBatchUserDataById(String dataId) throws PortableException;
 
     /**
      * 新增一个普通用户数据

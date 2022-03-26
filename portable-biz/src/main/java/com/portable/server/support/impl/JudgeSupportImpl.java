@@ -202,7 +202,7 @@ public class JudgeSupportImpl implements JudgeSupport {
     }
 
     @Override
-    public void killJudgeTask(Long solutionId, SolutionStatusType endType, Integer timeCost, Integer memoryCost) {
+    public void killJudgeTask(Long solutionId, SolutionStatusType endType, Integer timeCost, Integer memoryCost) throws PortableException {
         SolutionJudgeWork solutionJudgeWork = solutionJudgeWorkMap.get(solutionId);
         solutionJudgeWork.getJudgeContainer().getJudgeWorkMap().remove(solutionId);
         solutionJudgeWorkMap.remove(solutionId);
@@ -219,12 +219,9 @@ public class JudgeSupportImpl implements JudgeSupport {
 
                 Optional<User> userOptional = userManager.getAccountById(solution.getUserId());
                 if (userOptional.isPresent() && userOptional.get().getType().getIsNormal()) {
-                    Optional<NormalUserData> normalUserDataOptional = userDataManager.getNormalUserDataById(userOptional.get().getDataId());
-                    if (normalUserDataOptional.isPresent()) {
-                        NormalUserData normalUserData = normalUserDataOptional.get();
-                        normalUserData.setAccept(normalUserData.getAccept() + 1);
-                        userDataManager.updateUserData(normalUserData);
-                    }
+                    NormalUserData normalUserData = userDataManager.getNormalUserDataById(userOptional.get().getDataId());
+                    normalUserData.setAccept(normalUserData.getAccept() + 1);
+                    userDataManager.updateUserData(normalUserData);
                 }
                 break;
             case PROBLEM_PROCESS:
@@ -629,7 +626,10 @@ public class JudgeSupportImpl implements JudgeSupport {
             // 处理正在执行中的任务，将其转为失败
             JudgeContainer judgeContainer = entry.getValue();
             for (SolutionJudgeWork solutionJudgeWork : judgeContainer.getJudgeWorkMap().values()) {
-                killJudgeTask(solutionJudgeWork.getSolutionId(), SolutionStatusType.SYSTEM_ERROR, 0, 0);
+                try {
+                    killJudgeTask(solutionJudgeWork.getSolutionId(), SolutionStatusType.SYSTEM_ERROR, 0, 0);
+                } catch (PortableException ignore) {
+                }
             }
             for (TestJudgeWork testJudgeWork : judgeContainer.getTestWorkMap().values()) {
                 problemManager.updateProblemStatus(testJudgeWork.getProblemId(), ProblemStatusType.TREAT_FAILED);

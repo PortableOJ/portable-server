@@ -1,5 +1,6 @@
 package com.portable.server.manager.impl;
 
+import com.portable.server.exception.PortableException;
 import com.portable.server.manager.UserDataManager;
 import com.portable.server.model.user.BaseUserData;
 import com.portable.server.model.user.BatchUserData;
@@ -44,13 +45,13 @@ public class UserDataManagerImpl implements UserDataManager {
     }
 
     @Override
-    public Optional<NormalUserData> getNormalUserDataById(String dataId) {
-        return Optional.ofNullable(userDataRepo.getNormalUserDataById(dataId));
+    public NormalUserData getNormalUserDataById(String dataId) throws PortableException {
+        return Optional.ofNullable(userDataRepo.getNormalUserDataById(dataId)).orElseThrow(PortableException.from("S-02-001"));
     }
 
     @Override
-    public Optional<BatchUserData> getBatchUserDataById(String dataId) {
-        return Optional.ofNullable(userDataRepo.getBatchUserDataById(dataId));
+    public BatchUserData getBatchUserDataById(String dataId) throws PortableException {
+        return Optional.ofNullable(userDataRepo.getBatchUserDataById(dataId)).orElseThrow(PortableException.from("S-02-001"));
     }
 
     @Override
