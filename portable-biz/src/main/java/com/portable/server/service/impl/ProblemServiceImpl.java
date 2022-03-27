@@ -41,6 +41,8 @@ import com.portable.server.util.UserContext;
 import lombok.Builder;
 import lombok.Data;
 import lombok.Getter;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
@@ -93,7 +95,7 @@ public class ProblemServiceImpl implements ProblemService {
             this.editProblem = editProblem;
         }
 
-        public static User2ProblemAccessType of(Problem problem, Contest contest) {
+        public static User2ProblemAccessType of(@NotNull Problem problem, @Nullable Contest contest) {
 
             if (UserContext.ctx().getPermissionTypeSet().contains(PermissionType.CREATE_AND_EDIT_PROBLEM)) {
                 // 题目拥有者拥有完整权限
@@ -291,7 +293,8 @@ public class ProblemServiceImpl implements ProblemService {
             }
             // 其他任何转换 => 不允许在比赛期间发生
             if (problemPackage.getProblemData().getContestId() != null) {
-                Contest contest = contestManager.getContestById(problemPackage.getProblemData().getContestId());
+                Contest contest = contestManager.getContestById(problemPackage.getProblemData().getContestId())
+                        .orElseThrow(PortableException.from("A-08-002", problemPackage.getProblemData().getContestId()));
                 if (!contest.isEnd()) {
                     throw PortableException.of("A-04-014", problemPackage.getProblemData().getContestId());
                 }
@@ -539,7 +542,7 @@ public class ProblemServiceImpl implements ProblemService {
         ProblemPackage problemPackage = getProblemPackage(id);
         Contest contest = null;
         if (problemPackage.getProblemData().getContestId() != null) {
-            contest = contestManager.getContestById(problemPackage.getProblemData().getContestId());
+            contest = contestManager.getContestById(problemPackage.getProblemData().getContestId()).orElse(null);
         }
         User2ProblemAccessType accessType = User2ProblemAccessType.of(problemPackage.getProblem(), contest);
         if (accessType.getViewProblem()) {
@@ -552,7 +555,7 @@ public class ProblemServiceImpl implements ProblemService {
         ProblemPackage problemPackage = getProblemPackage(id);
         Contest contest = null;
         if (problemPackage.getProblemData().getContestId() != null) {
-            contest = contestManager.getContestById(problemPackage.getProblemData().getContestId());
+            contest = contestManager.getContestById(problemPackage.getProblemData().getContestId()).orElse(null);
         }
         User2ProblemAccessType accessType = User2ProblemAccessType.of(problemPackage.getProblem(), contest);
         if (accessType.getEditProblem() || problemPackage.getProblemData().getShareTest()) {
@@ -565,7 +568,7 @@ public class ProblemServiceImpl implements ProblemService {
         ProblemPackage problemPackage = getProblemPackage(id);
         Contest contest = null;
         if (problemPackage.getProblemData().getContestId() != null) {
-            contest = contestManager.getContestById(problemPackage.getProblemData().getContestId());
+            contest = contestManager.getContestById(problemPackage.getProblemData().getContestId()).orElse(null);
         }
         User2ProblemAccessType accessType = User2ProblemAccessType.of(problemPackage.getProblem(), contest);
         if (accessType.getEditProblem()) {

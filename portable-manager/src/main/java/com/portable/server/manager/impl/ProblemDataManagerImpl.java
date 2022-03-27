@@ -8,6 +8,7 @@ import com.portable.server.type.JudgeCodeType;
 import com.portable.server.type.LanguageType;
 import com.portable.server.type.ProblemType;
 import com.portable.server.type.SolutionStatusType;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
@@ -26,7 +27,7 @@ public class ProblemDataManagerImpl implements ProblemDataManager {
     private ProblemDataRepo problemDataRepo;
 
     @Override
-    public ProblemData newProblemData() {
+    public @NotNull ProblemData newProblemData() {
         return ProblemData.builder()
                 ._id(null)
                 .contestId(null)
@@ -58,7 +59,7 @@ public class ProblemDataManagerImpl implements ProblemDataManager {
     }
 
     @Override
-    public ProblemData getProblemData(String dataId) throws PortableException {
+    public @NotNull ProblemData getProblemData(String dataId) throws PortableException {
         return Optional.ofNullable(problemDataRepo.getProblemData(dataId))
                 .orElseThrow(PortableException.from("S-03-001"));
     }

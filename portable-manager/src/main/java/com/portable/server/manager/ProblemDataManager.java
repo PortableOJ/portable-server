@@ -2,6 +2,7 @@ package com.portable.server.manager;
 
 import com.portable.server.exception.PortableException;
 import com.portable.server.model.problem.ProblemData;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * @author shiroha
@@ -13,6 +14,7 @@ public interface ProblemDataManager {
      *
      * @return 新问题数据
      */
+    @NotNull
     ProblemData newProblemData();
 
     /**
@@ -22,6 +24,7 @@ public interface ProblemDataManager {
      * @return 题目数据
      * @throws PortableException ID 不存在则抛出
      */
+    @NotNull
     ProblemData getProblemData(String dataId) throws PortableException;
 
     /**

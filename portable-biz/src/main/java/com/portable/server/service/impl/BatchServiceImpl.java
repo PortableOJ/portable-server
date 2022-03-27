@@ -73,7 +73,7 @@ public class BatchServiceImpl implements BatchService {
                     if (batch.getContestId() == null) {
                         return BatchListResponse.of(batch, null);
                     }
-                    Contest contest = contestManager.getContestById(batch.getContestId());
+                    Contest contest = contestManager.getContestById(batch.getContestId()).orElse(null);
                     return BatchListResponse.of(batch, contest);
                 })
                 .collect(Collectors.toList());
@@ -141,7 +141,7 @@ public class BatchServiceImpl implements BatchService {
         }
         Contest contest = null;
         if (batch.getContestId() != null) {
-            contest = contestManager.getContestById(batch.getContestId());
+            contest = contestManager.getContestById(batch.getContestId()).orElse(null);
         }
         return BatchListResponse.of(batch, contest);
     }

@@ -3,6 +3,7 @@ package com.portable.server.manager;
 import com.portable.server.model.problem.Problem;
 import com.portable.server.type.ProblemAccessType;
 import com.portable.server.type.ProblemStatusType;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 import java.util.Optional;
@@ -17,6 +18,7 @@ public interface ProblemManager {
      *
      * @return 新题目
      */
+    @NotNull
     Problem newProblem();
 
     /**
@@ -26,6 +28,7 @@ public interface ProblemManager {
      * @param ownerId    所拥有的用户 ID
      * @return 总匹配的题目数量
      */
+    @NotNull
     Integer countProblemByTypeAndOwnerId(List<ProblemAccessType> accessType, Long ownerId);
 
     /**
@@ -37,6 +40,7 @@ public interface ProblemManager {
      * @param offset     偏移量
      * @return 题目的列表
      */
+    @NotNull
     List<Problem> getProblemListByTypeAndOwnerIdAndPaged(List<ProblemAccessType> accessType, Long ownerId, Integer pageSize, Integer offset);
 
     /**
@@ -46,6 +50,7 @@ public interface ProblemManager {
      * @param num 总需要数量
      * @return 问题列表
      */
+    @NotNull
     List<Problem> searchRecentProblemByTypedAndKeyword(List<ProblemAccessType> accessTypeList, String keyword, Integer num);
 
     /**
@@ -55,6 +60,7 @@ public interface ProblemManager {
      * @param num 总需要数量
      * @return 问题列表
      */
+    @NotNull
     List<Problem> searchRecentProblemByOwnerIdAndKeyword(Long ownerId, String keyword, Integer num);
 
     /**
@@ -63,6 +69,7 @@ public interface ProblemManager {
      * @param id 题目的 ID
      * @return 题目内容
      */
+    @NotNull
     Optional<Problem> getProblemById(Long id);
 
     /**
@@ -70,6 +77,7 @@ public interface ProblemManager {
      * @param problemList 题目列表
      * @return 不存在的题目列表
      */
+    @NotNull
     List<Long> checkProblemListExist(List<Long> problemList);
 
     /**

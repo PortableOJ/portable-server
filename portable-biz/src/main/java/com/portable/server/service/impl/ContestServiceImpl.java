@@ -495,10 +495,8 @@ public class ContestServiceImpl implements ContestService {
     }
 
     private ContestPackage getContestPackage(Long contestId) throws PortableException {
-        Contest contest = contestManager.getContestById(contestId);
-        if (contest == null) {
-            throw PortableException.of("A-08-002", contestId);
-        }
+        Contest contest = contestManager.getContestById(contestId)
+                .orElseThrow(PortableException.from("A-08-002", contestId));
         BaseContestData contestData;
         switch (contest.getAccessType()) {
             case PUBLIC:

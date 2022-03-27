@@ -180,10 +180,8 @@ public class ContestSupportImpl implements ContestSupport {
     }
 
     private void makeRank(Long contestId) throws PortableException {
-        Contest contest = contestManager.getContestById(contestId);
-        if (contest == null) {
-            throw PortableException.of("A-08-002", contestId);
-        }
+        Contest contest = contestManager.getContestById(contestId)
+                .orElseThrow(PortableException.from("A-08-002", contestId));
         BaseContestData contestData = contestDataManager.getBaseContestDataById(contest.getDataId(), contest.getAccessType());
         if (contestData == null) {
             throw PortableException.of("S-07-002", contestId);
@@ -204,14 +202,8 @@ public class ContestSupportImpl implements ContestSupport {
         Map<Long, ContestRankItem> userIdContestRankMap = new ConcurrentHashMap<>(128);
         for (int i = 0; i < totalPageNum; i++) {
             Integer offset = i * MAKE_RANK_PAGE_SIZE;
-            List<Solution> solutionList = solutionManager.selectSolutionByPage(
-                    MAKE_RANK_PAGE_SIZE,
-                    offset,
-                    SolutionType.CONTEST,
-                    null,
-                    contestId,
-                    null,
-                    null);
+            List<Solution> solutionList = solutionManager.selectSolutionByPage(MAKE_RANK_PAGE_SIZE, offset,
+                    SolutionType.CONTEST, null, contestId, null, null);
             // 先并行创建不存在的参加者
             solutionList.stream()
                     .parallel()

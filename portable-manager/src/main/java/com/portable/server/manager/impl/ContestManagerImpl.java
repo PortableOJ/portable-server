@@ -4,11 +4,13 @@ import com.portable.server.manager.ContestManager;
 import com.portable.server.mapper.ContestMapper;
 import com.portable.server.model.contest.Contest;
 import com.portable.server.type.ContestAccessType;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * @author shiroha
@@ -20,7 +22,7 @@ public class ContestManagerImpl implements ContestManager {
     private ContestMapper contestMapper;
 
     @Override
-    public Contest insertContest() {
+    public @NotNull Contest insertContest() {
         return Contest.builder()
                 .id(null)
                 .dataId(null)
@@ -33,18 +35,18 @@ public class ContestManagerImpl implements ContestManager {
     }
 
     @Override
-    public Integer getAllContestNumber() {
+    public @NotNull Integer getAllContestNumber() {
         return contestMapper.getAllContestNumber();
     }
 
     @Override
-    public List<Contest> getContestByPage(Integer pageSize, Integer offset) {
+    public @NotNull List<Contest> getContestByPage(Integer pageSize, Integer offset) {
         return contestMapper.getContestByPage(pageSize, offset);
     }
 
     @Override
-    public Contest getContestById(Long id) {
-        return contestMapper.getContestById(id);
+    public Optional<Contest> getContestById(Long id) {
+        return Optional.ofNullable(contestMapper.getContestById(id));
     }
 
     @Override

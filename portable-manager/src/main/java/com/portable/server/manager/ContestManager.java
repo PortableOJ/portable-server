@@ -2,9 +2,11 @@ package com.portable.server.manager;
 
 import com.portable.server.model.contest.Contest;
 import com.portable.server.type.ContestAccessType;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * @author shiroha
@@ -15,12 +17,14 @@ public interface ContestManager {
      * 创建新的比赛实体
      * @return 比赛实体
      */
+    @NotNull
     Contest insertContest();
 
     /**
      * 获取所有的比赛数目
      * @return 总共的比赛数目
      */
+    @NotNull
     Integer getAllContestNumber();
 
     /**
@@ -29,6 +33,7 @@ public interface ContestManager {
      * @param offset 偏移量
      * @return 比赛列表
      */
+    @NotNull
     List<Contest> getContestByPage(Integer pageSize, Integer offset);
 
     /**
@@ -36,7 +41,7 @@ public interface ContestManager {
      * @param id 比赛 id
      * @return 比赛信息
      */
-    Contest getContestById(Long id);
+    Optional<Contest> getContestById(Long id);
 
     /**
      * 创建一个新的比赛

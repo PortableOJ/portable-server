@@ -5,6 +5,7 @@ import com.portable.server.mapper.ProblemMapper;
 import com.portable.server.model.problem.Problem;
 import com.portable.server.type.ProblemAccessType;
 import com.portable.server.type.ProblemStatusType;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
@@ -23,7 +24,7 @@ public class ProblemManagerImpl implements ProblemManager {
     private ProblemMapper problemMapper;
 
     @Override
-    public Problem newProblem() {
+    public @NotNull Problem newProblem() {
         return Problem.builder()
                 .id(null)
                 .dataId(null)
@@ -37,32 +38,32 @@ public class ProblemManagerImpl implements ProblemManager {
     }
 
     @Override
-    public Integer countProblemByTypeAndOwnerId(List<ProblemAccessType> accessType, Long ownerId) {
+    public @NotNull Integer countProblemByTypeAndOwnerId(List<ProblemAccessType> accessType, Long ownerId) {
         return problemMapper.countProblemListByTypeAndOwnerId(accessType, ownerId);
     }
 
     @Override
-    public List<Problem> getProblemListByTypeAndOwnerIdAndPaged(List<ProblemAccessType> accessType, Long ownerId, Integer pageSize, Integer offset) {
+    public @NotNull List<Problem> getProblemListByTypeAndOwnerIdAndPaged(List<ProblemAccessType> accessType, Long ownerId, Integer pageSize, Integer offset) {
         return problemMapper.selectProblemListByPageAndTypeAndOwnerId(accessType, ownerId, pageSize, offset);
     }
 
     @Override
-    public List<Problem> searchRecentProblemByTypedAndKeyword(List<ProblemAccessType> accessTypeList, String keyword, Integer num) {
+    public @NotNull List<Problem> searchRecentProblemByTypedAndKeyword(List<ProblemAccessType> accessTypeList, String keyword, Integer num) {
         return problemMapper.selectRecentProblemByTypeAndKeyword(accessTypeList, keyword, num);
     }
 
     @Override
-    public List<Problem> searchRecentProblemByOwnerIdAndKeyword(Long ownerId, String keyword, Integer num) {
+    public @NotNull List<Problem> searchRecentProblemByOwnerIdAndKeyword(Long ownerId, String keyword, Integer num) {
         return problemMapper.selectPrivateProblemByKeyword(ownerId, keyword, num);
     }
 
     @Override
-    public Optional<Problem> getProblemById(Long id) {
+    public @NotNull Optional<Problem> getProblemById(Long id) {
         return Optional.ofNullable(problemMapper.selectProblemById(id));
     }
 
     @Override
-    public List<Long> checkProblemListExist(List<Long> problemList) {
+    public @NotNull List<Long> checkProblemListExist(List<Long> problemList) {
         return problemList.stream()
                 .map(aLong -> {
                     Optional<Problem> problem = getProblemById(aLong);
