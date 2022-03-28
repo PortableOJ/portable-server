@@ -36,7 +36,7 @@ public class PageResponse<E, T> {
         return new PageResponse<>(request.getPageNum(),
                 request.getPageSize(),
                 totalNum,
-                (totalNum + request.getPageNum() - 1) / request.getPageSize(),
+                (totalNum + request.getPageSize() - 1) / request.getPageSize(),
                 null,
                 null);
     }

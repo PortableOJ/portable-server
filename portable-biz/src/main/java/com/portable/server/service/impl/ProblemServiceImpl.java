@@ -77,7 +77,7 @@ public class ProblemServiceImpl implements ProblemService {
         NO_ACCESS(false, false),
 
         /**
-         * 仅查看
+         * 查看与提交
          */
         VIEW(true, false),
 
@@ -179,14 +179,15 @@ public class ProblemServiceImpl implements ProblemService {
         Integer problemCount = problemManager.countProblemByTypeAndOwnerId(problemAccessTypeList, userId);
         PageResponse<ProblemListResponse, Void> problemPageResponse = PageResponse.of(pageRequest, problemCount);
         List<Problem> problemList = problemManager.getProblemListByTypeAndOwnerIdAndPaged(problemAccessTypeList, userId, problemPageResponse.getPageSize(), problemPageResponse.offset());
-        List<ProblemListResponse> problemDataResponseList = isLogin
-                ? problemList.stream()
+        List<ProblemListResponse> problemDataResponseList = problemList.stream()
                 .parallel()
-                .map(problem -> ProblemListResponse.of(problem, solutionManager.selectLastSolutionByUserIdAndProblemId(userId, problem.getId())))
-                .collect(Collectors.toList())
-                : problemList.stream()
-                .parallel()
-                .map(problem -> ProblemListResponse.of(problem, null))
+                .map(problem -> {
+                    if (isLogin) {
+                        Solution solution = solutionManager.selectLastSolutionByUserIdAndProblemId(userId, problem.getId());
+                        return ProblemListResponse.of(problem, solution);
+                    }
+                    return ProblemListResponse.of(problem, null);
+                })
                 .collect(Collectors.toList());
 
         problemPageResponse.setData(problemDataResponseList);
@@ -592,7 +593,7 @@ public class ProblemServiceImpl implements ProblemService {
      *
      * @return 导致不通过则返回 true
      */
-    public Boolean checkAnyStdCodeNotPass(ProblemData problemData) {
+    private Boolean checkAnyStdCodeNotPass(ProblemData problemData) {
         if (checkStdCodeNotPass(problemData.getStdCode(), problemData)) {
             return true;
         }

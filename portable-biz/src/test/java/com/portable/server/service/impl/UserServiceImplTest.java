@@ -74,15 +74,15 @@ class UserServiceImplTest {
     private static final Long MOCKED_BATCH_ID = 1L;
     private static final Long MOCKED_CONTEST_ID = 2L;
 
-    private static User user;
-    private static Batch batch;
-    private static UserContext userContext;
-    private static NormalUserData normalUserData;
-    private static BatchUserData batchUserData;
+    private User user;
+    private Batch batch;
+    private UserContext userContext;
+    private NormalUserData normalUserData;
+    private BatchUserData batchUserData;
 
-    private static MockedStatic<BCryptEncoder> bCryptEncoderMockedStatic;
-    private static MockedStatic<UserContext> userContextMockedStatic;
-    private static MockedStatic<ImageUtils> imageUtilsMockedStatic;
+    private MockedStatic<BCryptEncoder> bCryptEncoderMockedStatic;
+    private MockedStatic<UserContext> userContextMockedStatic;
+    private MockedStatic<ImageUtils> imageUtilsMockedStatic;
 
     @BeforeEach
     void setUp() {
