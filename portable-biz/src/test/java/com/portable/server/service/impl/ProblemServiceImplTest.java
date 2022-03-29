@@ -1,5 +1,6 @@
 package com.portable.server.service.impl;
 
+import com.Ostermiller.util.CircularByteBuffer;
 import com.portable.server.exception.PortableException;
 import com.portable.server.manager.ContestManager;
 import com.portable.server.manager.ProblemDataManager;
@@ -12,6 +13,7 @@ import com.portable.server.model.contest.Contest;
 import com.portable.server.model.problem.Problem;
 import com.portable.server.model.problem.ProblemData;
 import com.portable.server.model.request.PageRequest;
+import com.portable.server.model.request.problem.ProblemNameRequest;
 import com.portable.server.model.response.PageResponse;
 import com.portable.server.model.response.problem.ProblemDetailResponse;
 import com.portable.server.model.response.problem.ProblemListResponse;
@@ -24,6 +26,7 @@ import com.portable.server.type.PermissionType;
 import com.portable.server.type.ProblemAccessType;
 import com.portable.server.type.ProblemListStatusType;
 import com.portable.server.type.SolutionStatusType;
+import com.portable.server.util.StreamUtils;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -36,6 +39,7 @@ import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.test.util.ReflectionTestUtils;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -80,8 +84,11 @@ public class ProblemServiceImplTest {
 
     private static final Long MOCKED_USER_ID = 1L;
     private static final Long MOCKED_PROBLEM_ID = 2L;
+    private static final Integer MOCKED_TEST_LEN = 100;
     private static final String MOCKED_PROBLEM_MONGO_ID = "MOCKED_PROBLEM_MONGO_ID";
     private static final String MOCKED_HANDLE = "MOCKED_HANDLE";
+    private static final String MOCKED_NAME = "MOCKED_NAME";
+    private static final String MOCKED_CODE_TEST = "MOCKED_CODE_TEST";
 
     private Problem problem;
     private ProblemData problemData;
@@ -96,9 +103,8 @@ public class ProblemServiceImplTest {
 
         private static final Long MOCKED_USER_ID = 1L;
         private static final Long MOCKED_PROBLEM_ID = 2L;
-        private static final Long MOCKED_CONTEST_ID = 3L;
+
         private static final String MOCKED_PROBLEM_MONGO_ID = "MOCKED_PROBLEM_MONGO_ID";
-        private static final String MOCKED_HANDLE = "MOCKED_HANDLE";
 
         private Problem problem;
         private Contest contest;
@@ -666,19 +672,236 @@ public class ProblemServiceImplTest {
     }
 
     @Test
-    void showTestInput() {
+    void testShowTestInputWithNoTest() throws PortableException {
+        userToProblemAccessTypeMockedStatic
+                .when(() -> ProblemServiceImpl.UserToProblemAccessType.of(Mockito.any(), Mockito.any()))
+                .thenReturn(ProblemServiceImpl.UserToProblemAccessType.FULL_ACCESS);
+
+        problemData.setContestId(null);
+        problemData.setShareTest(false);
+
+        Mockito.when(problemManager.getProblemById(MOCKED_PROBLEM_ID)).thenReturn(Optional.of(problem));
+        Mockito.when(problemDataManager.getProblemData(MOCKED_PROBLEM_MONGO_ID)).thenReturn(problemData);
+
+        ProblemNameRequest problemNameRequest = ProblemNameRequest.builder()
+                .id(MOCKED_PROBLEM_ID)
+                .name(MOCKED_NAME)
+                .build();
+        try {
+            problemService.showTestInput(problemNameRequest);
+            Assertions.fail();
+        } catch (PortableException e) {
+            Assertions.assertEquals("A-04-006", e.getCode());
+        }
     }
 
     @Test
-    void showTestOutput() {
+    void testShowTestInputWithTest() throws PortableException, IOException {
+        userToProblemAccessTypeMockedStatic
+                .when(() -> ProblemServiceImpl.UserToProblemAccessType.of(Mockito.any(), Mockito.any()))
+                .thenReturn(ProblemServiceImpl.UserToProblemAccessType.FULL_ACCESS);
+
+        problemData.setContestId(null);
+        problemData.setShareTest(false);
+
+        CircularByteBuffer circularByteBuffer = new CircularByteBuffer();
+        circularByteBuffer.getOutputStream().write(MOCKED_CODE_TEST.getBytes());
+        circularByteBuffer.getOutputStream().close();
+
+        Mockito.when(problemManager.getProblemById(MOCKED_PROBLEM_ID)).thenReturn(Optional.of(problem));
+        Mockito.when(problemDataManager.getProblemData(MOCKED_PROBLEM_MONGO_ID)).thenReturn(problemData);
+        Mockito.when(fileSupport.getTestInput(MOCKED_PROBLEM_ID, problemData.getTestName().get(0))).thenReturn(circularByteBuffer.getInputStream());
+
+        ReflectionTestUtils.setField(problemService, "maxTestShowLen", MOCKED_TEST_LEN);
+
+        ProblemNameRequest problemNameRequest = ProblemNameRequest.builder()
+                .id(MOCKED_PROBLEM_ID)
+                .name(problemData.getTestName().get(0))
+                .build();
+        String retVal = problemService.showTestInput(problemNameRequest);
+
+        /// region 校验返回值
+
+        Assertions.assertEquals(MOCKED_CODE_TEST, retVal);
+
+        /// endregion
+
     }
 
     @Test
-    void downloadTestInput() {
+    void testShowTestOutputWithNoTest() throws PortableException {
+        userToProblemAccessTypeMockedStatic
+                .when(() -> ProblemServiceImpl.UserToProblemAccessType.of(Mockito.any(), Mockito.any()))
+                .thenReturn(ProblemServiceImpl.UserToProblemAccessType.FULL_ACCESS);
+
+        problemData.setContestId(null);
+        problemData.setShareTest(false);
+
+        Mockito.when(problemManager.getProblemById(MOCKED_PROBLEM_ID)).thenReturn(Optional.of(problem));
+        Mockito.when(problemDataManager.getProblemData(MOCKED_PROBLEM_MONGO_ID)).thenReturn(problemData);
+
+        ProblemNameRequest problemNameRequest = ProblemNameRequest.builder()
+                .id(MOCKED_PROBLEM_ID)
+                .name(MOCKED_NAME)
+                .build();
+        try {
+            problemService.showTestOutput(problemNameRequest);
+            Assertions.fail();
+        } catch (PortableException e) {
+            Assertions.assertEquals("A-04-006", e.getCode());
+        }
+
     }
 
     @Test
-    void downloadTestOutput() {
+    void testShowTestOutputWithTest() throws PortableException, IOException {
+        userToProblemAccessTypeMockedStatic
+                .when(() -> ProblemServiceImpl.UserToProblemAccessType.of(Mockito.any(), Mockito.any()))
+                .thenReturn(ProblemServiceImpl.UserToProblemAccessType.FULL_ACCESS);
+
+        problemData.setContestId(null);
+        problemData.setShareTest(false);
+
+        CircularByteBuffer circularByteBuffer = new CircularByteBuffer();
+        circularByteBuffer.getOutputStream().write(MOCKED_CODE_TEST.getBytes());
+        circularByteBuffer.getOutputStream().close();
+
+        Mockito.when(problemManager.getProblemById(MOCKED_PROBLEM_ID)).thenReturn(Optional.of(problem));
+        Mockito.when(problemDataManager.getProblemData(MOCKED_PROBLEM_MONGO_ID)).thenReturn(problemData);
+        Mockito.when(fileSupport.getTestOutput(MOCKED_PROBLEM_ID, problemData.getTestName().get(0))).thenReturn(circularByteBuffer.getInputStream());
+
+        ReflectionTestUtils.setField(problemService, "maxTestShowLen", MOCKED_TEST_LEN);
+
+        ProblemNameRequest problemNameRequest = ProblemNameRequest.builder()
+                .id(MOCKED_PROBLEM_ID)
+                .name(problemData.getTestName().get(0))
+                .build();
+        String retVal = problemService.showTestOutput(problemNameRequest);
+
+        /// region 校验返回值
+
+        Assertions.assertEquals(MOCKED_CODE_TEST, retVal);
+
+        /// endregion
+
+    }
+
+    @Test
+    void testDownloadTestInputWithNoTest() throws PortableException {
+        userToProblemAccessTypeMockedStatic
+                .when(() -> ProblemServiceImpl.UserToProblemAccessType.of(Mockito.any(), Mockito.any()))
+                .thenReturn(ProblemServiceImpl.UserToProblemAccessType.FULL_ACCESS);
+
+        problemData.setContestId(null);
+        problemData.setShareTest(false);
+
+        Mockito.when(problemManager.getProblemById(MOCKED_PROBLEM_ID)).thenReturn(Optional.of(problem));
+        Mockito.when(problemDataManager.getProblemData(MOCKED_PROBLEM_MONGO_ID)).thenReturn(problemData);
+
+        ProblemNameRequest problemNameRequest = ProblemNameRequest.builder()
+                .id(MOCKED_PROBLEM_ID)
+                .name(MOCKED_NAME)
+                .build();
+        CircularByteBuffer circularByteBuffer = new CircularByteBuffer();
+
+        try {
+            problemService.downloadTestInput(problemNameRequest, circularByteBuffer.getOutputStream());
+            Assertions.fail();
+        } catch (PortableException e) {
+            Assertions.assertEquals("A-04-006", e.getCode());
+        }
+    }
+
+    @Test
+    void testDownloadTestInputWithTest() throws PortableException, IOException {
+        userToProblemAccessTypeMockedStatic
+                .when(() -> ProblemServiceImpl.UserToProblemAccessType.of(Mockito.any(), Mockito.any()))
+                .thenReturn(ProblemServiceImpl.UserToProblemAccessType.FULL_ACCESS);
+
+        problemData.setContestId(null);
+        problemData.setShareTest(false);
+
+        CircularByteBuffer circularByteBuffer = new CircularByteBuffer();
+        circularByteBuffer.getOutputStream().write(MOCKED_CODE_TEST.getBytes());
+        circularByteBuffer.getOutputStream().close();
+
+        Mockito.when(problemManager.getProblemById(MOCKED_PROBLEM_ID)).thenReturn(Optional.of(problem));
+        Mockito.when(problemDataManager.getProblemData(MOCKED_PROBLEM_MONGO_ID)).thenReturn(problemData);
+        Mockito.when(fileSupport.getTestInput(MOCKED_PROBLEM_ID, problemData.getTestName().get(0))).thenReturn(circularByteBuffer.getInputStream());
+
+        ProblemNameRequest problemNameRequest = ProblemNameRequest.builder()
+                .id(MOCKED_PROBLEM_ID)
+                .name(problemData.getTestName().get(0))
+                .build();
+        CircularByteBuffer circularByteBufferOutput = new CircularByteBuffer();
+        problemService.downloadTestInput(problemNameRequest, circularByteBufferOutput.getOutputStream());
+
+        /// region 校验返回值
+
+        String retVal = StreamUtils.read(circularByteBufferOutput.getInputStream());
+        Assertions.assertEquals(MOCKED_CODE_TEST, retVal);
+
+        /// endregion
+
+    }
+
+    @Test
+    void testDownloadTestOutputWithNoTest() throws PortableException {
+        userToProblemAccessTypeMockedStatic
+                .when(() -> ProblemServiceImpl.UserToProblemAccessType.of(Mockito.any(), Mockito.any()))
+                .thenReturn(ProblemServiceImpl.UserToProblemAccessType.FULL_ACCESS);
+
+        problemData.setContestId(null);
+        problemData.setShareTest(false);
+
+        Mockito.when(problemManager.getProblemById(MOCKED_PROBLEM_ID)).thenReturn(Optional.of(problem));
+        Mockito.when(problemDataManager.getProblemData(MOCKED_PROBLEM_MONGO_ID)).thenReturn(problemData);
+
+        ProblemNameRequest problemNameRequest = ProblemNameRequest.builder()
+                .id(MOCKED_PROBLEM_ID)
+                .name(MOCKED_NAME)
+                .build();
+        CircularByteBuffer circularByteBuffer = new CircularByteBuffer();
+
+        try {
+            problemService.downloadTestOutput(problemNameRequest, circularByteBuffer.getOutputStream());
+            Assertions.fail();
+        } catch (PortableException e) {
+            Assertions.assertEquals("A-04-006", e.getCode());
+        }
+    }
+
+    @Test
+    void testDownloadTestOutputWithTest() throws PortableException, IOException {
+        userToProblemAccessTypeMockedStatic
+                .when(() -> ProblemServiceImpl.UserToProblemAccessType.of(Mockito.any(), Mockito.any()))
+                .thenReturn(ProblemServiceImpl.UserToProblemAccessType.FULL_ACCESS);
+
+        problemData.setContestId(null);
+        problemData.setShareTest(false);
+
+        CircularByteBuffer circularByteBuffer = new CircularByteBuffer();
+        circularByteBuffer.getOutputStream().write(MOCKED_CODE_TEST.getBytes());
+        circularByteBuffer.getOutputStream().close();
+
+        Mockito.when(problemManager.getProblemById(MOCKED_PROBLEM_ID)).thenReturn(Optional.of(problem));
+        Mockito.when(problemDataManager.getProblemData(MOCKED_PROBLEM_MONGO_ID)).thenReturn(problemData);
+        Mockito.when(fileSupport.getTestOutput(MOCKED_PROBLEM_ID, problemData.getTestName().get(0))).thenReturn(circularByteBuffer.getInputStream());
+
+        ProblemNameRequest problemNameRequest = ProblemNameRequest.builder()
+                .id(MOCKED_PROBLEM_ID)
+                .name(problemData.getTestName().get(0))
+                .build();
+        CircularByteBuffer circularByteBufferOutput = new CircularByteBuffer();
+        problemService.downloadTestOutput(problemNameRequest, circularByteBufferOutput.getOutputStream());
+
+        /// region 校验返回值
+
+        String retVal = StreamUtils.read(circularByteBufferOutput.getInputStream());
+        Assertions.assertEquals(MOCKED_CODE_TEST, retVal);
+
+        /// endregion
+
     }
 
     @Test
