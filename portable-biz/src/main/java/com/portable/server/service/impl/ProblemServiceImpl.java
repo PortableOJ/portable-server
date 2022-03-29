@@ -70,7 +70,7 @@ public class ProblemServiceImpl implements ProblemService {
     }
 
     @Getter
-    private enum User2ProblemAccessType {
+    public enum UserToProblemAccessType {
 
         /**
          * 无访问权限
@@ -91,12 +91,12 @@ public class ProblemServiceImpl implements ProblemService {
         private final Boolean viewProblem;
         private final Boolean editProblem;
 
-        User2ProblemAccessType(Boolean viewProblem, Boolean editProblem) {
+        UserToProblemAccessType(Boolean viewProblem, Boolean editProblem) {
             this.viewProblem = viewProblem;
             this.editProblem = editProblem;
         }
 
-        public static User2ProblemAccessType of(@NotNull Problem problem, @Nullable Contest contest) {
+        public static UserToProblemAccessType of(@NotNull Problem problem, @Nullable Contest contest) {
             if (UserContext.ctx().getPermissionTypeSet().contains(PermissionType.CREATE_AND_EDIT_PROBLEM)) {
                 // 题目拥有者拥有完整权限
                 if (Objects.equals(problem.getOwner(), UserContext.ctx().getId())) {
@@ -109,7 +109,7 @@ public class ProblemServiceImpl implements ProblemService {
                 }
             }
 
-            User2ProblemAccessType resultAccessType;
+            UserToProblemAccessType resultAccessType;
             switch (problem.getAccessType()) {
                 case PUBLIC:
                     resultAccessType = VIEW;
@@ -127,7 +127,7 @@ public class ProblemServiceImpl implements ProblemService {
                     return NO_ACCESS;
             }
 
-            if (User2ProblemAccessType.VIEW.equals(resultAccessType)
+            if (UserToProblemAccessType.VIEW.equals(resultAccessType)
                     && UserContext.ctx().isLogin()
                     && UserContext.ctx().getPermissionTypeSet().contains(PermissionType.EDIT_NOT_OWNER_PROBLEM)) {
                 return FULL_ACCESS;
@@ -229,28 +229,28 @@ public class ProblemServiceImpl implements ProblemService {
 
     @Override
     public String showTestInput(ProblemNameRequest problemNameRequest) throws PortableException {
-        ProblemPackage problemPackage = getForViewProblem(problemNameRequest.getId());
+        ProblemPackage problemPackage = getForViewProblemTest(problemNameRequest.getId());
         problemPackage.getProblemData().findTest(problemNameRequest.getName());
         return StreamUtils.read(fileSupport.getTestInput(problemNameRequest.getId(), problemNameRequest.getName()), maxTestShowLen);
     }
 
     @Override
     public String showTestOutput(ProblemNameRequest problemNameRequest) throws PortableException {
-        ProblemPackage problemPackage = getForViewProblem(problemNameRequest.getId());
+        ProblemPackage problemPackage = getForViewProblemTest(problemNameRequest.getId());
         problemPackage.getProblemData().findTest(problemNameRequest.getName());
         return StreamUtils.read(fileSupport.getTestOutput(problemNameRequest.getId(), problemNameRequest.getName()), maxTestShowLen);
     }
 
     @Override
     public void downloadTestInput(ProblemNameRequest problemNameRequest, OutputStream outputStream) throws PortableException {
-        ProblemPackage problemPackage = getForViewProblem(problemNameRequest.getId());
+        ProblemPackage problemPackage = getForViewProblemTest(problemNameRequest.getId());
         problemPackage.getProblemData().findTest(problemNameRequest.getName());
         StreamUtils.copy(fileSupport.getTestInput(problemNameRequest.getId(), problemNameRequest.getName()), outputStream);
     }
 
     @Override
     public void downloadTestOutput(ProblemNameRequest problemNameRequest, OutputStream outputStream) throws PortableException {
-        ProblemPackage problemPackage = getForViewProblem(problemNameRequest.getId());
+        ProblemPackage problemPackage = getForViewProblemTest(problemNameRequest.getId());
         problemPackage.getProblemData().findTest(problemNameRequest.getName());
         StreamUtils.copy(fileSupport.getTestOutput(problemNameRequest.getId(), problemNameRequest.getName()), outputStream);
     }
@@ -542,7 +542,7 @@ public class ProblemServiceImpl implements ProblemService {
 
     private ProblemPackage getForViewProblem(Long id) throws PortableException {
         ProblemPackage problemPackage = getProblemPackage(id);
-        User2ProblemAccessType accessType = User2ProblemAccessType.of(problemPackage.getProblem(), problemPackage.getContest());
+        UserToProblemAccessType accessType = UserToProblemAccessType.of(problemPackage.getProblem(), problemPackage.getContest());
         if (accessType.getViewProblem()) {
             return problemPackage;
         }
@@ -551,8 +551,9 @@ public class ProblemServiceImpl implements ProblemService {
 
     private ProblemPackage getForViewProblemTest(Long id) throws PortableException {
         ProblemPackage problemPackage = getProblemPackage(id);
-        User2ProblemAccessType accessType = User2ProblemAccessType.of(problemPackage.getProblem(), problemPackage.getContest());
-        if (accessType.getEditProblem() || problemPackage.getProblemData().getShareTest()) {
+        UserToProblemAccessType accessType = UserToProblemAccessType.of(problemPackage.getProblem(), problemPackage.getContest());
+        boolean viewAndShare = accessType.getViewProblem() && problemPackage.getProblemData().getShareTest();
+        if (accessType.getEditProblem() || viewAndShare) {
             return problemPackage;
         }
         throw PortableException.of("A-02-006");
@@ -560,7 +561,7 @@ public class ProblemServiceImpl implements ProblemService {
 
     private ProblemPackage getForEditProblem(Long id) throws PortableException {
         ProblemPackage problemPackage = getProblemPackage(id);
-        User2ProblemAccessType accessType = User2ProblemAccessType.of(problemPackage.getProblem(), problemPackage.getContest());
+        UserToProblemAccessType accessType = UserToProblemAccessType.of(problemPackage.getProblem(), problemPackage.getContest());
         if (accessType.getEditProblem()) {
             return problemPackage;
         }
