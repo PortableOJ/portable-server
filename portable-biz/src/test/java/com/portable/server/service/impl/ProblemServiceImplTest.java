@@ -31,6 +31,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.MockedStatic;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.test.util.ReflectionTestUtils;
@@ -79,28 +80,240 @@ public class ProblemServiceImplTest {
 
     private static final Long MOCKED_USER_ID = 1L;
     private static final Long MOCKED_PROBLEM_ID = 2L;
-    private static final Long MOCKED_CONTEST_ID = 3L;
     private static final String MOCKED_PROBLEM_MONGO_ID = "MOCKED_PROBLEM_MONGO_ID";
     private static final String MOCKED_HANDLE = "MOCKED_HANDLE";
 
     private Problem problem;
     private ProblemData problemData;
-    private Contest contest;
     private List<Problem> problemList;
     private User user;
 
     private UserContextBuilder userContextBuilder;
 
+    private MockedStatic<ProblemServiceImpl.UserToProblemAccessType> userToProblemAccessTypeMockedStatic;
+
+    public static class UserToProblemAccessTypeTest {
+
+        private static final Long MOCKED_USER_ID = 1L;
+        private static final Long MOCKED_PROBLEM_ID = 2L;
+        private static final Long MOCKED_CONTEST_ID = 3L;
+        private static final String MOCKED_PROBLEM_MONGO_ID = "MOCKED_PROBLEM_MONGO_ID";
+        private static final String MOCKED_HANDLE = "MOCKED_HANDLE";
+
+        private Problem problem;
+        private Contest contest;
+
+        private UserContextBuilder userContextBuilder;
+
+        @BeforeEach
+        void setUp() {
+            problem = Problem.builder().id(MOCKED_PROBLEM_ID).dataId(MOCKED_PROBLEM_MONGO_ID).build();
+            contest = Contest.builder().build();
+
+            userContextBuilder = new UserContextBuilder();
+            userContextBuilder.setup();
+        }
+
+        @AfterEach
+        void tearDown() {
+            userContextBuilder.tearDown();
+        }
+
+        @Test
+        void testOfWithNoContestPrivateNotOwner() {
+            userContextBuilder.withNotLogin();
+            problem.setOwner(MOCKED_USER_ID + 1);
+            problem.setAccessType(ProblemAccessType.PRIVATE);
+
+            ProblemServiceImpl.UserToProblemAccessType retVal = ProblemServiceImpl.UserToProblemAccessType.of(problem, contest);
+
+            Assertions.assertEquals(ProblemServiceImpl.UserToProblemAccessType.NO_ACCESS, retVal);
+        }
+
+        @Test
+        void testOfWithNoContestPrivateOwnerNoPermission() {
+            userContextBuilder.withNormalLoginIn(MOCKED_USER_ID);
+            problem.setOwner(MOCKED_USER_ID);
+            problem.setAccessType(ProblemAccessType.PRIVATE);
+
+            ProblemServiceImpl.UserToProblemAccessType retVal = ProblemServiceImpl.UserToProblemAccessType.of(problem, contest);
+
+            Assertions.assertEquals(ProblemServiceImpl.UserToProblemAccessType.NO_ACCESS, retVal);
+        }
+
+        @Test
+        void testOfWithNoContestPrivateOwner() {
+            userContextBuilder.withNormalLoginIn(MOCKED_USER_ID).withPermission(PermissionType.CREATE_AND_EDIT_PROBLEM);
+            problem.setOwner(MOCKED_USER_ID);
+            problem.setAccessType(ProblemAccessType.PRIVATE);
+
+            ProblemServiceImpl.UserToProblemAccessType retVal = ProblemServiceImpl.UserToProblemAccessType.of(problem, contest);
+
+            Assertions.assertEquals(ProblemServiceImpl.UserToProblemAccessType.FULL_ACCESS, retVal);
+        }
+
+        @Test
+        void testOfWithNoContestPrivateEditOther() {
+            userContextBuilder.withNormalLoginIn(MOCKED_USER_ID + 1).withPermission(PermissionType.CREATE_AND_EDIT_PROBLEM, PermissionType.EDIT_NOT_OWNER_PROBLEM);
+            problem.setOwner(MOCKED_USER_ID);
+            problem.setAccessType(ProblemAccessType.PRIVATE);
+
+            ProblemServiceImpl.UserToProblemAccessType retVal = ProblemServiceImpl.UserToProblemAccessType.of(problem, contest);
+
+            Assertions.assertEquals(ProblemServiceImpl.UserToProblemAccessType.NO_ACCESS, retVal);
+        }
+
+        @Test
+        void testOfWithContestOwnerPrivateEnd() {
+            userContextBuilder.withNormalLoginIn(MOCKED_USER_ID + 1).withPermission(PermissionType.CREATE_AND_EDIT_PROBLEM, PermissionType.EDIT_NOT_OWNER_PROBLEM);
+            contest.setOwner(MOCKED_USER_ID + 1);
+            contest.setStartTime(new Date(0));
+            contest.setDuration(10000);
+            problem.setOwner(MOCKED_USER_ID);
+            problem.setAccessType(ProblemAccessType.PRIVATE);
+
+            ProblemServiceImpl.UserToProblemAccessType retVal = ProblemServiceImpl.UserToProblemAccessType.of(problem, contest);
+
+            Assertions.assertEquals(ProblemServiceImpl.UserToProblemAccessType.NO_ACCESS, retVal);
+        }
+
+        @Test
+        void testOfWithContestOwnerPrivateNotEnd() {
+            userContextBuilder.withNormalLoginIn(MOCKED_USER_ID + 1).withPermission(PermissionType.CREATE_AND_EDIT_PROBLEM, PermissionType.EDIT_NOT_OWNER_PROBLEM);
+            contest.setOwner(MOCKED_USER_ID + 1);
+            contest.setStartTime(new Date());
+            contest.setDuration(10000);
+            problem.setOwner(MOCKED_USER_ID);
+            problem.setAccessType(ProblemAccessType.PRIVATE);
+
+            ProblemServiceImpl.UserToProblemAccessType retVal = ProblemServiceImpl.UserToProblemAccessType.of(problem, contest);
+
+            Assertions.assertEquals(ProblemServiceImpl.UserToProblemAccessType.FULL_ACCESS, retVal);
+        }
+
+        @Test
+        void testOfWithNoContestHiddenNotOwner() {
+            userContextBuilder.withNotLogin();
+            problem.setOwner(MOCKED_USER_ID);
+            problem.setAccessType(ProblemAccessType.HIDDEN);
+
+            ProblemServiceImpl.UserToProblemAccessType retVal = ProblemServiceImpl.UserToProblemAccessType.of(problem, contest);
+
+            Assertions.assertEquals(ProblemServiceImpl.UserToProblemAccessType.NO_ACCESS, retVal);
+        }
+
+        @Test
+        void testOfWithNoContestHiddenOwnerNoPermission() {
+            userContextBuilder.withNormalLoginIn(MOCKED_USER_ID);
+            problem.setOwner(MOCKED_USER_ID);
+            problem.setAccessType(ProblemAccessType.HIDDEN);
+
+            ProblemServiceImpl.UserToProblemAccessType retVal = ProblemServiceImpl.UserToProblemAccessType.of(problem, contest);
+
+            Assertions.assertEquals(ProblemServiceImpl.UserToProblemAccessType.NO_ACCESS, retVal);
+        }
+
+        @Test
+        void testOfWithNoContestHiddenOwnerWithView() {
+            userContextBuilder.withNormalLoginIn(MOCKED_USER_ID).withPermission(PermissionType.VIEW_HIDDEN_PROBLEM);
+            problem.setOwner(MOCKED_USER_ID);
+            problem.setAccessType(ProblemAccessType.HIDDEN);
+
+            ProblemServiceImpl.UserToProblemAccessType retVal = ProblemServiceImpl.UserToProblemAccessType.of(problem, contest);
+
+            Assertions.assertEquals(ProblemServiceImpl.UserToProblemAccessType.VIEW, retVal);
+        }
+
+        @Test
+        void testOfWithNoContestHiddenOwnerWithEdit() {
+            userContextBuilder.withNormalLoginIn(MOCKED_USER_ID).withPermission(PermissionType.CREATE_AND_EDIT_PROBLEM);
+            problem.setOwner(MOCKED_USER_ID);
+            problem.setAccessType(ProblemAccessType.HIDDEN);
+
+            ProblemServiceImpl.UserToProblemAccessType retVal = ProblemServiceImpl.UserToProblemAccessType.of(problem, contest);
+
+            Assertions.assertEquals(ProblemServiceImpl.UserToProblemAccessType.FULL_ACCESS, retVal);
+        }
+
+        @Test
+        void testOfWithNoContestHiddenNotOwnerView() {
+            userContextBuilder.withNormalLoginIn(MOCKED_USER_ID + 1).withPermission(PermissionType.VIEW_HIDDEN_PROBLEM);
+            problem.setOwner(MOCKED_USER_ID);
+            problem.setAccessType(ProblemAccessType.HIDDEN);
+
+            ProblemServiceImpl.UserToProblemAccessType retVal = ProblemServiceImpl.UserToProblemAccessType.of(problem, contest);
+
+            Assertions.assertEquals(ProblemServiceImpl.UserToProblemAccessType.VIEW, retVal);
+        }
+
+        @Test
+        void testOfWithNoContestHiddenNotOwnerNotViewEditOther() {
+            userContextBuilder.withNormalLoginIn(MOCKED_USER_ID + 1).withPermission(PermissionType.CREATE_AND_EDIT_PROBLEM, PermissionType.EDIT_NOT_OWNER_PROBLEM);
+            problem.setOwner(MOCKED_USER_ID);
+            problem.setAccessType(ProblemAccessType.HIDDEN);
+
+            ProblemServiceImpl.UserToProblemAccessType retVal = ProblemServiceImpl.UserToProblemAccessType.of(problem, contest);
+
+            Assertions.assertEquals(ProblemServiceImpl.UserToProblemAccessType.NO_ACCESS, retVal);
+        }
+
+        @Test
+        void testOfWithNoContestHiddenNotOwnerViewEditOther() {
+            userContextBuilder.withNormalLoginIn(MOCKED_USER_ID + 1).withPermission(PermissionType.CREATE_AND_EDIT_PROBLEM, PermissionType.VIEW_HIDDEN_PROBLEM, PermissionType.EDIT_NOT_OWNER_PROBLEM);
+            problem.setOwner(MOCKED_USER_ID);
+            problem.setAccessType(ProblemAccessType.HIDDEN);
+
+            ProblemServiceImpl.UserToProblemAccessType retVal = ProblemServiceImpl.UserToProblemAccessType.of(problem, contest);
+
+            Assertions.assertEquals(ProblemServiceImpl.UserToProblemAccessType.FULL_ACCESS, retVal);
+        }
+
+        @Test
+        void testOfWithNoContestPublicNotOwner() {
+            userContextBuilder.withNotLogin();
+            problem.setOwner(MOCKED_USER_ID);
+            problem.setAccessType(ProblemAccessType.PUBLIC);
+
+            ProblemServiceImpl.UserToProblemAccessType retVal = ProblemServiceImpl.UserToProblemAccessType.of(problem, contest);
+
+            Assertions.assertEquals(ProblemServiceImpl.UserToProblemAccessType.VIEW, retVal);
+        }
+
+        @Test
+        void testOfWithNoContestPublicOwner() {
+            userContextBuilder.withNormalLoginIn(MOCKED_USER_ID);
+            problem.setOwner(MOCKED_USER_ID);
+            problem.setAccessType(ProblemAccessType.PUBLIC);
+
+            ProblemServiceImpl.UserToProblemAccessType retVal = ProblemServiceImpl.UserToProblemAccessType.of(problem, contest);
+
+            Assertions.assertEquals(ProblemServiceImpl.UserToProblemAccessType.VIEW, retVal);
+        }
+
+        @Test
+        void testOfWithNoContestPublicOwnerPermission() {
+            userContextBuilder.withNormalLoginIn(MOCKED_USER_ID).withPermission(PermissionType.CREATE_AND_EDIT_PROBLEM);
+            problem.setOwner(MOCKED_USER_ID);
+            problem.setAccessType(ProblemAccessType.PUBLIC);
+
+            ProblemServiceImpl.UserToProblemAccessType retVal = ProblemServiceImpl.UserToProblemAccessType.of(problem, contest);
+
+            Assertions.assertEquals(ProblemServiceImpl.UserToProblemAccessType.FULL_ACCESS, retVal);
+        }
+
+    }
+
     @BeforeEach
     void setUp() {
-        problem = Problem.builder()
-                .id(MOCKED_PROBLEM_ID)
-                .dataId(MOCKED_PROBLEM_MONGO_ID)
-                .build();
+        problem = Problem.builder().id(MOCKED_PROBLEM_ID).dataId(MOCKED_PROBLEM_MONGO_ID).build();
         problemData = ProblemData.builder()
                 ._id(MOCKED_PROBLEM_MONGO_ID)
+                .testName(new ArrayList<String>() {{
+                    add("TestName1");
+                    add("TestName2");
+                    add("TestName3");
+                }})
                 .build();
-        contest = Contest.builder().build();
         problemList = new ArrayList<Problem>() {{
             add(Problem.builder().id(1L).build());
             add(Problem.builder().id(2L).build());
@@ -110,11 +323,14 @@ public class ProblemServiceImplTest {
 
         userContextBuilder = new UserContextBuilder();
         userContextBuilder.setup();
+
+        userToProblemAccessTypeMockedStatic = Mockito.mockStatic(ProblemServiceImpl.UserToProblemAccessType.class);
     }
 
     @AfterEach
     void tearDown() {
         userContextBuilder.tearDown();
+        userToProblemAccessTypeMockedStatic.close();
     }
 
     @Test
@@ -125,10 +341,7 @@ public class ProblemServiceImplTest {
         Mockito.when(problemManager.countProblemByTypeAndOwnerId(problemAccessTypeList, null)).thenReturn(problemList.size());
         Mockito.when(problemManager.getProblemListByTypeAndOwnerIdAndPaged(problemAccessTypeList, null, 30, 0)).thenReturn(problemList);
 
-        PageRequest<Void> pageRequest = PageRequest.<Void>builder()
-                .pageNum(1)
-                .pageSize(30)
-                .build();
+        PageRequest<Void> pageRequest = PageRequest.<Void>builder().pageNum(1).pageSize(30).build();
         PageResponse<ProblemListResponse, Void> retVal = problemService.getProblemList(pageRequest);
 
         /// region 校验返回值
@@ -136,11 +349,8 @@ public class ProblemServiceImplTest {
         Assertions.assertEquals(3, retVal.getTotalNum());
         Assertions.assertEquals(1, retVal.getTotalPage());
         Assertions.assertEquals(1, retVal.getPageNum());
-        Assertions.assertTrue(IntStream.range(0, 3)
-                .allMatch(i -> Objects.equals(i + 1L, retVal.getData().get(i).getId()))
-        );
-        Assertions.assertTrue(retVal.getData().stream()
-                .allMatch(problemListResponse -> ProblemListStatusType.NEVER_SUBMIT.equals(problemListResponse.getProblemListStatusType())));
+        Assertions.assertTrue(IntStream.range(0, 3).allMatch(i -> Objects.equals(i + 1L, retVal.getData().get(i).getId())));
+        Assertions.assertTrue(retVal.getData().stream().allMatch(problemListResponse -> ProblemListStatusType.NEVER_SUBMIT.equals(problemListResponse.getProblemListStatusType())));
 
         /// endregion
     }
@@ -149,12 +359,8 @@ public class ProblemServiceImplTest {
     void testGetProblemListWithNoPermission() {
         userContextBuilder.withNormalLoginIn(MOCKED_USER_ID);
 
-        Solution solutionAC = Solution.builder()
-                .status(SolutionStatusType.ACCEPT)
-                .build();
-        Solution solutionWA = Solution.builder()
-                .status(SolutionStatusType.WRONG_ANSWER)
-                .build();
+        Solution solutionAC = Solution.builder().status(SolutionStatusType.ACCEPT).build();
+        Solution solutionWA = Solution.builder().status(SolutionStatusType.WRONG_ANSWER).build();
 
         List<ProblemAccessType> problemAccessTypeList = Collections.singletonList(ProblemAccessType.PUBLIC);
         Mockito.when(problemManager.countProblemByTypeAndOwnerId(problemAccessTypeList, MOCKED_USER_ID)).thenReturn(problemList.size());
@@ -163,10 +369,7 @@ public class ProblemServiceImplTest {
         Mockito.when(solutionManager.selectLastSolutionByUserIdAndProblemId(MOCKED_USER_ID, 2L)).thenReturn(solutionWA);
         Mockito.when(solutionManager.selectLastSolutionByUserIdAndProblemId(MOCKED_USER_ID, 3L)).thenReturn(null);
 
-        PageRequest<Void> pageRequest = PageRequest.<Void>builder()
-                .pageNum(1)
-                .pageSize(30)
-                .build();
+        PageRequest<Void> pageRequest = PageRequest.<Void>builder().pageNum(1).pageSize(30).build();
         PageResponse<ProblemListResponse, Void> retVal = problemService.getProblemList(pageRequest);
 
         /// region 校验返回值
@@ -174,22 +377,20 @@ public class ProblemServiceImplTest {
         Assertions.assertEquals(3, retVal.getTotalNum());
         Assertions.assertEquals(1, retVal.getTotalPage());
         Assertions.assertEquals(1, retVal.getPageNum());
-        Assertions.assertTrue(IntStream.range(0, 3)
-                .allMatch(i -> {
-                    if (!Objects.equals(i + 1L, retVal.getData().get(i).getId())) {
-                        return false;
-                    }
-                    if (i == 0) {
-                        return ProblemListStatusType.PASS.equals(retVal.getData().get(i).getProblemListStatusType());
-                    } else if (i == 1) {
-                        return ProblemListStatusType.NOT_PASS.equals(retVal.getData().get(i).getProblemListStatusType());
-                    } else if (i == 2) {
-                        return ProblemListStatusType.NEVER_SUBMIT.equals(retVal.getData().get(i).getProblemListStatusType());
-                    } else {
-                        return ProblemListStatusType.ON_JUDGE.equals(retVal.getData().get(i).getProblemListStatusType());
-                    }
-                })
-        );
+        Assertions.assertTrue(IntStream.range(0, 3).allMatch(i -> {
+            if (!Objects.equals(i + 1L, retVal.getData().get(i).getId())) {
+                return false;
+            }
+            if (i == 0) {
+                return ProblemListStatusType.PASS.equals(retVal.getData().get(i).getProblemListStatusType());
+            } else if (i == 1) {
+                return ProblemListStatusType.NOT_PASS.equals(retVal.getData().get(i).getProblemListStatusType());
+            } else if (i == 2) {
+                return ProblemListStatusType.NEVER_SUBMIT.equals(retVal.getData().get(i).getProblemListStatusType());
+            } else {
+                return ProblemListStatusType.ON_JUDGE.equals(retVal.getData().get(i).getProblemListStatusType());
+            }
+        }));
 
         /// endregion
     }
@@ -198,12 +399,8 @@ public class ProblemServiceImplTest {
     void testGetProblemListWithPermission() {
         userContextBuilder.withNormalLoginIn(MOCKED_USER_ID).withPermission(PermissionType.VIEW_HIDDEN_PROBLEM);
 
-        Solution solutionAC = Solution.builder()
-                .status(SolutionStatusType.ACCEPT)
-                .build();
-        Solution solutionWA = Solution.builder()
-                .status(SolutionStatusType.WRONG_ANSWER)
-                .build();
+        Solution solutionAC = Solution.builder().status(SolutionStatusType.ACCEPT).build();
+        Solution solutionWA = Solution.builder().status(SolutionStatusType.WRONG_ANSWER).build();
 
         List<ProblemAccessType> problemAccessTypeList = Arrays.asList(ProblemAccessType.PUBLIC, ProblemAccessType.HIDDEN);
         Mockito.when(problemManager.countProblemByTypeAndOwnerId(problemAccessTypeList, MOCKED_USER_ID)).thenReturn(problemList.size());
@@ -212,10 +409,7 @@ public class ProblemServiceImplTest {
         Mockito.when(solutionManager.selectLastSolutionByUserIdAndProblemId(MOCKED_USER_ID, 2L)).thenReturn(solutionWA);
         Mockito.when(solutionManager.selectLastSolutionByUserIdAndProblemId(MOCKED_USER_ID, 3L)).thenReturn(null);
 
-        PageRequest<Void> pageRequest = PageRequest.<Void>builder()
-                .pageNum(1)
-                .pageSize(30)
-                .build();
+        PageRequest<Void> pageRequest = PageRequest.<Void>builder().pageNum(1).pageSize(30).build();
         PageResponse<ProblemListResponse, Void> retVal = problemService.getProblemList(pageRequest);
 
         /// region 校验返回值
@@ -223,22 +417,20 @@ public class ProblemServiceImplTest {
         Assertions.assertEquals(3, retVal.getTotalNum());
         Assertions.assertEquals(1, retVal.getTotalPage());
         Assertions.assertEquals(1, retVal.getPageNum());
-        Assertions.assertTrue(IntStream.range(0, 3)
-                .allMatch(i -> {
-                    if (!Objects.equals(i + 1L, retVal.getData().get(i).getId())) {
-                        return false;
-                    }
-                    if (i == 0) {
-                        return ProblemListStatusType.PASS.equals(retVal.getData().get(i).getProblemListStatusType());
-                    } else if (i == 1) {
-                        return ProblemListStatusType.NOT_PASS.equals(retVal.getData().get(i).getProblemListStatusType());
-                    } else if (i == 2) {
-                        return ProblemListStatusType.NEVER_SUBMIT.equals(retVal.getData().get(i).getProblemListStatusType());
-                    } else {
-                        return ProblemListStatusType.ON_JUDGE.equals(retVal.getData().get(i).getProblemListStatusType());
-                    }
-                })
-        );
+        Assertions.assertTrue(IntStream.range(0, 3).allMatch(i -> {
+            if (!Objects.equals(i + 1L, retVal.getData().get(i).getId())) {
+                return false;
+            }
+            if (i == 0) {
+                return ProblemListStatusType.PASS.equals(retVal.getData().get(i).getProblemListStatusType());
+            } else if (i == 1) {
+                return ProblemListStatusType.NOT_PASS.equals(retVal.getData().get(i).getProblemListStatusType());
+            } else if (i == 2) {
+                return ProblemListStatusType.NEVER_SUBMIT.equals(retVal.getData().get(i).getProblemListStatusType());
+            } else {
+                return ProblemListStatusType.ON_JUDGE.equals(retVal.getData().get(i).getProblemListStatusType());
+            }
+        }));
 
         /// endregion
     }
@@ -260,9 +452,7 @@ public class ProblemServiceImplTest {
 
         /// region 校验返回值
 
-        Assertions.assertTrue(IntStream.range(0, 3)
-                .allMatch(i -> Objects.equals(i + 1L, retVal.get(i).getId()))
-        );
+        Assertions.assertTrue(IntStream.range(0, 3).allMatch(i -> Objects.equals(i + 1L, retVal.get(i).getId())));
 
         /// endregion
     }
@@ -283,9 +473,7 @@ public class ProblemServiceImplTest {
 
         /// region 校验返回值
 
-        Assertions.assertTrue(IntStream.range(0, 3)
-                .allMatch(i -> Objects.equals(i + 1L, retVal.get(i).getId()))
-        );
+        Assertions.assertTrue(IntStream.range(0, 3).allMatch(i -> Objects.equals(i + 1L, retVal.get(i).getId())));
 
         /// endregion
     }
@@ -305,9 +493,7 @@ public class ProblemServiceImplTest {
 
         /// region 校验返回值
 
-        Assertions.assertTrue(IntStream.range(0, 3)
-                .allMatch(i -> Objects.equals(i + 1L, retVal.get(i).getId()))
-        );
+        Assertions.assertTrue(IntStream.range(0, 3).allMatch(i -> Objects.equals(i + 1L, retVal.get(i).getId())));
 
         /// endregion
     }
@@ -338,11 +524,12 @@ public class ProblemServiceImplTest {
     }
 
     @Test
-    void testGetProblemWithNoContestPrivateNotOwner() throws PortableException {
-        userContextBuilder.withNotLogin();
+    void testGetProblemWithNoAccess() throws PortableException {
+        userToProblemAccessTypeMockedStatic
+                .when(() -> ProblemServiceImpl.UserToProblemAccessType.of(Mockito.any(), Mockito.any()))
+                .thenReturn(ProblemServiceImpl.UserToProblemAccessType.NO_ACCESS);
+
         problemData.setContestId(null);
-        problem.setOwner(MOCKED_USER_ID + 1);
-        problem.setAccessType(ProblemAccessType.PRIVATE);
 
         Mockito.when(problemManager.getProblemById(MOCKED_PROBLEM_ID)).thenReturn(Optional.of(problem));
         Mockito.when(problemDataManager.getProblemData(MOCKED_PROBLEM_MONGO_ID)).thenReturn(problemData);
@@ -356,319 +543,126 @@ public class ProblemServiceImplTest {
     }
 
     @Test
-    void testGetProblemWithNoContestPrivateOwnerNoPermission() throws PortableException {
-        userContextBuilder.withNormalLoginIn(MOCKED_USER_ID);
-        problemData.setContestId(null);
+    void testGetProblemWithView() throws PortableException {
+        userToProblemAccessTypeMockedStatic
+                .when(() -> ProblemServiceImpl.UserToProblemAccessType.of(Mockito.any(), Mockito.any()))
+                .thenReturn(ProblemServiceImpl.UserToProblemAccessType.VIEW);
+
         problem.setOwner(MOCKED_USER_ID);
-        problem.setAccessType(ProblemAccessType.PRIVATE);
+        problemData.setContestId(null);
         user.setId(MOCKED_USER_ID);
         user.setHandle(MOCKED_HANDLE);
+
+        Mockito.when(problemManager.getProblemById(MOCKED_PROBLEM_ID)).thenReturn(Optional.of(problem));
+        Mockito.when(problemDataManager.getProblemData(MOCKED_PROBLEM_MONGO_ID)).thenReturn(problemData);
+        Mockito.when(userManager.getAccountById(MOCKED_USER_ID)).thenReturn(Optional.of(user));
+
+        ProblemDetailResponse retVal = problemService.getProblem(MOCKED_PROBLEM_ID);
+
+        /// region 校验返回值
+
+        Assertions.assertEquals(problem.getId(), retVal.getId());
+        Assertions.assertEquals(user.getHandle(), retVal.getOwnerHandle());
+
+        /// endregion
+    }
+
+    @Test
+    void testGetProblemWithFullAccess() throws PortableException {
+        userToProblemAccessTypeMockedStatic
+                .when(() -> ProblemServiceImpl.UserToProblemAccessType.of(Mockito.any(), Mockito.any()))
+                .thenReturn(ProblemServiceImpl.UserToProblemAccessType.FULL_ACCESS);
+
+        problem.setOwner(MOCKED_USER_ID);
+        problemData.setContestId(null);
+        user.setId(MOCKED_USER_ID);
+        user.setHandle(MOCKED_HANDLE);
+
+        Mockito.when(problemManager.getProblemById(MOCKED_PROBLEM_ID)).thenReturn(Optional.of(problem));
+        Mockito.when(problemDataManager.getProblemData(MOCKED_PROBLEM_MONGO_ID)).thenReturn(problemData);
+        Mockito.when(userManager.getAccountById(MOCKED_USER_ID)).thenReturn(Optional.of(user));
+
+        ProblemDetailResponse retVal = problemService.getProblem(MOCKED_PROBLEM_ID);
+
+        /// region 校验返回值
+
+        Assertions.assertEquals(problem.getId(), retVal.getId());
+        Assertions.assertEquals(user.getHandle(), retVal.getOwnerHandle());
+
+        /// endregion
+    }
+
+    @Test
+    void testGetProblemTestListNoAccess() throws PortableException {
+        userToProblemAccessTypeMockedStatic
+                .when(() -> ProblemServiceImpl.UserToProblemAccessType.of(Mockito.any(), Mockito.any()))
+                .thenReturn(ProblemServiceImpl.UserToProblemAccessType.NO_ACCESS);
+
+        problemData.setContestId(null);
 
         Mockito.when(problemManager.getProblemById(MOCKED_PROBLEM_ID)).thenReturn(Optional.of(problem));
         Mockito.when(problemDataManager.getProblemData(MOCKED_PROBLEM_MONGO_ID)).thenReturn(problemData);
 
         try {
-            problemService.getProblem(MOCKED_PROBLEM_ID);
+            problemService.getProblemTestList(MOCKED_PROBLEM_ID);
             Assertions.fail();
         } catch (PortableException e) {
-            Assertions.assertEquals("A-02-004", e.getCode());
+            Assertions.assertEquals("A-02-006", e.getCode());
         }
     }
 
     @Test
-    void testGetProblemWithNoContestPrivateOwner() throws PortableException {
-        userContextBuilder.withNormalLoginIn(MOCKED_USER_ID).withPermission(PermissionType.CREATE_AND_EDIT_PROBLEM);
+    void testGetProblemTestListViewNoShare() throws PortableException {
+        userToProblemAccessTypeMockedStatic
+                .when(() -> ProblemServiceImpl.UserToProblemAccessType.of(Mockito.any(), Mockito.any()))
+                .thenReturn(ProblemServiceImpl.UserToProblemAccessType.VIEW);
+
         problemData.setContestId(null);
-        problem.setOwner(MOCKED_USER_ID);
-        problem.setAccessType(ProblemAccessType.PRIVATE);
-        user.setId(MOCKED_USER_ID);
-        user.setHandle(MOCKED_HANDLE);
-
-        Mockito.when(problemManager.getProblemById(MOCKED_PROBLEM_ID)).thenReturn(Optional.of(problem));
-        Mockito.when(problemDataManager.getProblemData(MOCKED_PROBLEM_MONGO_ID)).thenReturn(problemData);
-        Mockito.when(userManager.getAccountById(MOCKED_USER_ID)).thenReturn(Optional.of(user));
-
-        ProblemDetailResponse retVal = problemService.getProblem(MOCKED_PROBLEM_ID);
-
-        /// region 校验返回值
-
-        Assertions.assertEquals(problem.getId(), retVal.getId());
-        Assertions.assertEquals(user.getHandle(), retVal.getOwnerHandle());
-
-        /// endregion
-    }
-
-    @Test
-    void testGetProblemWithNoContestPrivateEditOther() throws PortableException {
-        userContextBuilder.withNormalLoginIn(MOCKED_USER_ID + 1).withPermission(PermissionType.CREATE_AND_EDIT_PROBLEM, PermissionType.EDIT_NOT_OWNER_PROBLEM);
-        problemData.setContestId(null);
-        problem.setOwner(MOCKED_USER_ID);
-        problem.setAccessType(ProblemAccessType.PRIVATE);
-        user.setId(MOCKED_USER_ID);
-        user.setHandle(MOCKED_HANDLE);
+        problemData.setShareTest(false);
 
         Mockito.when(problemManager.getProblemById(MOCKED_PROBLEM_ID)).thenReturn(Optional.of(problem));
         Mockito.when(problemDataManager.getProblemData(MOCKED_PROBLEM_MONGO_ID)).thenReturn(problemData);
 
         try {
-            problemService.getProblem(MOCKED_PROBLEM_ID);
+            problemService.getProblemTestList(MOCKED_PROBLEM_ID);
             Assertions.fail();
         } catch (PortableException e) {
-            Assertions.assertEquals("A-02-004", e.getCode());
+            Assertions.assertEquals("A-02-006", e.getCode());
         }
     }
 
     @Test
-    void testGetProblemWithContestOwnerPrivateEnd() throws PortableException {
-        userContextBuilder.withNormalLoginIn(MOCKED_USER_ID + 1).withPermission(PermissionType.CREATE_AND_EDIT_PROBLEM, PermissionType.EDIT_NOT_OWNER_PROBLEM);
-        contest.setOwner(MOCKED_USER_ID + 1);
-        contest.setStartTime(new Date(0));
-        contest.setDuration(10000);
-        problemData.setContestId(MOCKED_CONTEST_ID);
-        problem.setOwner(MOCKED_USER_ID);
-        problem.setAccessType(ProblemAccessType.PRIVATE);
-        user.setId(MOCKED_USER_ID);
-        user.setHandle(MOCKED_HANDLE);
+    void testGetProblemTestListViewShare() throws PortableException {
+        userToProblemAccessTypeMockedStatic
+                .when(() -> ProblemServiceImpl.UserToProblemAccessType.of(Mockito.any(), Mockito.any()))
+                .thenReturn(ProblemServiceImpl.UserToProblemAccessType.VIEW);
 
-        Mockito.when(problemManager.getProblemById(MOCKED_PROBLEM_ID)).thenReturn(Optional.of(problem));
-        Mockito.when(problemDataManager.getProblemData(MOCKED_PROBLEM_MONGO_ID)).thenReturn(problemData);
-        Mockito.when(contestManager.getContestById(MOCKED_CONTEST_ID)).thenReturn(Optional.of(contest));
-
-        try {
-            problemService.getProblem(MOCKED_PROBLEM_ID);
-            Assertions.fail();
-        } catch (PortableException e) {
-            Assertions.assertEquals("A-02-004", e.getCode());
-        }
-    }
-
-    @Test
-    void testGetProblemWithContestOwnerPrivateNotEnd() throws PortableException {
-        userContextBuilder.withNormalLoginIn(MOCKED_USER_ID + 1).withPermission(PermissionType.CREATE_AND_EDIT_PROBLEM, PermissionType.EDIT_NOT_OWNER_PROBLEM);
-        contest.setOwner(MOCKED_USER_ID + 1);
-        contest.setStartTime(new Date());
-        contest.setDuration(10000);
-        problemData.setContestId(MOCKED_CONTEST_ID);
-        problem.setOwner(MOCKED_USER_ID);
-        problem.setAccessType(ProblemAccessType.PRIVATE);
-        user.setId(MOCKED_USER_ID);
-        user.setHandle(MOCKED_HANDLE);
-
-        Mockito.when(problemManager.getProblemById(MOCKED_PROBLEM_ID)).thenReturn(Optional.of(problem));
-        Mockito.when(problemDataManager.getProblemData(MOCKED_PROBLEM_MONGO_ID)).thenReturn(problemData);
-        Mockito.when(contestManager.getContestById(MOCKED_CONTEST_ID)).thenReturn(Optional.of(contest));
-        Mockito.when(userManager.getAccountById(MOCKED_USER_ID)).thenReturn(Optional.of(user));
-
-        ProblemDetailResponse retVal = problemService.getProblem(MOCKED_PROBLEM_ID);
-
-        /// region 校验返回值
-
-        Assertions.assertEquals(problem.getId(), retVal.getId());
-        Assertions.assertEquals(user.getHandle(), retVal.getOwnerHandle());
-
-        /// endregion
-    }
-
-    @Test
-    void testGetProblemWithNoContestHiddenNotOwner() throws PortableException {
-        userContextBuilder.withNotLogin();
         problemData.setContestId(null);
-        problem.setOwner(MOCKED_USER_ID);
-        problem.setAccessType(ProblemAccessType.HIDDEN);
-        user.setId(MOCKED_USER_ID);
-        user.setHandle(MOCKED_HANDLE);
+        problemData.setShareTest(true);
 
         Mockito.when(problemManager.getProblemById(MOCKED_PROBLEM_ID)).thenReturn(Optional.of(problem));
         Mockito.when(problemDataManager.getProblemData(MOCKED_PROBLEM_MONGO_ID)).thenReturn(problemData);
 
-        try {
-            problemService.getProblem(MOCKED_PROBLEM_ID);
-            Assertions.fail();
-        } catch (PortableException e) {
-            Assertions.assertEquals("A-02-004", e.getCode());
-        }
+        List<String> testList = problemService.getProblemTestList(MOCKED_PROBLEM_ID);
+
+        Assertions.assertEquals(problemData.getTestName(), testList);
     }
 
     @Test
-    void testGetProblemWithNoContestHiddenOwnerNoPermission() throws PortableException {
-        userContextBuilder.withNormalLoginIn(MOCKED_USER_ID);
+    void testGetProblemTestListFullAccessNoShare() throws PortableException {
+        userToProblemAccessTypeMockedStatic
+                .when(() -> ProblemServiceImpl.UserToProblemAccessType.of(Mockito.any(), Mockito.any()))
+                .thenReturn(ProblemServiceImpl.UserToProblemAccessType.FULL_ACCESS);
+
         problemData.setContestId(null);
-        problem.setOwner(MOCKED_USER_ID);
-        problem.setAccessType(ProblemAccessType.HIDDEN);
-        user.setId(MOCKED_USER_ID);
-        user.setHandle(MOCKED_HANDLE);
+        problemData.setShareTest(false);
 
         Mockito.when(problemManager.getProblemById(MOCKED_PROBLEM_ID)).thenReturn(Optional.of(problem));
         Mockito.when(problemDataManager.getProblemData(MOCKED_PROBLEM_MONGO_ID)).thenReturn(problemData);
 
-        try {
-            problemService.getProblem(MOCKED_PROBLEM_ID);
-            Assertions.fail();
-        } catch (PortableException e) {
-            Assertions.assertEquals("A-02-004", e.getCode());
-        }
-    }
+        List<String> testList = problemService.getProblemTestList(MOCKED_PROBLEM_ID);
 
-    @Test
-    void testGetProblemWithNoContestHiddenOwnerWithView() throws PortableException {
-        userContextBuilder.withNormalLoginIn(MOCKED_USER_ID).withPermission(PermissionType.VIEW_HIDDEN_PROBLEM);
-        problemData.setContestId(null);
-        problem.setOwner(MOCKED_USER_ID);
-        problem.setAccessType(ProblemAccessType.HIDDEN);
-        user.setId(MOCKED_USER_ID);
-        user.setHandle(MOCKED_HANDLE);
-
-        Mockito.when(problemManager.getProblemById(MOCKED_PROBLEM_ID)).thenReturn(Optional.of(problem));
-        Mockito.when(problemDataManager.getProblemData(MOCKED_PROBLEM_MONGO_ID)).thenReturn(problemData);
-        Mockito.when(userManager.getAccountById(MOCKED_USER_ID)).thenReturn(Optional.of(user));
-
-        ProblemDetailResponse retVal = problemService.getProblem(MOCKED_PROBLEM_ID);
-
-        /// region 校验返回值
-
-        Assertions.assertEquals(problem.getId(), retVal.getId());
-        Assertions.assertEquals(user.getHandle(), retVal.getOwnerHandle());
-
-        /// endregion
-    }
-
-    @Test
-    void testGetProblemWithNoContestHiddenOwnerWithEdit() throws PortableException {
-        userContextBuilder.withNormalLoginIn(MOCKED_USER_ID).withPermission(PermissionType.CREATE_AND_EDIT_PROBLEM);
-        problemData.setContestId(null);
-        problem.setOwner(MOCKED_USER_ID);
-        problem.setAccessType(ProblemAccessType.HIDDEN);
-        user.setId(MOCKED_USER_ID);
-        user.setHandle(MOCKED_HANDLE);
-
-        Mockito.when(problemManager.getProblemById(MOCKED_PROBLEM_ID)).thenReturn(Optional.of(problem));
-        Mockito.when(problemDataManager.getProblemData(MOCKED_PROBLEM_MONGO_ID)).thenReturn(problemData);
-        Mockito.when(userManager.getAccountById(MOCKED_USER_ID)).thenReturn(Optional.of(user));
-
-        ProblemDetailResponse retVal = problemService.getProblem(MOCKED_PROBLEM_ID);
-
-        /// region 校验返回值
-
-        Assertions.assertEquals(problem.getId(), retVal.getId());
-        Assertions.assertEquals(user.getHandle(), retVal.getOwnerHandle());
-
-        /// endregion
-    }
-
-    @Test
-    void testGetProblemWithNoContestHiddenNotOwnerView() throws PortableException {
-        userContextBuilder.withNormalLoginIn(MOCKED_USER_ID + 1).withPermission(PermissionType.VIEW_HIDDEN_PROBLEM);
-        problemData.setContestId(null);
-        problem.setOwner(MOCKED_USER_ID);
-        problem.setAccessType(ProblemAccessType.HIDDEN);
-        user.setId(MOCKED_USER_ID);
-        user.setHandle(MOCKED_HANDLE);
-
-        Mockito.when(problemManager.getProblemById(MOCKED_PROBLEM_ID)).thenReturn(Optional.of(problem));
-        Mockito.when(problemDataManager.getProblemData(MOCKED_PROBLEM_MONGO_ID)).thenReturn(problemData);
-        Mockito.when(userManager.getAccountById(MOCKED_USER_ID)).thenReturn(Optional.of(user));
-
-        ProblemDetailResponse retVal = problemService.getProblem(MOCKED_PROBLEM_ID);
-
-        /// region 校验返回值
-
-        Assertions.assertEquals(problem.getId(), retVal.getId());
-        Assertions.assertEquals(user.getHandle(), retVal.getOwnerHandle());
-
-        /// endregion
-    }
-
-    @Test
-    void testGetProblemWithNoContestHiddenNotOwnerNotViewEditOther() throws PortableException {
-        userContextBuilder.withNormalLoginIn(MOCKED_USER_ID + 1).withPermission(PermissionType.CREATE_AND_EDIT_PROBLEM, PermissionType.EDIT_NOT_OWNER_PROBLEM);
-        problemData.setContestId(null);
-        problem.setOwner(MOCKED_USER_ID);
-        problem.setAccessType(ProblemAccessType.HIDDEN);
-        user.setId(MOCKED_USER_ID);
-        user.setHandle(MOCKED_HANDLE);
-
-        Mockito.when(problemManager.getProblemById(MOCKED_PROBLEM_ID)).thenReturn(Optional.of(problem));
-        Mockito.when(problemDataManager.getProblemData(MOCKED_PROBLEM_MONGO_ID)).thenReturn(problemData);
-
-        try {
-            problemService.getProblem(MOCKED_PROBLEM_ID);
-            Assertions.fail();
-        } catch (PortableException e) {
-            Assertions.assertEquals("A-02-004", e.getCode());
-        }
-    }
-
-    @Test
-    void testGetProblemWithNoContestHiddenNotOwnerViewEditOther() throws PortableException {
-        userContextBuilder.withNormalLoginIn(MOCKED_USER_ID + 1).withPermission(PermissionType.CREATE_AND_EDIT_PROBLEM, PermissionType.VIEW_HIDDEN_PROBLEM, PermissionType.EDIT_NOT_OWNER_PROBLEM);
-        problemData.setContestId(null);
-        problem.setOwner(MOCKED_USER_ID);
-        problem.setAccessType(ProblemAccessType.HIDDEN);
-        user.setId(MOCKED_USER_ID);
-        user.setHandle(MOCKED_HANDLE);
-
-        Mockito.when(problemManager.getProblemById(MOCKED_PROBLEM_ID)).thenReturn(Optional.of(problem));
-        Mockito.when(problemDataManager.getProblemData(MOCKED_PROBLEM_MONGO_ID)).thenReturn(problemData);
-        Mockito.when(userManager.getAccountById(MOCKED_USER_ID)).thenReturn(Optional.of(user));
-
-        ProblemDetailResponse retVal = problemService.getProblem(MOCKED_PROBLEM_ID);
-
-        /// region 校验返回值
-
-        Assertions.assertEquals(problem.getId(), retVal.getId());
-        Assertions.assertEquals(user.getHandle(), retVal.getOwnerHandle());
-
-        /// endregion
-    }
-
-    @Test
-    void testGetProblemWithNoContestPublicNotOwner() throws PortableException {
-        userContextBuilder.withNotLogin();
-        problemData.setContestId(null);
-        problem.setOwner(MOCKED_USER_ID);
-        problem.setAccessType(ProblemAccessType.PUBLIC);
-        user.setId(MOCKED_USER_ID);
-        user.setHandle(MOCKED_HANDLE);
-
-        Mockito.when(problemManager.getProblemById(MOCKED_PROBLEM_ID)).thenReturn(Optional.of(problem));
-        Mockito.when(problemDataManager.getProblemData(MOCKED_PROBLEM_MONGO_ID)).thenReturn(problemData);
-        Mockito.when(userManager.getAccountById(MOCKED_USER_ID)).thenReturn(Optional.of(user));
-
-        ProblemDetailResponse retVal = problemService.getProblem(MOCKED_PROBLEM_ID);
-
-        /// region 校验返回值
-
-        Assertions.assertEquals(problem.getId(), retVal.getId());
-        Assertions.assertEquals(user.getHandle(), retVal.getOwnerHandle());
-
-        /// endregion
-    }
-
-    @Test
-    void testGetProblemWithNoContestPublicOwner() throws PortableException {
-        userContextBuilder.withNormalLoginIn(MOCKED_USER_ID);
-        problemData.setContestId(null);
-        problem.setOwner(MOCKED_USER_ID);
-        problem.setAccessType(ProblemAccessType.PUBLIC);
-        user.setId(MOCKED_USER_ID);
-        user.setHandle(MOCKED_HANDLE);
-
-        Mockito.when(problemManager.getProblemById(MOCKED_PROBLEM_ID)).thenReturn(Optional.of(problem));
-        Mockito.when(problemDataManager.getProblemData(MOCKED_PROBLEM_MONGO_ID)).thenReturn(problemData);
-        Mockito.when(userManager.getAccountById(MOCKED_USER_ID)).thenReturn(Optional.of(user));
-
-        ProblemDetailResponse retVal = problemService.getProblem(MOCKED_PROBLEM_ID);
-
-        /// region 校验返回值
-
-        Assertions.assertEquals(problem.getId(), retVal.getId());
-        Assertions.assertEquals(user.getHandle(), retVal.getOwnerHandle());
-
-        /// endregion
-    }
-
-    @Test
-    void getProblemTestList() {
+        Assertions.assertEquals(problemData.getTestName(), testList);
     }
 
     @Test
