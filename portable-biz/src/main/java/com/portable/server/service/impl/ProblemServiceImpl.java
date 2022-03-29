@@ -66,6 +66,7 @@ public class ProblemServiceImpl implements ProblemService {
     public static class ProblemPackage {
         private Problem problem;
         private ProblemData problemData;
+        private Contest contest;
     }
 
     @Getter
@@ -96,7 +97,6 @@ public class ProblemServiceImpl implements ProblemService {
         }
 
         public static User2ProblemAccessType of(@NotNull Problem problem, @Nullable Contest contest) {
-
             if (UserContext.ctx().getPermissionTypeSet().contains(PermissionType.CREATE_AND_EDIT_PROBLEM)) {
                 // 题目拥有者拥有完整权限
                 if (Objects.equals(problem.getOwner(), UserContext.ctx().getId())) {
@@ -196,9 +196,10 @@ public class ProblemServiceImpl implements ProblemService {
 
     @Override
     public List<ProblemListResponse> searchProblemSetList(String keyword) {
-        boolean isLogin = UserContext.ctx().isLogin();
-        boolean viewHiddenProblem = isLogin && UserContext.ctx().getPermissionTypeSet().contains(PermissionType.VIEW_HIDDEN_PROBLEM);
-        List<ProblemAccessType> problemAccessTypeList = viewHiddenProblem ? Arrays.asList(ProblemAccessType.PUBLIC, ProblemAccessType.HIDDEN) : Collections.singletonList(ProblemAccessType.PUBLIC);
+        boolean viewHiddenProblem = UserContext.ctx().getPermissionTypeSet().contains(PermissionType.VIEW_HIDDEN_PROBLEM);
+        List<ProblemAccessType> problemAccessTypeList = viewHiddenProblem
+                ? Arrays.asList(ProblemAccessType.PUBLIC, ProblemAccessType.HIDDEN)
+                : Collections.singletonList(ProblemAccessType.PUBLIC);
         List<Problem> problemList = problemManager.searchRecentProblemByTypedAndKeyword(problemAccessTypeList, keyword, searchPageSize);
         return problemList.stream()
                 .map(problem -> ProblemListResponse.of(problem, null))
@@ -541,11 +542,7 @@ public class ProblemServiceImpl implements ProblemService {
 
     private ProblemPackage getForViewProblem(Long id) throws PortableException {
         ProblemPackage problemPackage = getProblemPackage(id);
-        Contest contest = null;
-        if (problemPackage.getProblemData().getContestId() != null) {
-            contest = contestManager.getContestById(problemPackage.getProblemData().getContestId()).orElse(null);
-        }
-        User2ProblemAccessType accessType = User2ProblemAccessType.of(problemPackage.getProblem(), contest);
+        User2ProblemAccessType accessType = User2ProblemAccessType.of(problemPackage.getProblem(), problemPackage.getContest());
         if (accessType.getViewProblem()) {
             return problemPackage;
         }
@@ -554,11 +551,7 @@ public class ProblemServiceImpl implements ProblemService {
 
     private ProblemPackage getForViewProblemTest(Long id) throws PortableException {
         ProblemPackage problemPackage = getProblemPackage(id);
-        Contest contest = null;
-        if (problemPackage.getProblemData().getContestId() != null) {
-            contest = contestManager.getContestById(problemPackage.getProblemData().getContestId()).orElse(null);
-        }
-        User2ProblemAccessType accessType = User2ProblemAccessType.of(problemPackage.getProblem(), contest);
+        User2ProblemAccessType accessType = User2ProblemAccessType.of(problemPackage.getProblem(), problemPackage.getContest());
         if (accessType.getEditProblem() || problemPackage.getProblemData().getShareTest()) {
             return problemPackage;
         }
@@ -567,11 +560,7 @@ public class ProblemServiceImpl implements ProblemService {
 
     private ProblemPackage getForEditProblem(Long id) throws PortableException {
         ProblemPackage problemPackage = getProblemPackage(id);
-        Contest contest = null;
-        if (problemPackage.getProblemData().getContestId() != null) {
-            contest = contestManager.getContestById(problemPackage.getProblemData().getContestId()).orElse(null);
-        }
-        User2ProblemAccessType accessType = User2ProblemAccessType.of(problemPackage.getProblem(), contest);
+        User2ProblemAccessType accessType = User2ProblemAccessType.of(problemPackage.getProblem(), problemPackage.getContest());
         if (accessType.getEditProblem()) {
             return problemPackage;
         }
@@ -582,9 +571,11 @@ public class ProblemServiceImpl implements ProblemService {
         Problem problem = problemManager.getProblemById(id)
                 .orElseThrow(PortableException.from("A-04-001", id));
         ProblemData problemData = problemDataManager.getProblemData(problem.getDataId());
+        Contest contest = contestManager.getContestById(problemData.getContestId()).orElse(null);
         return ProblemPackage.builder()
                 .problem(problem)
                 .problemData(problemData)
+                .contest(contest)
                 .build();
     }
 
