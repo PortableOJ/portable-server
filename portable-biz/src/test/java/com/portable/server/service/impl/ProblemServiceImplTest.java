@@ -8,6 +8,7 @@ import com.portable.server.manager.SolutionDataManager;
 import com.portable.server.manager.SolutionManager;
 import com.portable.server.manager.UserDataManager;
 import com.portable.server.manager.UserManager;
+import com.portable.server.model.contest.Contest;
 import com.portable.server.model.problem.Problem;
 import com.portable.server.model.problem.ProblemData;
 import com.portable.server.model.request.PageRequest;
@@ -37,6 +38,7 @@ import org.springframework.test.util.ReflectionTestUtils;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -77,11 +79,13 @@ public class ProblemServiceImplTest {
 
     private static final Long MOCKED_USER_ID = 1L;
     private static final Long MOCKED_PROBLEM_ID = 2L;
+    private static final Long MOCKED_CONTEST_ID = 3L;
     private static final String MOCKED_PROBLEM_MONGO_ID = "MOCKED_PROBLEM_MONGO_ID";
     private static final String MOCKED_HANDLE = "MOCKED_HANDLE";
 
     private Problem problem;
     private ProblemData problemData;
+    private Contest contest;
     private List<Problem> problemList;
     private User user;
 
@@ -96,6 +100,7 @@ public class ProblemServiceImplTest {
         problemData = ProblemData.builder()
                 ._id(MOCKED_PROBLEM_MONGO_ID)
                 .build();
+        contest = Contest.builder().build();
         problemList = new ArrayList<Problem>() {{
             add(Problem.builder().id(1L).build());
             add(Problem.builder().id(2L).build());
@@ -411,6 +416,57 @@ public class ProblemServiceImplTest {
         } catch (PortableException e) {
             Assertions.assertEquals("A-02-004", e.getCode());
         }
+    }
+
+    @Test
+    void testGetProblemWithContestOwnerPrivateEnd() throws PortableException {
+        userContextBuilder.withNormalLoginIn(MOCKED_USER_ID + 1).withPermission(PermissionType.CREATE_AND_EDIT_PROBLEM, PermissionType.EDIT_NOT_OWNER_PROBLEM);
+        contest.setOwner(MOCKED_USER_ID + 1);
+        contest.setStartTime(new Date(0));
+        contest.setDuration(10000);
+        problemData.setContestId(MOCKED_CONTEST_ID);
+        problem.setOwner(MOCKED_USER_ID);
+        problem.setAccessType(ProblemAccessType.PRIVATE);
+        user.setId(MOCKED_USER_ID);
+        user.setHandle(MOCKED_HANDLE);
+
+        Mockito.when(problemManager.getProblemById(MOCKED_PROBLEM_ID)).thenReturn(Optional.of(problem));
+        Mockito.when(problemDataManager.getProblemData(MOCKED_PROBLEM_MONGO_ID)).thenReturn(problemData);
+        Mockito.when(contestManager.getContestById(MOCKED_CONTEST_ID)).thenReturn(Optional.of(contest));
+
+        try {
+            problemService.getProblem(MOCKED_PROBLEM_ID);
+            Assertions.fail();
+        } catch (PortableException e) {
+            Assertions.assertEquals("A-02-004", e.getCode());
+        }
+    }
+
+    @Test
+    void testGetProblemWithContestOwnerPrivateNotEnd() throws PortableException {
+        userContextBuilder.withNormalLoginIn(MOCKED_USER_ID + 1).withPermission(PermissionType.CREATE_AND_EDIT_PROBLEM, PermissionType.EDIT_NOT_OWNER_PROBLEM);
+        contest.setOwner(MOCKED_USER_ID + 1);
+        contest.setStartTime(new Date());
+        contest.setDuration(10000);
+        problemData.setContestId(MOCKED_CONTEST_ID);
+        problem.setOwner(MOCKED_USER_ID);
+        problem.setAccessType(ProblemAccessType.PRIVATE);
+        user.setId(MOCKED_USER_ID);
+        user.setHandle(MOCKED_HANDLE);
+
+        Mockito.when(problemManager.getProblemById(MOCKED_PROBLEM_ID)).thenReturn(Optional.of(problem));
+        Mockito.when(problemDataManager.getProblemData(MOCKED_PROBLEM_MONGO_ID)).thenReturn(problemData);
+        Mockito.when(contestManager.getContestById(MOCKED_CONTEST_ID)).thenReturn(Optional.of(contest));
+        Mockito.when(userManager.getAccountById(MOCKED_USER_ID)).thenReturn(Optional.of(user));
+
+        ProblemDetailResponse retVal = problemService.getProblem(MOCKED_PROBLEM_ID);
+
+        /// region 校验返回值
+
+        Assertions.assertEquals(problem.getId(), retVal.getId());
+        Assertions.assertEquals(user.getHandle(), retVal.getOwnerHandle());
+
+        /// endregion
     }
 
     @Test
