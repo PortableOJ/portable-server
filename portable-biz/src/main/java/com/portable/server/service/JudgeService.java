@@ -41,7 +41,7 @@ public interface JudgeService {
      * 终止一个 judge 任务
      * @param solutionId 提交 ID
      */
-    void killJudge(Long solutionId);
+    void killJudge(Long solutionId) throws PortableException;
 
     /**
      * 终止一个 test 任务

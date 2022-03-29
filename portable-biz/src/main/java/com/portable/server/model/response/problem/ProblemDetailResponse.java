@@ -3,8 +3,14 @@ package com.portable.server.model.response.problem;
 import com.portable.server.model.problem.Problem;
 import com.portable.server.model.problem.ProblemData;
 import com.portable.server.model.user.User;
-import com.portable.server.type.*;
+import com.portable.server.type.JudgeCodeType;
+import com.portable.server.type.LanguageType;
+import com.portable.server.type.ProblemAccessType;
+import com.portable.server.type.ProblemStatusType;
+import com.portable.server.type.ProblemType;
 import lombok.Data;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.Date;
 import java.util.List;
@@ -131,7 +137,7 @@ public class ProblemDetailResponse {
      */
     private Date gmtModifyTime;
 
-    public ProblemDetailResponse(Problem problem, ProblemData problemData, User user) {
+    public ProblemDetailResponse(@NotNull Problem problem, @NotNull ProblemData problemData, @Nullable User user) {
         this.id = problem.getId();
         this.title = problem.getTitle();
         this.statusType = problem.getStatusType();
@@ -158,7 +164,7 @@ public class ProblemDetailResponse {
         this.gmtModifyTime = problemData.getGmtModifyTime();
     }
 
-    public static ProblemDetailResponse of(Problem problem, ProblemData problemData, User user) {
+    public static ProblemDetailResponse of(@NotNull Problem problem, @NotNull ProblemData problemData, @Nullable User user) {
         return new ProblemDetailResponse(problem, problemData, user);
     }
 }

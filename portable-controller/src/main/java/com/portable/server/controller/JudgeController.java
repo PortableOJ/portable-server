@@ -74,7 +74,7 @@ public class JudgeController {
     @NeedLogin(normal = true)
     @PostMapping("/killJudge")
     @PermissionRequirement(PermissionType.MANAGER_JUDGE)
-    public Response<Void> killJudge(@Validated @RequestBody IdRequest idRequest) {
+    public Response<Void> killJudge(@Validated @RequestBody IdRequest idRequest) throws PortableException {
         judgeService.killJudge(idRequest.getId());
         return Response.ofOk();
     }

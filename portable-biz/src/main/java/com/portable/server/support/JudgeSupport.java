@@ -54,7 +54,7 @@ public interface JudgeSupport {
      * @param timeCost 耗时
      * @param memoryCost 内存消耗
      */
-    void killJudgeTask(Long solutionId, SolutionStatusType endType, Integer timeCost, Integer memoryCost);
+    void killJudgeTask(Long solutionId, SolutionStatusType endType, Integer timeCost, Integer memoryCost) throws PortableException;
 
     /**
      * 结束一个 test 任务

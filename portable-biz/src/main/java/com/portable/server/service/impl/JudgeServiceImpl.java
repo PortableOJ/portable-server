@@ -52,7 +52,7 @@ public class JudgeServiceImpl implements JudgeService {
     }
 
     @Override
-    public void killJudge(Long solutionId) {
+    public void killJudge(Long solutionId) throws PortableException {
         judgeSupport.killJudgeTask(solutionId, SolutionStatusType.SYSTEM_ERROR, null, null);
     }
 

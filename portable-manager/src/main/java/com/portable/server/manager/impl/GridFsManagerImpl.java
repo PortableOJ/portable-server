@@ -5,6 +5,7 @@ import com.portable.server.manager.GridFsManager;
 import com.portable.server.model.fs.FileData;
 import com.portable.server.repo.GridFsRepo;
 import com.portable.server.type.FileStoreType;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
@@ -20,12 +21,12 @@ public class GridFsManagerImpl implements GridFsManager {
     private GridFsRepo gridFsRepo;
 
     @Override
-    public String uploadImage(InputStream inputStream, String name, String contentType) throws PortableException {
+    public @NotNull String uploadImage(InputStream inputStream, String name, String contentType) throws PortableException {
         return gridFsRepo.saveFile(inputStream, name, contentType, FileStoreType.IMAGE);
     }
 
     @Override
-    public String uploadAvatar(String lastId, InputStream inputStream, String name, String contentType) throws PortableException {
+    public @NotNull String uploadAvatar(String lastId, InputStream inputStream, String name, String contentType) throws PortableException {
         if (lastId != null) {
             gridFsRepo.deleteFile(lastId);
         }
@@ -33,7 +34,7 @@ public class GridFsManagerImpl implements GridFsManager {
     }
 
     @Override
-    public FileData get(String id, FileStoreType type) throws PortableException {
+    public @NotNull FileData get(String id, FileStoreType type) throws PortableException {
         return gridFsRepo.getFile(id, type);
     }
 }

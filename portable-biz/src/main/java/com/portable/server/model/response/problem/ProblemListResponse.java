@@ -2,10 +2,12 @@ package com.portable.server.model.response.problem;
 
 import com.portable.server.model.problem.Problem;
 import com.portable.server.model.solution.Solution;
-import com.portable.server.type.ProblemListStatusType;
 import com.portable.server.type.ProblemAccessType;
+import com.portable.server.type.ProblemListStatusType;
 import com.portable.server.type.ProblemStatusType;
 import lombok.Data;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * @author shiroha
@@ -48,21 +50,19 @@ public class ProblemListResponse {
      */
     private ProblemListStatusType problemListStatusType;
 
-    private ProblemListResponse(Problem problem, ProblemListStatusType problemListStatusType) {
+    ProblemListResponse(@NotNull Problem problem, @Nullable Solution solution) {
         this.id = problem.getId();
         this.title = problem.getTitle();
         this.status = problem.getStatusType();
         this.accessType = problem.getAccessType();
         this.submissionCount = problem.getSubmissionCount();
         this.acceptCount = problem.getAcceptCount();
-        this.problemListStatusType = problemListStatusType;
+        this.problemListStatusType = solution == null
+                ? ProblemListStatusType.NEVER_SUBMIT
+                : ProblemListStatusType.of(solution.getStatus());
     }
 
-
-    public static ProblemListResponse of(Problem problem, Solution solution) {
-        return new ProblemListResponse(problem,
-                solution == null
-                        ? ProblemListStatusType.NEVER_SUBMIT
-                        : ProblemListStatusType.of(solution.getStatus()));
+    public static ProblemListResponse of(@NotNull Problem problem, @Nullable Solution solution) {
+        return new ProblemListResponse(problem, solution);
     }
 }
