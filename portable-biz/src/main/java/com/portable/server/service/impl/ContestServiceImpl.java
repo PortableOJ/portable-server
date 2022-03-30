@@ -450,11 +450,6 @@ public class ContestServiceImpl implements ContestService {
         } else if (contest.isStarted() && !contest.isEnd()) {
             // 已经开始的比赛不允许修改比赛开始时间
             contestContentRequest.setStartTime(contest.getStartTime());
-            // 检查新的比赛结束时间是否已经超过当前时间了
-            contestContentRequest.toContest(contest);
-            if (contest.isEnd()) {
-                throw PortableException.of("A-08-013");
-            }
             checkSameProblem(contestContentRequest);
             contestManager.updateDuration(contestContentRequest.getId(), contestContentRequest.getDuration());
             // 下面的函数已经保证了不会删除题目
@@ -462,8 +457,9 @@ public class ContestServiceImpl implements ContestService {
             contestDataManager.saveContestData(contestData);
             updateContestLock(contestPackage, contestContentRequest.getProblemList());
         } else {
-            // 比赛已经结束，仅允许修改比赛公告
+            // 比赛已经结束，仅允许修改比赛公告和封榜时间
             contestData.setAnnouncement(contestContentRequest.getAnnouncement());
+            contestData.setFreezeTime(contestContentRequest.getFreezeTime());
             contestDataManager.saveContestData(contestData);
         }
     }
