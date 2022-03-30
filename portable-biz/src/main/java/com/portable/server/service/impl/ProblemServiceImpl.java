@@ -287,7 +287,7 @@ public class ProblemServiceImpl implements ProblemService {
             throw PortableException.of("A-04-007");
         }
 
-        // 发生比赛访问权限更新
+        // 发生题目访问权限更新
         if (!Objects.equals(problemPackage.getProblem().getAccessType(), problemSettingRequest.getAccessType())) {
             // 从公开转私有 => 拒绝
             if (ProblemAccessType.PRIVATE.equals(problemSettingRequest.getAccessType())) {
@@ -295,8 +295,7 @@ public class ProblemServiceImpl implements ProblemService {
             }
             // 其他任何转换 => 不允许在比赛期间发生
             if (problemPackage.getProblemData().getContestId() != null) {
-                Contest contest = contestManager.getContestById(problemPackage.getProblemData().getContestId())
-                        .orElseThrow(PortableException.from("A-08-002", problemPackage.getProblemData().getContestId()));
+                Contest contest = problemPackage.getContest();
                 if (!contest.isEnd()) {
                     throw PortableException.of("A-04-014", problemPackage.getProblemData().getContestId());
                 }
@@ -305,11 +304,15 @@ public class ProblemServiceImpl implements ProblemService {
 
         boolean isChecked = problemPackage.getProblem().getStatusType().getChecked();
         boolean needCheck = problemSettingRequest.toProblemData(problemPackage.getProblemData());
-        needCheck = needCheck || checkAnyStdCodeNotPass(problemPackage.getProblemData());
-        if (isChecked && needCheck) {
-            problemPackage.getProblem().toUncheck();
+
+        if (isChecked) {
+            // 可能因为修改了耗时导致了部分的原来通过的代码变得不通过了
+            if (needCheck || checkAnyStdCodeNotPass(problemPackage.getProblemData())) {
+                problemPackage.getProblem().toUncheck();
+            }
         }
 
+        problemManager.updateProblemStatus(problemPackage.getProblem().getId(), problemPackage.getProblem().getStatusType());
         problemManager.updateProblemAccessStatus(problemPackage.getProblem().getId(), problemSettingRequest.getAccessType());
         problemDataManager.updateProblemData(problemPackage.getProblemData());
     }
@@ -608,9 +611,6 @@ public class ProblemServiceImpl implements ProblemService {
             return false;
         }
         Solution solution = solutionManager.selectSolutionById(stdCode.getSolutionId());
-        if (!solution.getStatus().getEndingResult()) {
-            return false;
-        }
         Integer timeLimit = problemData.getTimeLimit(stdCode.getLanguageType());
         Integer memoryLimit = problemData.getMemoryLimit(stdCode.getLanguageType());
         if (!SolutionStatusType.TIME_LIMIT_EXCEEDED.equals(stdCode.getExpectResultType())) {
