@@ -256,7 +256,7 @@ public class ProblemServiceImpl implements ProblemService {
     }
 
     @Override
-    public synchronized Problem newProblem(ProblemContentRequest problemContentRequest) throws PortableException {
+    public Problem newProblem(ProblemContentRequest problemContentRequest) throws PortableException {
         Problem problem = problemManager.newProblem();
         ProblemData problemData = problemDataManager.newProblemData();
         problemContentRequest.toProblem(problem);

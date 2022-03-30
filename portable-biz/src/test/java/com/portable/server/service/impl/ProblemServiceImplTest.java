@@ -3,16 +3,17 @@ package com.portable.server.service.impl;
 import com.Ostermiller.util.CircularByteBuffer;
 import com.portable.server.exception.PortableException;
 import com.portable.server.manager.ContestManager;
-import com.portable.server.manager.ProblemDataManager;
-import com.portable.server.manager.ProblemManager;
 import com.portable.server.manager.SolutionDataManager;
 import com.portable.server.manager.SolutionManager;
 import com.portable.server.manager.UserDataManager;
 import com.portable.server.manager.UserManager;
+import com.portable.server.manager.impl.ProblemDataManagerImpl;
+import com.portable.server.manager.impl.ProblemManagerImpl;
 import com.portable.server.model.contest.Contest;
 import com.portable.server.model.problem.Problem;
 import com.portable.server.model.problem.ProblemData;
 import com.portable.server.model.request.PageRequest;
+import com.portable.server.model.request.problem.ProblemContentRequest;
 import com.portable.server.model.request.problem.ProblemNameRequest;
 import com.portable.server.model.response.PageResponse;
 import com.portable.server.model.response.problem.ProblemDetailResponse;
@@ -32,6 +33,7 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockedStatic;
@@ -56,10 +58,10 @@ public class ProblemServiceImplTest {
     private ProblemServiceImpl problemService;
 
     @Mock
-    private ProblemManager problemManager;
+    private ProblemManagerImpl problemManager;
 
     @Mock
-    private ProblemDataManager problemDataManager;
+    private ProblemDataManagerImpl problemDataManager;
 
     @Mock
     private UserManager userManager;
@@ -89,6 +91,10 @@ public class ProblemServiceImplTest {
     private static final String MOCKED_HANDLE = "MOCKED_HANDLE";
     private static final String MOCKED_NAME = "MOCKED_NAME";
     private static final String MOCKED_CODE_TEST = "MOCKED_CODE_TEST";
+    private static final String MOCKED_PROBLEM_TITLE = "MOCKED_PROBLEM_TITLE";
+    private static final String MOCKED_PROBLEM_DESC = "MOCKED_PROBLEM_DESC";
+    private static final String MOCKED_PROBLEM_INPUT = "MOCKED_PROBLEM_INPUT";
+    private static final String MOCKED_PROBLEM_OUTPUT = "MOCKED_PROBLEM_OUTPUT";
 
     private Problem problem;
     private ProblemData problemData;
@@ -905,7 +911,62 @@ public class ProblemServiceImplTest {
     }
 
     @Test
-    void newProblem() {
+    void newProblem() throws PortableException {
+        userContextBuilder.withNormalLoginIn(MOCKED_USER_ID).withPermission(PermissionType.CREATE_AND_EDIT_PROBLEM);
+
+        Mockito.when(problemManager.newProblem()).thenCallRealMethod();
+        Mockito.when(problemDataManager.newProblemData()).thenCallRealMethod();
+
+        Mockito.doAnswer(invocationOnMock -> {
+            ProblemData problemData = invocationOnMock.getArgument(0);
+            problemData.set_id(MOCKED_PROBLEM_MONGO_ID);
+            return null;
+        }).when(problemDataManager).insertProblemData(Mockito.any());
+        Mockito.doAnswer(invocationOnMock -> {
+            Problem problem = invocationOnMock.getArgument(0);
+            problem.setId(MOCKED_PROBLEM_ID);
+            return null;
+        }).when(problemManager).insertProblem(Mockito.any());
+
+
+        ProblemContentRequest problemContentRequest = ProblemContentRequest.builder()
+                .id(null)
+                .title(MOCKED_PROBLEM_TITLE)
+                .description(MOCKED_PROBLEM_DESC)
+                .input(MOCKED_PROBLEM_INPUT)
+                .output(MOCKED_PROBLEM_OUTPUT)
+                .example(new ArrayList<>())
+                .build();
+
+        Problem problem = problemService.newProblem(problemContentRequest);
+
+        /// region 校验返回值
+
+        Assertions.assertEquals(MOCKED_PROBLEM_ID, problem.getId());
+        Assertions.assertEquals(MOCKED_PROBLEM_TITLE, problem.getTitle());
+
+        /// endregion
+
+        /// region 校验写入的问题数据信息
+
+        ArgumentCaptor<ProblemData> problemDataArgumentCaptor = ArgumentCaptor.forClass(ProblemData.class);
+        Mockito.verify(problemDataManager).insertProblemData(problemDataArgumentCaptor.capture());
+        ProblemData problemDataCP = problemDataArgumentCaptor.getValue();
+        Assertions.assertEquals(MOCKED_PROBLEM_DESC, problemDataCP.getDescription());
+        Assertions.assertEquals(MOCKED_PROBLEM_INPUT, problemDataCP.getInput());
+        Assertions.assertEquals(MOCKED_PROBLEM_OUTPUT, problemDataCP.getOutput());
+
+        /// endregion
+
+        /// region 校验写入的问题信息
+
+        ArgumentCaptor<Problem> problemArgumentCaptor = ArgumentCaptor.forClass(Problem.class);
+        Mockito.verify(problemManager).insertProblem(problemArgumentCaptor.capture());
+        Problem problemCP = problemArgumentCaptor.getValue();
+        Assertions.assertEquals(MOCKED_PROBLEM_MONGO_ID, problem.getDataId());
+        Assertions.assertEquals(MOCKED_PROBLEM_TITLE, problem.getTitle());
+
+        /// endregion
     }
 
     @Test
