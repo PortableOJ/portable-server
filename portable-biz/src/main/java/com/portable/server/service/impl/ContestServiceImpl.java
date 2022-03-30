@@ -353,17 +353,19 @@ public class ContestServiceImpl implements ContestService {
         Integer totalNum = contestSupport.getContestRankLen(contestId, freeze);
         PageResponse<ContestRankListResponse, ContestRankListResponse> response = PageResponse.of(pageRequest, totalNum);
         List<ContestRankItem> contestRankItemList = contestSupport.getContestRank(contestId, response.getPageSize(), response.offset(), freeze);
+
+        final Boolean finalFreeze = freeze;
         List<ContestRankListResponse> contestRankListResponseList = contestRankItemList.stream()
                 .map(contestRankItem -> {
                     User user = userManager.getAccountById(contestRankItem.getUserId()).orElse(null);
-                    return ContestRankListResponse.of(contestRankItem, user);
+                    return ContestRankListResponse.of(contestRankItem, user, finalFreeze);
                 })
                 .collect(Collectors.toList());
         UserContext userContext = UserContext.ctx();
         ContestRankItem userItem = contestSupport.getContestByUserId(contestId, userContext.getId(), freeze);
         ContestRankListResponse metaData = null;
         if (userItem != null) {
-            metaData = ContestRankListResponse.of(userItem, null);
+            metaData = ContestRankListResponse.of(userItem, null, finalFreeze);
             metaData.setUserHandle(userContext.getHandle());
         }
         response.setData(contestRankListResponseList);
