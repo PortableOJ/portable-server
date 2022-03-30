@@ -7,6 +7,7 @@ import com.portable.server.model.request.PageRequest;
 import com.portable.server.model.request.contest.ContestAddProblem;
 import com.portable.server.model.request.contest.ContestAuth;
 import com.portable.server.model.request.contest.ContestContentRequest;
+import com.portable.server.model.request.contest.ContestRankPageRequest;
 import com.portable.server.model.request.solution.SolutionListQueryRequest;
 import com.portable.server.model.request.solution.SubmitSolutionRequest;
 import com.portable.server.model.response.PageResponse;
@@ -150,10 +151,14 @@ public class ContestController {
     @GetMapping("/rank")
     public Response<PageResponse<ContestRankListResponse, ContestRankListResponse>> getContestRank(@NotNull(message = "A-08-002") @Min(value = 1, message = "A-08-002") Long contestId,
                                                                                                    Integer pageNum,
-                                                                                                   Integer pageSize) throws PortableException {
-        PageRequest<Void> pageRequest = PageRequest.<Void>builder()
+                                                                                                   Integer pageSize,
+                                                                                                   @NotNull(message = "A-08-002") Boolean freeze) throws PortableException {
+        PageRequest<ContestRankPageRequest> pageRequest = PageRequest.<ContestRankPageRequest>builder()
                 .pageNum(pageNum)
                 .pageSize(pageSize)
+                .queryData(ContestRankPageRequest.builder()
+                        .freeze(freeze)
+                        .build())
                 .build();
         pageRequest.verify();
         return Response.ofOk(contestService.getContestRank(contestId, pageRequest));

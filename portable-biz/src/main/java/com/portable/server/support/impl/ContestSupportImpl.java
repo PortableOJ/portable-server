@@ -18,11 +18,9 @@ import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
 import java.util.Calendar;
-import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
@@ -66,6 +64,8 @@ public class ContestSupportImpl implements ContestSupport {
      */
     private static final String RANK_HASH_PREFIX = "RANK_USER_HASH";
     private static final String RANK_LIST_PREFIX = "RANK_LIST";
+    private static final String NOFREEZE_RANK_HASH_PREFIX = "NOFREEZE_RANK_USER_HASH";
+    private static final String NOFREEZE_RANK_LIST_PREFIX = "NOFREEZE_RANK_LIST";
 
     /**
      * 同时能够创建的比赛榜单数量
@@ -95,23 +95,26 @@ public class ContestSupportImpl implements ContestSupport {
     @Scheduled(fixedDelayString = "${portable.contest.rank.update}")
     public void updateRank() {
         Date now = new Date();
-        CACHED_RANK = Collections.synchronizedMap(CACHED_RANK.entrySet().stream()
+        // entrySet 完全没有拷贝，所以这里替换的方式可以保证后续的数据仍然能够正确保存至此
+        Set<Map.Entry<Long, Date>> cachedRankList = CACHED_RANK.entrySet();
+        CACHED_RANK = new ConcurrentHashMap<>(CACHED_RANK.size());
+        cachedRankList.stream()
                 .sequential()
-                .map(longDateEntry -> {
+                .forEach(longDateEntry -> {
                     // 超过了更新时间，则清理缓存
                     if (longDateEntry.getValue().before(now)) {
                         redisListKit.clear(RANK_LIST_PREFIX, longDateEntry.getKey());
+                        redisListKit.clear(NOFREEZE_RANK_LIST_PREFIX, longDateEntry.getKey());
                         redisHashKit.clear(RANK_HASH_PREFIX, longDateEntry.getKey());
+                        redisHashKit.clear(NOFREEZE_RANK_HASH_PREFIX, longDateEntry.getKey());
+                        return;
                     }
                     try {
                         makeRank(longDateEntry.getKey());
-                        return longDateEntry;
-                    } catch (PortableException e) {
-                        return null;
+                        CACHED_RANK.put(longDateEntry.getKey(), longDateEntry.getValue());
+                    } catch (PortableException ignore) {
                     }
-                })
-                .filter(longDateEntry -> !Objects.isNull(longDateEntry))
-                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue)));
+                });
     }
 
     @Override
@@ -163,19 +166,21 @@ public class ContestSupportImpl implements ContestSupport {
     }
 
     @Override
-    public Integer getContestRankLen(Long contestId) {
-        return redisListKit.getLen(RANK_LIST_PREFIX, contestId);
+    public Integer getContestRankLen(Long contestId, Boolean freeze) {
+        return redisListKit.getLen(freeze ? RANK_LIST_PREFIX : NOFREEZE_RANK_LIST_PREFIX, contestId);
     }
 
     @Override
-    public List<ContestRankItem> getContestRank(Long contestId, Integer pageSize, Integer offset) {
-        return redisListKit.getPage(RANK_LIST_PREFIX, contestId, pageSize, offset, ContestRankItem.class);
+    public List<ContestRankItem> getContestRank(Long contestId, Integer pageSize, Integer offset, Boolean freeze) {
+        return redisListKit.getPage(freeze ? RANK_LIST_PREFIX : NOFREEZE_RANK_LIST_PREFIX, contestId, pageSize, offset, ContestRankItem.class);
     }
 
     @Override
-    public ContestRankItem getContestByUserId(Long contestId, Long userId) {
-        Optional<Integer> rank = redisHashKit.get(RANK_HASH_PREFIX, contestId, userId);
-        Optional<ContestRankItem> optionalContestRankItem = rank.flatMap(integer -> redisListKit.get(RANK_LIST_PREFIX, contestId, integer, ContestRankItem.class));
+    public ContestRankItem getContestByUserId(Long contestId, Long userId, Boolean freeze) {
+        Optional<Integer> rank = redisHashKit.get(freeze ? RANK_HASH_PREFIX : NOFREEZE_RANK_HASH_PREFIX, contestId, userId);
+        Optional<ContestRankItem> optionalContestRankItem = rank.flatMap(
+                integer -> redisListKit.get(freeze ? RANK_LIST_PREFIX : NOFREEZE_RANK_LIST_PREFIX, contestId, integer, ContestRankItem.class)
+        );
         return optionalContestRankItem.orElse(null);
     }
 
@@ -224,6 +229,7 @@ public class ContestSupportImpl implements ContestSupport {
                             .totalCost(0L)
                             .totalSolve(0)
                             .submitStatus(new ConcurrentHashMap<>(0))
+                            .noFreezeSubmitStatus(new ConcurrentHashMap<>(0))
                             .build()));
             solutionList.forEach(solution -> {
                 ContestRankItem contestRankItem = userIdContestRankMap.get(solution.getUserId());
@@ -234,16 +240,27 @@ public class ContestSupportImpl implements ContestSupport {
                 );
             });
         }
+        contestDataManager.saveContestData(contestData);
+
         List<ContestRankItem> contestRankItemList = userIdContestRankMap.values().stream()
                 .parallel()
-                .peek(contestRankItem -> contestRankItem.calCost(contestData.getPenaltyTime()))
+                .peek(contestRankItem -> contestRankItem.calCost(contestData.getPenaltyTime(), true))
                 .sorted()
                 .collect(Collectors.toList());
-        contestDataManager.saveContestData(contestData);
-        saveRank(contestId, contestRankItemList);
+        saveRank(RANK_HASH_PREFIX, RANK_LIST_PREFIX, contestId, contestRankItemList);
+
+        // 可能存在封榜数据的时候，则生成不封榜的数据，否则不生成
+        if (!Integer.valueOf(0).equals(contestData.getFreezeTime())) {
+            contestRankItemList = userIdContestRankMap.values().stream()
+                    .parallel()
+                    .peek(contestRankItem -> contestRankItem.calCost(contestData.getPenaltyTime(), false))
+                    .sorted()
+                    .collect(Collectors.toList());
+            saveRank(NOFREEZE_RANK_HASH_PREFIX, NOFREEZE_RANK_LIST_PREFIX, contestId, contestRankItemList);
+        }
     }
 
-    private void saveRank(Long contestId, List<ContestRankItem> contestRankItemList) {
+    private void saveRank(String hashPre, String listPre, Long contestId, List<ContestRankItem> contestRankItemList) {
         Map<Long, Integer> userRankMap = IntStream.range(0, contestRankItemList.size())
                 .parallel()
                 .boxed()
@@ -253,9 +270,9 @@ public class ContestSupportImpl implements ContestSupport {
                     return contestRankItem;
                 })
                 .collect(Collectors.toMap(ContestRankItem::getUserId, ContestRankItem::getRank));
-        redisHashKit.clear(RANK_HASH_PREFIX, contestId);
-        redisHashKit.create(RANK_HASH_PREFIX, contestId, userRankMap);
-        redisListKit.clear(RANK_LIST_PREFIX, contestId);
-        redisListKit.create(RANK_LIST_PREFIX, contestId, contestRankItemList);
+        redisHashKit.clear(hashPre, contestId);
+        redisHashKit.create(hashPre, contestId, userRankMap);
+        redisListKit.clear(listPre, contestId);
+        redisListKit.create(listPre, contestId, contestRankItemList);
     }
 }

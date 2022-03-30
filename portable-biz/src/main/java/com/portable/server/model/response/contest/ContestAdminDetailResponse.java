@@ -13,6 +13,7 @@ import lombok.NoArgsConstructor;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
@@ -57,7 +58,7 @@ public class ContestAdminDetailResponse extends ContestDetailResponse {
                                @NotNull List<ProblemListResponse> problemList,
                                @NotNull Set<User> coAuthor,
                                @NotNull List<Boolean> problemLock,
-                               @NotNull Set<User> inviteUserSet) throws PortableException {
+                               @Nullable Set<User> inviteUserSet) throws PortableException {
         super(contest, contestData, owner, problemList, coAuthor);
         switch (contest.getAccessType()) {
             case PUBLIC:
@@ -67,11 +68,15 @@ public class ContestAdminDetailResponse extends ContestDetailResponse {
                 this.password = passwordContestData.getPassword();
                 break;
             case PRIVATE:
-                this.inviteUserSet = inviteUserSet.stream()
-                        .parallel()
-                        .filter(user -> !Objects.isNull(user))
-                        .map(User::getHandle)
-                        .collect(Collectors.toSet());
+                if (inviteUserSet == null) {
+                    this.inviteUserSet = new HashSet<>();
+                } else {
+                    this.inviteUserSet = inviteUserSet.stream()
+                            .parallel()
+                            .filter(user -> !Objects.isNull(user))
+                            .map(User::getHandle)
+                            .collect(Collectors.toSet());
+                }
                 break;
             case BATCH:
                 BatchContestData batchContestData = (BatchContestData) contestData;
