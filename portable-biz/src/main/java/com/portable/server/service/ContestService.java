@@ -5,6 +5,7 @@ import com.portable.server.model.request.PageRequest;
 import com.portable.server.model.request.contest.ContestAddProblem;
 import com.portable.server.model.request.contest.ContestAuth;
 import com.portable.server.model.request.contest.ContestContentRequest;
+import com.portable.server.model.request.contest.ContestRankPageRequest;
 import com.portable.server.model.request.solution.SolutionListQueryRequest;
 import com.portable.server.model.request.solution.SubmitSolutionRequest;
 import com.portable.server.model.response.PageResponse;
@@ -107,12 +108,13 @@ public interface ContestService {
 
     /**
      * 获取比赛的榜单
-     * @param contestId 比赛 id
+     *
+     * @param contestId   比赛 id
      * @param pageRequest 比赛榜单过滤条件
      * @return 比赛榜单
      * @throws PortableException 创建比赛榜单出错时抛出
      */
-    PageResponse<ContestRankListResponse, ContestRankListResponse> getContestRank(Long contestId, PageRequest<Void> pageRequest) throws PortableException;
+    PageResponse<ContestRankListResponse, ContestRankListResponse> getContestRank(Long contestId, PageRequest<ContestRankPageRequest> pageRequest) throws PortableException;
 
     /**
      * 提交代码

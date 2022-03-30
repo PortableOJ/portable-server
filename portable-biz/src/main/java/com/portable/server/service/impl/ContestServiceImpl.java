@@ -22,6 +22,7 @@ import com.portable.server.model.request.PageRequest;
 import com.portable.server.model.request.contest.ContestAddProblem;
 import com.portable.server.model.request.contest.ContestAuth;
 import com.portable.server.model.request.contest.ContestContentRequest;
+import com.portable.server.model.request.contest.ContestRankPageRequest;
 import com.portable.server.model.request.solution.SolutionListQueryRequest;
 import com.portable.server.model.request.solution.SubmitSolutionRequest;
 import com.portable.server.model.response.PageResponse;
@@ -328,27 +329,43 @@ public class ContestServiceImpl implements ContestService {
     }
 
     @Override
-    public PageResponse<ContestRankListResponse, ContestRankListResponse> getContestRank(Long contestId, PageRequest<Void> pageRequest) throws PortableException {
+    public PageResponse<ContestRankListResponse, ContestRankListResponse> getContestRank(Long contestId,
+                                                                                         PageRequest<ContestRankPageRequest> pageRequest) throws PortableException {
         ContestPackage contestPackage = getContestPackage(contestId);
         ContestVisitPermission contestVisitPermission = checkPermission(contestPackage);
         if (!ContestVisitPermission.VISIT.approve(contestVisitPermission)) {
             throw PortableException.of("A-08-004", contestId);
         }
         contestSupport.ensureRank(contestId);
-        Integer totalNum = contestSupport.getContestRankLen(contestId);
+
+        Boolean freeze = pageRequest.getQueryData().getFreeze();
+        if (!freeze) {
+            if (!ContestVisitPermission.CO_AUTHOR.approve(contestVisitPermission)) {
+                throw PortableException.of("A-08-034", contestId);
+            }
+        }
+
+        if (Integer.valueOf(0).equals(contestPackage.getContestData().getFreezeTime())) {
+            freeze = true;
+        }
+
+        // 组装返回值
+        Integer totalNum = contestSupport.getContestRankLen(contestId, freeze);
         PageResponse<ContestRankListResponse, ContestRankListResponse> response = PageResponse.of(pageRequest, totalNum);
-        List<ContestRankItem> contestRankItemList = contestSupport.getContestRank(contestId, response.getPageSize(), response.offset());
+        List<ContestRankItem> contestRankItemList = contestSupport.getContestRank(contestId, response.getPageSize(), response.offset(), freeze);
+
+        final Boolean finalFreeze = freeze;
         List<ContestRankListResponse> contestRankListResponseList = contestRankItemList.stream()
                 .map(contestRankItem -> {
                     User user = userManager.getAccountById(contestRankItem.getUserId()).orElse(null);
-                    return ContestRankListResponse.of(contestRankItem, user);
+                    return ContestRankListResponse.of(contestRankItem, user, finalFreeze);
                 })
                 .collect(Collectors.toList());
         UserContext userContext = UserContext.ctx();
-        ContestRankItem userItem = contestSupport.getContestByUserId(contestId, userContext.getId());
+        ContestRankItem userItem = contestSupport.getContestByUserId(contestId, userContext.getId(), freeze);
         ContestRankListResponse metaData = null;
         if (userItem != null) {
-            metaData = ContestRankListResponse.of(userItem, null);
+            metaData = ContestRankListResponse.of(userItem, null, finalFreeze);
             metaData.setUserHandle(userContext.getHandle());
         }
         response.setData(contestRankListResponseList);
@@ -450,11 +467,6 @@ public class ContestServiceImpl implements ContestService {
         } else if (contest.isStarted() && !contest.isEnd()) {
             // 已经开始的比赛不允许修改比赛开始时间
             contestContentRequest.setStartTime(contest.getStartTime());
-            // 检查新的比赛结束时间是否已经超过当前时间了
-            contestContentRequest.toContest(contest);
-            if (contest.isEnd()) {
-                throw PortableException.of("A-08-013");
-            }
             checkSameProblem(contestContentRequest);
             contestManager.updateDuration(contestContentRequest.getId(), contestContentRequest.getDuration());
             // 下面的函数已经保证了不会删除题目
@@ -462,8 +474,9 @@ public class ContestServiceImpl implements ContestService {
             contestDataManager.saveContestData(contestData);
             updateContestLock(contestPackage, contestContentRequest.getProblemList());
         } else {
-            // 比赛已经结束，仅允许修改比赛公告
+            // 比赛已经结束，仅允许修改比赛公告和封榜时间
             contestData.setAnnouncement(contestContentRequest.getAnnouncement());
+            contestData.setFreezeTime(contestContentRequest.getFreezeTime());
             contestDataManager.saveContestData(contestData);
         }
     }
@@ -767,6 +780,6 @@ public class ContestServiceImpl implements ContestService {
                     return false;
                 })
                 .findAny()
-                .orElseThrow(PortableException.from("A-08-034"));
+                .orElseThrow(PortableException.from("S-03-001"));
     }
 }

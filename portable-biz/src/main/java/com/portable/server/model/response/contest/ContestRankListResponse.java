@@ -5,6 +5,8 @@ import com.portable.server.model.contest.ContestRankProblemStatus;
 import com.portable.server.model.user.User;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.Map;
 
@@ -40,15 +42,19 @@ public class ContestRankListResponse {
      */
     private Map<Integer, ContestRankProblemStatus> submitStatus;
 
-    ContestRankListResponse(ContestRankItem contestRankItem, User user) {
+    ContestRankListResponse(@NotNull ContestRankItem contestRankItem,
+                            @Nullable User user,
+                            @NotNull Boolean freeze) {
         this.rank = contestRankItem.getRank();
         this.userHandle = user == null ? "" : user.getHandle();
         this.totalCost = contestRankItem.getTotalCost();
         this.totalSolve = contestRankItem.getTotalSolve();
-        this.submitStatus = contestRankItem.getSubmitStatus();
+        this.submitStatus = freeze ? contestRankItem.getSubmitStatus() : contestRankItem.getNoFreezeSubmitStatus();
     }
 
-    public static ContestRankListResponse of(ContestRankItem contestRankItem, User user) {
-        return new ContestRankListResponse(contestRankItem, user);
+    public static ContestRankListResponse of(@NotNull ContestRankItem contestRankItem,
+                                             @Nullable User user,
+                                             @NotNull Boolean freeze) {
+        return new ContestRankListResponse(contestRankItem, user, freeze);
     }
 }

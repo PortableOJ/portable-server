@@ -45,6 +45,11 @@ public class ContestRankItem implements Comparable<ContestRankItem> {
     private Map<Integer, ContestRankProblemStatus> submitStatus;
 
     /**
+     * 不封榜的用户提交的题目信息
+     */
+    private Map<Integer, ContestRankProblemStatus> noFreezeSubmitStatus;
+
+    /**
      * 添加评测
      *
      * @param solution     提交的信息
@@ -53,23 +58,35 @@ public class ContestRankItem implements Comparable<ContestRankItem> {
      * @param freezeTime   比赛冻结时间
      */
     public void addSolution(Solution solution, Integer problemIndex, Date startTime, Date freezeTime) {
-        ContestRankProblemStatus contestRankProblemStatus;
+        ContestRankProblemStatus freezeStatus;
+        ContestRankProblemStatus noFreezeStatus;
         if (!submitStatus.containsKey(problemIndex)) {
-            contestRankProblemStatus = ContestRankProblemStatus.builder()
+            freezeStatus = ContestRankProblemStatus.builder()
                     .firstSolveId(null)
                     .solveTime(null)
                     .penaltyTimes(0)
                     .runningSubmit(0)
                     .build();
-            submitStatus.put(problemIndex, contestRankProblemStatus);
+            noFreezeStatus = ContestRankProblemStatus.builder()
+                    .firstSolveId(null)
+                    .solveTime(null)
+                    .penaltyTimes(0)
+                    .runningSubmit(0)
+                    .build();
+            submitStatus.put(problemIndex, freezeStatus);
+            noFreezeSubmitStatus.put(problemIndex, noFreezeStatus);
         } else {
-            contestRankProblemStatus = submitStatus.get(problemIndex);
+            freezeStatus = submitStatus.get(problemIndex);
+            noFreezeStatus = noFreezeSubmitStatus.get(problemIndex);
         }
-        contestRankProblemStatus.add(solution, startTime, freezeTime);
+        freezeStatus.add(solution, startTime, freezeTime, true);
+        noFreezeStatus.add(solution, startTime, freezeTime, false);
     }
 
-    public void calCost(Integer penaltyTime) {
-        totalCost = submitStatus.values().stream()
+    public void calCost(Integer penaltyTime, Boolean freeze) {
+        Map<Integer, ContestRankProblemStatus> statusMap = freeze ? submitStatus : noFreezeSubmitStatus;
+        totalSolve = 0;
+        totalCost = statusMap.values().stream()
                 .map(contestRankProblemStatus -> {
                     if (contestRankProblemStatus.getFirstSolveId() == null) {
                         return 0L;

@@ -42,13 +42,14 @@ public class ContestRankProblemStatus {
     /**
      * 添加评测
      *
-     * @param solution    提交的信息
-     * @param startTime   比赛开始时间
-     * @param freezeTime  比赛冻结时间
+     * @param solution   提交的信息
+     * @param startTime  比赛开始时间
+     * @param freezeTime 比赛冻结时间
+     * @param freeze     是否启用封榜
      */
     @Nullable
-    public void add(Solution solution, Date startTime, Date freezeTime) {
-        if (freezeTime.before(solution.getSubmitTime())) {
+    public void add(Solution solution, Date startTime, Date freezeTime, Boolean freeze) {
+        if (freeze && freezeTime.before(solution.getSubmitTime())) {
             runningSubmit++;
         } else {
             if (!solution.getStatus().getEndingResult()) {
