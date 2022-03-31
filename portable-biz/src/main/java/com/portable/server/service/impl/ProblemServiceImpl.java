@@ -53,6 +53,7 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
@@ -183,7 +184,7 @@ public class ProblemServiceImpl implements ProblemService {
                 .parallel()
                 .map(problem -> {
                     if (isLogin) {
-                        Solution solution = solutionManager.selectLastSolutionByUserIdAndProblemId(userId, problem.getId());
+                        Solution solution = solutionManager.selectLastSolutionByUserIdAndProblemId(userId, problem.getId()).orElse(null);
                         return ProblemListResponse.of(problem, solution);
                     }
                     return ProblemListResponse.of(problem, null);
@@ -392,11 +393,8 @@ public class ProblemServiceImpl implements ProblemService {
             if (stdCode.getSolutionId() == null) {
                 return;
             }
-            Solution solution = solutionManager.selectSolutionById(stdCode.getSolutionId());
-            if (solution == null) {
-                return;
-            }
-            stdCode.setSolutionStatusType(solution.getStatus());
+            Optional<Solution> solutionOptional = solutionManager.selectSolutionById(stdCode.getSolutionId());
+            solutionOptional.ifPresent(solution -> stdCode.setSolutionStatusType(solution.getStatus()));
         });
         return problemStdTestCodeResponse;
     }
@@ -610,7 +608,11 @@ public class ProblemServiceImpl implements ProblemService {
         if (stdCode.getSolutionId() == null) {
             return false;
         }
-        Solution solution = solutionManager.selectSolutionById(stdCode.getSolutionId());
+        Optional<Solution> solutionOptional = solutionManager.selectSolutionById(stdCode.getSolutionId());
+        if (!solutionOptional.isPresent()) {
+            return false;
+        }
+        Solution solution = solutionOptional.get();
         Integer timeLimit = problemData.getTimeLimit(stdCode.getLanguageType());
         Integer memoryLimit = problemData.getMemoryLimit(stdCode.getLanguageType());
         if (!SolutionStatusType.TIME_LIMIT_EXCEEDED.equals(stdCode.getExpectResultType())) {

@@ -5,6 +5,7 @@ import com.portable.server.type.SolutionStatusType;
 import com.portable.server.type.SolutionType;
 
 import java.util.List;
+import java.util.Optional;
 
 /**
  * @author shiroha
@@ -58,7 +59,7 @@ public interface SolutionManager {
      * @param id solution 的 ID
      * @return 对应的 solution
      */
-    Solution selectSolutionById(Long id);
+    Optional<Solution> selectSolutionById(Long id);
 
     /**
      * 获取目标用户的目标题目的最后一次提交的结果
@@ -67,7 +68,7 @@ public interface SolutionManager {
      * @param problemId 题目的 ID
      * @return 提交的问题的
      */
-    Solution selectLastSolutionByUserIdAndProblemId(Long userId, Long problemId);
+    Optional<Solution> selectLastSolutionByUserIdAndProblemId(Long userId, Long problemId);
 
     /**
      * 获取目标用户的目标题目以及目标比赛的最后一次提交的结果
@@ -77,7 +78,7 @@ public interface SolutionManager {
      * @param contestId 比赛的 ID
      * @return 提交的问题的
      */
-    Solution selectLastSolutionByUserIdAndProblemIdAndContestId(Long userId, Long problemId, Long contestId);
+    Optional<Solution> selectLastSolutionByUserIdAndProblemIdAndContestId(Long userId, Long problemId, Long contestId);
 
     /**
      * 新增一个 solution

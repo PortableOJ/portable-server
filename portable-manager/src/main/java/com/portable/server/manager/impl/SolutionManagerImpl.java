@@ -12,6 +12,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
@@ -59,18 +60,18 @@ public class SolutionManagerImpl implements SolutionManager {
     }
 
     @Override
-    public Solution selectSolutionById(Long id) {
-        return solutionMapper.selectSolutionById(id);
+    public Optional<Solution> selectSolutionById(Long id) {
+        return Optional.ofNullable(solutionMapper.selectSolutionById(id));
     }
 
     @Override
-    public Solution selectLastSolutionByUserIdAndProblemId(Long userId, Long problemId) {
-        return solutionMapper.selectLastSolutionByUserIdAndProblemId(userId, problemId);
+    public Optional<Solution> selectLastSolutionByUserIdAndProblemId(Long userId, Long problemId) {
+        return Optional.ofNullable(solutionMapper.selectLastSolutionByUserIdAndProblemId(userId, problemId));
     }
 
     @Override
-    public Solution selectLastSolutionByUserIdAndProblemIdAndContestId(Long userId, Long problemId, Long contestId) {
-        return solutionMapper.selectLastSolutionByUserIdAndProblemIdAndContestId(userId, problemId, contestId);
+    public Optional<Solution> selectLastSolutionByUserIdAndProblemIdAndContestId(Long userId, Long problemId, Long contestId) {
+        return Optional.ofNullable(solutionMapper.selectLastSolutionByUserIdAndProblemIdAndContestId(userId, problemId, contestId));
     }
 
     @Override

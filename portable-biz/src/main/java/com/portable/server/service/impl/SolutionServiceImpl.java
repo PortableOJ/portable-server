@@ -77,10 +77,8 @@ public class SolutionServiceImpl implements SolutionService {
 
     @Override
     public SolutionDetailResponse getSolution(Long id) throws PortableException {
-        Solution solution = solutionManager.selectSolutionById(id);
-        if (solution == null) {
-            throw PortableException.of("A-05-001", id);
-        }
+        Solution solution = solutionManager.selectSolutionById(id)
+                .orElseThrow(PortableException.from("A-05-001", id));
         if (!SolutionType.PUBLIC.equals(solution.getSolutionType())) {
             throw PortableException.of("A-05-002");
         }
@@ -91,9 +89,6 @@ public class SolutionServiceImpl implements SolutionService {
             throw PortableException.of("A-05-003");
         }
         SolutionData solutionData = solutionDataManager.getSolutionData(solution.getDataId());
-        if (solutionData == null) {
-            throw PortableException.of("S-05-001");
-        }
         User user = userManager.getAccountById(solution.getUserId()).orElse(null);
         Problem problem = problemManager.getProblemById(solution.getProblemId()).orElse(null);
         Boolean ownerProblem = problem != null && Objects.equals(problem.getOwner(), userContext.getId());

@@ -236,7 +236,8 @@ public class ContestServiceImpl implements ContestService {
 
     @Override
     public SolutionDetailResponse getContestSolution(Long solutionId) throws PortableException {
-        Solution solution = solutionManager.selectSolutionById(solutionId);
+        Solution solution = solutionManager.selectSolutionById(solutionId)
+                .orElseThrow(PortableException.from("A-05-001", solutionId));
         ContestPackage contestPackage = getContestPackage(solution.getContestId());
         ContestVisitPermission contestVisitPermission = checkPermission(contestPackage);
         if (!ContestVisitPermission.VISIT.approve(contestVisitPermission)) {
@@ -312,7 +313,8 @@ public class ContestServiceImpl implements ContestService {
 
     @Override
     public SolutionDetailResponse getContestTestSolution(Long solutionId) throws PortableException {
-        Solution solution = solutionManager.selectSolutionById(solutionId);
+        Solution solution = solutionManager.selectSolutionById(solutionId)
+                .orElseThrow(PortableException.from("A-05-001", solutionId));
         ContestPackage contestPackage = getContestPackage(solution.getContestId());
         ContestVisitPermission contestVisitPermission = checkPermission(contestPackage);
         if (!ContestVisitPermission.CO_AUTHOR.approve(contestVisitPermission)) {
@@ -581,7 +583,7 @@ public class ContestServiceImpl implements ContestService {
 
                         Problem problem = problemOptional.get();
 
-                        Solution solution = solutionManager.selectLastSolutionByUserIdAndProblemIdAndContestId(userContext.getId(), problem.getId(), contestId);
+                        Solution solution = solutionManager.selectLastSolutionByUserIdAndProblemIdAndContestId(userContext.getId(), problem.getId(), contestId).orElse(null);
                         ProblemListResponse problemListResponse = ProblemListResponse.of(problem, solution);
                         problemListResponse.setAcceptCount(contestProblemData.getAcceptCount());
                         problemListResponse.setSubmissionCount(contestProblemData.getSubmissionCount());
