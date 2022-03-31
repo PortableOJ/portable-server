@@ -14,6 +14,7 @@ import com.portable.server.model.problem.Problem;
 import com.portable.server.model.problem.ProblemData;
 import com.portable.server.model.request.PageRequest;
 import com.portable.server.model.request.problem.ProblemContentRequest;
+import com.portable.server.model.request.problem.ProblemJudgeRequest;
 import com.portable.server.model.request.problem.ProblemNameRequest;
 import com.portable.server.model.request.problem.ProblemSettingRequest;
 import com.portable.server.model.response.PageResponse;
@@ -24,6 +25,7 @@ import com.portable.server.model.user.User;
 import com.portable.server.support.FileSupport;
 import com.portable.server.support.JudgeSupport;
 import com.portable.server.tool.UserContextBuilder;
+import com.portable.server.type.JudgeCodeType;
 import com.portable.server.type.LanguageType;
 import com.portable.server.type.PermissionType;
 import com.portable.server.type.ProblemAccessType;
@@ -1466,11 +1468,71 @@ public class ProblemServiceImplTest {
     }
 
     @Test
-    void updateProblemJudge() {
+    void testUpdateProblemJudgeWithOnTreate() throws PortableException {
+        problem.setStatusType(ProblemStatusType.TREATING);
+        problem.setAccessType(ProblemAccessType.PUBLIC);
+        problemData.setContestId(null);
+        problemData.setShareTest(false);
+        Mockito.when(problemManager.getProblemById(MOCKED_PROBLEM_ID)).thenReturn(Optional.of(problem));
+        Mockito.when(problemDataManager.getProblemData(MOCKED_PROBLEM_MONGO_ID)).thenReturn(problemData);
+
+        userToProblemAccessTypeMockedStatic
+                .when(() -> ProblemServiceImpl.UserToProblemAccessType.of(Mockito.any(), Mockito.any()))
+                .thenReturn(ProblemServiceImpl.UserToProblemAccessType.FULL_ACCESS);
+
+        ProblemJudgeRequest problemJudgeRequest = ProblemJudgeRequest.builder()
+                .id(MOCKED_PROBLEM_ID)
+                .judgeCodeType(JudgeCodeType.ALL_SAME)
+                .judgeCode("abc")
+                .build();
+
+        try {
+            problemService.updateProblemJudge(problemJudgeRequest);
+            Assertions.fail();
+        } catch (PortableException e) {
+            Assertions.assertEquals("A-04-007", e.getCode());
+        }
     }
 
     @Test
-    void addProblemTest() {
+    void testUpdateProblemJudge() throws PortableException {
+        problem.setStatusType(ProblemStatusType.NORMAL);
+        problem.setAccessType(ProblemAccessType.PUBLIC);
+        problemData.setContestId(null);
+        problemData.setShareTest(false);
+        problemData.setVersion(0);
+        Mockito.when(problemManager.getProblemById(MOCKED_PROBLEM_ID)).thenReturn(Optional.of(problem));
+        Mockito.when(problemDataManager.getProblemData(MOCKED_PROBLEM_MONGO_ID)).thenReturn(problemData);
+
+        userToProblemAccessTypeMockedStatic
+                .when(() -> ProblemServiceImpl.UserToProblemAccessType.of(Mockito.any(), Mockito.any()))
+                .thenReturn(ProblemServiceImpl.UserToProblemAccessType.FULL_ACCESS);
+
+        ProblemJudgeRequest problemJudgeRequest = ProblemJudgeRequest.builder()
+                .id(MOCKED_PROBLEM_ID)
+                .judgeCodeType(JudgeCodeType.ALL_SAME)
+                .judgeCode("abc")
+                .build();
+
+        problemService.updateProblemJudge(problemJudgeRequest);
+
+        Mockito.verify(problemManager).updateProblemStatus(MOCKED_PROBLEM_ID, ProblemStatusType.UNCHECK);
+
+        /// region 校验写入的数据
+
+        ArgumentCaptor<ProblemData> problemDataArgumentCaptor = ArgumentCaptor.forClass(ProblemData.class);
+        Mockito.verify(problemDataManager).updateProblemData(problemDataArgumentCaptor.capture());
+        ProblemData problemDataCP = problemDataArgumentCaptor.getValue();
+        Assertions.assertEquals(JudgeCodeType.ALL_SAME, problemDataCP.getJudgeCodeType());
+        Assertions.assertEquals("", problemDataCP.getJudgeCode());
+        Assertions.assertEquals(1, problemDataCP.getVersion());
+
+        /// endregion
+
+    }
+
+    @Test
+    void testAddProblemTestWith() {
     }
 
     @Test
