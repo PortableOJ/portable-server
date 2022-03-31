@@ -470,7 +470,7 @@ public class ProblemServiceImpl implements ProblemService {
         } else {
             // 校验是否满足能够 treat 的条件
             ProblemData.StdCode stdCode = problemPackage.getProblemData().getStdCode();
-            if (stdCode.getCode() == null && stdCode.getLanguageType() == null) {
+            if (stdCode.getCode() == null || stdCode.getLanguageType() == null) {
                 throw PortableException.of("A-04-009");
             }
             if (problemPackage.getProblemData().getTestName().isEmpty()) {
@@ -500,7 +500,7 @@ public class ProblemServiceImpl implements ProblemService {
         // 创建提交信息
         SolutionData solutionData = solutionDataManager.newSolutionData(problemPackage.getProblemData());
         submitSolutionRequest.toSolutionData(solutionData);
-        solutionDataManager.saveSolutionData(solutionData);
+        solutionDataManager.insertSolutionData(solutionData);
 
         Solution solution = solutionManager.newSolution();
         submitSolutionRequest.toSolution(solution);
