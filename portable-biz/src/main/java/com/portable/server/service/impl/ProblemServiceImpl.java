@@ -53,6 +53,7 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
@@ -183,7 +184,7 @@ public class ProblemServiceImpl implements ProblemService {
                 .parallel()
                 .map(problem -> {
                     if (isLogin) {
-                        Solution solution = solutionManager.selectLastSolutionByUserIdAndProblemId(userId, problem.getId());
+                        Solution solution = solutionManager.selectLastSolutionByUserIdAndProblemId(userId, problem.getId()).orElse(null);
                         return ProblemListResponse.of(problem, solution);
                     }
                     return ProblemListResponse.of(problem, null);
@@ -256,7 +257,7 @@ public class ProblemServiceImpl implements ProblemService {
     }
 
     @Override
-    public synchronized Problem newProblem(ProblemContentRequest problemContentRequest) throws PortableException {
+    public Problem newProblem(ProblemContentRequest problemContentRequest) throws PortableException {
         Problem problem = problemManager.newProblem();
         ProblemData problemData = problemDataManager.newProblemData();
         problemContentRequest.toProblem(problem);
@@ -273,7 +274,7 @@ public class ProblemServiceImpl implements ProblemService {
 
     @Override
     public void updateProblemContent(ProblemContentRequest problemContentRequest) throws PortableException {
-        ProblemPackage problemPackage = getForEditProblem(problemContentRequest.getId());
+        ProblemPackage problemPackage = getForFullAccessProblem(problemContentRequest.getId());
         problemContentRequest.toProblemData(problemPackage.getProblemData());
 
         problemManager.updateProblemTitle(problemContentRequest.getId(), problemContentRequest.getTitle());
@@ -283,11 +284,8 @@ public class ProblemServiceImpl implements ProblemService {
     @Override
     public void updateProblemSetting(ProblemSettingRequest problemSettingRequest) throws PortableException {
         ProblemPackage problemPackage = getForEditProblem(problemSettingRequest.getId());
-        if (problemPackage.getProblem().getStatusType().getOnTreatedOrCheck()) {
-            throw PortableException.of("A-04-007");
-        }
 
-        // 发生比赛访问权限更新
+        // 发生题目访问权限更新
         if (!Objects.equals(problemPackage.getProblem().getAccessType(), problemSettingRequest.getAccessType())) {
             // 从公开转私有 => 拒绝
             if (ProblemAccessType.PRIVATE.equals(problemSettingRequest.getAccessType())) {
@@ -295,8 +293,7 @@ public class ProblemServiceImpl implements ProblemService {
             }
             // 其他任何转换 => 不允许在比赛期间发生
             if (problemPackage.getProblemData().getContestId() != null) {
-                Contest contest = contestManager.getContestById(problemPackage.getProblemData().getContestId())
-                        .orElseThrow(PortableException.from("A-08-002", problemPackage.getProblemData().getContestId()));
+                Contest contest = problemPackage.getContest();
                 if (!contest.isEnd()) {
                     throw PortableException.of("A-04-014", problemPackage.getProblemData().getContestId());
                 }
@@ -305,11 +302,15 @@ public class ProblemServiceImpl implements ProblemService {
 
         boolean isChecked = problemPackage.getProblem().getStatusType().getChecked();
         boolean needCheck = problemSettingRequest.toProblemData(problemPackage.getProblemData());
-        needCheck = needCheck || checkAnyStdCodeNotPass(problemPackage.getProblemData());
-        if (isChecked && needCheck) {
-            problemPackage.getProblem().toUncheck();
+
+        if (isChecked) {
+            // 可能因为修改了耗时导致了部分的原来通过的代码变得不通过了
+            if (needCheck || checkAnyStdCodeNotPass(problemPackage.getProblemData())) {
+                problemPackage.getProblem().toUncheck();
+            }
         }
 
+        problemManager.updateProblemStatus(problemPackage.getProblem().getId(), problemPackage.getProblem().getStatusType());
         problemManager.updateProblemAccessStatus(problemPackage.getProblem().getId(), problemSettingRequest.getAccessType());
         problemDataManager.updateProblemData(problemPackage.getProblemData());
     }
@@ -320,9 +321,6 @@ public class ProblemServiceImpl implements ProblemService {
             problemJudgeRequest.setJudgeCode("");
         }
         ProblemPackage problemPackage = getForEditProblem(problemJudgeRequest.getId());
-        if (problemPackage.getProblem().getStatusType().getOnTreatedOrCheck()) {
-            throw PortableException.of("A-04-007");
-        }
         problemJudgeRequest.toProblemData(problemPackage.getProblemData());
         if (ProblemStatusType.NORMAL.equals(problemPackage.getProblem().getStatusType())) {
             problemPackage.getProblemData().nextVersion();
@@ -337,9 +335,6 @@ public class ProblemServiceImpl implements ProblemService {
     @Override
     public void addProblemTest(ProblemTestRequest problemTestRequest) throws PortableException {
         ProblemPackage problemPackage = getForEditProblem(problemTestRequest.getId());
-        if (problemPackage.getProblem().getStatusType().getOnTreatedOrCheck()) {
-            throw PortableException.of("A-04-007");
-        }
 
         if (!problemPackage.getProblemData().getTestName().contains(problemTestRequest.getName())) {
             problemPackage.getProblemData().getTestName().add(problemTestRequest.getName());
@@ -362,9 +357,7 @@ public class ProblemServiceImpl implements ProblemService {
     @Override
     public void removeProblemTest(ProblemNameRequest problemNameRequest) throws PortableException {
         ProblemPackage problemPackage = getForEditProblem(problemNameRequest.getId());
-        if (problemPackage.getProblem().getStatusType().getOnTreatedOrCheck()) {
-            throw PortableException.of("A-04-007");
-        }
+
         problemPackage.getProblemData().findTest(problemNameRequest.getName());
         problemPackage.getProblemData().getTestName().remove(problemNameRequest.getName());
 
@@ -383,17 +376,14 @@ public class ProblemServiceImpl implements ProblemService {
 
     @Override
     public ProblemStdTestCodeResponse getProblemStdTestCode(Long id) throws PortableException {
-        ProblemPackage problemPackage = getForEditProblem(id);
+        ProblemPackage problemPackage = getForFullAccessProblem(id);
         ProblemStdTestCodeResponse problemStdTestCodeResponse = ProblemStdTestCodeResponse.of(problemPackage.getProblemData());
         problemStdTestCodeResponse.getTestCodeList().forEach(stdCode -> {
             if (stdCode.getSolutionId() == null) {
                 return;
             }
-            Solution solution = solutionManager.selectSolutionById(stdCode.getSolutionId());
-            if (solution == null) {
-                return;
-            }
-            stdCode.setSolutionStatusType(solution.getStatus());
+            Optional<Solution> solutionOptional = solutionManager.selectSolutionById(stdCode.getSolutionId());
+            solutionOptional.ifPresent(solution -> stdCode.setSolutionStatusType(solution.getStatus()));
         });
         return problemStdTestCodeResponse;
     }
@@ -401,9 +391,7 @@ public class ProblemServiceImpl implements ProblemService {
     @Override
     public void updateProblemStdCode(ProblemCodeRequest problemCodeRequest) throws PortableException {
         ProblemPackage problemPackage = getForEditProblem(problemCodeRequest.getId());
-        if (problemPackage.getProblem().getStatusType().getOnTreatedOrCheck()) {
-            throw PortableException.of("A-04-007");
-        }
+
         problemCodeRequest.toStdCode(problemPackage.getProblemData().getStdCode());
         problemPackage.getProblemData().getStdCode().setExpectResultType(SolutionStatusType.ACCEPT);
         if (problemPackage.getProblem().getStatusType().getTreated()) {
@@ -419,9 +407,6 @@ public class ProblemServiceImpl implements ProblemService {
     @Override
     public void addProblemTestCode(ProblemCodeRequest problemStdCodeRequest) throws PortableException {
         ProblemPackage problemPackage = getForEditProblem(problemStdCodeRequest.getId());
-        if (problemPackage.getProblem().getStatusType().getOnTreatedOrCheck()) {
-            throw PortableException.of("A-04-007");
-        }
 
         try {
             ProblemData.StdCode stdCode = problemPackage.getProblemData().findStdCode(problemStdCodeRequest.getCodeName());
@@ -446,36 +431,31 @@ public class ProblemServiceImpl implements ProblemService {
     @Override
     public void removeProblemTestCode(ProblemNameRequest problemNameRequest) throws PortableException {
         ProblemPackage problemPackage = getForEditProblem(problemNameRequest.getId());
-        if (problemPackage.getProblem().getStatusType().getOnTreatedOrCheck()) {
-            throw PortableException.of("A-04-007");
-        }
-
         problemPackage.getProblemData().getTestCodeList().removeIf(stdCode -> Objects.equals(stdCode.getName(), problemNameRequest.getName()));
-
         problemDataManager.updateProblemData(problemPackage.getProblemData());
     }
 
     @Override
     public String showStdCode(Long id) throws PortableException {
-        ProblemPackage problemPackage = getForEditProblem(id);
+        ProblemPackage problemPackage = getForFullAccessProblem(id);
         return problemPackage.getProblemData().getStdCode().getCode();
     }
 
     @Override
     public String showTestCode(ProblemNameRequest problemNameRequest) throws PortableException {
-        ProblemPackage problemPackage = getForEditProblem(problemNameRequest.getId());
+        ProblemPackage problemPackage = getForFullAccessProblem(problemNameRequest.getId());
         return problemPackage.getProblemData().findStdCode(problemNameRequest.getName()).getCode();
     }
 
     @Override
     public void downloadStdCode(Long id, OutputStream outputStream) throws PortableException {
-        ProblemPackage problemPackage = getForEditProblem(id);
+        ProblemPackage problemPackage = getForFullAccessProblem(id);
         StreamUtils.write(problemPackage.getProblemData().getStdCode().getCode(), outputStream);
     }
 
     @Override
     public void downloadTestCode(ProblemNameRequest problemNameRequest, OutputStream outputStream) throws PortableException {
-        ProblemPackage problemPackage = getForEditProblem(problemNameRequest.getId());
+        ProblemPackage problemPackage = getForFullAccessProblem(problemNameRequest.getId());
         StreamUtils.write(problemPackage.getProblemData().findStdCode(problemNameRequest.getName()).getCode(), outputStream);
     }
 
@@ -485,9 +465,6 @@ public class ProblemServiceImpl implements ProblemService {
         // 已经是 normal 了
         if (problemPackage.getProblem().getStatusType().getChecked()) {
             return;
-        }
-        if (problemPackage.getProblem().getStatusType().getOnTreatedOrCheck()) {
-            throw PortableException.of("A-04-008");
         }
         // 只需要 check 时
         if (problemPackage.getProblem().getStatusType().getTreated()) {
@@ -559,13 +536,21 @@ public class ProblemServiceImpl implements ProblemService {
         throw PortableException.of("A-02-006");
     }
 
-    private ProblemPackage getForEditProblem(Long id) throws PortableException {
+    private ProblemPackage getForFullAccessProblem(Long id) throws PortableException {
         ProblemPackage problemPackage = getProblemPackage(id);
         UserToProblemAccessType accessType = UserToProblemAccessType.of(problemPackage.getProblem(), problemPackage.getContest());
         if (accessType.getEditProblem()) {
             return problemPackage;
         }
         throw PortableException.of("A-02-005", id);
+    }
+
+    private ProblemPackage getForEditProblem(Long id) throws PortableException {
+        ProblemPackage problemPackage = getForFullAccessProblem(id);
+        if (problemPackage.getProblem().getStatusType().getOnTreatedOrCheck()) {
+            throw PortableException.of("A-04-007");
+        }
+        return problemPackage;
     }
 
     private ProblemPackage getProblemPackage(Long id) throws PortableException {
@@ -607,10 +592,11 @@ public class ProblemServiceImpl implements ProblemService {
         if (stdCode.getSolutionId() == null) {
             return false;
         }
-        Solution solution = solutionManager.selectSolutionById(stdCode.getSolutionId());
-        if (!solution.getStatus().getEndingResult()) {
+        Optional<Solution> solutionOptional = solutionManager.selectSolutionById(stdCode.getSolutionId());
+        if (!solutionOptional.isPresent()) {
             return false;
         }
+        Solution solution = solutionOptional.get();
         Integer timeLimit = problemData.getTimeLimit(stdCode.getLanguageType());
         Integer memoryLimit = problemData.getMemoryLimit(stdCode.getLanguageType());
         if (!SolutionStatusType.TIME_LIMIT_EXCEEDED.equals(stdCode.getExpectResultType())) {

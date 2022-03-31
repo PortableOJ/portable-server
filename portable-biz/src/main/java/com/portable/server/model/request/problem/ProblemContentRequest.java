@@ -2,6 +2,7 @@ package com.portable.server.model.request.problem;
 
 import com.portable.server.model.problem.Problem;
 import com.portable.server.model.problem.ProblemData;
+import lombok.Builder;
 import lombok.Data;
 
 import javax.validation.Valid;
@@ -13,6 +14,7 @@ import java.util.List;
  * @author shiroha
  */
 @Data
+@Builder
 public class ProblemContentRequest {
 
     /**

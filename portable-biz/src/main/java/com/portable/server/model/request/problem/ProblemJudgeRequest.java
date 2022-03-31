@@ -2,6 +2,7 @@ package com.portable.server.model.request.problem;
 
 import com.portable.server.model.problem.ProblemData;
 import com.portable.server.type.JudgeCodeType;
+import lombok.Builder;
 import lombok.Data;
 
 import javax.validation.constraints.Min;
@@ -11,6 +12,7 @@ import javax.validation.constraints.NotNull;
  * @author shiroha
  */
 @Data
+@Builder
 public class ProblemJudgeRequest {
 
     /**

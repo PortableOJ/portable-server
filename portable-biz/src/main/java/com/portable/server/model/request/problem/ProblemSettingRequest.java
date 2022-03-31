@@ -4,6 +4,7 @@ import com.portable.server.model.problem.ProblemData;
 import com.portable.server.type.LanguageType;
 import com.portable.server.type.ProblemAccessType;
 import com.portable.server.type.ProblemType;
+import lombok.Builder;
 import lombok.Data;
 import org.hibernate.validator.constraints.Range;
 
@@ -17,6 +18,7 @@ import java.util.Objects;
  * @author shiroha
  */
 @Data
+@Builder
 public class ProblemSettingRequest {
 
     /**
@@ -83,19 +85,15 @@ public class ProblemSettingRequest {
     public Boolean toProblemData(ProblemData problemData) {
         // support language
         boolean result = false;
+
         // 检查因为更改了支持的语言，导致是否可能出现某个测试代码的语言存在条件为非了
         LanguageType stdLang = problemData.getStdCode().getLanguageType();
-        if (supportLanguage.contains(stdLang) != problemData.getSupportLanguage().contains(stdLang)) {
+        if (!supportLanguage.contains(stdLang)) {
             result = true;
         }
 
-        boolean tmp = problemData.getTestCodeList().stream()
-                .anyMatch(stdCode ->
-                        supportLanguage.contains(stdCode.getLanguageType())
-                                != problemData.getSupportLanguage().contains(stdCode.getLanguageType()));
-        if (tmp) {
-            result = true;
-        }
+        result = result || problemData.getTestCodeList().stream()
+                .anyMatch(stdCode -> !supportLanguage.contains(stdCode.getLanguageType()));
 
         problemData.setSupportLanguage(supportLanguage);
 
@@ -108,7 +106,7 @@ public class ProblemSettingRequest {
 
         problemData.setShareTest(this.shareTest);
 
-        // type
+        // 题目类型校验
         if (!Objects.equals(problemData.getType(), this.type)) {
             result = true;
         }

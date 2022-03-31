@@ -1,14 +1,16 @@
 package com.portable.server.manager.impl;
 
+import com.portable.server.exception.PortableException;
 import com.portable.server.manager.SolutionDataManager;
 import com.portable.server.model.problem.ProblemData;
 import com.portable.server.model.solution.SolutionData;
 import com.portable.server.repo.SolutionDataRepo;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
-import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Optional;
 
 /**
  * @author shiroha
@@ -20,7 +22,7 @@ public class SolutionDataManagerImpl implements SolutionDataManager {
     private SolutionDataRepo solutionDataRepo;
 
     @Override
-    public SolutionData newSolutionData(ProblemData problemData) {
+    public @NotNull SolutionData newSolutionData(ProblemData problemData) {
         return SolutionData.builder()
                 ._id(null)
                 .code(null)
@@ -31,8 +33,8 @@ public class SolutionDataManagerImpl implements SolutionDataManager {
     }
 
     @Override
-    public SolutionData getSolutionData(String dataId) {
-        return solutionDataRepo.getSolutionData(dataId);
+    public @NotNull SolutionData getSolutionData(String dataId) throws PortableException {
+        return Optional.ofNullable(solutionDataRepo.getSolutionData(dataId)).orElseThrow(PortableException.from("S-05-001"));
     }
 
     @Override

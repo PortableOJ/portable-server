@@ -174,10 +174,8 @@ public class JudgeSupportImpl implements JudgeSupport {
 
     @Override
     public void addJudgeTask(Long solutionId) throws PortableException {
-        Solution solution = solutionManager.selectSolutionById(solutionId);
-        if (solution == null) {
-            throw PortableException.of("S-06-001", solutionId);
-        }
+        Solution solution = solutionManager.selectSolutionById(solutionId)
+                .orElseThrow(PortableException.from("S-06-001", solutionId));
         ProblemData problemData = getProblemData(solution.getProblemId());
         SolutionJudgeWork solutionJudgeWork = new SolutionJudgeWork(solution.getSolutionType());
         solutionJudgeWork.setSolutionId(solutionId);
@@ -207,7 +205,8 @@ public class JudgeSupportImpl implements JudgeSupport {
         solutionJudgeWork.getJudgeContainer().getJudgeWorkMap().remove(solutionId);
         solutionJudgeWorkMap.remove(solutionId);
         solutionManager.updateCostAndStatus(solutionId, endType, timeCost, memoryCost);
-        Solution solution = solutionManager.selectSolutionById(solutionId);
+        Solution solution = solutionManager.selectSolutionById(solutionId)
+                .orElseThrow(PortableException.from("A-05-001", solutionId));
 
         if (!SolutionStatusType.ACCEPT.equals(endType)) {
             return;
@@ -393,10 +392,8 @@ public class JudgeSupportImpl implements JudgeSupport {
     public SolutionInfoResponse getSolutionInfo(Long solutionId) throws PortableException {
         getCurContainer();
         SolutionInfoResponse solutionInfoResponse = new SolutionInfoResponse();
-        Solution solution = solutionManager.selectSolutionById(solutionId);
-        if (solution == null) {
-            throw PortableException.of("S-06-001", solutionId);
-        }
+        Solution solution = solutionManager.selectSolutionById(solutionId)
+                .orElseThrow(PortableException.from("S-06-001", solutionId));
         solutionManager.updateStatus(solutionId, SolutionStatusType.COMPILING);
         ProblemData problemData = getProblemData(solution.getProblemId());
 
@@ -584,6 +581,12 @@ public class JudgeSupportImpl implements JudgeSupport {
             return;
         }
 
+        if (problemData.getTestCodeList().size() == 0) {
+            problemManager.updateProblemStatus(problemId, ProblemStatusType.NORMAL);
+            return;
+        }
+        problemManager.updateProblemStatus(problemId, ProblemStatusType.CHECKING);
+
         for (ProblemData.StdCode stdCode : problemData.getTestCodeList()) {
             SolutionData solutionData = solutionDataManager.newSolutionData(problemData);
             solutionData.setCode(stdCode.getCode());
@@ -598,9 +601,6 @@ public class JudgeSupportImpl implements JudgeSupport {
             solutionManager.insertSolution(solution);
             addJudgeTask(solution.getId());
             stdCode.setSolutionId(solution.getId());
-        }
-        if (problemData.getTestCodeList().size() == 0) {
-            problemManager.updateProblemStatus(problemId, ProblemStatusType.NORMAL);
         }
         problemDataManager.updateProblemData(problemData);
     }
@@ -641,16 +641,9 @@ public class JudgeSupportImpl implements JudgeSupport {
     }
 
     private SolutionData getSolutionData(Long solutionId) throws PortableException {
-        Solution solution = solutionManager.selectSolutionById(solutionId);
-        if (solution == null) {
-            throw PortableException.of("S-06-001", solutionId);
-        }
-        SolutionData solutionData = solutionDataManager.getSolutionData(solution.getDataId());
-        if (solutionData == null) {
-            solutionManager.updateStatus(solutionId, SolutionStatusType.SYSTEM_ERROR);
-            throw PortableException.of("S-05-001");
-        }
-        return solutionData;
+        Solution solution = solutionManager.selectSolutionById(solutionId)
+                .orElseThrow(PortableException.from("S-06-001", solutionId));
+        return solutionDataManager.getSolutionData(solution.getDataId());
     }
 
     private ProblemData getProblemData(Long problemId) throws PortableException {
@@ -683,10 +676,11 @@ public class JudgeSupportImpl implements JudgeSupport {
                 ProblemData problemData = getProblemData(solutionJudgeWork.getProblemId());
                 Set<Boolean> statusSet = problemData.getTestCodeList().stream()
                         .map(stdCode -> {
-                            Solution solution = solutionManager.selectSolutionById(stdCode.getSolutionId());
-                            if (solution == null) {
+                            Optional<Solution> solutionOptional = solutionManager.selectSolutionById(stdCode.getSolutionId());
+                            if (!solutionOptional.isPresent()) {
                                 return false;
                             }
+                            Solution solution = solutionOptional.get();
                             if (!solution.getStatus().getEndingResult()) {
                                 return null;
                             }
