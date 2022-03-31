@@ -13,6 +13,7 @@ import com.portable.server.model.contest.Contest;
 import com.portable.server.model.problem.Problem;
 import com.portable.server.model.problem.ProblemData;
 import com.portable.server.model.request.PageRequest;
+import com.portable.server.model.request.problem.ProblemCodeRequest;
 import com.portable.server.model.request.problem.ProblemContentRequest;
 import com.portable.server.model.request.problem.ProblemJudgeRequest;
 import com.portable.server.model.request.problem.ProblemNameRequest;
@@ -1667,7 +1668,50 @@ public class ProblemServiceImplTest {
     }
 
     @Test
-    void updateProblemStdCode() {
+    void updateProblemStdCode() throws PortableException {
+        problem.setStatusType(ProblemStatusType.NORMAL);
+        problem.setAccessType(ProblemAccessType.PUBLIC);
+        problemData.setContestId(null);
+        problemData.setStdCode(ProblemData.StdCode.builder()
+                .code("")
+                .name("")
+                .expectResultType(null)
+                .languageType(LanguageType.CPP11)
+                .solutionId(MOCKED_SOLUTION_ID)
+                .build());
+        problemData.setVersion(0);
+        solution.setStatus(SolutionStatusType.WRONG_ANSWER);
+
+        Mockito.when(problemManager.getProblemById(MOCKED_PROBLEM_ID)).thenReturn(Optional.of(problem));
+        Mockito.when(problemDataManager.getProblemData(MOCKED_PROBLEM_MONGO_ID)).thenReturn(problemData);
+
+        userToProblemAccessTypeMockedStatic
+                .when(() -> ProblemServiceImpl.UserToProblemAccessType.of(Mockito.any(), Mockito.any()))
+                .thenReturn(ProblemServiceImpl.UserToProblemAccessType.FULL_ACCESS);
+
+        ProblemCodeRequest problemCodeRequest = ProblemCodeRequest.builder()
+                .id(MOCKED_PROBLEM_ID)
+                .code(MOCKED_CODE_TEST)
+                .languageType(LanguageType.CPP17)
+                .codeName(MOCKED_NAME)
+                .resultType(SolutionStatusType.WRONG_ANSWER)
+                .build();
+
+        problemService.updateProblemStdCode(problemCodeRequest);
+
+        Mockito.verify(problemManager).updateProblemStatus(MOCKED_PROBLEM_ID, ProblemStatusType.UNTREATED);
+
+        /// region 校验写入的数据
+
+        ArgumentCaptor<ProblemData> problemDataArgumentCaptor = ArgumentCaptor.forClass(ProblemData.class);
+        Mockito.verify(problemDataManager).updateProblemData(problemDataArgumentCaptor.capture());
+        ProblemData problemDataCP = problemDataArgumentCaptor.getValue();
+        Assertions.assertEquals(MOCKED_CODE_TEST, problemDataCP.getStdCode().getCode());
+        Assertions.assertNull(problemDataCP.getStdCode().getSolutionId());
+        Assertions.assertEquals(SolutionStatusType.ACCEPT, problemDataCP.getStdCode().getExpectResultType());
+        Assertions.assertEquals(LanguageType.CPP17, problemDataCP.getStdCode().getLanguageType());
+
+        /// endregion
     }
 
     @Test
