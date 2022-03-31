@@ -56,6 +56,10 @@ public class UserContextBuilder {
         return this;
     }
 
+    public void withDataId(String dataId) {
+        userContext.setDataId(dataId);
+    }
+
     public void withPermission(PermissionType... permission) {
         userContext.setPermissionTypeSet(Arrays.stream(permission).collect(Collectors.toSet()));
     }
