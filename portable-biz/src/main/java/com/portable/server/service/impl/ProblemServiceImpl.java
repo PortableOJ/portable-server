@@ -339,13 +339,10 @@ public class ProblemServiceImpl implements ProblemService {
         if (!problemPackage.getProblemData().getTestName().contains(problemTestRequest.getName())) {
             problemPackage.getProblemData().getTestName().add(problemTestRequest.getName());
         }
-
         fileSupport.saveTestInput(problemTestRequest.getId(), problemTestRequest.getName(), problemTestRequest.getInputStream());
-
         if (problemPackage.getProblem().getStatusType().getTreated()) {
             problemPackage.getProblemData().nextVersion();
         }
-
         problemPackage.getProblem().toUntreated();
 
         problemPackage.getProblemData().setGmtModifyTime(new Date());

@@ -17,9 +17,11 @@ import com.portable.server.model.request.problem.ProblemContentRequest;
 import com.portable.server.model.request.problem.ProblemJudgeRequest;
 import com.portable.server.model.request.problem.ProblemNameRequest;
 import com.portable.server.model.request.problem.ProblemSettingRequest;
+import com.portable.server.model.request.problem.ProblemTestRequest;
 import com.portable.server.model.response.PageResponse;
 import com.portable.server.model.response.problem.ProblemDetailResponse;
 import com.portable.server.model.response.problem.ProblemListResponse;
+import com.portable.server.model.response.problem.ProblemStdTestCodeResponse;
 import com.portable.server.model.solution.Solution;
 import com.portable.server.model.user.User;
 import com.portable.server.support.FileSupport;
@@ -47,6 +49,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.*;
 import java.util.stream.IntStream;
 
@@ -1528,19 +1531,139 @@ public class ProblemServiceImplTest {
         Assertions.assertEquals(1, problemDataCP.getVersion());
 
         /// endregion
-
     }
 
     @Test
-    void testAddProblemTestWith() {
+    void testAddProblemTest() throws PortableException, IOException {
+        problem.setStatusType(ProblemStatusType.NORMAL);
+        problem.setAccessType(ProblemAccessType.PUBLIC);
+        problemData.setContestId(null);
+        problemData.setShareTest(false);
+        problemData.setVersion(0);
+        problemData.setTestName(new ArrayList<>());
+        Mockito.when(problemManager.getProblemById(MOCKED_PROBLEM_ID)).thenReturn(Optional.of(problem));
+        Mockito.when(problemDataManager.getProblemData(MOCKED_PROBLEM_MONGO_ID)).thenReturn(problemData);
+
+        userToProblemAccessTypeMockedStatic
+                .when(() -> ProblemServiceImpl.UserToProblemAccessType.of(Mockito.any(), Mockito.any()))
+                .thenReturn(ProblemServiceImpl.UserToProblemAccessType.FULL_ACCESS);
+
+        CircularByteBuffer circularByteBuffer = new CircularByteBuffer();
+        circularByteBuffer.getOutputStream().write(MOCKED_PROBLEM_DESC.getBytes());
+        circularByteBuffer.getOutputStream().close();
+
+        ProblemTestRequest problemTestRequest = ProblemTestRequest.builder()
+                .id(MOCKED_PROBLEM_ID)
+                .inputStream(circularByteBuffer.getInputStream())
+                .name(MOCKED_NAME)
+                .build();
+
+        problemService.addProblemTest(problemTestRequest);
+
+        Mockito.verify(problemManager).updateProblemStatus(MOCKED_PROBLEM_ID, ProblemStatusType.UNTREATED);
+
+        /// region 校验写入的数据
+
+        ArgumentCaptor<ProblemData> problemDataArgumentCaptor = ArgumentCaptor.forClass(ProblemData.class);
+        Mockito.verify(problemDataManager).updateProblemData(problemDataArgumentCaptor.capture());
+        ProblemData problemDataCP = problemDataArgumentCaptor.getValue();
+        Assertions.assertEquals(Collections.singletonList(MOCKED_NAME), problemDataCP.getTestName());
+
+        /// endregion
+
+        /// region 校验写入文件的数据
+
+        ArgumentCaptor<InputStream> inputStreamArgumentCaptor = ArgumentCaptor.forClass(InputStream.class);
+        Mockito.verify(fileSupport).saveTestInput(Mockito.eq(MOCKED_PROBLEM_ID), Mockito.eq(MOCKED_NAME), inputStreamArgumentCaptor.capture());
+        InputStream inputStreamCP = inputStreamArgumentCaptor.getValue();
+        Assertions.assertEquals(MOCKED_PROBLEM_DESC, StreamUtils.read(inputStreamCP));
+
+        /// endregion
     }
 
     @Test
-    void removeProblemTest() {
+    void testRemoveProblemTest() throws PortableException {
+        problem.setStatusType(ProblemStatusType.NORMAL);
+        problem.setAccessType(ProblemAccessType.PUBLIC);
+        problemData.setContestId(null);
+        problemData.setShareTest(false);
+        problemData.setVersion(0);
+        problemData.setTestName(new ArrayList<String>() {{
+            add(MOCKED_NAME);
+        }});
+        Mockito.when(problemManager.getProblemById(MOCKED_PROBLEM_ID)).thenReturn(Optional.of(problem));
+        Mockito.when(problemDataManager.getProblemData(MOCKED_PROBLEM_MONGO_ID)).thenReturn(problemData);
+
+        userToProblemAccessTypeMockedStatic
+                .when(() -> ProblemServiceImpl.UserToProblemAccessType.of(Mockito.any(), Mockito.any()))
+                .thenReturn(ProblemServiceImpl.UserToProblemAccessType.FULL_ACCESS);
+
+        ProblemNameRequest problemNameRequest = ProblemNameRequest.builder()
+                .id(MOCKED_PROBLEM_ID)
+                .name(MOCKED_NAME)
+                .build();
+
+        problemService.removeProblemTest(problemNameRequest);
+
+        Mockito.verify(problemManager).updateProblemStatus(MOCKED_PROBLEM_ID, ProblemStatusType.UNCHECK);
+
+        /// region 校验写入的数据
+
+        ArgumentCaptor<ProblemData> problemDataArgumentCaptor = ArgumentCaptor.forClass(ProblemData.class);
+        Mockito.verify(problemDataManager).updateProblemData(problemDataArgumentCaptor.capture());
+        ProblemData problemDataCP = problemDataArgumentCaptor.getValue();
+        Assertions.assertEquals(new ArrayList<>(), problemDataCP.getTestName());
+
+        /// endregion
+
+        /// region 校验写入文件的数据
+
+        Mockito.verify(fileSupport).removeTest(MOCKED_PROBLEM_ID, MOCKED_NAME);
+
+        /// endregion
     }
 
     @Test
-    void getProblemStdTestCode() {
+    void testGetProblemStdTestCode() throws PortableException {
+        problem.setStatusType(ProblemStatusType.NORMAL);
+        problem.setAccessType(ProblemAccessType.PUBLIC);
+        problemData.setContestId(null);
+        problemData.setStdCode(ProblemData.StdCode.builder()
+                .code(MOCKED_CODE_TEST)
+                .name(MOCKED_NAME)
+                .expectResultType(SolutionStatusType.ACCEPT)
+                .languageType(LanguageType.CPP17)
+                .solutionId(MOCKED_SOLUTION_ID)
+                .build());
+        problemData.setTestCodeList(new ArrayList<ProblemData.StdCode>() {{
+            add(ProblemData.StdCode.builder()
+                    .code(MOCKED_CODE_TEST)
+                    .name(MOCKED_NAME)
+                    .expectResultType(SolutionStatusType.ACCEPT)
+                    .languageType(LanguageType.CPP17)
+                    .solutionId(MOCKED_SOLUTION_ID)
+                    .build());
+        }});
+        problemData.setVersion(0);
+        solution.setStatus(SolutionStatusType.WRONG_ANSWER);
+
+        Mockito.when(problemManager.getProblemById(MOCKED_PROBLEM_ID)).thenReturn(Optional.of(problem));
+        Mockito.when(problemDataManager.getProblemData(MOCKED_PROBLEM_MONGO_ID)).thenReturn(problemData);
+        Mockito.when(solutionManager.selectSolutionById(MOCKED_SOLUTION_ID)).thenReturn(Optional.of(solution));
+
+        userToProblemAccessTypeMockedStatic
+                .when(() -> ProblemServiceImpl.UserToProblemAccessType.of(Mockito.any(), Mockito.any()))
+                .thenReturn(ProblemServiceImpl.UserToProblemAccessType.FULL_ACCESS);
+
+        ProblemStdTestCodeResponse retVal = problemService.getProblemStdTestCode(MOCKED_PROBLEM_ID);
+
+        /// region 校验返回值
+
+        Assertions.assertEquals(SolutionStatusType.ACCEPT, retVal.getStdCode().getExpectResultType());
+        Assertions.assertEquals(SolutionStatusType.ACCEPT, retVal.getTestCodeList().get(0).getExpectResultType());
+        Assertions.assertEquals(SolutionStatusType.WRONG_ANSWER, retVal.getTestCodeList().get(0).getSolutionStatusType());
+
+        /// endregion
     }
 
     @Test
