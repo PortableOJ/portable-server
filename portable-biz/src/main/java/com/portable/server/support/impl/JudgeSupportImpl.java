@@ -581,6 +581,12 @@ public class JudgeSupportImpl implements JudgeSupport {
             return;
         }
 
+        if (problemData.getTestCodeList().size() == 0) {
+            problemManager.updateProblemStatus(problemId, ProblemStatusType.NORMAL);
+            return;
+        }
+        problemManager.updateProblemStatus(problemId, ProblemStatusType.CHECKING);
+
         for (ProblemData.StdCode stdCode : problemData.getTestCodeList()) {
             SolutionData solutionData = solutionDataManager.newSolutionData(problemData);
             solutionData.setCode(stdCode.getCode());
@@ -595,9 +601,6 @@ public class JudgeSupportImpl implements JudgeSupport {
             solutionManager.insertSolution(solution);
             addJudgeTask(solution.getId());
             stdCode.setSolutionId(solution.getId());
-        }
-        if (problemData.getTestCodeList().size() == 0) {
-            problemManager.updateProblemStatus(problemId, ProblemStatusType.NORMAL);
         }
         problemDataManager.updateProblemData(problemData);
     }

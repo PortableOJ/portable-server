@@ -431,9 +431,7 @@ public class ProblemServiceImpl implements ProblemService {
     @Override
     public void removeProblemTestCode(ProblemNameRequest problemNameRequest) throws PortableException {
         ProblemPackage problemPackage = getForEditProblem(problemNameRequest.getId());
-
         problemPackage.getProblemData().getTestCodeList().removeIf(stdCode -> Objects.equals(stdCode.getName(), problemNameRequest.getName()));
-
         problemDataManager.updateProblemData(problemPackage.getProblemData());
     }
 
