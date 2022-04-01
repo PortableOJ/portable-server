@@ -1,5 +1,6 @@
 package com.portable.server.controller;
 
+import com.portable.server.annotation.NeedLogin;
 import com.portable.server.exception.PortableException;
 import com.portable.server.model.request.PageRequest;
 import com.portable.server.model.request.solution.SolutionListQueryRequest;
@@ -50,6 +51,7 @@ public class SolutionController {
         return Response.ofOk(solutionService.getPublicStatus(pageRequest));
     }
 
+    @NeedLogin(normal = true)
     @GetMapping("/getSolution")
     public Response<SolutionDetailResponse> getSolution(@NotNull(message = "A-05-001") @Min(value = 1, message = "A-05-001") Long id) throws PortableException {
         return Response.ofOk(solutionService.getSolution(id));
