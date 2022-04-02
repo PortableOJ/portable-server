@@ -28,12 +28,12 @@ public class JudgeServiceImpl implements JudgeService {
     private JudgeSupport judgeSupport;
 
     @Override
-    public ServiceVerifyCode getServerCode() {
+    public ServiceVerifyCode getServiceCode() {
         return judgeSupport.getServiceCode();
     }
 
     @Override
-    public String getTheServerCodeFirstTime() {
+    public String getTheServiceCodeFirstTime() {
         if (firstServerCode) {
             firstServerCode = false;
             return judgeSupport.getServiceCode().getCode();

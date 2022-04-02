@@ -14,15 +14,17 @@ public interface JudgeService {
 
     /**
      * 获取 server code
+     *
      * @return 返回当前的 server code
      */
-    ServiceVerifyCode getServerCode();
+    ServiceVerifyCode getServiceCode();
 
     /**
      * 在项目启动后，获取一次 server code
+     *
      * @return serve code
      */
-    String getTheServerCodeFirstTime();
+    String getTheServiceCodeFirstTime();
 
     /**
      * 获取所有 Judge 信息
@@ -40,6 +42,7 @@ public interface JudgeService {
     /**
      * 终止一个 judge 任务
      * @param solutionId 提交 ID
+     * @throws PortableException 当提交不存在时候则抛出
      */
     void killJudge(Long solutionId) throws PortableException;
 
