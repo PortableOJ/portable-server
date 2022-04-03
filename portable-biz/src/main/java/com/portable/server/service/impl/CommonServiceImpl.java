@@ -44,6 +44,7 @@ public class CommonServiceImpl implements CommonService {
         long time = DateTimeUtils.formatLong(new Date());
         for (int i = 0; i < LONG_BYTE_SIZE; i++) {
             timeByte[i] = (byte) (time & 0xff);
+            time >>= 4;
         }
         version = Base64.getEncoder().encodeToString(timeByte);
 
