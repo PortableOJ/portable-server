@@ -3,6 +3,7 @@ package com.portable.server.model.request.solution;
 import com.portable.server.model.solution.Solution;
 import com.portable.server.model.solution.SolutionData;
 import com.portable.server.type.LanguageType;
+import lombok.Builder;
 import lombok.Data;
 
 import javax.validation.constraints.NotNull;
@@ -12,6 +13,7 @@ import javax.validation.constraints.Size;
  * @author shiroha
  */
 @Data
+@Builder
 public class SubmitSolutionRequest {
 
     /**

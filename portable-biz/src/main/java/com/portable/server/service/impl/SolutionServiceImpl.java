@@ -83,9 +83,9 @@ public class SolutionServiceImpl implements SolutionService {
             throw PortableException.of("A-05-002");
         }
         UserContext userContext = UserContext.ctx();
-        boolean isHost = Objects.equals(solution.getUserId(), userContext.getId());
+        boolean isOwner = Objects.equals(solution.getUserId(), userContext.getId());
         boolean hasPermission = UserContext.ctx().getPermissionTypeSet().contains(PermissionType.VIEW_PUBLIC_SOLUTION);
-        if (!isHost && !hasPermission) {
+        if (!isOwner && !hasPermission) {
             throw PortableException.of("A-05-003");
         }
         SolutionData solutionData = solutionDataManager.getSolutionData(solution.getDataId());

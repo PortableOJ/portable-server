@@ -3,6 +3,7 @@ package com.portable.server.model.request.problem;
 import com.portable.server.model.problem.ProblemData;
 import com.portable.server.type.LanguageType;
 import com.portable.server.type.SolutionStatusType;
+import lombok.Builder;
 import lombok.Data;
 
 import javax.validation.constraints.Min;
@@ -15,6 +16,7 @@ import javax.validation.constraints.Size;
  * @author shiroha
  */
 @Data
+@Builder
 public class ProblemCodeRequest {
 
     /**

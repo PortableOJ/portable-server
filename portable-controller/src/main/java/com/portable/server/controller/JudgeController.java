@@ -39,12 +39,12 @@ public class JudgeController {
     @GetMapping("/serverCode")
     @PermissionRequirement(PermissionType.MANAGER_JUDGE)
     public Response<ServiceVerifyCode> getServerCode() {
-        return Response.ofOk(judgeService.getServerCode());
+        return Response.ofOk(judgeService.getServiceCode());
     }
 
     @GetMapping("/initCode")
     public void getServerCodeFirst(HttpServletResponse response) {
-        String code = judgeService.getTheServerCodeFirstTime();
+        String code = judgeService.getTheServiceCodeFirstTime();
         try {
             if (code != null) {
                 OutputStream outputStream = response.getOutputStream();
