@@ -1,11 +1,13 @@
 package com.portable.server.model.judge.entity;
 
+import lombok.Builder;
 import lombok.Data;
 
 /**
  * @author shiroha
  */
 @Data
+@Builder
 public class UpdateJudgeContainer {
 
     /**
