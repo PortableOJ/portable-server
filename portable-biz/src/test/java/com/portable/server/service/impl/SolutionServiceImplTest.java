@@ -81,12 +81,14 @@ class SolutionServiceImplTest {
 
     @Test
     void testGetPublicStatus() {
+        user.setId(MOCKED_USER_ID);
         user.setHandle(MOCKED_USER_HANDLE);
         problem.setTitle(MOCKED_PROBLEM_TITLE);
         solution.setUserId(MOCKED_USER_ID);
         solution.setProblemId(MOCKED_PROBLEM_ID);
         solution.setId(MOCKED_SOLUTION_ID);
 
+        Mockito.when(userManager.changeHandleToUserId(MOCKED_USER_HANDLE)).thenReturn(Optional.of(MOCKED_USER_ID));
         Mockito.when(solutionManager.countSolution(SolutionType.PUBLIC, MOCKED_USER_ID, null, MOCKED_PROBLEM_ID, SolutionStatusType.ACCEPT)).thenReturn(100);
         Mockito.when(solutionManager.selectSolutionByPage(10, 10, SolutionType.PUBLIC, MOCKED_USER_ID, null, MOCKED_PROBLEM_ID, SolutionStatusType.ACCEPT)).thenReturn(Collections.singletonList(solution));
         Mockito.when(userManager.getAccountById(MOCKED_USER_ID)).thenReturn(Optional.of(user));
