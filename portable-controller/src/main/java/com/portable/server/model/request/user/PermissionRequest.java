@@ -4,7 +4,6 @@ import com.portable.server.type.PermissionType;
 import lombok.Data;
 
 import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Positive;
 
 /**
  * @author shiroha
@@ -13,10 +12,10 @@ import javax.validation.constraints.Positive;
 public class PermissionRequest {
 
     /**
-     * 目标用户
+     * 目标用户的昵称
      */
-    @Positive(message = "A-01-001")
-    private Long targetId;
+    @NotNull(message = "A-01-001")
+    private String targetHandle;
 
     /**
      * 权力

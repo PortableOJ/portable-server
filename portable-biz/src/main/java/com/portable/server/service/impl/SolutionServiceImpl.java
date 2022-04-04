@@ -45,9 +45,10 @@ public class SolutionServiceImpl implements SolutionService {
 
     @Override
     public PageResponse<SolutionListResponse, Void> getPublicStatus(PageRequest<SolutionListQueryRequest> pageRequest) {
+        Long userId = userManager.changeHandleToUserId(pageRequest.getQueryData().getUserHandle()).orElse(null);
         Integer solutionCount = solutionManager.countSolution(
                 SolutionType.PUBLIC,
-                pageRequest.getQueryData().getUserId(),
+                userId,
                 null,
                 pageRequest.getQueryData().getProblemId(),
                 pageRequest.getQueryData().getStatusType()
@@ -57,7 +58,7 @@ public class SolutionServiceImpl implements SolutionService {
                 response.getPageSize(),
                 response.offset(),
                 SolutionType.PUBLIC,
-                pageRequest.getQueryData().getUserId(),
+                userId,
                 null,
                 pageRequest.getQueryData().getProblemId(),
                 pageRequest.getQueryData().getStatusType()

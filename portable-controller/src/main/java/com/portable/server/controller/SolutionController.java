@@ -33,7 +33,7 @@ public class SolutionController {
     @GetMapping("/getPublicStatus")
     public Response<PageResponse<SolutionListResponse, Void>> getPublicSolutionList(Integer pageNum,
                                                                                     Integer pageSize,
-                                                                                    Long userId,
+                                                                                    String userHandle,
                                                                                     Long problemId,
                                                                                     SolutionStatusType statusType) {
         PageRequest<SolutionListQueryRequest> pageRequest = PageRequest.<SolutionListQueryRequest>builder()
@@ -41,7 +41,7 @@ public class SolutionController {
                 .pageSize(pageSize)
                 .queryData(
                         SolutionListQueryRequest.builder()
-                                .userId(userId)
+                                .userHandle(userHandle)
                                 .problemId(problemId)
                                 .statusType(statusType)
                                 .build()

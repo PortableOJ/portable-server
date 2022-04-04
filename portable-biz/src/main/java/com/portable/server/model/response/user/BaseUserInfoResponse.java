@@ -1,5 +1,6 @@
 package com.portable.server.model.response.user;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.portable.server.model.user.User;
 import com.portable.server.type.AccountType;
 import lombok.Data;
@@ -17,6 +18,7 @@ public abstract class BaseUserInfoResponse {
     /**
      * 用户 id
      */
+    @JsonIgnore
     private Long id;
 
     /**

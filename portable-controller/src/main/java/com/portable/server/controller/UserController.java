@@ -76,10 +76,7 @@ public class UserController {
 
     @GetMapping("/check")
     public Response<BaseUserInfoResponse> check() throws PortableException {
-        if (!UserContext.ctx().isLogin()) {
-            return Response.ofOk();
-        }
-        return Response.ofOk(userService.getUserInfo(UserContext.ctx().getId()));
+        return Response.ofOk(userService.check());
     }
 
     @GetMapping("/getUserInfo")
@@ -98,7 +95,7 @@ public class UserController {
     @PostMapping("/changeOrganization")
     @PermissionRequirement(PermissionType.CHANGE_ORGANIZATION)
     public Response<Void> changeOrganization(@Validated @RequestBody OrganizationChangeRequest organizationChangeRequest) throws PortableException {
-        userService.changeOrganization(organizationChangeRequest.getTargetId(), organizationChangeRequest.getNewOrganization());
+        userService.changeOrganization(organizationChangeRequest.getTargetHandle(), organizationChangeRequest.getNewOrganization());
         return Response.ofOk();
     }
 
@@ -106,7 +103,7 @@ public class UserController {
     @PostMapping("/addPermission")
     @PermissionRequirement(PermissionType.GRANT)
     public Response<Void> grantPermission(@Validated @RequestBody PermissionRequest permissionRequest) throws PortableException {
-        userService.addPermission(permissionRequest.getTargetId(), permissionRequest.getPermissionType());
+        userService.addPermission(permissionRequest.getTargetHandle(), permissionRequest.getPermissionType());
         return Response.ofOk();
     }
 
@@ -114,7 +111,7 @@ public class UserController {
     @PostMapping("/removePermission")
     @PermissionRequirement(PermissionType.GRANT)
     public Response<Void> removePermission(@Validated @RequestBody PermissionRequest permissionRequest) throws PortableException {
-        userService.removePermission(permissionRequest.getTargetId(), permissionRequest.getPermissionType());
+        userService.removePermission(permissionRequest.getTargetHandle(), permissionRequest.getPermissionType());
         return Response.ofOk();
     }
 

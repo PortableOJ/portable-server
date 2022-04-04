@@ -1,5 +1,6 @@
 package com.portable.server.model.user;
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
@@ -11,6 +12,7 @@ import org.springframework.data.annotation.Id;
 @Data
 @SuperBuilder
 @NoArgsConstructor
+@AllArgsConstructor
 public abstract class BaseUserData {
 
     /**

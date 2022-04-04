@@ -26,6 +26,7 @@ import com.portable.server.util.ImageUtils;
 import com.portable.server.util.UserContext;
 import lombok.Builder;
 import lombok.Data;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
@@ -169,8 +170,13 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public BaseUserInfoResponse getUserInfo(Long userId) throws PortableException {
-        User user = userManager.getAccountById(userId).orElseThrow(PortableException.from("A-01-001"));
+    public BaseUserInfoResponse check() throws PortableException {
+        UserContext userContext = UserContext.ctx();
+        if (!userContext.isLogin()) {
+            return null;
+        }
+        User user = userManager.getAccountById(userContext.getId())
+                .orElseThrow(PortableException.from("A-01-001"));
         return getUserBasicInfoResponse(user);
     }
 
@@ -188,15 +194,15 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public void changeOrganization(Long targetId, OrganizationType newOrganization) throws PortableException {
-        NormalUserData targetUserData = organizationCheck(targetId);
+    public void changeOrganization(String targetHandle, OrganizationType newOrganization) throws PortableException {
+        NormalUserData targetUserData = organizationCheck(targetHandle);
         targetUserData.setOrganization(newOrganization);
         userDataManager.updateUserData(targetUserData);
     }
 
     @Override
-    public void addPermission(Long targetId, PermissionType newPermission) throws PortableException {
-        NormalUserData targetUserData = organizationCheck(targetId);
+    public void addPermission(String targetHandle, PermissionType newPermission) throws PortableException {
+        NormalUserData targetUserData = organizationCheck(targetHandle);
         if (!UserContext.ctx().getPermissionTypeSet().contains(newPermission)) {
             throw PortableException.of("A-02-007", newPermission);
         }
@@ -208,8 +214,8 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public void removePermission(Long targetId, PermissionType permission) throws PortableException {
-        NormalUserData targetUserData = organizationCheck(targetId);
+    public void removePermission(String targetHandle, PermissionType permission) throws PortableException {
+        NormalUserData targetUserData = organizationCheck(targetHandle);
         if (!UserContext.ctx().getPermissionTypeSet().contains(permission)) {
             throw PortableException.of("A-02-007", permission);
         }
@@ -258,15 +264,14 @@ public class UserServiceImpl implements UserService {
         userDataManager.updateUserData(batchUserPackage.getUserData());
     }
 
-    private NormalUserData organizationCheck(Long target) throws PortableException {
-        User user = userManager.getAccountById(target)
+    @NotNull
+    private NormalUserData organizationCheck(String handle) throws PortableException {
+        User user = userManager.getAccountByHandle(handle)
                 .orElseThrow(PortableException.from("A-01-001"));
         if (!user.getType().getIsNormal()) {
             throw PortableException.of("A-02-003");
         }
-
         NormalUserData targetUserData = userDataManager.getNormalUserDataById(user.getDataId());
-
         if (!UserContext.ctx().getOrganization().isDominate(targetUserData.getOrganization())) {
             throw PortableException.of("A-03-001",
                     user.getHandle(),

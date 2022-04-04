@@ -44,6 +44,7 @@ public class CommonServiceImpl implements CommonService {
         long time = DateTimeUtils.formatLong(new Date());
         for (int i = 0; i < LONG_BYTE_SIZE; i++) {
             timeByte[i] = (byte) (time & 0xff);
+            time >>= 4;
         }
         version = Base64.getEncoder().encodeToString(timeByte);
 
@@ -87,7 +88,7 @@ public class CommonServiceImpl implements CommonService {
                     }
 
                     for (Field field : fields) {
-                        field.setAccessible(true);
+                        field.setAccessible(false);
                     }
 
                     enumDescMap.put(name, result);
@@ -95,8 +96,7 @@ public class CommonServiceImpl implements CommonService {
                     return result;
                 }
             }
-        } catch (ClassNotFoundException | NoSuchMethodException | InvocationTargetException | IllegalAccessException e) {
-            e.printStackTrace();
+        } catch (ClassNotFoundException | NoSuchMethodException | InvocationTargetException | IllegalAccessException ignore) {
         }
         throw PortableException.of("A-06-001", name);
     }

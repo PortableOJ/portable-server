@@ -25,6 +25,8 @@ public class RedisListKitImpl extends BaseRedisKit implements RedisListKit {
 
     private ListOperations<String, String> redisListOperation;
 
+    private static final Long LIST_DELETE_PAGE_SIZE = 100L;
+
     @PostConstruct
     public void init() {
         redisListOperation = stringRedisTemplate.opsForList();
@@ -72,6 +74,17 @@ public class RedisListKitImpl extends BaseRedisKit implements RedisListKit {
 
     @Override
     public void clear(String prefix, Object key) {
-        redisListOperation.trim(getKey(prefix, key), 1, 0);
+        String redisKey = getKey(prefix, key);
+        Long listSize = redisListOperation.size(redisKey);
+        if (listSize == null) {
+            return;
+        }
+        long totalPageNum = listSize / LIST_DELETE_PAGE_SIZE;
+        for (int i = 0; i < totalPageNum; i++) {
+            redisListOperation.trim(redisKey, LIST_DELETE_PAGE_SIZE, listSize - 1);
+            listSize -= LIST_DELETE_PAGE_SIZE;
+        }
+        // 最后删除一次，避免出现少删除的情况
+        redisListOperation.trim(redisKey, 1, 0);
     }
 }

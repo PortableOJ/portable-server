@@ -1,14 +1,18 @@
 package com.portable.server.model.user;
 
 import com.portable.server.type.AccountType;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 /**
  * @author shiroha
  */
 @Data
 @Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class User {
 
     /**

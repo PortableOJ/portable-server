@@ -14,7 +14,7 @@ public class SolutionListQueryRequest {
     /**
      * 仅查看此用户的提交
      */
-    private Long userId;
+    private String userHandle;
 
     /**
      * 仅查看此问题的提交
