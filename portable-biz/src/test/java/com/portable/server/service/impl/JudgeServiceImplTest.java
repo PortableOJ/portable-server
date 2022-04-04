@@ -37,7 +37,7 @@ class JudgeServiceImplTest {
     }
 
     @Test
-    void getServerCode() {
+    void testGetServerCode() {
         ServiceVerifyCode serviceVerifyCode = ServiceVerifyCode.builder()
                 .code("CODE")
                 .temporary(false)
@@ -51,7 +51,7 @@ class JudgeServiceImplTest {
     }
 
     @Test
-    void getTheServerCodeFirstTime() {
+    void testGetTheServerCodeFirstTime() {
         ServiceVerifyCode serviceVerifyCode = ServiceVerifyCode.builder()
                 .code("CODE")
                 .temporary(false)
@@ -80,7 +80,7 @@ class JudgeServiceImplTest {
     }
 
     @Test
-    void updateJudgeContainer() throws PortableException {
+    void testUpdateJudgeContainer() throws PortableException {
         UpdateJudgeContainer updateJudgeContainer = UpdateJudgeContainer.builder()
                 .build();
 
@@ -90,7 +90,7 @@ class JudgeServiceImplTest {
     }
 
     @Test
-    void killJudge() throws PortableException {
+    void testKillJudge() throws PortableException {
         Long id = null;
 
         judgeService.killJudge(id);
@@ -99,7 +99,7 @@ class JudgeServiceImplTest {
     }
 
     @Test
-    void killTest() {
+    void testKillTest() {
         Long id = null;
 
         judgeService.killTest(id);
@@ -108,7 +108,7 @@ class JudgeServiceImplTest {
     }
 
     @Test
-    void stopJudge() {
+    void testStopJudge() {
         String judgeCode = "";
 
         judgeService.stopJudge(judgeCode);
