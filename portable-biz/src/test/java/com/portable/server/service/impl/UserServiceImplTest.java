@@ -904,10 +904,10 @@ class UserServiceImplTest {
 
     @Test
     void testChangeOrganizationWithNoUser() {
-        Mockito.when(userManager.getAccountById(MOCKED_ID)).thenReturn(Optional.empty());
+        Mockito.when(userManager.getAccountByHandle(MOCKED_HANDLE)).thenReturn(Optional.empty());
 
         try {
-            userService.changeOrganization(MOCKED_ID, OrganizationType.STUDENT);
+            userService.changeOrganization(MOCKED_HANDLE, OrganizationType.STUDENT);
             Assertions.fail();
         } catch (PortableException e) {
             Assertions.assertEquals("A-01-001", e.getCode());
@@ -917,10 +917,10 @@ class UserServiceImplTest {
     @Test
     void testChangeOrganizationWithNotNormal() {
         user.setType(AccountType.BATCH);
-        Mockito.when(userManager.getAccountById(MOCKED_ID)).thenReturn(Optional.of(user));
+        Mockito.when(userManager.getAccountByHandle(MOCKED_HANDLE)).thenReturn(Optional.of(user));
 
         try {
-            userService.changeOrganization(MOCKED_ID, OrganizationType.STUDENT);
+            userService.changeOrganization(MOCKED_HANDLE, OrganizationType.STUDENT);
             Assertions.fail();
         } catch (PortableException e) {
             Assertions.assertEquals("A-02-003", e.getCode());
@@ -930,11 +930,11 @@ class UserServiceImplTest {
     @Test
     void testChangeOrganizationWithNoUserData() throws PortableException {
         user.setType(AccountType.LOCKED_NORMAL);
-        Mockito.when(userManager.getAccountById(MOCKED_ID)).thenReturn(Optional.of(user));
+        Mockito.when(userManager.getAccountByHandle(MOCKED_HANDLE)).thenReturn(Optional.of(user));
         Mockito.when(userDataManager.getNormalUserDataById(MOCKED_MONGO_ID)).thenThrow(PortableException.of("S-02-001"));
 
         try {
-            userService.changeOrganization(MOCKED_ID, OrganizationType.STUDENT);
+            userService.changeOrganization(MOCKED_HANDLE, OrganizationType.STUDENT);
             Assertions.fail();
         } catch (PortableException e) {
             Assertions.assertEquals("S-02-001", e.getCode());
@@ -946,12 +946,12 @@ class UserServiceImplTest {
         user.setType(AccountType.LOCKED_NORMAL);
         userContext.setOrganization(OrganizationType.TEACHER);
         normalUserData.setOrganization(OrganizationType.ACMER);
-        Mockito.when(userManager.getAccountById(MOCKED_ID)).thenReturn(Optional.of(user));
+        Mockito.when(userManager.getAccountByHandle(MOCKED_HANDLE)).thenReturn(Optional.of(user));
         Mockito.when(userDataManager.getNormalUserDataById(MOCKED_MONGO_ID)).thenReturn(normalUserData);
         userContextMockedStatic.when(UserContext::ctx).thenReturn(userContext);
 
         try {
-            userService.changeOrganization(MOCKED_ID, OrganizationType.STUDENT);
+            userService.changeOrganization(MOCKED_HANDLE, OrganizationType.STUDENT);
             Assertions.fail();
         } catch (PortableException e) {
             Assertions.assertEquals("A-03-001", e.getCode());
@@ -963,11 +963,11 @@ class UserServiceImplTest {
         user.setType(AccountType.LOCKED_NORMAL);
         userContext.setOrganization(OrganizationType.ACMER);
         normalUserData.setOrganization(OrganizationType.STUDENT);
-        Mockito.when(userManager.getAccountById(MOCKED_ID)).thenReturn(Optional.of(user));
+        Mockito.when(userManager.getAccountByHandle(MOCKED_HANDLE)).thenReturn(Optional.of(user));
         Mockito.when(userDataManager.getNormalUserDataById(MOCKED_MONGO_ID)).thenReturn(normalUserData);
         userContextMockedStatic.when(UserContext::ctx).thenReturn(userContext);
 
-        userService.changeOrganization(MOCKED_ID, OrganizationType.SPECIAL_STUDENT);
+        userService.changeOrganization(MOCKED_HANDLE, OrganizationType.SPECIAL_STUDENT);
 
         ArgumentCaptor<NormalUserData> normalUserDataArgumentCaptor = ArgumentCaptor.forClass(NormalUserData.class);
         Mockito.verify(userDataManager).updateUserData(normalUserDataArgumentCaptor.capture());
@@ -978,10 +978,10 @@ class UserServiceImplTest {
 
     @Test
     void testAddPermissionWithNoUser() {
-        Mockito.when(userManager.getAccountById(MOCKED_ID)).thenReturn(Optional.empty());
+        Mockito.when(userManager.getAccountByHandle(MOCKED_HANDLE)).thenReturn(Optional.empty());
 
         try {
-            userService.addPermission(MOCKED_ID, PermissionType.GRANT);
+            userService.addPermission(MOCKED_HANDLE, PermissionType.GRANT);
             Assertions.fail();
         } catch (PortableException e) {
             Assertions.assertEquals("A-01-001", e.getCode());
@@ -991,10 +991,10 @@ class UserServiceImplTest {
     @Test
     void testAddPermissionWithNotNormal() {
         user.setType(AccountType.BATCH);
-        Mockito.when(userManager.getAccountById(MOCKED_ID)).thenReturn(Optional.of(user));
+        Mockito.when(userManager.getAccountByHandle(MOCKED_HANDLE)).thenReturn(Optional.of(user));
 
         try {
-            userService.addPermission(MOCKED_ID, PermissionType.GRANT);
+            userService.addPermission(MOCKED_HANDLE, PermissionType.GRANT);
             Assertions.fail();
         } catch (PortableException e) {
             Assertions.assertEquals("A-02-003", e.getCode());
@@ -1004,11 +1004,11 @@ class UserServiceImplTest {
     @Test
     void testAddPermissionWithNoUserData() throws PortableException {
         user.setType(AccountType.LOCKED_NORMAL);
-        Mockito.when(userManager.getAccountById(MOCKED_ID)).thenReturn(Optional.of(user));
+        Mockito.when(userManager.getAccountByHandle(MOCKED_HANDLE)).thenReturn(Optional.of(user));
         Mockito.when(userDataManager.getNormalUserDataById(MOCKED_MONGO_ID)).thenThrow(PortableException.of("S-02-001"));
 
         try {
-            userService.addPermission(MOCKED_ID, PermissionType.GRANT);
+            userService.addPermission(MOCKED_HANDLE, PermissionType.GRANT);
             Assertions.fail();
         } catch (PortableException e) {
             Assertions.assertEquals("S-02-001", e.getCode());
@@ -1020,12 +1020,12 @@ class UserServiceImplTest {
         user.setType(AccountType.LOCKED_NORMAL);
         userContext.setOrganization(OrganizationType.TEACHER);
         normalUserData.setOrganization(OrganizationType.ACMER);
-        Mockito.when(userManager.getAccountById(MOCKED_ID)).thenReturn(Optional.of(user));
+        Mockito.when(userManager.getAccountByHandle(MOCKED_HANDLE)).thenReturn(Optional.of(user));
         Mockito.when(userDataManager.getNormalUserDataById(MOCKED_MONGO_ID)).thenReturn(normalUserData);
         userContextMockedStatic.when(UserContext::ctx).thenReturn(userContext);
 
         try {
-            userService.addPermission(MOCKED_ID, PermissionType.GRANT);
+            userService.addPermission(MOCKED_HANDLE, PermissionType.GRANT);
             Assertions.fail();
         } catch (PortableException e) {
             Assertions.assertEquals("A-03-001", e.getCode());
@@ -1038,12 +1038,12 @@ class UserServiceImplTest {
         userContext.setOrganization(OrganizationType.ACMER);
         userContext.getPermissionTypeSet().add(PermissionType.VIEW_SOLUTION_MESSAGE);
         normalUserData.setOrganization(OrganizationType.STUDENT);
-        Mockito.when(userManager.getAccountById(MOCKED_ID)).thenReturn(Optional.of(user));
+        Mockito.when(userManager.getAccountByHandle(MOCKED_HANDLE)).thenReturn(Optional.of(user));
         Mockito.when(userDataManager.getNormalUserDataById(MOCKED_MONGO_ID)).thenReturn(normalUserData);
         userContextMockedStatic.when(UserContext::ctx).thenReturn(userContext);
 
         try {
-            userService.addPermission(MOCKED_ID, PermissionType.GRANT);
+            userService.addPermission(MOCKED_HANDLE, PermissionType.GRANT);
             Assertions.fail();
         } catch (PortableException e) {
             Assertions.assertEquals("A-02-007", e.getCode());
@@ -1057,11 +1057,11 @@ class UserServiceImplTest {
         userContext.getPermissionTypeSet().add(PermissionType.GRANT);
         normalUserData.setOrganization(OrganizationType.STUDENT);
         normalUserData.setPermissionTypeSet(new HashSet<>());
-        Mockito.when(userManager.getAccountById(MOCKED_ID)).thenReturn(Optional.of(user));
+        Mockito.when(userManager.getAccountByHandle(MOCKED_HANDLE)).thenReturn(Optional.of(user));
         Mockito.when(userDataManager.getNormalUserDataById(MOCKED_MONGO_ID)).thenReturn(normalUserData);
         userContextMockedStatic.when(UserContext::ctx).thenReturn(userContext);
 
-        userService.addPermission(MOCKED_ID, PermissionType.GRANT);
+        userService.addPermission(MOCKED_HANDLE, PermissionType.GRANT);
 
         ArgumentCaptor<NormalUserData> normalUserDataArgumentCaptor = ArgumentCaptor.forClass(NormalUserData.class);
         Mockito.verify(userDataManager).updateUserData(normalUserDataArgumentCaptor.capture());
@@ -1072,10 +1072,10 @@ class UserServiceImplTest {
 
     @Test
     void testRemovePermissionWithNoUser() {
-        Mockito.when(userManager.getAccountById(MOCKED_ID)).thenReturn(Optional.empty());
+        Mockito.when(userManager.getAccountByHandle(MOCKED_HANDLE)).thenReturn(Optional.empty());
 
         try {
-            userService.removePermission(MOCKED_ID, PermissionType.GRANT);
+            userService.removePermission(MOCKED_HANDLE, PermissionType.GRANT);
             Assertions.fail();
         } catch (PortableException e) {
             Assertions.assertEquals("A-01-001", e.getCode());
@@ -1085,10 +1085,10 @@ class UserServiceImplTest {
     @Test
     void testRemovePermissionWithNotNormal() {
         user.setType(AccountType.BATCH);
-        Mockito.when(userManager.getAccountById(MOCKED_ID)).thenReturn(Optional.of(user));
+        Mockito.when(userManager.getAccountByHandle(MOCKED_HANDLE)).thenReturn(Optional.of(user));
 
         try {
-            userService.removePermission(MOCKED_ID, PermissionType.GRANT);
+            userService.removePermission(MOCKED_HANDLE, PermissionType.GRANT);
             Assertions.fail();
         } catch (PortableException e) {
             Assertions.assertEquals("A-02-003", e.getCode());
@@ -1098,11 +1098,11 @@ class UserServiceImplTest {
     @Test
     void testRemovePermissionWithNoUserData() throws PortableException {
         user.setType(AccountType.LOCKED_NORMAL);
-        Mockito.when(userManager.getAccountById(MOCKED_ID)).thenReturn(Optional.of(user));
+        Mockito.when(userManager.getAccountByHandle(MOCKED_HANDLE)).thenReturn(Optional.of(user));
         Mockito.when(userDataManager.getNormalUserDataById(MOCKED_MONGO_ID)).thenThrow(PortableException.of("S-02-001"));
 
         try {
-            userService.removePermission(MOCKED_ID, PermissionType.GRANT);
+            userService.removePermission(MOCKED_HANDLE, PermissionType.GRANT);
             Assertions.fail();
         } catch (PortableException e) {
             Assertions.assertEquals("S-02-001", e.getCode());
@@ -1114,12 +1114,12 @@ class UserServiceImplTest {
         user.setType(AccountType.LOCKED_NORMAL);
         userContext.setOrganization(OrganizationType.TEACHER);
         normalUserData.setOrganization(OrganizationType.ACMER);
-        Mockito.when(userManager.getAccountById(MOCKED_ID)).thenReturn(Optional.of(user));
+        Mockito.when(userManager.getAccountByHandle(MOCKED_HANDLE)).thenReturn(Optional.of(user));
         Mockito.when(userDataManager.getNormalUserDataById(MOCKED_MONGO_ID)).thenReturn(normalUserData);
         userContextMockedStatic.when(UserContext::ctx).thenReturn(userContext);
 
         try {
-            userService.removePermission(MOCKED_ID, PermissionType.GRANT);
+            userService.removePermission(MOCKED_HANDLE, PermissionType.GRANT);
             Assertions.fail();
         } catch (PortableException e) {
             Assertions.assertEquals("A-03-001", e.getCode());
@@ -1132,12 +1132,12 @@ class UserServiceImplTest {
         userContext.setOrganization(OrganizationType.ACMER);
         userContext.getPermissionTypeSet().add(PermissionType.VIEW_SOLUTION_MESSAGE);
         normalUserData.setOrganization(OrganizationType.STUDENT);
-        Mockito.when(userManager.getAccountById(MOCKED_ID)).thenReturn(Optional.of(user));
+        Mockito.when(userManager.getAccountByHandle(MOCKED_HANDLE)).thenReturn(Optional.of(user));
         Mockito.when(userDataManager.getNormalUserDataById(MOCKED_MONGO_ID)).thenReturn(normalUserData);
         userContextMockedStatic.when(UserContext::ctx).thenReturn(userContext);
 
         try {
-            userService.removePermission(MOCKED_ID, PermissionType.GRANT);
+            userService.removePermission(MOCKED_HANDLE, PermissionType.GRANT);
             Assertions.fail();
         } catch (PortableException e) {
             Assertions.assertEquals("A-02-007", e.getCode());
@@ -1153,11 +1153,11 @@ class UserServiceImplTest {
         normalUserData.setPermissionTypeSet(new HashSet<PermissionType>() {{
             add(PermissionType.GRANT);
         }});
-        Mockito.when(userManager.getAccountById(MOCKED_ID)).thenReturn(Optional.of(user));
+        Mockito.when(userManager.getAccountByHandle(MOCKED_HANDLE)).thenReturn(Optional.of(user));
         Mockito.when(userDataManager.getNormalUserDataById(MOCKED_MONGO_ID)).thenReturn(normalUserData);
         userContextMockedStatic.when(UserContext::ctx).thenReturn(userContext);
 
-        userService.removePermission(MOCKED_ID, PermissionType.GRANT);
+        userService.removePermission(MOCKED_HANDLE, PermissionType.GRANT);
 
         ArgumentCaptor<NormalUserData> normalUserDataArgumentCaptor = ArgumentCaptor.forClass(NormalUserData.class);
         Mockito.verify(userDataManager).updateUserData(normalUserDataArgumentCaptor.capture());

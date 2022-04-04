@@ -39,14 +39,12 @@ public interface UserService {
     NormalUserInfoResponse register(RegisterRequest registerRequest) throws PortableException;
 
     /**
-     * 根据用户的 id 获取用户信息
+     * 获取当前登录的用户
      *
-     * @param userId 用户的 id
      * @return 用户信息
      * @throws PortableException 不存在则抛出错误
      */
-    @Deprecated
-    BaseUserInfoResponse getUserInfo(Long userId) throws PortableException;
+    BaseUserInfoResponse check() throws PortableException;
 
     /**
      * 根据用户的 handle 获取用户的信息
@@ -69,32 +67,29 @@ public interface UserService {
     /**
      * 修改用户所在组织
      *
-     * @param targetId        被修改的用户
+     * @param targetHandle    被修改的用户
      * @param newOrganization 被修改至的组织
      * @throws PortableException 遇到意外情况抛出错误
      */
-    @Deprecated
-    void changeOrganization(Long targetId, OrganizationType newOrganization) throws PortableException;
+    void changeOrganization(String targetHandle, OrganizationType newOrganization) throws PortableException;
 
     /**
      * 添加权限
      *
-     * @param targetId      目标用户
+     * @param targetHandle  目标用户
      * @param newPermission 新增加的权限
      * @throws PortableException 遇到意外情况抛出错误
      */
-    @Deprecated
-    void addPermission(Long targetId, PermissionType newPermission) throws PortableException;
+    void addPermission(String targetHandle, PermissionType newPermission) throws PortableException;
 
     /**
      * 移除权限
      *
-     * @param targetId   目标用户
-     * @param permission 移除的权限
+     * @param targetHandle 目标用户
+     * @param permission   移除的权限
      * @throws PortableException 遇到意外情况抛出错误
      */
-    @Deprecated
-    void removePermission(Long targetId, PermissionType permission) throws PortableException;
+    void removePermission(String targetHandle, PermissionType permission) throws PortableException;
 
     /**
      * 上传头像

@@ -88,7 +88,7 @@ public class CommonServiceImpl implements CommonService {
                     }
 
                     for (Field field : fields) {
-                        field.setAccessible(true);
+                        field.setAccessible(false);
                     }
 
                     enumDescMap.put(name, result);
@@ -96,8 +96,7 @@ public class CommonServiceImpl implements CommonService {
                     return result;
                 }
             }
-        } catch (ClassNotFoundException | NoSuchMethodException | InvocationTargetException | IllegalAccessException e) {
-            e.printStackTrace();
+        } catch (ClassNotFoundException | NoSuchMethodException | InvocationTargetException | IllegalAccessException ignore) {
         }
         throw PortableException.of("A-06-001", name);
     }
