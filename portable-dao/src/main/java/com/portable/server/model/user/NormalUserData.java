@@ -2,6 +2,7 @@ package com.portable.server.model.user;
 
 import com.portable.server.type.OrganizationType;
 import com.portable.server.type.PermissionType;
+import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
@@ -15,6 +16,7 @@ import java.util.Set;
 @Data
 @SuperBuilder
 @NoArgsConstructor
+@AllArgsConstructor
 @EqualsAndHashCode(callSuper = true)
 public class NormalUserData extends BaseUserData {
 

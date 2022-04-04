@@ -31,17 +31,17 @@ public class RedisValueKitImpl extends BaseRedisKit implements RedisValueKit {
 
     @Override
     public void set(String prefix, Object key, Long data, Long time) {
-        redisValueOperation.set(getKey(prefix, key), String.valueOf(data), time, TimeUnit.SECONDS);
+        redisValueOperation.set(getKey(prefix, key), String.valueOf(data), time, TimeUnit.MINUTES);
     }
 
     @Override
     public void set(String prefix, Object key, String data, Long time) {
-        redisValueOperation.set(getKey(prefix, key), data, time, TimeUnit.SECONDS);
+        redisValueOperation.set(getKey(prefix, key), data, time, TimeUnit.MINUTES);
     }
 
     @Override
     public <T> void set(String prefix, Object key, T data, Long time) {
-        redisValueOperation.set(getKey(prefix, key), JsonUtils.toString(data), time, TimeUnit.SECONDS);
+        redisValueOperation.set(getKey(prefix, key), JsonUtils.toString(data), time, TimeUnit.MINUTES);
     }
 
     @Override
