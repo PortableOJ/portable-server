@@ -56,6 +56,9 @@ public class UserManagerImpl implements UserManager {
 
     @Override
     public Optional<User> getAccountByHandle(String handle) {
+        if (handle == null) {
+            return Optional.empty();
+        }
         Optional<Long> userId = redisValueKit.get(REDIS_USER_HANDLE_TO_ID_PREFIX, handle, Long.class);
         if (userId.isPresent()) {
             return getAccountById(userId.get());
@@ -70,6 +73,9 @@ public class UserManagerImpl implements UserManager {
 
     @Override
     public Optional<Long> changeHandleToUserId(String handle) {
+        if (handle == null) {
+            return Optional.empty();
+        }
         return Optional.ofNullable(redisValueKit.get(REDIS_USER_HANDLE_TO_ID_PREFIX, handle, Long.class)
                 .orElseGet(() -> {
                     User user = userMapper.selectAccountByHandle(handle);
@@ -90,6 +96,9 @@ public class UserManagerImpl implements UserManager {
 
     @Override
     public Optional<User> getAccountById(Long id) {
+        if (id == null) {
+            return Optional.empty();
+        }
         return Optional.ofNullable(redisValueKit.get(REDIS_USER_ID_TO_DATA_PREFIX, id, User.class)
                 .orElseGet(() -> {
                     User user = userMapper.selectAccountById(id);

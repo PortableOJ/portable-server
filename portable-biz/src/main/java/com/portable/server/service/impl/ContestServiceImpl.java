@@ -202,9 +202,10 @@ public class ContestServiceImpl implements ContestService {
                     .getProblemId());
         }
 
+        Long userId = userManager.changeHandleToUserId(pageRequest.getQueryData().getUserHandle()).orElse(null);
         Integer solutionCount = solutionManager.countSolution(
                 SolutionType.CONTEST,
-                queryData.getUserId(),
+                userId,
                 contestId,
                 queryData.getProblemId(),
                 queryData.getStatusType()
@@ -214,7 +215,7 @@ public class ContestServiceImpl implements ContestService {
                 response.getPageSize(),
                 response.offset(),
                 SolutionType.CONTEST,
-                queryData.getUserId(),
+                userId,
                 contestId,
                 queryData.getProblemId(),
                 queryData.getStatusType()
@@ -279,9 +280,10 @@ public class ContestServiceImpl implements ContestService {
                     .getProblemId());
         }
 
+        Long userId = userManager.changeHandleToUserId(pageRequest.getQueryData().getUserHandle()).orElse(null);
         Integer solutionCount = solutionManager.countSolution(
                 SolutionType.TEST_CONTEST,
-                queryData.getUserId(),
+                userId,
                 contestId,
                 queryData.getProblemId(),
                 queryData.getStatusType()
@@ -291,7 +293,7 @@ public class ContestServiceImpl implements ContestService {
                 response.getPageSize(),
                 response.offset(),
                 SolutionType.TEST_CONTEST,
-                queryData.getUserId(),
+                userId,
                 contestId,
                 queryData.getProblemId(),
                 queryData.getStatusType()

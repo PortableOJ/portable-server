@@ -28,11 +28,6 @@ public class SolutionListResponse {
     private Date submitTime;
 
     /**
-     * 提交者 id
-     */
-    private Long userId;
-
-    /**
      * 提交者 handle
      */
     private String userHandle;
@@ -70,7 +65,6 @@ public class SolutionListResponse {
     private SolutionListResponse(@NotNull Solution solution, @Nullable User user, @Nullable Problem problem) {
         this.id = solution.getId();
         this.submitTime = solution.getSubmitTime();
-        this.userId = solution.getUserId();
         this.userHandle = user == null ? "" : user.getHandle();
         this.problemId = solution.getProblemId();
         this.problemTitle = problem == null ? "" : problem.getTitle();

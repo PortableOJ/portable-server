@@ -96,7 +96,7 @@ class SolutionServiceImplTest {
                 .pageNum(2)
                 .pageSize(10)
                 .queryData(SolutionListQueryRequest.builder()
-                        .userId(MOCKED_USER_ID)
+                        .userHandle(MOCKED_USER_HANDLE)
                         .problemId(MOCKED_PROBLEM_ID)
                         .statusType(SolutionStatusType.ACCEPT)
                         .build())

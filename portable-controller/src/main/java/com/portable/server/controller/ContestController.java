@@ -94,14 +94,14 @@ public class ContestController {
     public Response<PageResponse<SolutionListResponse, Void>> getContestStatusList(@NotNull(message = "A-08-002") @Min(value = 1, message = "A-08-002") Long contestId,
                                                                                    Integer pageNum,
                                                                                    Integer pageSize,
-                                                                                   Long userId,
+                                                                                   String userHandle,
                                                                                    Long problemId,
                                                                                    SolutionStatusType statusType) throws PortableException {
         PageRequest<SolutionListQueryRequest> pageRequest = PageRequest.<SolutionListQueryRequest>builder()
                 .pageNum(pageNum)
                 .pageSize(pageSize)
                 .queryData(SolutionListQueryRequest.builder()
-                        .userId(userId)
+                        .userHandle(userHandle)
                         .problemId(problemId)
                         .statusType(statusType)
                         .build()
@@ -122,14 +122,14 @@ public class ContestController {
     public Response<PageResponse<SolutionListResponse, Void>> getContestTestStatusList(@NotNull(message = "A-08-002") @Min(value = 1, message = "A-08-002") Long contestId,
                                                                                        Integer pageNum,
                                                                                        Integer pageSize,
-                                                                                       Long userId,
+                                                                                       String userHandle,
                                                                                        Long problemId,
                                                                                        SolutionStatusType statusType) throws PortableException {
         PageRequest<SolutionListQueryRequest> pageRequest = PageRequest.<SolutionListQueryRequest>builder()
                 .pageNum(pageNum)
                 .pageSize(pageSize)
                 .queryData(SolutionListQueryRequest.builder()
-                        .userId(userId)
+                        .userHandle(userHandle)
                         .problemId(problemId)
                         .statusType(statusType)
                         .build()
