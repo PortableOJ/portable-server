@@ -100,12 +100,11 @@ public class ContestController {
         PageRequest<SolutionListQueryRequest> pageRequest = PageRequest.<SolutionListQueryRequest>builder()
                 .pageNum(pageNum)
                 .pageSize(pageSize)
-                .queryData(
-                        SolutionListQueryRequest.builder()
-                                .userId(userId)
-                                .problemId(problemId)
-                                .statusType(statusType)
-                                .build()
+                .queryData(SolutionListQueryRequest.builder()
+                        .userId(userId)
+                        .problemId(problemId)
+                        .statusType(statusType)
+                        .build()
                 )
                 .build();
         pageRequest.verify();
@@ -129,12 +128,11 @@ public class ContestController {
         PageRequest<SolutionListQueryRequest> pageRequest = PageRequest.<SolutionListQueryRequest>builder()
                 .pageNum(pageNum)
                 .pageSize(pageSize)
-                .queryData(
-                        SolutionListQueryRequest.builder()
-                                .userId(userId)
-                                .problemId(problemId)
-                                .statusType(statusType)
-                                .build()
+                .queryData(SolutionListQueryRequest.builder()
+                        .userId(userId)
+                        .problemId(problemId)
+                        .statusType(statusType)
+                        .build()
                 )
                 .build();
         pageRequest.verify();

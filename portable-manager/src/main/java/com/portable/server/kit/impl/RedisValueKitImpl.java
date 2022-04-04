@@ -10,7 +10,6 @@ import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
-import java.io.Serializable;
 import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 
@@ -31,7 +30,12 @@ public class RedisValueKitImpl extends BaseRedisKit implements RedisValueKit {
     }
 
     @Override
-    public void set(String prefix, String key, String data, Long time) {
+    public void set(String prefix, Object key, Long data, Long time) {
+        redisValueOperation.set(getKey(prefix, key), String.valueOf(data), time, TimeUnit.SECONDS);
+    }
+
+    @Override
+    public void set(String prefix, Object key, String data, Long time) {
         redisValueOperation.set(getKey(prefix, key), data, time, TimeUnit.SECONDS);
     }
 
@@ -41,12 +45,24 @@ public class RedisValueKitImpl extends BaseRedisKit implements RedisValueKit {
     }
 
     @Override
-    public <T> Optional<T> get(String prefix, String key, Class<T> clazz) {
+    public <T> Optional<T> get(String prefix, Object key, Class<T> clazz) {
         String value = redisValueOperation.get(getKey(prefix, key));
         if (value == null) {
             return Optional.empty();
         }
-        return Optional.of(JsonUtils.toObject(value, clazz));
+        Object res;
+        if (Integer.class.equals(clazz)) {
+            res = Integer.valueOf(value);
+        } else if (Long.class.equals(clazz)) {
+            res = Long.valueOf(value);
+        } else if (Double.class.equals(clazz)) {
+            res = Double.valueOf(value);
+        } else if (String.class.equals(clazz)) {
+            res = value;
+        } else {
+            res = JsonUtils.toObject(value, clazz);
+        }
+        return Optional.ofNullable(clazz.cast(res));
     }
 
     @Override

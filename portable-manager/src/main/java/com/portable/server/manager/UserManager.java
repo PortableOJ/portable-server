@@ -27,13 +27,23 @@ public interface UserManager {
 
     /**
      * 根据用户的 handle 获取账号
+     *
      * @param handle 用户 handle
      * @return 用户信息
      */
     Optional<User> getAccountByHandle(String handle);
 
     /**
+     * 将用户的昵称转为用户的 id
+     *
+     * @param handle 用户的昵称
+     * @return 用户的 id
+     */
+    Optional<Long> changeHandleToUserId(String handle);
+
+    /**
      * 批量转换用户的昵称为用户的 id
+     *
      * @param handleList 用户昵称列表
      * @return 用户 id 列表
      */
