@@ -652,6 +652,29 @@ class UserServiceImplTest {
     }
 
     @Test
+    void testCheckWithNotLogin() throws PortableException {
+        userContext.setId(null);
+        userContextMockedStatic.when(UserContext::ctx).thenReturn(userContext);
+
+        BaseUserInfoResponse retVal = userService.check();
+
+        Assertions.assertNull(retVal);
+    }
+
+    @Test
+    void testCheckWithLogin() throws PortableException {
+        user.setType(AccountType.NORMAL);
+        userContext.setId(MOCKED_ID);
+        userContextMockedStatic.when(UserContext::ctx).thenReturn(userContext);
+        Mockito.when(userManager.getAccountById(MOCKED_ID)).thenReturn(Optional.of(user));
+        Mockito.when(userDataManager.getNormalUserDataById(MOCKED_MONGO_ID)).thenReturn(normalUserData);
+
+        BaseUserInfoResponse retVal = userService.check();
+
+        Assertions.assertEquals(MOCKED_HANDLE, retVal.getHandle());
+    }
+
+    @Test
     void testGetUserInfoWithNoUser() {
         Mockito.when(userManager.getAccountByHandle(MOCKED_HANDLE)).thenReturn(Optional.empty());
 
@@ -1313,7 +1336,6 @@ class UserServiceImplTest {
 
         /// endregion
     }
-
 
     @Test
     void testclearBatchUserIpListWithNoUser() {

@@ -268,11 +268,6 @@ public class UserServiceImpl implements UserService {
     private NormalUserData organizationCheck(String handle) throws PortableException {
         User user = userManager.getAccountByHandle(handle)
                 .orElseThrow(PortableException.from("A-01-001"));
-        return organizationCheck(user);
-    }
-
-    @NotNull
-    private NormalUserData organizationCheck(User user) throws PortableException {
         if (!user.getType().getIsNormal()) {
             throw PortableException.of("A-02-003");
         }
@@ -284,13 +279,6 @@ public class UserServiceImpl implements UserService {
                     UserContext.ctx().getOrganization());
         }
         return targetUserData;
-    }
-
-    @NotNull
-    private NormalUserData organizationCheck(Long target) throws PortableException {
-        User user = userManager.getAccountById(target)
-                .orElseThrow(PortableException.from("A-01-001"));
-        return organizationCheck(user);
     }
 
     private BaseUserInfoResponse getUserBasicInfoResponse(User user) throws PortableException {
