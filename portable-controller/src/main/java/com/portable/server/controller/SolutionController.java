@@ -35,7 +35,7 @@ public class SolutionController {
                                                                                     Integer pageSize,
                                                                                     String userHandle,
                                                                                     Long problemId,
-                                                                                    SolutionStatusType statusType) {
+                                                                                    SolutionStatusType statusType) throws PortableException {
         PageRequest<SolutionListQueryRequest> pageRequest = PageRequest.<SolutionListQueryRequest>builder()
                 .pageNum(pageNum)
                 .pageSize(pageSize)

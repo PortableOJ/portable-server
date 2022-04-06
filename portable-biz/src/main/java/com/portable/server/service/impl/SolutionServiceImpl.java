@@ -18,6 +18,7 @@ import com.portable.server.service.SolutionService;
 import com.portable.server.type.PermissionType;
 import com.portable.server.type.SolutionType;
 import com.portable.server.util.UserContext;
+import org.apache.logging.log4j.util.Strings;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
@@ -44,14 +45,19 @@ public class SolutionServiceImpl implements SolutionService {
     private SolutionDataManager solutionDataManager;
 
     @Override
-    public PageResponse<SolutionListResponse, Void> getPublicStatus(PageRequest<SolutionListQueryRequest> pageRequest) {
-        Long userId = userManager.changeHandleToUserId(pageRequest.getQueryData().getUserHandle()).orElse(null);
+    public PageResponse<SolutionListResponse, Void> getPublicStatus(PageRequest<SolutionListQueryRequest> pageRequest) throws PortableException {
+        SolutionListQueryRequest queryRequest = pageRequest.getQueryData();
+        // 当提供了 userhandle 的时候，若用户不存在，则抛出错误，若为空值，则当作不设置条件
+        Long userId = null;
+        if (Strings.isNotBlank(queryRequest.getUserHandle())) {
+            userId = userManager.changeHandleToUserId(queryRequest.getUserHandle()).orElseThrow(PortableException.from("A-01-001"));
+        }
         Integer solutionCount = solutionManager.countSolution(
                 SolutionType.PUBLIC,
                 userId,
                 null,
-                pageRequest.getQueryData().getProblemId(),
-                pageRequest.getQueryData().getStatusType()
+                queryRequest.getProblemId(),
+                queryRequest.getStatusType()
         );
         PageResponse<SolutionListResponse, Void> response = PageResponse.of(pageRequest, solutionCount);
         List<Solution> solutionList = solutionManager.selectSolutionByPage(
@@ -60,8 +66,8 @@ public class SolutionServiceImpl implements SolutionService {
                 SolutionType.PUBLIC,
                 userId,
                 null,
-                pageRequest.getQueryData().getProblemId(),
-                pageRequest.getQueryData().getStatusType()
+                queryRequest.getProblemId(),
+                queryRequest.getStatusType()
         );
 
         List<SolutionListResponse> solutionListResponseList = solutionList.stream()

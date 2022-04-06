@@ -3,11 +3,9 @@ package com.portable.server.service;
 import com.portable.server.exception.PortableException;
 import com.portable.server.model.request.PageRequest;
 import com.portable.server.model.request.solution.SolutionListQueryRequest;
-import com.portable.server.model.request.solution.SubmitSolutionRequest;
 import com.portable.server.model.response.PageResponse;
 import com.portable.server.model.response.solution.SolutionDetailResponse;
 import com.portable.server.model.response.solution.SolutionListResponse;
-import com.portable.server.model.solution.SolutionData;
 
 /**
  * @author shiroha
@@ -16,10 +14,12 @@ public interface SolutionService {
 
     /**
      * 获取公共提交列表
+     *
      * @param pageRequest 分页
      * @return 公共提交列表
+     * @throws PortableException 分页时若没有提供正确的用户昵称的时候则抛出错误
      */
-    PageResponse<SolutionListResponse, Void> getPublicStatus(PageRequest<SolutionListQueryRequest> pageRequest);
+    PageResponse<SolutionListResponse, Void> getPublicStatus(PageRequest<SolutionListQueryRequest> pageRequest) throws PortableException;
 
     /**
      * 获取公共提交中的某次详细信息

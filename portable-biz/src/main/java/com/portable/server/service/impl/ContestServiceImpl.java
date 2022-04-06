@@ -50,6 +50,7 @@ import com.portable.server.type.SolutionType;
 import com.portable.server.util.UserContext;
 import lombok.Builder;
 import lombok.Data;
+import org.apache.logging.log4j.util.Strings;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
@@ -186,53 +187,14 @@ public class ContestServiceImpl implements ContestService {
     }
 
     @Override
-    public PageResponse<SolutionListResponse, Void> getContestStatusList(Long contestId, PageRequest<SolutionListQueryRequest> pageRequest) throws PortableException {
+    public PageResponse<SolutionListResponse, Void> getContestStatusList(Long contestId,
+                                                                         PageRequest<SolutionListQueryRequest> pageRequest) throws PortableException {
         ContestPackage contestPackage = getContestPackage(contestId);
         ContestVisitPermission contestVisitPermission = checkPermission(contestPackage);
         if (!ContestVisitPermission.VISIT.approve(contestVisitPermission)) {
             throw PortableException.of("A-08-004", contestId);
         }
-
-        SolutionListQueryRequest queryData = pageRequest.getQueryData();
-
-        if (queryData.getProblemId() != null) {
-            queryData.setProblemId(contestPackage.getContestData()
-                    .getProblemList()
-                    .get(Math.toIntExact(queryData.getProblemId()))
-                    .getProblemId());
-        }
-
-        Long userId = userManager.changeHandleToUserId(pageRequest.getQueryData().getUserHandle()).orElse(null);
-        Integer solutionCount = solutionManager.countSolution(
-                SolutionType.CONTEST,
-                userId,
-                contestId,
-                queryData.getProblemId(),
-                queryData.getStatusType()
-        );
-        PageResponse<SolutionListResponse, Void> response = PageResponse.of(pageRequest, solutionCount);
-        List<Solution> solutionList = solutionManager.selectSolutionByPage(
-                response.getPageSize(),
-                response.offset(),
-                SolutionType.CONTEST,
-                userId,
-                contestId,
-                queryData.getProblemId(),
-                queryData.getStatusType()
-        );
-        @SuppressWarnings("DuplicatedCode")
-        Map<Long, Integer> problemIdToProblemIndexMap = contestPackage.getContestData().idToIndex();
-        List<SolutionListResponse> solutionListResponseList = solutionList.stream()
-                .map(solution -> {
-                    User user = userManager.getAccountById(solution.getUserId()).orElse(null);
-                    Problem problem = problemManager.getProblemById(solution.getProblemId()).orElse(null);
-                    SolutionListResponse solutionListResponse = SolutionListResponse.of(solution, user, problem);
-                    solutionListResponse.setProblemId(Long.valueOf(problemIdToProblemIndexMap.get(solution.getProblemId())));
-                    return solutionListResponse;
-                })
-                .collect(Collectors.toList());
-        response.setData(solutionListResponseList);
-        return response;
+        return getSolutionList(contestPackage, pageRequest, SolutionType.TEST_CONTEST);
     }
 
     @Override
@@ -264,53 +226,14 @@ public class ContestServiceImpl implements ContestService {
     }
 
     @Override
-    public PageResponse<SolutionListResponse, Void> getContestTestStatusList(Long contestId, PageRequest<SolutionListQueryRequest> pageRequest) throws PortableException {
+    public PageResponse<SolutionListResponse, Void> getContestTestStatusList(Long contestId,
+                                                                             PageRequest<SolutionListQueryRequest> pageRequest) throws PortableException {
         ContestPackage contestPackage = getContestPackage(contestId);
         ContestVisitPermission contestVisitPermission = checkPermission(contestPackage);
         if (!ContestVisitPermission.CO_AUTHOR.approve(contestVisitPermission)) {
             throw PortableException.of("A-08-006", contestId);
         }
-
-        SolutionListQueryRequest queryData = pageRequest.getQueryData();
-
-        if (queryData.getProblemId() != null) {
-            queryData.setProblemId(contestPackage.getContestData()
-                    .getProblemList()
-                    .get(Math.toIntExact(queryData.getProblemId()))
-                    .getProblemId());
-        }
-
-        Long userId = userManager.changeHandleToUserId(pageRequest.getQueryData().getUserHandle()).orElse(null);
-        Integer solutionCount = solutionManager.countSolution(
-                SolutionType.TEST_CONTEST,
-                userId,
-                contestId,
-                queryData.getProblemId(),
-                queryData.getStatusType()
-        );
-        PageResponse<SolutionListResponse, Void> response = PageResponse.of(pageRequest, solutionCount);
-        List<Solution> solutionList = solutionManager.selectSolutionByPage(
-                response.getPageSize(),
-                response.offset(),
-                SolutionType.TEST_CONTEST,
-                userId,
-                contestId,
-                queryData.getProblemId(),
-                queryData.getStatusType()
-        );
-        @SuppressWarnings("DuplicatedCode")
-        Map<Long, Integer> problemIdToProblemIndexMap = contestPackage.getContestData().idToIndex();
-        List<SolutionListResponse> solutionListResponseList = solutionList.stream()
-                .map(solution -> {
-                    User user = userManager.getAccountById(solution.getUserId()).orElse(null);
-                    Problem problem = problemManager.getProblemById(solution.getProblemId()).orElse(null);
-                    SolutionListResponse solutionListResponse = SolutionListResponse.of(solution, user, problem);
-                    solutionListResponse.setProblemId(Long.valueOf(problemIdToProblemIndexMap.get(solution.getProblemId())));
-                    return solutionListResponse;
-                })
-                .collect(Collectors.toList());
-        response.setData(solutionListResponseList);
-        return response;
+        return getSolutionList(contestPackage, pageRequest, SolutionType.CONTEST);
     }
 
     @Override
@@ -785,5 +708,52 @@ public class ContestServiceImpl implements ContestService {
                 })
                 .findAny()
                 .orElseThrow(PortableException.from("S-03-001"));
+    }
+
+    private PageResponse<SolutionListResponse, Void> getSolutionList(ContestPackage contestPackage, PageRequest<SolutionListQueryRequest> pageRequest, SolutionType solutionType) throws PortableException {
+        SolutionListQueryRequest queryData = pageRequest.getQueryData();
+
+        if (queryData.getProblemId() != null) {
+            queryData.setProblemId(contestPackage.getContestData()
+                    .getProblemList()
+                    .get(Math.toIntExact(queryData.getProblemId()))
+                    .getProblemId());
+        }
+
+        // 当提供了 userhandle 的时候，若用户不存在，则抛出错误，若为空值，则当作不设置条件
+        Long userId = null;
+        if (Strings.isNotBlank(queryData.getUserHandle())) {
+            userId = userManager.changeHandleToUserId(queryData.getUserHandle()).orElseThrow(PortableException.from("A-01-001"));
+        }
+
+        Integer solutionCount = solutionManager.countSolution(solutionType,
+                userId,
+                contestPackage.getContest().getId(),
+                queryData.getProblemId(),
+                queryData.getStatusType()
+        );
+
+        PageResponse<SolutionListResponse, Void> response = PageResponse.of(pageRequest, solutionCount);
+        List<Solution> solutionList = solutionManager.selectSolutionByPage(response.getPageSize(),
+                response.offset(),
+                solutionType,
+                userId,
+                contestPackage.getContest().getId(),
+                queryData.getProblemId(),
+                queryData.getStatusType()
+        );
+
+        Map<Long, Integer> problemIdToProblemIndexMap = contestPackage.getContestData().idToIndex();
+        List<SolutionListResponse> solutionListResponseList = solutionList.stream()
+                .map(solution -> {
+                    User user = userManager.getAccountById(solution.getUserId()).orElse(null);
+                    Problem problem = problemManager.getProblemById(solution.getProblemId()).orElse(null);
+                    SolutionListResponse solutionListResponse = SolutionListResponse.of(solution, user, problem);
+                    solutionListResponse.setProblemId(Long.valueOf(problemIdToProblemIndexMap.get(solution.getProblemId())));
+                    return solutionListResponse;
+                })
+                .collect(Collectors.toList());
+        response.setData(solutionListResponseList);
+        return response;
     }
 }
