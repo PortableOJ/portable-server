@@ -94,26 +94,25 @@ public class BatchServiceImpl implements BatchService {
             batch.setOwner(UserContext.ctx().getId());
             batchManager.insertBatch(batch);
         }
-        final Batch finalBatch = batch;
-        CreateBatchResponse createBatchResponse = CreateBatchResponse.of(batch.getId());
+        Long batchId = batch.getId();
+        CreateBatchResponse createBatchResponse = CreateBatchResponse.of(batch);
         IntStream.rangeClosed(1, request.getCount())
                 .boxed()
                 .forEachOrdered(i -> {
                             BatchUserData batchUserData = userDataManager.newBatchUserData();
-                            batchUserData.setBatchId(finalBatch.getId());
+                            batchUserData.setBatchId(batchId);
                             userDataManager.insertUserData(batchUserData);
 
                             User user = userManager.newBatchAccount();
                             user.setDataId(batchUserData.get_id());
                             user.setHandle(String.format(BATCH_FORMAT, request.getPrefix(), i));
-                            StringBuilder stringBuilder = new StringBuilder();
-                            IntStream.range(0, PASSWORD_LEN)
-                                    .forEach(t -> stringBuilder.append(RANDOM.nextInt(10)));
+                            String password = IntStream.range(0, PASSWORD_LEN)
+                                    .mapToObj(t -> String.valueOf(RANDOM.nextInt(10)))
+                                    .collect(Collectors.joining());
+
                             // 在密码还是原来的非加密态时保存至返回值
-                            user.setPassword(stringBuilder.toString());
-
+                            user.setPassword(password);
                             createBatchResponse.add(user);
-
                             user.setPassword(BCryptEncoder.encoder(user.getPassword()));
 
                             userManager.insertAccount(user);
@@ -124,21 +123,13 @@ public class BatchServiceImpl implements BatchService {
 
     @Override
     public void changeStatus(Long id, BatchStatusType statusType) throws PortableException {
-        Batch batch = batchManager.selectBatchById(id)
-                .orElseThrow(PortableException.from("A-10-006", id));
-        if (!Objects.equals(batch.getOwner(), UserContext.ctx().getId())) {
-            throw PortableException.of("A-10-002");
-        }
+        getBatchData(id);
         batchManager.updateBatchStatus(id, statusType);
     }
 
     @Override
     public BatchListResponse getBatch(Long id) throws PortableException {
-        Batch batch = batchManager.selectBatchById(id)
-                .orElseThrow(PortableException.from("A-10-006", id));
-        if (!Objects.equals(batch.getOwner(), UserContext.ctx().getId())) {
-            throw PortableException.of("A-10-002");
-        }
+        Batch batch = getBatchData(id);
         Contest contest = null;
         if (batch.getContestId() != null) {
             contest = contestManager.getContestById(batch.getContestId()).orElse(null);
@@ -148,11 +139,16 @@ public class BatchServiceImpl implements BatchService {
 
     @Override
     public void changeBatchIpLock(Long id, Boolean ipLock) throws PortableException {
+        getBatchData(id);
+        batchManager.updateBatchIpLock(id, ipLock);
+    }
+
+    private Batch getBatchData(Long id) throws PortableException {
         Batch batch = batchManager.selectBatchById(id)
                 .orElseThrow(PortableException.from("A-10-006", id));
         if (!Objects.equals(batch.getOwner(), UserContext.ctx().getId())) {
             throw PortableException.of("A-10-002");
         }
-        batchManager.updateBatchIpLock(id, ipLock);
+        return batch;
     }
 }
