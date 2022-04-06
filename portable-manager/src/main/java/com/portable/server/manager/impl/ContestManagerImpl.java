@@ -73,4 +73,9 @@ public class ContestManagerImpl implements ContestManager {
     public void updateAccessType(Long id, ContestAccessType newAccessType) {
         contestMapper.updateAccessType(id, newAccessType);
     }
+
+    @Override
+    public void updateTitle(Long id, String title) {
+        contestMapper.updateTitle(id, title);
+    }
 }

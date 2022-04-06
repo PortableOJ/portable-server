@@ -387,24 +387,29 @@ public class ContestServiceImpl implements ContestService {
             }
             checkSameProblem(contestContentRequest);
             setContestContentToContestData(contestContentRequest, contestData);
+
             contestManager.updateStartTime(contestContentRequest.getId(), contestContentRequest.getStartTime());
             contestManager.updateDuration(contestContentRequest.getId(), contestContentRequest.getDuration());
+            contestManager.updateTitle(contestContentRequest.getId(), contestContentRequest.getTitle());
+
             contestDataManager.saveContestData(contestData);
             updateContestLock(contestPackage, contestContentRequest.getProblemList());
         } else if (contest.isStarted() && !contest.isEnd()) {
             // 已经开始的比赛不允许修改比赛开始时间
             contestContentRequest.setStartTime(contest.getStartTime());
             checkSameProblem(contestContentRequest);
-            contestManager.updateDuration(contestContentRequest.getId(), contestContentRequest.getDuration());
             // 下面的函数已经保证了不会删除题目
             contestContentRequest.toContestData(contestData);
             contestDataManager.saveContestData(contestData);
+            contestManager.updateDuration(contestContentRequest.getId(), contestContentRequest.getDuration());
+            contestManager.updateTitle(contestContentRequest.getId(), contestContentRequest.getTitle());
             updateContestLock(contestPackage, contestContentRequest.getProblemList());
         } else {
             // 比赛已经结束，仅允许修改比赛公告和封榜时间
             contestData.setAnnouncement(contestContentRequest.getAnnouncement());
             contestData.setFreezeTime(contestContentRequest.getFreezeTime());
             contestDataManager.saveContestData(contestData);
+            contestManager.updateTitle(contestContentRequest.getId(), contestContentRequest.getTitle());
         }
     }
 

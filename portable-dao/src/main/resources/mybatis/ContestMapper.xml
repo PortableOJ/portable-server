@@ -70,4 +70,10 @@
         WHERE id = #{id}
     </update>
 
+    <update id="updateTitle">
+        UPDATE contest
+        SET title = #{title}
+        WHERE id = #{id}
+    </update>
+
 </mapper>
