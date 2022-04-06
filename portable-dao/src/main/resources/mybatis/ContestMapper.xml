@@ -29,7 +29,7 @@
     <select id="getContestByPage" resultMap="Problem">
         SELECT *
         FROM contest
-        ORDER BY id
+        ORDER BY id DESC
         LIMIT #{offset}, #{pageSize}
     </select>
 
