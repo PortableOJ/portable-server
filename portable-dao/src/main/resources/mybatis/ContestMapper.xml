@@ -29,7 +29,7 @@
     <select id="getContestByPage" resultMap="Problem">
         SELECT *
         FROM contest
-        ORDER BY id
+        ORDER BY id DESC
         LIMIT #{offset}, #{pageSize}
     </select>
 
@@ -67,6 +67,12 @@
     <update id="updateAccessType">
         UPDATE contest
         SET access_type = #{newAccessType}
+        WHERE id = #{id}
+    </update>
+
+    <update id="updateTitle">
+        UPDATE contest
+        SET title = #{title}
         WHERE id = #{id}
     </update>
 

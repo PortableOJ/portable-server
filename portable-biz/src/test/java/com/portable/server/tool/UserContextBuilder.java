@@ -18,11 +18,14 @@ public class UserContextBuilder {
     private UserContext userContext;
     private MockedStatic<UserContext> userContextMockedStatic;
 
+    private UserContextLogined userContextLogined;
+
     public void setup() {
         MOCKED_USER_ID = 1L;
         userContext = UserContext.getNullUser();
         userContextMockedStatic = Mockito.mockStatic(UserContext.class);
         userContextMockedStatic.when(UserContext::ctx).thenReturn(userContext);
+        userContextLogined = new UserContextLogined(userContext);
     }
 
     public void tearDown() {
@@ -32,35 +35,44 @@ public class UserContextBuilder {
     public void withNotLogin() {
     }
 
-    public UserContextBuilder withNormalLoginIn() {
+    public UserContextLogined withNormalLoginIn() {
         userContext.setId(MOCKED_USER_ID);
         userContext.setType(AccountType.NORMAL);
-        return this;
+        return userContextLogined;
     }
 
-    public UserContextBuilder withNormalLoginIn(Long id) {
+    public UserContextLogined withNormalLoginIn(Long id) {
         userContext.setId(id);
         userContext.setType(AccountType.NORMAL);
-        return this;
+        return userContextLogined;
     }
 
-    public UserContextBuilder withBatchLoginIn() {
+    public UserContextLogined withBatchLoginIn() {
         userContext.setId(MOCKED_USER_ID);
         userContext.setType(AccountType.NORMAL);
-        return this;
+        return userContextLogined;
     }
 
-    public UserContextBuilder withBatchLoginIn(Long id) {
+    public UserContextLogined withBatchLoginIn(Long id) {
         userContext.setId(id);
         userContext.setType(AccountType.NORMAL);
-        return this;
+        return userContextLogined;
     }
 
-    public void withDataId(String dataId) {
-        userContext.setDataId(dataId);
-    }
+    public static class UserContextLogined {
 
-    public void withPermission(PermissionType... permission) {
-        userContext.setPermissionTypeSet(Arrays.stream(permission).collect(Collectors.toSet()));
+        private final UserContext userContext;
+
+        private UserContextLogined(UserContext userContext) {
+            this.userContext = userContext;
+        }
+
+        public void withDataId(String dataId) {
+            userContext.setDataId(dataId);
+        }
+
+        public void withPermission(PermissionType... permission) {
+            userContext.setPermissionTypeSet(Arrays.stream(permission).collect(Collectors.toSet()));
+        }
     }
 }

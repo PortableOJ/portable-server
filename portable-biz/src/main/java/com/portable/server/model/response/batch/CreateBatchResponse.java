@@ -1,5 +1,6 @@
 package com.portable.server.model.response.batch;
 
+import com.portable.server.model.batch.Batch;
 import com.portable.server.model.user.User;
 import lombok.Data;
 import org.jetbrains.annotations.NotNull;
@@ -46,8 +47,8 @@ public class CreateBatchResponse {
         }
     }
 
-    CreateBatchResponse(Long id) {
-        this.id = id;
+    CreateBatchResponse(Batch batch) {
+        this.id = batch.getId();
         this.batchUserList = new ArrayList<>();
     }
 
@@ -55,7 +56,7 @@ public class CreateBatchResponse {
         this.batchUserList.add(BatchUser.of(user));
     }
 
-    public static CreateBatchResponse of(@NotNull Long id) {
-        return new CreateBatchResponse(id);
+    public static CreateBatchResponse of(@NotNull Batch batch) {
+        return new CreateBatchResponse(batch);
     }
 }

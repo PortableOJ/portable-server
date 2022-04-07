@@ -80,7 +80,30 @@ class SolutionServiceImplTest {
     }
 
     @Test
-    void testGetPublicStatus() {
+    void testGetPublicStatusWithNoUserId() {
+
+        Mockito.when(userManager.changeHandleToUserId(MOCKED_USER_HANDLE)).thenReturn(Optional.empty());
+
+        PageRequest<SolutionListQueryRequest> pageRequest = PageRequest.<SolutionListQueryRequest>builder()
+                .pageNum(2)
+                .pageSize(10)
+                .queryData(SolutionListQueryRequest.builder()
+                        .userHandle(MOCKED_USER_HANDLE)
+                        .problemId(MOCKED_PROBLEM_ID)
+                        .statusType(SolutionStatusType.ACCEPT)
+                        .build())
+                .build();
+
+        try {
+            solutionService.getPublicStatus(pageRequest);
+            Assertions.fail();
+        } catch (PortableException e) {
+            Assertions.assertEquals("A-01-001", e.getCode());
+        }
+    }
+
+    @Test
+    void testGetPublicStatusWithSuccess() throws PortableException {
         user.setId(MOCKED_USER_ID);
         user.setHandle(MOCKED_USER_HANDLE);
         problem.setTitle(MOCKED_PROBLEM_TITLE);

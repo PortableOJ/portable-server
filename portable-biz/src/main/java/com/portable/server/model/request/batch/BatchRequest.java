@@ -1,6 +1,7 @@
 package com.portable.server.model.request.batch;
 
 import com.portable.server.model.batch.Batch;
+import lombok.Builder;
 import lombok.Data;
 import org.hibernate.validator.constraints.Range;
 
@@ -11,6 +12,7 @@ import javax.validation.constraints.Pattern;
  * @author shiroha
  */
 @Data
+@Builder
 public class BatchRequest {
 
     /**

@@ -204,7 +204,7 @@ public class ProblemServiceImplTest {
 
         @Test
         void testOfWithContestOwnerPrivateNotEnd() {
-            userContextBuilder.withNormalLoginIn(MOCKED_USER_ID + 1).withPermission(PermissionType.CREATE_AND_EDIT_PROBLEM, PermissionType.EDIT_NOT_OWNER_PROBLEM);
+            userContextBuilder.withNormalLoginIn(MOCKED_USER_ID + 1).withPermission(PermissionType.CREATE_AND_EDIT_PROBLEM);
             contest.setOwner(MOCKED_USER_ID + 1);
             contest.setStartTime(new Date());
             contest.setDuration(10000);
