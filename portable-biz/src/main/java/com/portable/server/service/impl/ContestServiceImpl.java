@@ -194,7 +194,7 @@ public class ContestServiceImpl implements ContestService {
         if (!ContestVisitPermission.VISIT.approve(contestVisitPermission)) {
             throw PortableException.of("A-08-004", contestId);
         }
-        return getSolutionList(contestPackage, pageRequest, SolutionType.TEST_CONTEST);
+        return getSolutionList(contestPackage, pageRequest, SolutionType.CONTEST);
     }
 
     @Override
@@ -233,7 +233,7 @@ public class ContestServiceImpl implements ContestService {
         if (!ContestVisitPermission.CO_AUTHOR.approve(contestVisitPermission)) {
             throw PortableException.of("A-08-006", contestId);
         }
-        return getSolutionList(contestPackage, pageRequest, SolutionType.CONTEST);
+        return getSolutionList(contestPackage, pageRequest, SolutionType.TEST_CONTEST);
     }
 
     @Override
