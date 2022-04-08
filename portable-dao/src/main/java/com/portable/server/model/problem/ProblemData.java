@@ -134,6 +134,11 @@ public class ProblemData {
          * 样例输出（原始文件格式 \n 表示换行）
          */
         private String out;
+
+        /**
+         * 提示
+         */
+        private String hint;
     }
 
     @Data
