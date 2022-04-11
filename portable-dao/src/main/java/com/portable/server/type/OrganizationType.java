@@ -43,9 +43,9 @@ public enum OrganizationType implements ExceptionTextType {
     HONOR(0x0f, "荣誉集训队成员"),
 
     /**
-     * 00011111 老大专属
+     * 00011111 教练
      */
-    BOSS(0x1f, "老大"),
+    BOSS(0x1f, "教练"),
 
     /**
      * 11111111 超级管理员

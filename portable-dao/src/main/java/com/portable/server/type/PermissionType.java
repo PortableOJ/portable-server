@@ -73,6 +73,11 @@ public enum PermissionType implements ExceptionTextType {
     CREATE_AND_EDIT_BATCH("创建和管理批量用户"),
 
     /**
+     * 上传图片的权限，上传头像不受影响
+     */
+    UPLOAD_FILE("上传图片"),
+
+    /**
      * 管理 Judge 系统的权利
      */
     MANAGER_JUDGE("管理 Judge 系统的权利"),

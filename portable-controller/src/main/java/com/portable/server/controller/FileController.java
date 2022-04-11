@@ -1,10 +1,12 @@
 package com.portable.server.controller;
 
 import com.portable.server.annotation.NeedLogin;
+import com.portable.server.annotation.PermissionRequirement;
 import com.portable.server.exception.PortableException;
 import com.portable.server.model.response.Response;
 import com.portable.server.service.FileService;
 import com.portable.server.type.FileStoreType;
+import com.portable.server.type.PermissionType;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -31,6 +33,7 @@ public class FileController {
 
     @NeedLogin(normal = true)
     @PostMapping("/image")
+    @PermissionRequirement(PermissionType.UPLOAD_FILE)
     public Response<String> uploadImage(MultipartFile fileData) throws PortableException {
         if (IMAGE_FILE_MAX_SIZE.compareTo(fileData.getSize()) < 0) {
             throw PortableException.of("A-09-002", IMAGE_FILE_MAX_SIZE);
