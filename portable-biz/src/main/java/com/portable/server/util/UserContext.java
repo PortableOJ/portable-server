@@ -9,7 +9,7 @@ import com.portable.server.model.batch.Batch;
 import com.portable.server.model.user.NormalUserData;
 import com.portable.server.model.user.User;
 import com.portable.server.type.AccountType;
-import com.portable.server.type.ContestVisitPermission;
+import com.portable.server.type.ContestVisitType;
 import com.portable.server.type.OrganizationType;
 import com.portable.server.type.PermissionType;
 import lombok.Data;
@@ -73,7 +73,7 @@ public class UserContext implements AutoCloseable {
     /**
      * 用户验证过的比赛情况
      */
-    private Map<Long, ContestVisitPermission> contestVisitPermissionMap;
+    private Map<Long, ContestVisitType> contestVisitPermissionMap;
 
     /**
      * 当前登陆的用户信息
@@ -184,9 +184,10 @@ public class UserContext implements AutoCloseable {
         userContext.setContestId(batch.getContestId());
         set(userContext);
     }
-    public static void addCurUserContestVisit(Long contestId, ContestVisitPermission contestVisitPermission) {
+
+    public static void addCurUserContestVisit(Long contestId, ContestVisitType contestVisitType) {
         UserContext userContext = ctx();
-        userContext.addContestVisit(contestId, contestVisitPermission);
+        userContext.addContestVisit(contestId, contestVisitType);
     }
 
     public static void remove() {
@@ -209,8 +210,8 @@ public class UserContext implements AutoCloseable {
         return id != null;
     }
 
-    public void addContestVisit(Long contestId, ContestVisitPermission contestVisitPermission) {
-        contestVisitPermissionMap.put(contestId, contestVisitPermission);
+    public void addContestVisit(Long contestId, ContestVisitType contestVisitType) {
+        contestVisitPermissionMap.put(contestId, contestVisitType);
         set(this);
     }
 

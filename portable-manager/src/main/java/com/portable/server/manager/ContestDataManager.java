@@ -32,31 +32,39 @@ public interface ContestDataManager {
 
     /**
      * 获取公开的比赛信息
+     *
      * @param datId 比赛的 id
      * @return 比赛信息
+     * @throws PortableException 不存在则抛出
      */
-    PublicContestData getPublicContestDataById(String datId);
+    PublicContestData getPublicContestDataById(String datId) throws PortableException;
 
     /**
      * 获取带密码的比赛信息
+     *
      * @param datId 比赛的 id
      * @return 比赛信息
+     * @throws PortableException 不存在则抛出
      */
-    PasswordContestData getPasswordContestDataById(String datId);
+    PasswordContestData getPasswordContestDataById(String datId) throws PortableException;
 
     /**
      * 获取私有的比赛信息
+     *
      * @param datId 比赛的 id
      * @return 比赛信息
+     * @throws PortableException 不存在则抛出
      */
-    PrivateContestData getPrivateContestDataById(String datId);
+    PrivateContestData getPrivateContestDataById(String datId) throws PortableException;
 
     /**
      * 获取提供账号邀请制的比赛信息
+     *
      * @param datId 比赛的 id
      * @return 比赛信息
+     * @throws PortableException 不存在则抛出
      */
-    BatchContestData getBatchContestDataById(String datId);
+    BatchContestData getBatchContestDataById(String datId) throws PortableException;
 
     /**
      * 新建比赛

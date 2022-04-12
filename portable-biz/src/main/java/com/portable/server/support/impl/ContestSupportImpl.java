@@ -189,7 +189,7 @@ public class ContestSupportImpl implements ContestSupport {
                 .orElseThrow(PortableException.from("A-08-002", contestId));
         BaseContestData contestData = contestDataManager.getBaseContestDataById(contest.getDataId(), contest.getAccessType());
         if (contestData == null) {
-            throw PortableException.of("S-07-002", contestId);
+            throw PortableException.of("S-07-002");
         }
         // 删除之前记录的通过数量
         contestData.getProblemList().forEach(BaseContestData.ContestProblemData::init);

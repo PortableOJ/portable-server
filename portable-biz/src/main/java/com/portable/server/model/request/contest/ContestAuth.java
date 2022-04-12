@@ -1,5 +1,6 @@
 package com.portable.server.model.request.contest;
 
+import lombok.Builder;
 import lombok.Data;
 
 import javax.validation.constraints.Min;
@@ -9,6 +10,7 @@ import javax.validation.constraints.NotNull;
  * @author shiroha
  */
 @Data
+@Builder
 public class ContestAuth {
 
     /**
