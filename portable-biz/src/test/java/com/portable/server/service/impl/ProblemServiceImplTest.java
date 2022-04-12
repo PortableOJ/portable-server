@@ -30,7 +30,6 @@ import com.portable.server.model.user.NormalUserData;
 import com.portable.server.model.user.User;
 import com.portable.server.support.impl.FileSupportImpl;
 import com.portable.server.support.impl.JudgeSupportImpl;
-import com.portable.server.tool.UserContextBuilder;
 import com.portable.server.type.JudgeCodeType;
 import com.portable.server.type.LanguageType;
 import com.portable.server.type.PermissionType;
@@ -40,6 +39,8 @@ import com.portable.server.type.ProblemStatusType;
 import com.portable.server.type.SolutionStatusType;
 import com.portable.server.type.SolutionType;
 import com.portable.server.util.StreamUtils;
+import com.portable.server.util.test.TestMockedValueMaker;
+import com.portable.server.util.test.UserContextBuilder;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -91,20 +92,19 @@ public class ProblemServiceImplTest {
     @Mock
     private JudgeSupportImpl judgeSupport;
 
-    private static final Long MOCKED_USER_ID = 1L;
-    private static final Long MOCKED_PROBLEM_ID = 2L;
-    private static final Long MOCKED_CONTEST_ID = 3L;
-    private static final Long MOCKED_SOLUTION_ID = 4L;
-    private static final Integer MOCKED_TEST_LEN = 100;
-    private static final String MOCKED_PROBLEM_MONGO_ID = "MOCKED_PROBLEM_MONGO_ID";
-    private static final String MOCKED_HANDLE = "MOCKED_HANDLE";
-    private static final String MOCKED_NAME = "MOCKED_NAME";
-    private static final String MOCKED_CODE_TEST = "MOCKED_CODE_TEST";
-    private static final String MOCKED_PROBLEM_TITLE = "MOCKED_PROBLEM_TITLE";
-    private static final String MOCKED_PROBLEM_DESC = "MOCKED_PROBLEM_DESC";
-    private static final String MOCKED_PROBLEM_INPUT = "MOCKED_PROBLEM_INPUT";
-    private static final String MOCKED_PROBLEM_OUTPUT = "MOCKED_PROBLEM_OUTPUT";
-    private static final String MOCKED_USER_DATA_ID = "MOCKED_USER_DATA_ID";
+    private static final Long MOCKED_USER_ID = TestMockedValueMaker.mLong();
+    private static final Long MOCKED_PROBLEM_ID = TestMockedValueMaker.mLong();
+    private static final Long MOCKED_CONTEST_ID = TestMockedValueMaker.mLong();
+    private static final Long MOCKED_SOLUTION_ID = TestMockedValueMaker.mLong();
+    private static final String MOCKED_PROBLEM_MONGO_ID = TestMockedValueMaker.mString();
+    private static final String MOCKED_HANDLE = TestMockedValueMaker.mString();
+    private static final String MOCKED_NAME = TestMockedValueMaker.mString();
+    private static final String MOCKED_CODE_TEST = TestMockedValueMaker.mString();
+    private static final String MOCKED_PROBLEM_TITLE = TestMockedValueMaker.mString();
+    private static final String MOCKED_PROBLEM_DESC = TestMockedValueMaker.mString();
+    private static final String MOCKED_PROBLEM_INPUT = TestMockedValueMaker.mString();
+    private static final String MOCKED_PROBLEM_OUTPUT = TestMockedValueMaker.mString();
+    private static final String MOCKED_USER_DATA_ID = TestMockedValueMaker.mString();
 
     private Problem problem;
     private ProblemData problemData;
@@ -120,10 +120,10 @@ public class ProblemServiceImplTest {
 
     public static class UserToProblemAccessTypeTest {
 
-        private static final Long MOCKED_USER_ID = 1L;
-        private static final Long MOCKED_PROBLEM_ID = 2L;
+        private static final Long MOCKED_USER_ID = TestMockedValueMaker.mLong();
+        private static final Long MOCKED_PROBLEM_ID = TestMockedValueMaker.mLong();
 
-        private static final String MOCKED_PROBLEM_MONGO_ID = "MOCKED_PROBLEM_MONGO_ID";
+        private static final String MOCKED_PROBLEM_MONGO_ID = TestMockedValueMaker.mString();
 
         private Problem problem;
         private Contest contest;
@@ -147,7 +147,7 @@ public class ProblemServiceImplTest {
         @Test
         void testOfWithNoContestPrivateNotOwner() {
             userContextBuilder.withNotLogin();
-            problem.setOwner(MOCKED_USER_ID + 1);
+            problem.setOwner(TestMockedValueMaker.mLong());
             problem.setAccessType(ProblemAccessType.PRIVATE);
 
             ProblemServiceImpl.UserToProblemAccessType retVal = ProblemServiceImpl.UserToProblemAccessType.of(problem, contest);
@@ -179,7 +179,7 @@ public class ProblemServiceImplTest {
 
         @Test
         void testOfWithNoContestPrivateEditOther() {
-            userContextBuilder.withNormalLoginIn(MOCKED_USER_ID + 1).withPermission(PermissionType.CREATE_AND_EDIT_PROBLEM, PermissionType.EDIT_NOT_OWNER_PROBLEM);
+            userContextBuilder.withNormalLoginIn(TestMockedValueMaker.mLong()).withPermission(PermissionType.CREATE_AND_EDIT_PROBLEM, PermissionType.EDIT_NOT_OWNER_PROBLEM);
             problem.setOwner(MOCKED_USER_ID);
             problem.setAccessType(ProblemAccessType.PRIVATE);
 
@@ -190,8 +190,8 @@ public class ProblemServiceImplTest {
 
         @Test
         void testOfWithContestOwnerPrivateEnd() {
-            userContextBuilder.withNormalLoginIn(MOCKED_USER_ID + 1).withPermission(PermissionType.CREATE_AND_EDIT_PROBLEM, PermissionType.EDIT_NOT_OWNER_PROBLEM);
-            contest.setOwner(MOCKED_USER_ID + 1);
+            userContextBuilder.withNormalLoginIn(TestMockedValueMaker.mLong()).withPermission(PermissionType.CREATE_AND_EDIT_PROBLEM, PermissionType.EDIT_NOT_OWNER_PROBLEM);
+            contest.setOwner(TestMockedValueMaker.mLong());
             contest.setStartTime(new Date(0));
             contest.setDuration(10000);
             problem.setOwner(MOCKED_USER_ID);
@@ -204,11 +204,11 @@ public class ProblemServiceImplTest {
 
         @Test
         void testOfWithContestOwnerPrivateNotEnd() {
-            userContextBuilder.withNormalLoginIn(MOCKED_USER_ID + 1).withPermission(PermissionType.CREATE_AND_EDIT_PROBLEM);
-            contest.setOwner(MOCKED_USER_ID + 1);
+            userContextBuilder.withNormalLoginIn(MOCKED_USER_ID).withPermission(PermissionType.CREATE_AND_EDIT_PROBLEM);
+            contest.setOwner(MOCKED_USER_ID);
             contest.setStartTime(new Date());
             contest.setDuration(10000);
-            problem.setOwner(MOCKED_USER_ID);
+            problem.setOwner(TestMockedValueMaker.mLong());
             problem.setAccessType(ProblemAccessType.PRIVATE);
 
             ProblemServiceImpl.UserToProblemAccessType retVal = ProblemServiceImpl.UserToProblemAccessType.of(problem, contest);
@@ -262,7 +262,7 @@ public class ProblemServiceImplTest {
 
         @Test
         void testOfWithNoContestHiddenNotOwnerView() {
-            userContextBuilder.withNormalLoginIn(MOCKED_USER_ID + 1).withPermission(PermissionType.VIEW_HIDDEN_PROBLEM);
+            userContextBuilder.withNormalLoginIn(TestMockedValueMaker.mLong()).withPermission(PermissionType.VIEW_HIDDEN_PROBLEM);
             problem.setOwner(MOCKED_USER_ID);
             problem.setAccessType(ProblemAccessType.HIDDEN);
 
@@ -273,7 +273,7 @@ public class ProblemServiceImplTest {
 
         @Test
         void testOfWithNoContestHiddenNotOwnerNotViewEditOther() {
-            userContextBuilder.withNormalLoginIn(MOCKED_USER_ID + 1).withPermission(PermissionType.CREATE_AND_EDIT_PROBLEM, PermissionType.EDIT_NOT_OWNER_PROBLEM);
+            userContextBuilder.withNormalLoginIn(TestMockedValueMaker.mLong()).withPermission(PermissionType.CREATE_AND_EDIT_PROBLEM, PermissionType.EDIT_NOT_OWNER_PROBLEM);
             problem.setOwner(MOCKED_USER_ID);
             problem.setAccessType(ProblemAccessType.HIDDEN);
 
@@ -284,7 +284,7 @@ public class ProblemServiceImplTest {
 
         @Test
         void testOfWithNoContestHiddenNotOwnerViewEditOther() {
-            userContextBuilder.withNormalLoginIn(MOCKED_USER_ID + 1).withPermission(PermissionType.CREATE_AND_EDIT_PROBLEM, PermissionType.VIEW_HIDDEN_PROBLEM, PermissionType.EDIT_NOT_OWNER_PROBLEM);
+            userContextBuilder.withNormalLoginIn(TestMockedValueMaker.mLong()).withPermission(PermissionType.CREATE_AND_EDIT_PROBLEM, PermissionType.VIEW_HIDDEN_PROBLEM, PermissionType.EDIT_NOT_OWNER_PROBLEM);
             problem.setOwner(MOCKED_USER_ID);
             problem.setAccessType(ProblemAccessType.HIDDEN);
 
@@ -734,7 +734,7 @@ public class ProblemServiceImplTest {
         Mockito.when(problemDataManager.getProblemData(MOCKED_PROBLEM_MONGO_ID)).thenReturn(problemData);
         Mockito.when(fileSupport.getTestInput(MOCKED_PROBLEM_ID, problemData.getTestName().get(0))).thenReturn(circularByteBuffer.getInputStream());
 
-        ReflectionTestUtils.setField(problemService, "maxTestShowLen", MOCKED_TEST_LEN);
+        ReflectionTestUtils.setField(problemService, "maxTestShowLen", 100);
 
         ProblemNameRequest problemNameRequest = ProblemNameRequest.builder()
                 .id(MOCKED_PROBLEM_ID)
@@ -792,7 +792,7 @@ public class ProblemServiceImplTest {
         Mockito.when(problemDataManager.getProblemData(MOCKED_PROBLEM_MONGO_ID)).thenReturn(problemData);
         Mockito.when(fileSupport.getTestOutput(MOCKED_PROBLEM_ID, problemData.getTestName().get(0))).thenReturn(circularByteBuffer.getInputStream());
 
-        ReflectionTestUtils.setField(problemService, "maxTestShowLen", MOCKED_TEST_LEN);
+        ReflectionTestUtils.setField(problemService, "maxTestShowLen", 100);
 
         ProblemNameRequest problemNameRequest = ProblemNameRequest.builder()
                 .id(MOCKED_PROBLEM_ID)

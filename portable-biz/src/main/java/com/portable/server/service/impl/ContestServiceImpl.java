@@ -474,7 +474,7 @@ public class ContestServiceImpl implements ContestService {
      * @return 比赛详情
      * @throws PortableException 出现非法访问则抛出错误
      */
-    public ContestInfoResponse getContestDetail(Long contestId, Boolean info, Boolean admin) throws PortableException {
+    private ContestInfoResponse getContestDetail(Long contestId, Boolean info, Boolean admin) throws PortableException {
         ContestPackage contestPackage = getContestPackage(contestId);
         ContestVisitPermission contestVisitPermission = checkPermission(contestPackage);
         boolean noAdminPermission = admin && !ContestVisitPermission.CO_AUTHOR.approve(contestVisitPermission);
@@ -549,11 +549,11 @@ public class ContestServiceImpl implements ContestService {
                 coAuthor);
     }
 
-    public ContestDetailResponse getContestDetailAdmin(ContestPackage contestPackage,
-                                                       User owner,
-                                                       List<ProblemListResponse> problemListResponses,
-                                                       List<Boolean> problemLock,
-                                                       Set<User> coAuthor) throws PortableException {
+    private ContestDetailResponse getContestDetailAdmin(ContestPackage contestPackage,
+                                                        User owner,
+                                                        List<ProblemListResponse> problemListResponses,
+                                                        List<Boolean> problemLock,
+                                                        Set<User> coAuthor) throws PortableException {
         Set<User> inviteUserSet = null;
         switch (contestPackage.getContest().getAccessType()) {
             case PUBLIC:

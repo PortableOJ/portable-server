@@ -1,4 +1,4 @@
-package com.portable.server.tool;
+package com.portable.server.util.test;
 
 import com.portable.server.type.AccountType;
 import com.portable.server.type.PermissionType;

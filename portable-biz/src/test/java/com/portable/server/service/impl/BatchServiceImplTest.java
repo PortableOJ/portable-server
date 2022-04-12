@@ -14,8 +14,9 @@ import com.portable.server.model.response.PageResponse;
 import com.portable.server.model.response.batch.BatchListResponse;
 import com.portable.server.model.response.batch.CreateBatchResponse;
 import com.portable.server.model.user.User;
-import com.portable.server.tool.UserContextBuilder;
 import com.portable.server.type.BatchStatusType;
+import com.portable.server.util.test.TestMockedValueMaker;
+import com.portable.server.util.test.UserContextBuilder;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -188,7 +189,7 @@ class BatchServiceImplTest {
 
     @Test
     void testChangeStatusWithNotOwner() {
-        userContextBuilder.withNormalLoginIn(MOCKED_USER_ID + 1);
+        userContextBuilder.withNormalLoginIn(TestMockedValueMaker.mLong());
 
         batch.setOwner(MOCKED_USER_ID);
         batch.setStatus(BatchStatusType.DISABLE);
