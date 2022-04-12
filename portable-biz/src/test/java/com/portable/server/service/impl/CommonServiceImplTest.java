@@ -5,7 +5,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.portable.server.exception.PortableException;
 import com.portable.server.support.impl.CaptchaSupportImpl;
 import com.portable.server.util.StreamUtils;
-import com.portable.server.util.test.TestMockedValueMaker;
+import com.portable.server.util.test.MockedValueMaker;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -47,7 +47,7 @@ class CommonServiceImplTest {
     @Test
     void testGetEnumDescWithFail() {
         try {
-            commonService.getEnumDesc(TestMockedValueMaker.mString());
+            commonService.getEnumDesc(MockedValueMaker.mString());
             Assertions.fail();
         } catch (PortableException e) {
             Assertions.assertEquals("A-06-001", e.getCode());
@@ -62,8 +62,8 @@ class CommonServiceImplTest {
 
     @Test
     void getCaptcha() throws PortableException, IOException {
-        String MOCKED_CAPTCHA_VALUE = TestMockedValueMaker.mString();
-        String MOCKED_CAPTCHA_BUFFER = TestMockedValueMaker.mString();
+        String MOCKED_CAPTCHA_VALUE = MockedValueMaker.mString();
+        String MOCKED_CAPTCHA_BUFFER = MockedValueMaker.mString();
         Mockito.when(captchaSupport.getCaptcha(Mockito.any())).thenAnswer(invocationOnMock -> {
             OutputStream outputStream = invocationOnMock.getArgument(0);
             outputStream.write(MOCKED_CAPTCHA_BUFFER.getBytes());

@@ -2,7 +2,7 @@ package com.portable.server.util.test;
 
 import java.util.UUID;
 
-public class TestMockedValueMaker {
+public class MockedValueMaker {
 
     private static Long longValue = 0L;
 

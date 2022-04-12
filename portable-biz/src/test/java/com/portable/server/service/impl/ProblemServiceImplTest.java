@@ -32,7 +32,7 @@ import com.portable.server.support.impl.FileSupportImpl;
 import com.portable.server.support.impl.JudgeSupportImpl;
 import com.portable.server.type.*;
 import com.portable.server.util.StreamUtils;
-import com.portable.server.util.test.TestMockedValueMaker;
+import com.portable.server.util.test.MockedValueMaker;
 import com.portable.server.util.test.UserContextBuilder;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
@@ -85,19 +85,19 @@ public class ProblemServiceImplTest {
     @Mock
     private JudgeSupportImpl judgeSupport;
 
-    private static final Long MOCKED_USER_ID = TestMockedValueMaker.mLong();
-    private static final Long MOCKED_PROBLEM_ID = TestMockedValueMaker.mLong();
-    private static final Long MOCKED_CONTEST_ID = TestMockedValueMaker.mLong();
-    private static final Long MOCKED_SOLUTION_ID = TestMockedValueMaker.mLong();
-    private static final String MOCKED_PROBLEM_MONGO_ID = TestMockedValueMaker.mString();
-    private static final String MOCKED_HANDLE = TestMockedValueMaker.mString();
-    private static final String MOCKED_NAME = TestMockedValueMaker.mString();
-    private static final String MOCKED_CODE_TEST = TestMockedValueMaker.mString();
-    private static final String MOCKED_PROBLEM_TITLE = TestMockedValueMaker.mString();
-    private static final String MOCKED_PROBLEM_DESC = TestMockedValueMaker.mString();
-    private static final String MOCKED_PROBLEM_INPUT = TestMockedValueMaker.mString();
-    private static final String MOCKED_PROBLEM_OUTPUT = TestMockedValueMaker.mString();
-    private static final String MOCKED_USER_DATA_ID = TestMockedValueMaker.mString();
+    private static final Long MOCKED_USER_ID = MockedValueMaker.mLong();
+    private static final Long MOCKED_PROBLEM_ID = MockedValueMaker.mLong();
+    private static final Long MOCKED_CONTEST_ID = MockedValueMaker.mLong();
+    private static final Long MOCKED_SOLUTION_ID = MockedValueMaker.mLong();
+    private static final String MOCKED_PROBLEM_MONGO_ID = MockedValueMaker.mString();
+    private static final String MOCKED_HANDLE = MockedValueMaker.mString();
+    private static final String MOCKED_NAME = MockedValueMaker.mString();
+    private static final String MOCKED_CODE_TEST = MockedValueMaker.mString();
+    private static final String MOCKED_PROBLEM_TITLE = MockedValueMaker.mString();
+    private static final String MOCKED_PROBLEM_DESC = MockedValueMaker.mString();
+    private static final String MOCKED_PROBLEM_INPUT = MockedValueMaker.mString();
+    private static final String MOCKED_PROBLEM_OUTPUT = MockedValueMaker.mString();
+    private static final String MOCKED_USER_DATA_ID = MockedValueMaker.mString();
 
     private Problem problem;
     private ProblemData problemData;

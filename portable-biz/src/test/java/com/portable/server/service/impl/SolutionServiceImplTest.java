@@ -17,7 +17,7 @@ import com.portable.server.model.user.User;
 import com.portable.server.type.PermissionType;
 import com.portable.server.type.SolutionStatusType;
 import com.portable.server.type.SolutionType;
-import com.portable.server.util.test.TestMockedValueMaker;
+import com.portable.server.util.test.MockedValueMaker;
 import com.portable.server.util.test.UserContextBuilder;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
@@ -51,12 +51,12 @@ class SolutionServiceImplTest {
     @Mock
     private SolutionDataManagerImpl solutionDataManager;
 
-    private static final Long MOCKED_SOLUTION_ID = TestMockedValueMaker.mLong();
-    private static final Long MOCKED_USER_ID = TestMockedValueMaker.mLong();
-    private static final Long MOCKED_PROBLEM_ID = TestMockedValueMaker.mLong();
-    private static final String MOCKED_USER_HANDLE = TestMockedValueMaker.mString();
-    private static final String MOCKED_PROBLEM_TITLE = TestMockedValueMaker.mString();
-    private static final String MOCKED_SOLUTION_MONGO_ID = TestMockedValueMaker.mString();
+    private static final Long MOCKED_SOLUTION_ID = MockedValueMaker.mLong();
+    private static final Long MOCKED_USER_ID = MockedValueMaker.mLong();
+    private static final Long MOCKED_PROBLEM_ID = MockedValueMaker.mLong();
+    private static final String MOCKED_USER_HANDLE = MockedValueMaker.mString();
+    private static final String MOCKED_PROBLEM_TITLE = MockedValueMaker.mString();
+    private static final String MOCKED_SOLUTION_MONGO_ID = MockedValueMaker.mString();
 
     private User user;
     private Problem problem;
@@ -169,7 +169,7 @@ class SolutionServiceImplTest {
 
     @Test
     void testGetSolutionWithNotOwner() {
-        userContextBuilder.withNormalLoginIn(TestMockedValueMaker.mLong());
+        userContextBuilder.withNormalLoginIn(MockedValueMaker.mLong());
 
         solution.setUserId(MOCKED_USER_ID);
         solution.setSolutionType(SolutionType.PUBLIC);
@@ -186,7 +186,7 @@ class SolutionServiceImplTest {
 
     @Test
     void testGetSolutionWithNotOwnerPermission() throws PortableException {
-        userContextBuilder.withNormalLoginIn(TestMockedValueMaker.mLong()).withPermission(PermissionType.VIEW_PUBLIC_SOLUTION);
+        userContextBuilder.withNormalLoginIn(MockedValueMaker.mLong()).withPermission(PermissionType.VIEW_PUBLIC_SOLUTION);
 
         user.setHandle(MOCKED_USER_HANDLE);
         problem.setTitle(MOCKED_PROBLEM_TITLE);
@@ -241,7 +241,7 @@ class SolutionServiceImplTest {
 
     @Test
     void testGetSolutionWithNotOwnerPermissionAndMsg() throws PortableException {
-        userContextBuilder.withNormalLoginIn(TestMockedValueMaker.mLong()).withPermission(PermissionType.VIEW_PUBLIC_SOLUTION, PermissionType.VIEW_SOLUTION_MESSAGE);
+        userContextBuilder.withNormalLoginIn(MockedValueMaker.mLong()).withPermission(PermissionType.VIEW_PUBLIC_SOLUTION, PermissionType.VIEW_SOLUTION_MESSAGE);
 
         user.setHandle(MOCKED_USER_HANDLE);
         problem.setTitle(MOCKED_PROBLEM_TITLE);

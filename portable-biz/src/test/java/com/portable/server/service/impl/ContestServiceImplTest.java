@@ -16,9 +16,11 @@ import com.portable.server.model.contest.PasswordContestData;
 import com.portable.server.model.contest.PrivateContestData;
 import com.portable.server.model.contest.PublicContestData;
 import com.portable.server.model.problem.Problem;
+import com.portable.server.model.problem.ProblemData;
 import com.portable.server.model.request.PageRequest;
 import com.portable.server.model.request.contest.ContestAuth;
 import com.portable.server.model.response.PageResponse;
+import com.portable.server.model.response.contest.ContestAdminDetailResponse;
 import com.portable.server.model.response.contest.ContestDetailResponse;
 import com.portable.server.model.response.contest.ContestInfoResponse;
 import com.portable.server.model.response.contest.ContestListResponse;
@@ -29,7 +31,7 @@ import com.portable.server.support.impl.JudgeSupportImpl;
 import com.portable.server.type.ContestAccessType;
 import com.portable.server.type.ContestVisitType;
 import com.portable.server.type.SolutionStatusType;
-import com.portable.server.util.test.TestMockedValueMaker;
+import com.portable.server.util.test.MockedValueMaker;
 import com.portable.server.util.test.UserContextBuilder;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
@@ -87,6 +89,7 @@ class ContestServiceImplTest {
     private User user;
     private Contest contest;
     private Problem problem;
+    private ProblemData problemData;
     private Solution solution;
     private List<Contest> contestList;
     private PublicContestData publicContestData;
@@ -94,15 +97,16 @@ class ContestServiceImplTest {
     private PrivateContestData privateContestData;
     private BatchContestData batchContestData;
 
-    private static final Long MOCKED_USER_ID = TestMockedValueMaker.mLong();
-    private static final Long MOCKED_CONTEST_ID = TestMockedValueMaker.mLong();
-    private static final Long MOCKED_SOLUTION_ID = TestMockedValueMaker.mLong();
-    private static final Long MOCKED_PROBLEM_ID = TestMockedValueMaker.mLong();
+    private static final Long MOCKED_USER_ID = MockedValueMaker.mLong();
+    private static final Long MOCKED_CONTEST_ID = MockedValueMaker.mLong();
+    private static final Long MOCKED_SOLUTION_ID = MockedValueMaker.mLong();
+    private static final Long MOCKED_PROBLEM_ID = MockedValueMaker.mLong();
 
-    private static final String MOCKED_CONTEST_MONGO_ID = TestMockedValueMaker.mString();
-    private static final String MOCKED_CONTEST_TITLE = TestMockedValueMaker.mString();
-    private static final String MOCKED_USER_HANDLE = TestMockedValueMaker.mString();
-    private static final String MOCKED_PROBLEM_TITLE = TestMockedValueMaker.mString();
+    private static final String MOCKED_CONTEST_MONGO_ID = MockedValueMaker.mString();
+    private static final String MOCKED_CONTEST_TITLE = MockedValueMaker.mString();
+    private static final String MOCKED_USER_HANDLE = MockedValueMaker.mString();
+    private static final String MOCKED_PROBLEM_TITLE = MockedValueMaker.mString();
+    private static final String MOCKED_PROBLEM_MONGO_ID = MockedValueMaker.mString();
 
     private UserContextBuilder userContextBuilder;
 
@@ -119,6 +123,7 @@ class ContestServiceImplTest {
         problem = Problem.builder()
                 .id(MOCKED_PROBLEM_ID)
                 .build();
+        problemData = ProblemData.builder().build();
         solution = Solution.builder()
                 .id(MOCKED_SOLUTION_ID)
                 .build();
@@ -238,7 +243,7 @@ class ContestServiceImplTest {
 
         ContestAuth contestAuth = ContestAuth.builder()
                 .contestId(MOCKED_CONTEST_ID)
-                .password(TestMockedValueMaker.mString())
+                .password(MockedValueMaker.mString())
                 .build();
 
         ContestVisitType retVal = contestService.authorizeContest(contestAuth);
@@ -268,14 +273,14 @@ class ContestServiceImplTest {
     void testAuthorizeContestWithPasswordFailAdmin() throws PortableException {
         contest.setAccessType(ContestAccessType.PASSWORD);
         contest.setDataId(MOCKED_CONTEST_MONGO_ID);
-        passwordContestData.setPassword(TestMockedValueMaker.mString());
+        passwordContestData.setPassword(MockedValueMaker.mString());
         Mockito.when(contestManager.getContestById(MOCKED_CONTEST_ID)).thenReturn(Optional.of(contest));
         Mockito.when(contestDataManager.getPasswordContestDataById(MOCKED_CONTEST_MONGO_ID)).thenReturn(passwordContestData);
         contestVisitTypeMockedStatic.when(() -> ContestVisitType.checkPermission(Mockito.any(), Mockito.any())).thenReturn(ContestVisitType.ADMIN);
 
         ContestAuth contestAuth = ContestAuth.builder()
                 .contestId(MOCKED_CONTEST_ID)
-                .password(TestMockedValueMaker.mString())
+                .password(MockedValueMaker.mString())
                 .build();
 
         ContestVisitType retVal = contestService.authorizeContest(contestAuth);
@@ -287,14 +292,14 @@ class ContestServiceImplTest {
     void testAuthorizeContestWithPasswordFail() throws PortableException {
         contest.setAccessType(ContestAccessType.PASSWORD);
         contest.setDataId(MOCKED_CONTEST_MONGO_ID);
-        passwordContestData.setPassword(TestMockedValueMaker.mString());
+        passwordContestData.setPassword(MockedValueMaker.mString());
         Mockito.when(contestManager.getContestById(MOCKED_CONTEST_ID)).thenReturn(Optional.of(contest));
         Mockito.when(contestDataManager.getPasswordContestDataById(MOCKED_CONTEST_MONGO_ID)).thenReturn(passwordContestData);
         contestVisitTypeMockedStatic.when(() -> ContestVisitType.checkPermission(Mockito.any(), Mockito.any())).thenReturn(ContestVisitType.VISIT);
 
         ContestAuth contestAuth = ContestAuth.builder()
                 .contestId(MOCKED_CONTEST_ID)
-                .password(TestMockedValueMaker.mString())
+                .password(MockedValueMaker.mString())
                 .build();
 
         try {
@@ -309,7 +314,7 @@ class ContestServiceImplTest {
     void testAuthorizeContestWithPasswordSuccess() throws PortableException {
         contest.setAccessType(ContestAccessType.PASSWORD);
         contest.setDataId(MOCKED_CONTEST_MONGO_ID);
-        passwordContestData.setPassword(TestMockedValueMaker.mString());
+        passwordContestData.setPassword(MockedValueMaker.mString());
         Mockito.when(contestManager.getContestById(MOCKED_CONTEST_ID)).thenReturn(Optional.of(contest));
         Mockito.when(contestDataManager.getPasswordContestDataById(MOCKED_CONTEST_MONGO_ID)).thenReturn(passwordContestData);
         contestVisitTypeMockedStatic.when(() -> ContestVisitType.checkPermission(Mockito.any(), Mockito.any())).thenReturn(ContestVisitType.VISIT);
@@ -328,7 +333,7 @@ class ContestServiceImplTest {
     void testGetContestInfoWithNoAccess() throws PortableException {
         contest.setAccessType(ContestAccessType.PRIVATE);
         contest.setDataId(MOCKED_CONTEST_MONGO_ID);
-        passwordContestData.setPassword(TestMockedValueMaker.mString());
+        passwordContestData.setPassword(MockedValueMaker.mString());
         Mockito.when(contestManager.getContestById(MOCKED_CONTEST_ID)).thenReturn(Optional.of(contest));
         Mockito.when(contestDataManager.getPrivateContestDataById(MOCKED_CONTEST_MONGO_ID)).thenReturn(privateContestData);
         contestVisitTypeMockedStatic.when(() -> ContestVisitType.checkPermission(Mockito.any(), Mockito.any())).thenReturn(ContestVisitType.NO_ACCESS);
@@ -418,7 +423,7 @@ class ContestServiceImplTest {
 
     @Test
     void testGetContestDataWithSuccess() throws PortableException {
-        Long loginUserId = TestMockedValueMaker.mLong();
+        Long loginUserId = MockedValueMaker.mLong();
         userContextBuilder.withNormalLoginIn(loginUserId);
         contest.setAccessType(ContestAccessType.PRIVATE);
         contest.setDataId(MOCKED_CONTEST_MONGO_ID);
@@ -443,7 +448,6 @@ class ContestServiceImplTest {
         Mockito.when(problemManager.getProblemById(MOCKED_PROBLEM_ID)).thenReturn(Optional.of(problem));
         Mockito.when(solutionManager.selectContestLastSolution(loginUserId, MOCKED_PROBLEM_ID, MOCKED_CONTEST_ID)).thenReturn(Optional.of(solution));
 
-
         ContestDetailResponse retVal = contestService.getContestData(MOCKED_CONTEST_ID);
 
         /// region 校验返回值
@@ -452,6 +456,7 @@ class ContestServiceImplTest {
         Assertions.assertEquals(MOCKED_CONTEST_ID, retVal.getId());
         Assertions.assertEquals(MOCKED_USER_HANDLE, retVal.getOwnerHandle());
         Assertions.assertEquals(new HashSet<>(), retVal.getCoAuthor());
+        Assertions.assertEquals(0, retVal.getProblemList().get(0).getId());
         Assertions.assertEquals(1, retVal.getProblemList().size());
         Assertions.assertEquals(MOCKED_PROBLEM_TITLE, retVal.getProblemList().get(0).getTitle());
         Assertions.assertEquals(5, retVal.getProblemList().get(0).getAcceptCount());
@@ -461,7 +466,128 @@ class ContestServiceImplTest {
     }
 
     @Test
-    void getContestAdminData() {
+    void getContestAdminDataWithParticipant() throws PortableException {
+        Long loginUserId = MockedValueMaker.mLong();
+        userContextBuilder.withNormalLoginIn(loginUserId);
+        contest.setAccessType(ContestAccessType.PRIVATE);
+        contest.setDataId(MOCKED_CONTEST_MONGO_ID);
+        contest.setTitle(MOCKED_CONTEST_TITLE);
+        contest.setOwner(MOCKED_USER_ID);
+        contest.setStartTime(new Date(0));
+        privateContestData.setCoAuthor(new HashSet<>());
+        privateContestData.setProblemList(new ArrayList<BaseContestData.ContestProblemData>() {{
+            add(BaseContestData.ContestProblemData.builder()
+                    .problemId(MOCKED_PROBLEM_ID)
+                    .acceptCount(5)
+                    .submissionCount(10)
+                    .build());
+        }});
+        user.setHandle(MOCKED_USER_HANDLE);
+        problem.setTitle(MOCKED_PROBLEM_TITLE);
+        solution.setStatus(SolutionStatusType.WRONG_ANSWER);
+        Mockito.when(contestManager.getContestById(MOCKED_CONTEST_ID)).thenReturn(Optional.of(contest));
+        Mockito.when(contestDataManager.getPrivateContestDataById(MOCKED_CONTEST_MONGO_ID)).thenReturn(privateContestData);
+        contestVisitTypeMockedStatic.when(() -> ContestVisitType.checkPermission(Mockito.any(), Mockito.any())).thenReturn(ContestVisitType.VISIT);
+
+        try {
+            contestService.getContestAdminData(MOCKED_CONTEST_ID);
+            Assertions.fail();
+        } catch (PortableException e) {
+            Assertions.assertEquals("A-08-004", e.getCode());
+        }
+    }
+
+    @Test
+    void getContestAdminDataWith() throws PortableException {
+        Long loginUserId = MockedValueMaker.mLong();
+        Long otherUserId = MockedValueMaker.mLong();
+        userContextBuilder.withNormalLoginIn(loginUserId);
+        contest.setAccessType(ContestAccessType.PRIVATE);
+        contest.setDataId(MOCKED_CONTEST_MONGO_ID);
+        contest.setTitle(MOCKED_CONTEST_TITLE);
+        contest.setOwner(MOCKED_USER_ID);
+        contest.setStartTime(new Date(0));
+        problemData.setContestId(MOCKED_CONTEST_ID);
+        privateContestData.setCoAuthor(new HashSet<>());
+        privateContestData.setInviteUserSet(new HashSet<Long>() {{
+            add(otherUserId);
+        }});
+
+        Problem problem2 = Problem.builder()
+                .id(MockedValueMaker.mLong())
+                .dataId(MockedValueMaker.mString())
+                .build();
+
+        ProblemData problemData2 = ProblemData.builder()
+                .contestId(MockedValueMaker.mLong())
+                .build();
+
+        User inUser = User.builder()
+                .handle(MockedValueMaker.mString())
+                .build();
+
+        Problem problem3 = Problem.builder()
+                .id(MockedValueMaker.mLong())
+                .dataId(MockedValueMaker.mString())
+                .build();
+
+        privateContestData.setProblemList(new ArrayList<BaseContestData.ContestProblemData>() {{
+            add(BaseContestData.ContestProblemData.builder()
+                    .problemId(MOCKED_PROBLEM_ID)
+                    .acceptCount(5)
+                    .submissionCount(10)
+                    .build());
+            add(BaseContestData.ContestProblemData.builder()
+                    .problemId(problem2.getId())
+                    .acceptCount(6)
+                    .submissionCount(11)
+                    .build());
+            add(BaseContestData.ContestProblemData.builder()
+                    .problemId(problem3.getId())
+                    .acceptCount(7)
+                    .submissionCount(12)
+                    .build());
+        }});
+        user.setHandle(MOCKED_USER_HANDLE);
+        problem.setTitle(MOCKED_PROBLEM_TITLE);
+        problem.setDataId(MOCKED_PROBLEM_MONGO_ID);
+        solution.setStatus(SolutionStatusType.WRONG_ANSWER);
+        Mockito.when(contestManager.getContestById(MOCKED_CONTEST_ID)).thenReturn(Optional.of(contest));
+        Mockito.when(contestDataManager.getPrivateContestDataById(MOCKED_CONTEST_MONGO_ID)).thenReturn(privateContestData);
+        contestVisitTypeMockedStatic.when(() -> ContestVisitType.checkPermission(Mockito.any(), Mockito.any())).thenReturn(ContestVisitType.CO_AUTHOR);
+        Mockito.when(userManager.getAccountById(MOCKED_USER_ID)).thenReturn(Optional.of(user));
+        Mockito.when(problemManager.getProblemById(MOCKED_PROBLEM_ID)).thenReturn(Optional.of(problem));
+        Mockito.when(problemManager.getProblemById(problem2.getId())).thenReturn(Optional.of(problem2));
+        Mockito.when(problemManager.getProblemById(problem3.getId())).thenReturn(Optional.of(problem3));
+        Mockito.when(solutionManager.selectContestLastSolution(loginUserId, MOCKED_PROBLEM_ID, MOCKED_CONTEST_ID)).thenReturn(Optional.of(solution));
+        Mockito.when(problemDataManager.getProblemData(MOCKED_PROBLEM_MONGO_ID)).thenReturn(problemData);
+        Mockito.when(problemDataManager.getProblemData(problem2.getDataId())).thenReturn(problemData2);
+        Mockito.when(problemDataManager.getProblemData(problem3.getDataId())).thenThrow(PortableException.of("S-03-001"));
+        Mockito.when(userManager.getAccountById(otherUserId)).thenReturn(Optional.of(inUser));
+
+        ContestAdminDetailResponse retVal = contestService.getContestAdminData(MOCKED_CONTEST_ID);
+
+        /// region 校验返回值
+
+        Assertions.assertEquals(ContestAccessType.PRIVATE, retVal.getAccessType());
+        Assertions.assertEquals(MOCKED_CONTEST_ID, retVal.getId());
+        Assertions.assertEquals(MOCKED_USER_HANDLE, retVal.getOwnerHandle());
+        Assertions.assertEquals(new HashSet<>(), retVal.getCoAuthor());
+        Assertions.assertEquals(3, retVal.getProblemList().size());
+        Assertions.assertEquals(MOCKED_PROBLEM_TITLE, retVal.getProblemList().get(0).getTitle());
+        Assertions.assertEquals(0, retVal.getProblemList().get(0).getId());
+        Assertions.assertEquals(1, retVal.getProblemList().get(1).getId());
+        Assertions.assertEquals(2, retVal.getProblemList().get(2).getId());
+        Assertions.assertEquals(5, retVal.getProblemList().get(0).getAcceptCount());
+        Assertions.assertEquals(10, retVal.getProblemList().get(0).getSubmissionCount());
+        Assertions.assertEquals(6, retVal.getProblemList().get(1).getAcceptCount());
+        Assertions.assertEquals(11, retVal.getProblemList().get(1).getSubmissionCount());
+        Assertions.assertEquals(7, retVal.getProblemList().get(2).getAcceptCount());
+        Assertions.assertEquals(12, retVal.getProblemList().get(2).getSubmissionCount());
+        Assertions.assertEquals(1, retVal.getInviteUserSet().size());
+        Assertions.assertTrue(retVal.getInviteUserSet().contains(inUser.getHandle()));
+
+        /// endregion
     }
 
     @Test

@@ -6,7 +6,7 @@ import com.portable.server.model.judge.entity.JudgeContainer;
 import com.portable.server.model.judge.entity.UpdateJudgeContainer;
 import com.portable.server.support.impl.JudgeSupportImpl;
 import com.portable.server.type.SolutionStatusType;
-import com.portable.server.util.test.TestMockedValueMaker;
+import com.portable.server.util.test.MockedValueMaker;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -29,7 +29,7 @@ class JudgeServiceImplTest {
     @Mock
     private JudgeSupportImpl judgeSupport;
 
-    private static final String MOCKED_CODE = TestMockedValueMaker.mString();
+    private static final String MOCKED_CODE = MockedValueMaker.mString();
 
     @BeforeEach
     void setUp() {

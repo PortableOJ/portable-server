@@ -2,7 +2,7 @@ package com.portable.server.type;
 
 import com.portable.server.model.contest.Contest;
 import com.portable.server.model.problem.Problem;
-import com.portable.server.util.test.TestMockedValueMaker;
+import com.portable.server.util.test.MockedValueMaker;
 import com.portable.server.util.test.UserContextBuilder;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
@@ -16,10 +16,10 @@ import java.util.Date;
 @ExtendWith(MockitoExtension.class)
 public class ProblemVisitTypeTest {
 
-    private static final Long MOCKED_USER_ID = TestMockedValueMaker.mLong();
-    private static final Long MOCKED_PROBLEM_ID = TestMockedValueMaker.mLong();
+    private static final Long MOCKED_USER_ID = MockedValueMaker.mLong();
+    private static final Long MOCKED_PROBLEM_ID = MockedValueMaker.mLong();
 
-    private static final String MOCKED_PROBLEM_MONGO_ID = TestMockedValueMaker.mString();
+    private static final String MOCKED_PROBLEM_MONGO_ID = MockedValueMaker.mString();
 
     private Problem problem;
     private Contest contest;
@@ -43,7 +43,7 @@ public class ProblemVisitTypeTest {
     @Test
     void testOfWithNoContestPrivateNotOwner() {
         userContextBuilder.withNotLogin();
-        problem.setOwner(TestMockedValueMaker.mLong());
+        problem.setOwner(MockedValueMaker.mLong());
         problem.setAccessType(ProblemAccessType.PRIVATE);
 
         ProblemVisitType retVal = ProblemVisitType.of(problem, contest);
@@ -75,7 +75,7 @@ public class ProblemVisitTypeTest {
 
     @Test
     void testOfWithNoContestPrivateEditOther() {
-        userContextBuilder.withNormalLoginIn(TestMockedValueMaker.mLong()).withPermission(PermissionType.CREATE_AND_EDIT_PROBLEM, PermissionType.EDIT_NOT_OWNER_PROBLEM);
+        userContextBuilder.withNormalLoginIn(MockedValueMaker.mLong()).withPermission(PermissionType.CREATE_AND_EDIT_PROBLEM, PermissionType.EDIT_NOT_OWNER_PROBLEM);
         problem.setOwner(MOCKED_USER_ID);
         problem.setAccessType(ProblemAccessType.PRIVATE);
 
@@ -86,8 +86,8 @@ public class ProblemVisitTypeTest {
 
     @Test
     void testOfWithContestOwnerPrivateEnd() {
-        userContextBuilder.withNormalLoginIn(TestMockedValueMaker.mLong()).withPermission(PermissionType.CREATE_AND_EDIT_PROBLEM, PermissionType.EDIT_NOT_OWNER_PROBLEM);
-        contest.setOwner(TestMockedValueMaker.mLong());
+        userContextBuilder.withNormalLoginIn(MockedValueMaker.mLong()).withPermission(PermissionType.CREATE_AND_EDIT_PROBLEM, PermissionType.EDIT_NOT_OWNER_PROBLEM);
+        contest.setOwner(MockedValueMaker.mLong());
         contest.setStartTime(new Date(0));
         contest.setDuration(10000);
         problem.setOwner(MOCKED_USER_ID);
@@ -104,7 +104,7 @@ public class ProblemVisitTypeTest {
         contest.setOwner(MOCKED_USER_ID);
         contest.setStartTime(new Date());
         contest.setDuration(10000);
-        problem.setOwner(TestMockedValueMaker.mLong());
+        problem.setOwner(MockedValueMaker.mLong());
         problem.setAccessType(ProblemAccessType.PRIVATE);
 
         ProblemVisitType retVal = ProblemVisitType.of(problem, contest);
@@ -158,7 +158,7 @@ public class ProblemVisitTypeTest {
 
     @Test
     void testOfWithNoContestHiddenNotOwnerView() {
-        userContextBuilder.withNormalLoginIn(TestMockedValueMaker.mLong()).withPermission(PermissionType.VIEW_HIDDEN_PROBLEM);
+        userContextBuilder.withNormalLoginIn(MockedValueMaker.mLong()).withPermission(PermissionType.VIEW_HIDDEN_PROBLEM);
         problem.setOwner(MOCKED_USER_ID);
         problem.setAccessType(ProblemAccessType.HIDDEN);
 
@@ -169,7 +169,7 @@ public class ProblemVisitTypeTest {
 
     @Test
     void testOfWithNoContestHiddenNotOwnerNotViewEditOther() {
-        userContextBuilder.withNormalLoginIn(TestMockedValueMaker.mLong()).withPermission(PermissionType.CREATE_AND_EDIT_PROBLEM, PermissionType.EDIT_NOT_OWNER_PROBLEM);
+        userContextBuilder.withNormalLoginIn(MockedValueMaker.mLong()).withPermission(PermissionType.CREATE_AND_EDIT_PROBLEM, PermissionType.EDIT_NOT_OWNER_PROBLEM);
         problem.setOwner(MOCKED_USER_ID);
         problem.setAccessType(ProblemAccessType.HIDDEN);
 
@@ -180,7 +180,7 @@ public class ProblemVisitTypeTest {
 
     @Test
     void testOfWithNoContestHiddenNotOwnerViewEditOther() {
-        userContextBuilder.withNormalLoginIn(TestMockedValueMaker.mLong()).withPermission(PermissionType.CREATE_AND_EDIT_PROBLEM, PermissionType.VIEW_HIDDEN_PROBLEM, PermissionType.EDIT_NOT_OWNER_PROBLEM);
+        userContextBuilder.withNormalLoginIn(MockedValueMaker.mLong()).withPermission(PermissionType.CREATE_AND_EDIT_PROBLEM, PermissionType.VIEW_HIDDEN_PROBLEM, PermissionType.EDIT_NOT_OWNER_PROBLEM);
         problem.setOwner(MOCKED_USER_ID);
         problem.setAccessType(ProblemAccessType.HIDDEN);
 

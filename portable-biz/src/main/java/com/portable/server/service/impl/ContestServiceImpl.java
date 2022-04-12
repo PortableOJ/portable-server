@@ -526,7 +526,6 @@ public class ContestServiceImpl implements ContestService {
                             ProblemData problemData = problemDataManager.getProblemData(problem.getDataId());
                             problemLock.add(Objects.equals(problemData.getContestId(), contestId));
                         } catch (PortableException e) {
-                            e.printStackTrace();
                             problemLock.add(false);
                         }
                     }
@@ -561,6 +560,7 @@ public class ContestServiceImpl implements ContestService {
                 PrivateContestData privateContestData = (PrivateContestData) contestPackage.getContestData();
                 inviteUserSet = privateContestData.getInviteUserSet().stream()
                         .map(aLong -> userManager.getAccountById(aLong).orElse(null))
+                        .filter(user -> !Objects.isNull(user))
                         .collect(Collectors.toSet());
                 break;
             default:

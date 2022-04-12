@@ -6,7 +6,7 @@ import com.portable.server.manager.impl.GridFsManagerImpl;
 import com.portable.server.model.fs.FileData;
 import com.portable.server.type.FileStoreType;
 import com.portable.server.util.StreamUtils;
-import com.portable.server.util.test.TestMockedValueMaker;
+import com.portable.server.util.test.MockedValueMaker;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -28,10 +28,10 @@ class FileServiceImplTest {
     @Mock
     private GridFsManagerImpl gridFsManager;
 
-    private static final String MOCKED_FILE_NAME = TestMockedValueMaker.mString();
-    private static final String MOCKED_FILE_TYPE = TestMockedValueMaker.mString();
-    private static final String MOCKED_FILE_ID = TestMockedValueMaker.mString();
-    private static final String MOCKED_FILE_DATA = TestMockedValueMaker.mString();
+    private static final String MOCKED_FILE_NAME = MockedValueMaker.mString();
+    private static final String MOCKED_FILE_TYPE = MockedValueMaker.mString();
+    private static final String MOCKED_FILE_ID = MockedValueMaker.mString();
+    private static final String MOCKED_FILE_DATA = MockedValueMaker.mString();
 
     @BeforeEach
     void setUp() {
