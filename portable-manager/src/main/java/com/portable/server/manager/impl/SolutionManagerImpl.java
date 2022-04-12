@@ -65,12 +65,12 @@ public class SolutionManagerImpl implements SolutionManager {
     }
 
     @Override
-    public Optional<Solution> selectLastSolutionByUserIdAndProblemId(Long userId, Long problemId) {
+    public Optional<Solution> selectLastSolution(Long userId, Long problemId) {
         return Optional.ofNullable(solutionMapper.selectLastSolutionByUserIdAndProblemId(userId, problemId));
     }
 
     @Override
-    public Optional<Solution> selectLastSolutionByUserIdAndProblemIdAndContestId(Long userId, Long problemId, Long contestId) {
+    public Optional<Solution> selectContestLastSolution(Long userId, Long problemId, Long contestId) {
         return Optional.ofNullable(solutionMapper.selectLastSolutionByUserIdAndProblemIdAndContestId(userId, problemId, contestId));
     }
 

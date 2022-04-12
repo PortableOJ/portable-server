@@ -513,7 +513,8 @@ public class ContestServiceImpl implements ContestService {
 
                     Problem problem = problemOptional.get();
 
-                    Solution solution = solutionManager.selectLastSolutionByUserIdAndProblemIdAndContestId(userContext.getId(), problem.getId(), contestId).orElse(null);
+                    Solution solution = solutionManager.selectContestLastSolution(userContext.getId(), problem.getId(), contestId)
+                            .orElse(null);
                     ProblemListResponse problemListResponse = ProblemListResponse.of(problem, solution);
                     problemListResponse.setAcceptCount(contestProblemData.getAcceptCount());
                     problemListResponse.setSubmissionCount(contestProblemData.getSubmissionCount());
@@ -538,18 +539,18 @@ public class ContestServiceImpl implements ContestService {
         if (admin) {
             return getContestDetailAdmin(contestPackage, owner, problemListResponses, problemLock, coAuthor);
         }
-        return ContestAdminDetailResponse.of(contestPackage.getContest(),
+        return ContestDetailResponse.of(contestPackage.getContest(),
                 contestPackage.getContestData(),
                 owner,
                 problemListResponses,
                 coAuthor);
     }
 
-    private ContestDetailResponse getContestDetailAdmin(ContestPackage contestPackage,
-                                                        User owner,
-                                                        List<ProblemListResponse> problemListResponses,
-                                                        List<Boolean> problemLock,
-                                                        Set<User> coAuthor) throws PortableException {
+    private ContestAdminDetailResponse getContestDetailAdmin(ContestPackage contestPackage,
+                                                             User owner,
+                                                             List<ProblemListResponse> problemListResponses,
+                                                             List<Boolean> problemLock,
+                                                             Set<User> coAuthor) throws PortableException {
         Set<User> inviteUserSet = null;
         switch (contestPackage.getContest().getAccessType()) {
             case PUBLIC:

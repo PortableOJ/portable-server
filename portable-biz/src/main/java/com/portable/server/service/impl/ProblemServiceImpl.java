@@ -115,7 +115,7 @@ public class ProblemServiceImpl implements ProblemService {
                 .parallel()
                 .map(problem -> {
                     if (isLogin) {
-                        Solution solution = solutionManager.selectLastSolutionByUserIdAndProblemId(userId, problem.getId()).orElse(null);
+                        Solution solution = solutionManager.selectLastSolution(userId, problem.getId()).orElse(null);
                         return ProblemListResponse.of(problem, solution);
                     }
                     return ProblemListResponse.of(problem, null);

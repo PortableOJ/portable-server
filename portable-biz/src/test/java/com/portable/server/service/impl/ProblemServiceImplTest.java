@@ -30,14 +30,7 @@ import com.portable.server.model.user.NormalUserData;
 import com.portable.server.model.user.User;
 import com.portable.server.support.impl.FileSupportImpl;
 import com.portable.server.support.impl.JudgeSupportImpl;
-import com.portable.server.type.JudgeCodeType;
-import com.portable.server.type.LanguageType;
-import com.portable.server.type.PermissionType;
-import com.portable.server.type.ProblemAccessType;
-import com.portable.server.type.ProblemListStatusType;
-import com.portable.server.type.ProblemStatusType;
-import com.portable.server.type.SolutionStatusType;
-import com.portable.server.type.SolutionType;
+import com.portable.server.type.*;
 import com.portable.server.util.StreamUtils;
 import com.portable.server.util.test.TestMockedValueMaker;
 import com.portable.server.util.test.UserContextBuilder;
@@ -116,217 +109,7 @@ public class ProblemServiceImplTest {
 
     private UserContextBuilder userContextBuilder;
 
-    private MockedStatic<ProblemServiceImpl.UserToProblemAccessType> userToProblemAccessTypeMockedStatic;
-
-    public static class UserToProblemAccessTypeTest {
-
-        private static final Long MOCKED_USER_ID = TestMockedValueMaker.mLong();
-        private static final Long MOCKED_PROBLEM_ID = TestMockedValueMaker.mLong();
-
-        private static final String MOCKED_PROBLEM_MONGO_ID = TestMockedValueMaker.mString();
-
-        private Problem problem;
-        private Contest contest;
-
-        private UserContextBuilder userContextBuilder;
-
-        @BeforeEach
-        void setUp() {
-            problem = Problem.builder().id(MOCKED_PROBLEM_ID).dataId(MOCKED_PROBLEM_MONGO_ID).build();
-            contest = Contest.builder().build();
-
-            userContextBuilder = new UserContextBuilder();
-            userContextBuilder.setup();
-        }
-
-        @AfterEach
-        void tearDown() {
-            userContextBuilder.tearDown();
-        }
-
-        @Test
-        void testOfWithNoContestPrivateNotOwner() {
-            userContextBuilder.withNotLogin();
-            problem.setOwner(TestMockedValueMaker.mLong());
-            problem.setAccessType(ProblemAccessType.PRIVATE);
-
-            ProblemServiceImpl.UserToProblemAccessType retVal = ProblemServiceImpl.UserToProblemAccessType.of(problem, contest);
-
-            Assertions.assertEquals(ProblemServiceImpl.UserToProblemAccessType.NO_ACCESS, retVal);
-        }
-
-        @Test
-        void testOfWithNoContestPrivateOwnerNoPermission() {
-            userContextBuilder.withNormalLoginIn(MOCKED_USER_ID);
-            problem.setOwner(MOCKED_USER_ID);
-            problem.setAccessType(ProblemAccessType.PRIVATE);
-
-            ProblemServiceImpl.UserToProblemAccessType retVal = ProblemServiceImpl.UserToProblemAccessType.of(problem, contest);
-
-            Assertions.assertEquals(ProblemServiceImpl.UserToProblemAccessType.NO_ACCESS, retVal);
-        }
-
-        @Test
-        void testOfWithNoContestPrivateOwner() {
-            userContextBuilder.withNormalLoginIn(MOCKED_USER_ID).withPermission(PermissionType.CREATE_AND_EDIT_PROBLEM);
-            problem.setOwner(MOCKED_USER_ID);
-            problem.setAccessType(ProblemAccessType.PRIVATE);
-
-            ProblemServiceImpl.UserToProblemAccessType retVal = ProblemServiceImpl.UserToProblemAccessType.of(problem, contest);
-
-            Assertions.assertEquals(ProblemServiceImpl.UserToProblemAccessType.FULL_ACCESS, retVal);
-        }
-
-        @Test
-        void testOfWithNoContestPrivateEditOther() {
-            userContextBuilder.withNormalLoginIn(TestMockedValueMaker.mLong()).withPermission(PermissionType.CREATE_AND_EDIT_PROBLEM, PermissionType.EDIT_NOT_OWNER_PROBLEM);
-            problem.setOwner(MOCKED_USER_ID);
-            problem.setAccessType(ProblemAccessType.PRIVATE);
-
-            ProblemServiceImpl.UserToProblemAccessType retVal = ProblemServiceImpl.UserToProblemAccessType.of(problem, contest);
-
-            Assertions.assertEquals(ProblemServiceImpl.UserToProblemAccessType.NO_ACCESS, retVal);
-        }
-
-        @Test
-        void testOfWithContestOwnerPrivateEnd() {
-            userContextBuilder.withNormalLoginIn(TestMockedValueMaker.mLong()).withPermission(PermissionType.CREATE_AND_EDIT_PROBLEM, PermissionType.EDIT_NOT_OWNER_PROBLEM);
-            contest.setOwner(TestMockedValueMaker.mLong());
-            contest.setStartTime(new Date(0));
-            contest.setDuration(10000);
-            problem.setOwner(MOCKED_USER_ID);
-            problem.setAccessType(ProblemAccessType.PRIVATE);
-
-            ProblemServiceImpl.UserToProblemAccessType retVal = ProblemServiceImpl.UserToProblemAccessType.of(problem, contest);
-
-            Assertions.assertEquals(ProblemServiceImpl.UserToProblemAccessType.NO_ACCESS, retVal);
-        }
-
-        @Test
-        void testOfWithContestOwnerPrivateNotEnd() {
-            userContextBuilder.withNormalLoginIn(MOCKED_USER_ID).withPermission(PermissionType.CREATE_AND_EDIT_PROBLEM);
-            contest.setOwner(MOCKED_USER_ID);
-            contest.setStartTime(new Date());
-            contest.setDuration(10000);
-            problem.setOwner(TestMockedValueMaker.mLong());
-            problem.setAccessType(ProblemAccessType.PRIVATE);
-
-            ProblemServiceImpl.UserToProblemAccessType retVal = ProblemServiceImpl.UserToProblemAccessType.of(problem, contest);
-
-            Assertions.assertEquals(ProblemServiceImpl.UserToProblemAccessType.FULL_ACCESS, retVal);
-        }
-
-        @Test
-        void testOfWithNoContestHiddenNotOwner() {
-            userContextBuilder.withNotLogin();
-            problem.setOwner(MOCKED_USER_ID);
-            problem.setAccessType(ProblemAccessType.HIDDEN);
-
-            ProblemServiceImpl.UserToProblemAccessType retVal = ProblemServiceImpl.UserToProblemAccessType.of(problem, contest);
-
-            Assertions.assertEquals(ProblemServiceImpl.UserToProblemAccessType.NO_ACCESS, retVal);
-        }
-
-        @Test
-        void testOfWithNoContestHiddenOwnerNoPermission() {
-            userContextBuilder.withNormalLoginIn(MOCKED_USER_ID);
-            problem.setOwner(MOCKED_USER_ID);
-            problem.setAccessType(ProblemAccessType.HIDDEN);
-
-            ProblemServiceImpl.UserToProblemAccessType retVal = ProblemServiceImpl.UserToProblemAccessType.of(problem, contest);
-
-            Assertions.assertEquals(ProblemServiceImpl.UserToProblemAccessType.NO_ACCESS, retVal);
-        }
-
-        @Test
-        void testOfWithNoContestHiddenOwnerWithView() {
-            userContextBuilder.withNormalLoginIn(MOCKED_USER_ID).withPermission(PermissionType.VIEW_HIDDEN_PROBLEM);
-            problem.setOwner(MOCKED_USER_ID);
-            problem.setAccessType(ProblemAccessType.HIDDEN);
-
-            ProblemServiceImpl.UserToProblemAccessType retVal = ProblemServiceImpl.UserToProblemAccessType.of(problem, contest);
-
-            Assertions.assertEquals(ProblemServiceImpl.UserToProblemAccessType.VIEW, retVal);
-        }
-
-        @Test
-        void testOfWithNoContestHiddenOwnerWithEdit() {
-            userContextBuilder.withNormalLoginIn(MOCKED_USER_ID).withPermission(PermissionType.CREATE_AND_EDIT_PROBLEM);
-            problem.setOwner(MOCKED_USER_ID);
-            problem.setAccessType(ProblemAccessType.HIDDEN);
-
-            ProblemServiceImpl.UserToProblemAccessType retVal = ProblemServiceImpl.UserToProblemAccessType.of(problem, contest);
-
-            Assertions.assertEquals(ProblemServiceImpl.UserToProblemAccessType.FULL_ACCESS, retVal);
-        }
-
-        @Test
-        void testOfWithNoContestHiddenNotOwnerView() {
-            userContextBuilder.withNormalLoginIn(TestMockedValueMaker.mLong()).withPermission(PermissionType.VIEW_HIDDEN_PROBLEM);
-            problem.setOwner(MOCKED_USER_ID);
-            problem.setAccessType(ProblemAccessType.HIDDEN);
-
-            ProblemServiceImpl.UserToProblemAccessType retVal = ProblemServiceImpl.UserToProblemAccessType.of(problem, contest);
-
-            Assertions.assertEquals(ProblemServiceImpl.UserToProblemAccessType.VIEW, retVal);
-        }
-
-        @Test
-        void testOfWithNoContestHiddenNotOwnerNotViewEditOther() {
-            userContextBuilder.withNormalLoginIn(TestMockedValueMaker.mLong()).withPermission(PermissionType.CREATE_AND_EDIT_PROBLEM, PermissionType.EDIT_NOT_OWNER_PROBLEM);
-            problem.setOwner(MOCKED_USER_ID);
-            problem.setAccessType(ProblemAccessType.HIDDEN);
-
-            ProblemServiceImpl.UserToProblemAccessType retVal = ProblemServiceImpl.UserToProblemAccessType.of(problem, contest);
-
-            Assertions.assertEquals(ProblemServiceImpl.UserToProblemAccessType.NO_ACCESS, retVal);
-        }
-
-        @Test
-        void testOfWithNoContestHiddenNotOwnerViewEditOther() {
-            userContextBuilder.withNormalLoginIn(TestMockedValueMaker.mLong()).withPermission(PermissionType.CREATE_AND_EDIT_PROBLEM, PermissionType.VIEW_HIDDEN_PROBLEM, PermissionType.EDIT_NOT_OWNER_PROBLEM);
-            problem.setOwner(MOCKED_USER_ID);
-            problem.setAccessType(ProblemAccessType.HIDDEN);
-
-            ProblemServiceImpl.UserToProblemAccessType retVal = ProblemServiceImpl.UserToProblemAccessType.of(problem, contest);
-
-            Assertions.assertEquals(ProblemServiceImpl.UserToProblemAccessType.FULL_ACCESS, retVal);
-        }
-
-        @Test
-        void testOfWithNoContestPublicNotOwner() {
-            userContextBuilder.withNotLogin();
-            problem.setOwner(MOCKED_USER_ID);
-            problem.setAccessType(ProblemAccessType.PUBLIC);
-
-            ProblemServiceImpl.UserToProblemAccessType retVal = ProblemServiceImpl.UserToProblemAccessType.of(problem, contest);
-
-            Assertions.assertEquals(ProblemServiceImpl.UserToProblemAccessType.VIEW, retVal);
-        }
-
-        @Test
-        void testOfWithNoContestPublicOwner() {
-            userContextBuilder.withNormalLoginIn(MOCKED_USER_ID);
-            problem.setOwner(MOCKED_USER_ID);
-            problem.setAccessType(ProblemAccessType.PUBLIC);
-
-            ProblemServiceImpl.UserToProblemAccessType retVal = ProblemServiceImpl.UserToProblemAccessType.of(problem, contest);
-
-            Assertions.assertEquals(ProblemServiceImpl.UserToProblemAccessType.VIEW, retVal);
-        }
-
-        @Test
-        void testOfWithNoContestPublicOwnerPermission() {
-            userContextBuilder.withNormalLoginIn(MOCKED_USER_ID).withPermission(PermissionType.CREATE_AND_EDIT_PROBLEM);
-            problem.setOwner(MOCKED_USER_ID);
-            problem.setAccessType(ProblemAccessType.PUBLIC);
-
-            ProblemServiceImpl.UserToProblemAccessType retVal = ProblemServiceImpl.UserToProblemAccessType.of(problem, contest);
-
-            Assertions.assertEquals(ProblemServiceImpl.UserToProblemAccessType.FULL_ACCESS, retVal);
-        }
-
-    }
+    private MockedStatic<ProblemVisitType> userToProblemAccessTypeMockedStatic;
 
     @BeforeEach
     void setUp() {
@@ -352,7 +135,7 @@ public class ProblemServiceImplTest {
         userContextBuilder = new UserContextBuilder();
         userContextBuilder.setup();
 
-        userToProblemAccessTypeMockedStatic = Mockito.mockStatic(ProblemServiceImpl.UserToProblemAccessType.class);
+        userToProblemAccessTypeMockedStatic = Mockito.mockStatic(ProblemVisitType.class);
     }
 
     @AfterEach
@@ -393,9 +176,9 @@ public class ProblemServiceImplTest {
         List<ProblemAccessType> problemAccessTypeList = Collections.singletonList(ProblemAccessType.PUBLIC);
         Mockito.when(problemManager.countProblemByTypeAndOwnerId(problemAccessTypeList, MOCKED_USER_ID)).thenReturn(problemList.size());
         Mockito.when(problemManager.getProblemListByTypeAndOwnerIdAndPaged(problemAccessTypeList, MOCKED_USER_ID, 30, 0)).thenReturn(problemList);
-        Mockito.when(solutionManager.selectLastSolutionByUserIdAndProblemId(MOCKED_USER_ID, 1L)).thenReturn(Optional.of(solutionAC));
-        Mockito.when(solutionManager.selectLastSolutionByUserIdAndProblemId(MOCKED_USER_ID, 2L)).thenReturn(Optional.of(solutionWA));
-        Mockito.when(solutionManager.selectLastSolutionByUserIdAndProblemId(MOCKED_USER_ID, 3L)).thenReturn(Optional.empty());
+        Mockito.when(solutionManager.selectLastSolution(MOCKED_USER_ID, 1L)).thenReturn(Optional.of(solutionAC));
+        Mockito.when(solutionManager.selectLastSolution(MOCKED_USER_ID, 2L)).thenReturn(Optional.of(solutionWA));
+        Mockito.when(solutionManager.selectLastSolution(MOCKED_USER_ID, 3L)).thenReturn(Optional.empty());
 
         PageRequest<Void> pageRequest = PageRequest.<Void>builder().pageNum(1).pageSize(30).build();
         PageResponse<ProblemListResponse, Void> retVal = problemService.getProblemList(pageRequest);
@@ -433,9 +216,9 @@ public class ProblemServiceImplTest {
         List<ProblemAccessType> problemAccessTypeList = Arrays.asList(ProblemAccessType.PUBLIC, ProblemAccessType.HIDDEN);
         Mockito.when(problemManager.countProblemByTypeAndOwnerId(problemAccessTypeList, MOCKED_USER_ID)).thenReturn(problemList.size());
         Mockito.when(problemManager.getProblemListByTypeAndOwnerIdAndPaged(problemAccessTypeList, MOCKED_USER_ID, 30, 0)).thenReturn(problemList);
-        Mockito.when(solutionManager.selectLastSolutionByUserIdAndProblemId(MOCKED_USER_ID, 1L)).thenReturn(Optional.of(solutionAC));
-        Mockito.when(solutionManager.selectLastSolutionByUserIdAndProblemId(MOCKED_USER_ID, 2L)).thenReturn(Optional.of(solutionWA));
-        Mockito.when(solutionManager.selectLastSolutionByUserIdAndProblemId(MOCKED_USER_ID, 3L)).thenReturn(Optional.empty());
+        Mockito.when(solutionManager.selectLastSolution(MOCKED_USER_ID, 1L)).thenReturn(Optional.of(solutionAC));
+        Mockito.when(solutionManager.selectLastSolution(MOCKED_USER_ID, 2L)).thenReturn(Optional.of(solutionWA));
+        Mockito.when(solutionManager.selectLastSolution(MOCKED_USER_ID, 3L)).thenReturn(Optional.empty());
 
         PageRequest<Void> pageRequest = PageRequest.<Void>builder().pageNum(1).pageSize(30).build();
         PageResponse<ProblemListResponse, Void> retVal = problemService.getProblemList(pageRequest);
@@ -554,8 +337,8 @@ public class ProblemServiceImplTest {
     @Test
     void testGetProblemWithNoAccess() throws PortableException {
         userToProblemAccessTypeMockedStatic
-                .when(() -> ProblemServiceImpl.UserToProblemAccessType.of(Mockito.any(), Mockito.any()))
-                .thenReturn(ProblemServiceImpl.UserToProblemAccessType.NO_ACCESS);
+                .when(() -> ProblemVisitType.of(Mockito.any(), Mockito.any()))
+                .thenReturn(ProblemVisitType.NO_ACCESS);
 
         problemData.setContestId(null);
 
@@ -573,8 +356,8 @@ public class ProblemServiceImplTest {
     @Test
     void testGetProblemWithView() throws PortableException {
         userToProblemAccessTypeMockedStatic
-                .when(() -> ProblemServiceImpl.UserToProblemAccessType.of(Mockito.any(), Mockito.any()))
-                .thenReturn(ProblemServiceImpl.UserToProblemAccessType.VIEW);
+                .when(() -> ProblemVisitType.of(Mockito.any(), Mockito.any()))
+                .thenReturn(ProblemVisitType.VIEW);
 
         problem.setOwner(MOCKED_USER_ID);
         problemData.setContestId(null);
@@ -598,8 +381,8 @@ public class ProblemServiceImplTest {
     @Test
     void testGetProblemWithFullAccess() throws PortableException {
         userToProblemAccessTypeMockedStatic
-                .when(() -> ProblemServiceImpl.UserToProblemAccessType.of(Mockito.any(), Mockito.any()))
-                .thenReturn(ProblemServiceImpl.UserToProblemAccessType.FULL_ACCESS);
+                .when(() -> ProblemVisitType.of(Mockito.any(), Mockito.any()))
+                .thenReturn(ProblemVisitType.FULL_ACCESS);
 
         problem.setOwner(MOCKED_USER_ID);
         problemData.setContestId(null);
@@ -623,8 +406,8 @@ public class ProblemServiceImplTest {
     @Test
     void testGetProblemTestListNoAccess() throws PortableException {
         userToProblemAccessTypeMockedStatic
-                .when(() -> ProblemServiceImpl.UserToProblemAccessType.of(Mockito.any(), Mockito.any()))
-                .thenReturn(ProblemServiceImpl.UserToProblemAccessType.NO_ACCESS);
+                .when(() -> ProblemVisitType.of(Mockito.any(), Mockito.any()))
+                .thenReturn(ProblemVisitType.NO_ACCESS);
 
         problemData.setContestId(null);
 
@@ -642,8 +425,8 @@ public class ProblemServiceImplTest {
     @Test
     void testGetProblemTestListViewNoShare() throws PortableException {
         userToProblemAccessTypeMockedStatic
-                .when(() -> ProblemServiceImpl.UserToProblemAccessType.of(Mockito.any(), Mockito.any()))
-                .thenReturn(ProblemServiceImpl.UserToProblemAccessType.VIEW);
+                .when(() -> ProblemVisitType.of(Mockito.any(), Mockito.any()))
+                .thenReturn(ProblemVisitType.VIEW);
 
         problemData.setContestId(null);
         problemData.setShareTest(false);
@@ -662,8 +445,8 @@ public class ProblemServiceImplTest {
     @Test
     void testGetProblemTestListViewShare() throws PortableException {
         userToProblemAccessTypeMockedStatic
-                .when(() -> ProblemServiceImpl.UserToProblemAccessType.of(Mockito.any(), Mockito.any()))
-                .thenReturn(ProblemServiceImpl.UserToProblemAccessType.VIEW);
+                .when(() -> ProblemVisitType.of(Mockito.any(), Mockito.any()))
+                .thenReturn(ProblemVisitType.VIEW);
 
         problemData.setContestId(null);
         problemData.setShareTest(true);
@@ -679,8 +462,8 @@ public class ProblemServiceImplTest {
     @Test
     void testGetProblemTestListFullAccessNoShare() throws PortableException {
         userToProblemAccessTypeMockedStatic
-                .when(() -> ProblemServiceImpl.UserToProblemAccessType.of(Mockito.any(), Mockito.any()))
-                .thenReturn(ProblemServiceImpl.UserToProblemAccessType.FULL_ACCESS);
+                .when(() -> ProblemVisitType.of(Mockito.any(), Mockito.any()))
+                .thenReturn(ProblemVisitType.FULL_ACCESS);
 
         problemData.setContestId(null);
         problemData.setShareTest(false);
@@ -696,8 +479,8 @@ public class ProblemServiceImplTest {
     @Test
     void testShowTestInputWithNoTest() throws PortableException {
         userToProblemAccessTypeMockedStatic
-                .when(() -> ProblemServiceImpl.UserToProblemAccessType.of(Mockito.any(), Mockito.any()))
-                .thenReturn(ProblemServiceImpl.UserToProblemAccessType.FULL_ACCESS);
+                .when(() -> ProblemVisitType.of(Mockito.any(), Mockito.any()))
+                .thenReturn(ProblemVisitType.FULL_ACCESS);
 
         problemData.setContestId(null);
         problemData.setShareTest(false);
@@ -720,8 +503,8 @@ public class ProblemServiceImplTest {
     @Test
     void testShowTestInputWithTest() throws PortableException, IOException {
         userToProblemAccessTypeMockedStatic
-                .when(() -> ProblemServiceImpl.UserToProblemAccessType.of(Mockito.any(), Mockito.any()))
-                .thenReturn(ProblemServiceImpl.UserToProblemAccessType.FULL_ACCESS);
+                .when(() -> ProblemVisitType.of(Mockito.any(), Mockito.any()))
+                .thenReturn(ProblemVisitType.FULL_ACCESS);
 
         problemData.setContestId(null);
         problemData.setShareTest(false);
@@ -753,8 +536,8 @@ public class ProblemServiceImplTest {
     @Test
     void testShowTestOutputWithNoTest() throws PortableException {
         userToProblemAccessTypeMockedStatic
-                .when(() -> ProblemServiceImpl.UserToProblemAccessType.of(Mockito.any(), Mockito.any()))
-                .thenReturn(ProblemServiceImpl.UserToProblemAccessType.FULL_ACCESS);
+                .when(() -> ProblemVisitType.of(Mockito.any(), Mockito.any()))
+                .thenReturn(ProblemVisitType.FULL_ACCESS);
 
         problemData.setContestId(null);
         problemData.setShareTest(false);
@@ -778,8 +561,8 @@ public class ProblemServiceImplTest {
     @Test
     void testShowTestOutputWithTest() throws PortableException, IOException {
         userToProblemAccessTypeMockedStatic
-                .when(() -> ProblemServiceImpl.UserToProblemAccessType.of(Mockito.any(), Mockito.any()))
-                .thenReturn(ProblemServiceImpl.UserToProblemAccessType.FULL_ACCESS);
+                .when(() -> ProblemVisitType.of(Mockito.any(), Mockito.any()))
+                .thenReturn(ProblemVisitType.FULL_ACCESS);
 
         problemData.setContestId(null);
         problemData.setShareTest(false);
@@ -811,8 +594,8 @@ public class ProblemServiceImplTest {
     @Test
     void testDownloadTestInputWithNoTest() throws PortableException {
         userToProblemAccessTypeMockedStatic
-                .when(() -> ProblemServiceImpl.UserToProblemAccessType.of(Mockito.any(), Mockito.any()))
-                .thenReturn(ProblemServiceImpl.UserToProblemAccessType.FULL_ACCESS);
+                .when(() -> ProblemVisitType.of(Mockito.any(), Mockito.any()))
+                .thenReturn(ProblemVisitType.FULL_ACCESS);
 
         problemData.setContestId(null);
         problemData.setShareTest(false);
@@ -837,8 +620,8 @@ public class ProblemServiceImplTest {
     @Test
     void testDownloadTestInputWithTest() throws PortableException, IOException {
         userToProblemAccessTypeMockedStatic
-                .when(() -> ProblemServiceImpl.UserToProblemAccessType.of(Mockito.any(), Mockito.any()))
-                .thenReturn(ProblemServiceImpl.UserToProblemAccessType.FULL_ACCESS);
+                .when(() -> ProblemVisitType.of(Mockito.any(), Mockito.any()))
+                .thenReturn(ProblemVisitType.FULL_ACCESS);
 
         problemData.setContestId(null);
         problemData.setShareTest(false);
@@ -870,8 +653,8 @@ public class ProblemServiceImplTest {
     @Test
     void testDownloadTestOutputWithNoTest() throws PortableException {
         userToProblemAccessTypeMockedStatic
-                .when(() -> ProblemServiceImpl.UserToProblemAccessType.of(Mockito.any(), Mockito.any()))
-                .thenReturn(ProblemServiceImpl.UserToProblemAccessType.FULL_ACCESS);
+                .when(() -> ProblemVisitType.of(Mockito.any(), Mockito.any()))
+                .thenReturn(ProblemVisitType.FULL_ACCESS);
 
         problemData.setContestId(null);
         problemData.setShareTest(false);
@@ -896,8 +679,8 @@ public class ProblemServiceImplTest {
     @Test
     void testDownloadTestOutputWithTest() throws PortableException, IOException {
         userToProblemAccessTypeMockedStatic
-                .when(() -> ProblemServiceImpl.UserToProblemAccessType.of(Mockito.any(), Mockito.any()))
-                .thenReturn(ProblemServiceImpl.UserToProblemAccessType.FULL_ACCESS);
+                .when(() -> ProblemVisitType.of(Mockito.any(), Mockito.any()))
+                .thenReturn(ProblemVisitType.FULL_ACCESS);
 
         problemData.setContestId(null);
         problemData.setShareTest(false);
@@ -993,8 +776,8 @@ public class ProblemServiceImplTest {
         Mockito.when(problemDataManager.getProblemData(MOCKED_PROBLEM_MONGO_ID)).thenReturn(problemData);
 
         userToProblemAccessTypeMockedStatic
-                .when(() -> ProblemServiceImpl.UserToProblemAccessType.of(Mockito.any(), Mockito.any()))
-                .thenReturn(ProblemServiceImpl.UserToProblemAccessType.NO_ACCESS);
+                .when(() -> ProblemVisitType.of(Mockito.any(), Mockito.any()))
+                .thenReturn(ProblemVisitType.NO_ACCESS);
 
         ProblemContentRequest problemContentRequest = ProblemContentRequest.builder()
                 .id(MOCKED_PROBLEM_ID)
@@ -1022,8 +805,8 @@ public class ProblemServiceImplTest {
         Mockito.when(problemDataManager.getProblemData(MOCKED_PROBLEM_MONGO_ID)).thenReturn(problemData);
 
         userToProblemAccessTypeMockedStatic
-                .when(() -> ProblemServiceImpl.UserToProblemAccessType.of(Mockito.any(), Mockito.any()))
-                .thenReturn(ProblemServiceImpl.UserToProblemAccessType.VIEW);
+                .when(() -> ProblemVisitType.of(Mockito.any(), Mockito.any()))
+                .thenReturn(ProblemVisitType.VIEW);
 
         ProblemContentRequest problemContentRequest = ProblemContentRequest.builder()
                 .id(MOCKED_PROBLEM_ID)
@@ -1051,8 +834,8 @@ public class ProblemServiceImplTest {
         Mockito.when(problemDataManager.getProblemData(MOCKED_PROBLEM_MONGO_ID)).thenReturn(problemData);
 
         userToProblemAccessTypeMockedStatic
-                .when(() -> ProblemServiceImpl.UserToProblemAccessType.of(Mockito.any(), Mockito.any()))
-                .thenReturn(ProblemServiceImpl.UserToProblemAccessType.FULL_ACCESS);
+                .when(() -> ProblemVisitType.of(Mockito.any(), Mockito.any()))
+                .thenReturn(ProblemVisitType.FULL_ACCESS);
 
         ProblemContentRequest problemContentRequest = ProblemContentRequest.builder()
                 .id(MOCKED_PROBLEM_ID)
@@ -1095,8 +878,8 @@ public class ProblemServiceImplTest {
         Mockito.when(problemDataManager.getProblemData(MOCKED_PROBLEM_MONGO_ID)).thenReturn(problemData);
 
         userToProblemAccessTypeMockedStatic
-                .when(() -> ProblemServiceImpl.UserToProblemAccessType.of(Mockito.any(), Mockito.any()))
-                .thenReturn(ProblemServiceImpl.UserToProblemAccessType.FULL_ACCESS);
+                .when(() -> ProblemVisitType.of(Mockito.any(), Mockito.any()))
+                .thenReturn(ProblemVisitType.FULL_ACCESS);
 
         ProblemSettingRequest problemSettingRequest = ProblemSettingRequest.builder()
                 .id(MOCKED_PROBLEM_ID)
@@ -1122,8 +905,8 @@ public class ProblemServiceImplTest {
         Mockito.when(problemDataManager.getProblemData(MOCKED_PROBLEM_MONGO_ID)).thenReturn(problemData);
 
         userToProblemAccessTypeMockedStatic
-                .when(() -> ProblemServiceImpl.UserToProblemAccessType.of(Mockito.any(), Mockito.any()))
-                .thenReturn(ProblemServiceImpl.UserToProblemAccessType.FULL_ACCESS);
+                .when(() -> ProblemVisitType.of(Mockito.any(), Mockito.any()))
+                .thenReturn(ProblemVisitType.FULL_ACCESS);
 
         ProblemSettingRequest problemSettingRequest = ProblemSettingRequest.builder()
                 .id(MOCKED_PROBLEM_ID)
@@ -1152,8 +935,8 @@ public class ProblemServiceImplTest {
         Mockito.when(contestManager.getContestById(MOCKED_CONTEST_ID)).thenReturn(Optional.of(contest));
 
         userToProblemAccessTypeMockedStatic
-                .when(() -> ProblemServiceImpl.UserToProblemAccessType.of(Mockito.any(), Mockito.any()))
-                .thenReturn(ProblemServiceImpl.UserToProblemAccessType.FULL_ACCESS);
+                .when(() -> ProblemVisitType.of(Mockito.any(), Mockito.any()))
+                .thenReturn(ProblemVisitType.FULL_ACCESS);
 
         ProblemSettingRequest problemSettingRequest = ProblemSettingRequest.builder()
                 .id(MOCKED_PROBLEM_ID)
@@ -1181,8 +964,8 @@ public class ProblemServiceImplTest {
         Mockito.when(problemDataManager.getProblemData(MOCKED_PROBLEM_MONGO_ID)).thenReturn(problemData);
 
         userToProblemAccessTypeMockedStatic
-                .when(() -> ProblemServiceImpl.UserToProblemAccessType.of(Mockito.any(), Mockito.any()))
-                .thenReturn(ProblemServiceImpl.UserToProblemAccessType.FULL_ACCESS);
+                .when(() -> ProblemVisitType.of(Mockito.any(), Mockito.any()))
+                .thenReturn(ProblemVisitType.FULL_ACCESS);
 
         List<LanguageType> supportLanguage = new ArrayList<LanguageType>() {{
             add(LanguageType.CPP17);
@@ -1242,8 +1025,8 @@ public class ProblemServiceImplTest {
         Mockito.when(solutionManager.selectSolutionById(MOCKED_SOLUTION_ID)).thenReturn(Optional.of(solution));
 
         userToProblemAccessTypeMockedStatic
-                .when(() -> ProblemServiceImpl.UserToProblemAccessType.of(Mockito.any(), Mockito.any()))
-                .thenReturn(ProblemServiceImpl.UserToProblemAccessType.FULL_ACCESS);
+                .when(() -> ProblemVisitType.of(Mockito.any(), Mockito.any()))
+                .thenReturn(ProblemVisitType.FULL_ACCESS);
 
         List<LanguageType> supportLanguage = new ArrayList<LanguageType>() {{
             add(LanguageType.CPP17);
@@ -1304,8 +1087,8 @@ public class ProblemServiceImplTest {
         Mockito.when(solutionManager.selectSolutionById(MOCKED_SOLUTION_ID)).thenReturn(Optional.of(solution));
 
         userToProblemAccessTypeMockedStatic
-                .when(() -> ProblemServiceImpl.UserToProblemAccessType.of(Mockito.any(), Mockito.any()))
-                .thenReturn(ProblemServiceImpl.UserToProblemAccessType.FULL_ACCESS);
+                .when(() -> ProblemVisitType.of(Mockito.any(), Mockito.any()))
+                .thenReturn(ProblemVisitType.FULL_ACCESS);
 
         List<LanguageType> supportLanguage = new ArrayList<LanguageType>() {{
             add(LanguageType.CPP17);
@@ -1371,8 +1154,8 @@ public class ProblemServiceImplTest {
         Mockito.when(solutionManager.selectSolutionById(MOCKED_SOLUTION_ID)).thenReturn(Optional.of(solution));
 
         userToProblemAccessTypeMockedStatic
-                .when(() -> ProblemServiceImpl.UserToProblemAccessType.of(Mockito.any(), Mockito.any()))
-                .thenReturn(ProblemServiceImpl.UserToProblemAccessType.FULL_ACCESS);
+                .when(() -> ProblemVisitType.of(Mockito.any(), Mockito.any()))
+                .thenReturn(ProblemVisitType.FULL_ACCESS);
 
         List<LanguageType> supportLanguage = new ArrayList<LanguageType>() {{
             add(LanguageType.CPP17);
@@ -1438,8 +1221,8 @@ public class ProblemServiceImplTest {
         Mockito.when(solutionManager.selectSolutionById(MOCKED_SOLUTION_ID)).thenReturn(Optional.of(solution));
 
         userToProblemAccessTypeMockedStatic
-                .when(() -> ProblemServiceImpl.UserToProblemAccessType.of(Mockito.any(), Mockito.any()))
-                .thenReturn(ProblemServiceImpl.UserToProblemAccessType.FULL_ACCESS);
+                .when(() -> ProblemVisitType.of(Mockito.any(), Mockito.any()))
+                .thenReturn(ProblemVisitType.FULL_ACCESS);
 
         List<LanguageType> supportLanguage = new ArrayList<LanguageType>() {{
             add(LanguageType.CPP17);
@@ -1488,8 +1271,8 @@ public class ProblemServiceImplTest {
         Mockito.when(problemDataManager.getProblemData(MOCKED_PROBLEM_MONGO_ID)).thenReturn(problemData);
 
         userToProblemAccessTypeMockedStatic
-                .when(() -> ProblemServiceImpl.UserToProblemAccessType.of(Mockito.any(), Mockito.any()))
-                .thenReturn(ProblemServiceImpl.UserToProblemAccessType.FULL_ACCESS);
+                .when(() -> ProblemVisitType.of(Mockito.any(), Mockito.any()))
+                .thenReturn(ProblemVisitType.FULL_ACCESS);
 
         ProblemJudgeRequest problemJudgeRequest = ProblemJudgeRequest.builder()
                 .id(MOCKED_PROBLEM_ID)
@@ -1516,8 +1299,8 @@ public class ProblemServiceImplTest {
         Mockito.when(problemDataManager.getProblemData(MOCKED_PROBLEM_MONGO_ID)).thenReturn(problemData);
 
         userToProblemAccessTypeMockedStatic
-                .when(() -> ProblemServiceImpl.UserToProblemAccessType.of(Mockito.any(), Mockito.any()))
-                .thenReturn(ProblemServiceImpl.UserToProblemAccessType.FULL_ACCESS);
+                .when(() -> ProblemVisitType.of(Mockito.any(), Mockito.any()))
+                .thenReturn(ProblemVisitType.FULL_ACCESS);
 
         ProblemJudgeRequest problemJudgeRequest = ProblemJudgeRequest.builder()
                 .id(MOCKED_PROBLEM_ID)
@@ -1553,8 +1336,8 @@ public class ProblemServiceImplTest {
         Mockito.when(problemDataManager.getProblemData(MOCKED_PROBLEM_MONGO_ID)).thenReturn(problemData);
 
         userToProblemAccessTypeMockedStatic
-                .when(() -> ProblemServiceImpl.UserToProblemAccessType.of(Mockito.any(), Mockito.any()))
-                .thenReturn(ProblemServiceImpl.UserToProblemAccessType.FULL_ACCESS);
+                .when(() -> ProblemVisitType.of(Mockito.any(), Mockito.any()))
+                .thenReturn(ProblemVisitType.FULL_ACCESS);
 
         CircularByteBuffer circularByteBuffer = new CircularByteBuffer();
         circularByteBuffer.getOutputStream().write(MOCKED_PROBLEM_DESC.getBytes());
@@ -1603,8 +1386,8 @@ public class ProblemServiceImplTest {
         Mockito.when(problemDataManager.getProblemData(MOCKED_PROBLEM_MONGO_ID)).thenReturn(problemData);
 
         userToProblemAccessTypeMockedStatic
-                .when(() -> ProblemServiceImpl.UserToProblemAccessType.of(Mockito.any(), Mockito.any()))
-                .thenReturn(ProblemServiceImpl.UserToProblemAccessType.FULL_ACCESS);
+                .when(() -> ProblemVisitType.of(Mockito.any(), Mockito.any()))
+                .thenReturn(ProblemVisitType.FULL_ACCESS);
 
         ProblemNameRequest problemNameRequest = ProblemNameRequest.builder()
                 .id(MOCKED_PROBLEM_ID)
@@ -1660,8 +1443,8 @@ public class ProblemServiceImplTest {
         Mockito.when(solutionManager.selectSolutionById(MOCKED_SOLUTION_ID)).thenReturn(Optional.of(solution));
 
         userToProblemAccessTypeMockedStatic
-                .when(() -> ProblemServiceImpl.UserToProblemAccessType.of(Mockito.any(), Mockito.any()))
-                .thenReturn(ProblemServiceImpl.UserToProblemAccessType.FULL_ACCESS);
+                .when(() -> ProblemVisitType.of(Mockito.any(), Mockito.any()))
+                .thenReturn(ProblemVisitType.FULL_ACCESS);
 
         ProblemStdTestCodeResponse retVal = problemService.getProblemStdTestCode(MOCKED_PROBLEM_ID);
 
@@ -1693,8 +1476,8 @@ public class ProblemServiceImplTest {
         Mockito.when(problemDataManager.getProblemData(MOCKED_PROBLEM_MONGO_ID)).thenReturn(problemData);
 
         userToProblemAccessTypeMockedStatic
-                .when(() -> ProblemServiceImpl.UserToProblemAccessType.of(Mockito.any(), Mockito.any()))
-                .thenReturn(ProblemServiceImpl.UserToProblemAccessType.FULL_ACCESS);
+                .when(() -> ProblemVisitType.of(Mockito.any(), Mockito.any()))
+                .thenReturn(ProblemVisitType.FULL_ACCESS);
 
         ProblemCodeRequest problemCodeRequest = ProblemCodeRequest.builder()
                 .id(MOCKED_PROBLEM_ID)
@@ -1749,8 +1532,8 @@ public class ProblemServiceImplTest {
         Mockito.when(problemDataManager.getProblemData(MOCKED_PROBLEM_MONGO_ID)).thenReturn(problemData);
 
         userToProblemAccessTypeMockedStatic
-                .when(() -> ProblemServiceImpl.UserToProblemAccessType.of(Mockito.any(), Mockito.any()))
-                .thenReturn(ProblemServiceImpl.UserToProblemAccessType.FULL_ACCESS);
+                .when(() -> ProblemVisitType.of(Mockito.any(), Mockito.any()))
+                .thenReturn(ProblemVisitType.FULL_ACCESS);
 
         ProblemCodeRequest problemCodeRequest = ProblemCodeRequest.builder()
                 .id(MOCKED_PROBLEM_ID)
@@ -1801,8 +1584,8 @@ public class ProblemServiceImplTest {
         Mockito.when(problemDataManager.getProblemData(MOCKED_PROBLEM_MONGO_ID)).thenReturn(problemData);
 
         userToProblemAccessTypeMockedStatic
-                .when(() -> ProblemServiceImpl.UserToProblemAccessType.of(Mockito.any(), Mockito.any()))
-                .thenReturn(ProblemServiceImpl.UserToProblemAccessType.FULL_ACCESS);
+                .when(() -> ProblemVisitType.of(Mockito.any(), Mockito.any()))
+                .thenReturn(ProblemVisitType.FULL_ACCESS);
 
         ProblemCodeRequest problemCodeRequest = ProblemCodeRequest.builder()
                 .id(MOCKED_PROBLEM_ID)
@@ -1861,8 +1644,8 @@ public class ProblemServiceImplTest {
         Mockito.when(problemDataManager.getProblemData(MOCKED_PROBLEM_MONGO_ID)).thenReturn(problemData);
 
         userToProblemAccessTypeMockedStatic
-                .when(() -> ProblemServiceImpl.UserToProblemAccessType.of(Mockito.any(), Mockito.any()))
-                .thenReturn(ProblemServiceImpl.UserToProblemAccessType.FULL_ACCESS);
+                .when(() -> ProblemVisitType.of(Mockito.any(), Mockito.any()))
+                .thenReturn(ProblemVisitType.FULL_ACCESS);
 
         ProblemNameRequest problemNameRequest = ProblemNameRequest.builder()
                 .id(MOCKED_PROBLEM_ID)
@@ -1898,8 +1681,8 @@ public class ProblemServiceImplTest {
         Mockito.when(problemDataManager.getProblemData(MOCKED_PROBLEM_MONGO_ID)).thenReturn(problemData);
 
         userToProblemAccessTypeMockedStatic
-                .when(() -> ProblemServiceImpl.UserToProblemAccessType.of(Mockito.any(), Mockito.any()))
-                .thenReturn(ProblemServiceImpl.UserToProblemAccessType.FULL_ACCESS);
+                .when(() -> ProblemVisitType.of(Mockito.any(), Mockito.any()))
+                .thenReturn(ProblemVisitType.FULL_ACCESS);
 
         String retVal = problemService.showStdCode(MOCKED_PROBLEM_ID);
 
@@ -1932,8 +1715,8 @@ public class ProblemServiceImplTest {
         Mockito.when(problemDataManager.getProblemData(MOCKED_PROBLEM_MONGO_ID)).thenReturn(problemData);
 
         userToProblemAccessTypeMockedStatic
-                .when(() -> ProblemServiceImpl.UserToProblemAccessType.of(Mockito.any(), Mockito.any()))
-                .thenReturn(ProblemServiceImpl.UserToProblemAccessType.FULL_ACCESS);
+                .when(() -> ProblemVisitType.of(Mockito.any(), Mockito.any()))
+                .thenReturn(ProblemVisitType.FULL_ACCESS);
 
         ProblemNameRequest problemNameRequest = ProblemNameRequest.builder()
                 .id(MOCKED_PROBLEM_ID)
@@ -1962,8 +1745,8 @@ public class ProblemServiceImplTest {
         Mockito.when(problemDataManager.getProblemData(MOCKED_PROBLEM_MONGO_ID)).thenReturn(problemData);
 
         userToProblemAccessTypeMockedStatic
-                .when(() -> ProblemServiceImpl.UserToProblemAccessType.of(Mockito.any(), Mockito.any()))
-                .thenReturn(ProblemServiceImpl.UserToProblemAccessType.FULL_ACCESS);
+                .when(() -> ProblemVisitType.of(Mockito.any(), Mockito.any()))
+                .thenReturn(ProblemVisitType.FULL_ACCESS);
 
         CircularByteBuffer circularByteBuffer = new CircularByteBuffer();
 
@@ -2000,8 +1783,8 @@ public class ProblemServiceImplTest {
         Mockito.when(problemDataManager.getProblemData(MOCKED_PROBLEM_MONGO_ID)).thenReturn(problemData);
 
         userToProblemAccessTypeMockedStatic
-                .when(() -> ProblemServiceImpl.UserToProblemAccessType.of(Mockito.any(), Mockito.any()))
-                .thenReturn(ProblemServiceImpl.UserToProblemAccessType.FULL_ACCESS);
+                .when(() -> ProblemVisitType.of(Mockito.any(), Mockito.any()))
+                .thenReturn(ProblemVisitType.FULL_ACCESS);
 
         ProblemNameRequest problemNameRequest = ProblemNameRequest.builder()
                 .id(MOCKED_PROBLEM_ID)
@@ -2024,8 +1807,8 @@ public class ProblemServiceImplTest {
         Mockito.when(problemDataManager.getProblemData(MOCKED_PROBLEM_MONGO_ID)).thenReturn(problemData);
 
         userToProblemAccessTypeMockedStatic
-                .when(() -> ProblemServiceImpl.UserToProblemAccessType.of(Mockito.any(), Mockito.any()))
-                .thenReturn(ProblemServiceImpl.UserToProblemAccessType.FULL_ACCESS);
+                .when(() -> ProblemVisitType.of(Mockito.any(), Mockito.any()))
+                .thenReturn(ProblemVisitType.FULL_ACCESS);
 
         problemService.treatAndCheckProblem(MOCKED_PROBLEM_ID);
 
@@ -2040,8 +1823,8 @@ public class ProblemServiceImplTest {
         Mockito.when(problemDataManager.getProblemData(MOCKED_PROBLEM_MONGO_ID)).thenReturn(problemData);
 
         userToProblemAccessTypeMockedStatic
-                .when(() -> ProblemServiceImpl.UserToProblemAccessType.of(Mockito.any(), Mockito.any()))
-                .thenReturn(ProblemServiceImpl.UserToProblemAccessType.FULL_ACCESS);
+                .when(() -> ProblemVisitType.of(Mockito.any(), Mockito.any()))
+                .thenReturn(ProblemVisitType.FULL_ACCESS);
 
         problemService.treatAndCheckProblem(MOCKED_PROBLEM_ID);
 
@@ -2065,8 +1848,8 @@ public class ProblemServiceImplTest {
         Mockito.when(problemDataManager.getProblemData(MOCKED_PROBLEM_MONGO_ID)).thenReturn(problemData);
 
         userToProblemAccessTypeMockedStatic
-                .when(() -> ProblemServiceImpl.UserToProblemAccessType.of(Mockito.any(), Mockito.any()))
-                .thenReturn(ProblemServiceImpl.UserToProblemAccessType.FULL_ACCESS);
+                .when(() -> ProblemVisitType.of(Mockito.any(), Mockito.any()))
+                .thenReturn(ProblemVisitType.FULL_ACCESS);
 
         try {
             problemService.treatAndCheckProblem(MOCKED_PROBLEM_ID);
@@ -2092,8 +1875,8 @@ public class ProblemServiceImplTest {
         Mockito.when(problemDataManager.getProblemData(MOCKED_PROBLEM_MONGO_ID)).thenReturn(problemData);
 
         userToProblemAccessTypeMockedStatic
-                .when(() -> ProblemServiceImpl.UserToProblemAccessType.of(Mockito.any(), Mockito.any()))
-                .thenReturn(ProblemServiceImpl.UserToProblemAccessType.FULL_ACCESS);
+                .when(() -> ProblemVisitType.of(Mockito.any(), Mockito.any()))
+                .thenReturn(ProblemVisitType.FULL_ACCESS);
 
         try {
             problemService.treatAndCheckProblem(MOCKED_PROBLEM_ID);
@@ -2119,8 +1902,8 @@ public class ProblemServiceImplTest {
         Mockito.when(problemDataManager.getProblemData(MOCKED_PROBLEM_MONGO_ID)).thenReturn(problemData);
 
         userToProblemAccessTypeMockedStatic
-                .when(() -> ProblemServiceImpl.UserToProblemAccessType.of(Mockito.any(), Mockito.any()))
-                .thenReturn(ProblemServiceImpl.UserToProblemAccessType.FULL_ACCESS);
+                .when(() -> ProblemVisitType.of(Mockito.any(), Mockito.any()))
+                .thenReturn(ProblemVisitType.FULL_ACCESS);
 
         problemService.treatAndCheckProblem(MOCKED_PROBLEM_ID);
 
@@ -2135,8 +1918,8 @@ public class ProblemServiceImplTest {
         problem.setStatusType(ProblemStatusType.UNTREATED);
 
         userToProblemAccessTypeMockedStatic
-                .when(() -> ProblemServiceImpl.UserToProblemAccessType.of(Mockito.any(), Mockito.any()))
-                .thenReturn(ProblemServiceImpl.UserToProblemAccessType.VIEW);
+                .when(() -> ProblemVisitType.of(Mockito.any(), Mockito.any()))
+                .thenReturn(ProblemVisitType.VIEW);
 
         problemData.setContestId(null);
 
@@ -2164,8 +1947,8 @@ public class ProblemServiceImplTest {
         problem.setStatusType(ProblemStatusType.NORMAL);
 
         userToProblemAccessTypeMockedStatic
-                .when(() -> ProblemServiceImpl.UserToProblemAccessType.of(Mockito.any(), Mockito.any()))
-                .thenReturn(ProblemServiceImpl.UserToProblemAccessType.VIEW);
+                .when(() -> ProblemVisitType.of(Mockito.any(), Mockito.any()))
+                .thenReturn(ProblemVisitType.VIEW);
 
         problemData.setContestId(null);
         normalUserData.setSubmission(0);

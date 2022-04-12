@@ -1,5 +1,7 @@
 package com.portable.server.model.contest;
 
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
@@ -51,6 +53,8 @@ public abstract class BaseContestData {
     private Integer penaltyTime;
 
     @Data
+    @Builder
+    @AllArgsConstructor
     public static class ContestProblemData {
 
         /**

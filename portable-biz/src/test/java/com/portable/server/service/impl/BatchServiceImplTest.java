@@ -51,12 +51,12 @@ class BatchServiceImplTest {
     @Mock
     private BatchManagerImpl batchManager;
 
-    private static final Long MOCKED_USER_ID = 1L;
-    private static final Long MOCKED_BATCH_ID = 2L;
-    private static final Long MOCKED_CONTEST_ID = 3L;
+    private static final Long MOCKED_USER_ID = TestMockedValueMaker.mLong();
+    private static final Long MOCKED_BATCH_ID = TestMockedValueMaker.mLong();
+    private static final Long MOCKED_CONTEST_ID = TestMockedValueMaker.mLong();
 
-    private static final String MOCKED_CONTEST_TITLE = "MOCKED_CONTEST_TITLE";
-    private static final String MOCKED_BATCh_PREFIX = "MOCKED_BATCh_PREFIX";
+    private static final String MOCKED_CONTEST_TITLE = TestMockedValueMaker.mString();
+    private static final String MOCKED_BATCh_PREFIX = TestMockedValueMaker.mString();
 
     private Batch batch;
     private Contest contest;
