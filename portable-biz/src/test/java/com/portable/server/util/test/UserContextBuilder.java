@@ -14,14 +14,12 @@ import java.util.stream.Collectors;
  */
 public class UserContextBuilder {
 
-    private Long MOCKED_USER_ID;
     private UserContext userContext;
     private MockedStatic<UserContext> userContextMockedStatic;
 
     private UserContextLogined userContextLogined;
 
     public void setup() {
-        MOCKED_USER_ID = 1L;
         userContext = UserContext.getNullUser();
         userContextMockedStatic = Mockito.mockStatic(UserContext.class);
         userContextMockedStatic.when(UserContext::ctx).thenReturn(userContext);
@@ -36,7 +34,7 @@ public class UserContextBuilder {
     }
 
     public UserContextLogined withNormalLoginIn() {
-        userContext.setId(MOCKED_USER_ID);
+        userContext.setId(MockedValueMaker.mLong());
         userContext.setType(AccountType.NORMAL);
         return userContextLogined;
     }
@@ -48,7 +46,7 @@ public class UserContextBuilder {
     }
 
     public UserContextLogined withBatchLoginIn() {
-        userContext.setId(MOCKED_USER_ID);
+        userContext.setId(MockedValueMaker.mLong());
         userContext.setType(AccountType.NORMAL);
         return userContextLogined;
     }
@@ -73,6 +71,10 @@ public class UserContextBuilder {
 
         public void withPermission(PermissionType... permission) {
             userContext.setPermissionTypeSet(Arrays.stream(permission).collect(Collectors.toSet()));
+        }
+
+        public void withHandle(String handle) {
+            userContext.setHandle(handle);
         }
     }
 }

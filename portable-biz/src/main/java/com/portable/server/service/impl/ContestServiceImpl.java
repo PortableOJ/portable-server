@@ -261,14 +261,12 @@ public class ContestServiceImpl implements ContestService {
         if (!ContestVisitType.VISIT.approve(contestVisitType)) {
             throw PortableException.of("A-08-004", contestId);
         }
-        contestSupport.ensureRank(contestId);
 
         Boolean freeze = pageRequest.getQueryData().getFreeze();
-        if (!freeze) {
-            if (!ContestVisitType.CO_AUTHOR.approve(contestVisitType)) {
-                throw PortableException.of("A-08-034", contestId);
-            }
+        if (!freeze && !ContestVisitType.CO_AUTHOR.approve(contestVisitType)) {
+            throw PortableException.of("A-08-034", contestId);
         }
+        contestSupport.ensureRank(contestId);
 
         if (Integer.valueOf(0).equals(contestPackage.getContestData().getFreezeTime())) {
             freeze = true;
@@ -666,7 +664,9 @@ public class ContestServiceImpl implements ContestService {
     }
 
     @NotNull
-    private PageResponse<SolutionListResponse, Void> getSolutionList(ContestPackage contestPackage, @NotNull PageRequest<SolutionListQueryRequest> pageRequest, SolutionType solutionType) throws PortableException {
+    private PageResponse<SolutionListResponse, Void> getSolutionList(ContestPackage contestPackage,
+                                                                     @NotNull PageRequest<SolutionListQueryRequest> pageRequest,
+                                                                     SolutionType solutionType) throws PortableException {
         SolutionListQueryRequest queryData = pageRequest.getQueryData();
 
         // 如果请求了指定问题的话，就不需要再重复查询指定的问题了

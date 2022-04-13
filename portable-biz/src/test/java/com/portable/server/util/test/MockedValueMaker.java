@@ -1,5 +1,6 @@
 package com.portable.server.util.test;
 
+import java.util.Date;
 import java.util.UUID;
 
 public class MockedValueMaker {
@@ -16,5 +17,9 @@ public class MockedValueMaker {
 
     public synchronized static String mString() {
         return UUID.randomUUID().toString();
+    }
+
+    public synchronized static Date mDate() {
+        return new Date(mLong());
     }
 }
