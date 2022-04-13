@@ -23,6 +23,7 @@ import com.portable.server.model.request.PageRequest;
 import com.portable.server.model.request.contest.ContestAuth;
 import com.portable.server.model.request.contest.ContestRankPageRequest;
 import com.portable.server.model.request.solution.SolutionListQueryRequest;
+import com.portable.server.model.request.solution.SubmitSolutionRequest;
 import com.portable.server.model.response.PageResponse;
 import com.portable.server.model.response.contest.ContestAdminDetailResponse;
 import com.portable.server.model.response.contest.ContestDetailResponse;
@@ -39,6 +40,7 @@ import com.portable.server.support.impl.ContestSupportImpl;
 import com.portable.server.support.impl.JudgeSupportImpl;
 import com.portable.server.type.ContestAccessType;
 import com.portable.server.type.ContestVisitType;
+import com.portable.server.type.LanguageType;
 import com.portable.server.type.SolutionStatusType;
 import com.portable.server.type.SolutionType;
 import com.portable.server.util.test.MockedValueMaker;
@@ -48,6 +50,7 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockedStatic;
@@ -1431,12 +1434,7 @@ class ContestServiceImplTest {
         Mockito.when(contestSupport.getContestByUserId(MOCKED_CONTEST_ID, MOCKED_USER_ID, true)).thenReturn(contestRankItem);
 
         PageRequest<ContestRankPageRequest> pageRequest = PageRequest.<ContestRankPageRequest>builder()
-                .queryData(ContestRankPageRequest.builder()
-                        .freeze(true)
-                        .build())
-                .pageNum(1)
-                .pageSize(10)
-                .build();
+                .queryData(ContestRankPageRequest.builder().freeze(true).build()).pageNum(1).pageSize(10).build();
 
         PageResponse<ContestRankListResponse, ContestRankListResponse> retVal = contestService.getContestRank(MOCKED_CONTEST_ID, pageRequest);
 
@@ -1460,7 +1458,227 @@ class ContestServiceImplTest {
     }
 
     @Test
-    void submit() {
+    void testSubmitWithVisit() throws PortableException {
+        contest.setAccessType(ContestAccessType.PUBLIC);
+        contest.setDataId(MOCKED_CONTEST_MONGO_ID);
+        publicContestData.set_id(MOCKED_CONTEST_MONGO_ID);
+
+        Mockito.when(contestManager.getContestById(MOCKED_CONTEST_ID)).thenReturn(Optional.of(contest));
+        Mockito.when(contestDataManager.getPublicContestDataById(MOCKED_CONTEST_MONGO_ID)).thenReturn(publicContestData);
+        contestVisitTypeMockedStatic.when(() -> ContestVisitType.checkPermission(Mockito.any(), Mockito.any())).thenReturn(ContestVisitType.VISIT);
+
+        SubmitSolutionRequest submitSolutionRequest = SubmitSolutionRequest.builder()
+                .problemId(0L)
+                .contestId(MOCKED_CONTEST_ID)
+                .languageType(LanguageType.CPP11)
+                .code(MOCKED_CODE)
+                .build();
+
+        try {
+            contestService.submit(submitSolutionRequest);
+            Assertions.fail();
+        } catch (PortableException e) {
+            Assertions.assertEquals("A-08-007", e.getCode());
+        }
+    }
+
+    @Test
+    void testSubmitWithNotStart() throws PortableException {
+        contest.setAccessType(ContestAccessType.PUBLIC);
+        contest.setDataId(MOCKED_CONTEST_MONGO_ID);
+        contest.setStartTime(new Date(new Date().getTime() + 10000));
+        publicContestData.set_id(MOCKED_CONTEST_MONGO_ID);
+
+        Mockito.when(contestManager.getContestById(MOCKED_CONTEST_ID)).thenReturn(Optional.of(contest));
+        Mockito.when(contestDataManager.getPublicContestDataById(MOCKED_CONTEST_MONGO_ID)).thenReturn(publicContestData);
+        contestVisitTypeMockedStatic.when(() -> ContestVisitType.checkPermission(Mockito.any(), Mockito.any())).thenReturn(ContestVisitType.PARTICIPANT);
+
+        SubmitSolutionRequest submitSolutionRequest = SubmitSolutionRequest.builder()
+                .problemId(0L)
+                .contestId(MOCKED_CONTEST_ID)
+                .languageType(LanguageType.CPP11)
+                .code(MOCKED_CODE)
+                .build();
+
+        try {
+            contestService.submit(submitSolutionRequest);
+            Assertions.fail();
+        } catch (PortableException e) {
+            Assertions.assertEquals("A-08-008", e.getCode());
+        }
+    }
+
+    @Test
+    void testSubmitWithIsEnd() throws PortableException {
+        contest.setAccessType(ContestAccessType.PUBLIC);
+        contest.setDataId(MOCKED_CONTEST_MONGO_ID);
+        contest.setStartTime(new Date(0));
+        contest.setDuration(10);
+        publicContestData.set_id(MOCKED_CONTEST_MONGO_ID);
+
+        Mockito.when(contestManager.getContestById(MOCKED_CONTEST_ID)).thenReturn(Optional.of(contest));
+        Mockito.when(contestDataManager.getPublicContestDataById(MOCKED_CONTEST_MONGO_ID)).thenReturn(publicContestData);
+        contestVisitTypeMockedStatic.when(() -> ContestVisitType.checkPermission(Mockito.any(), Mockito.any())).thenReturn(ContestVisitType.PARTICIPANT);
+
+        SubmitSolutionRequest submitSolutionRequest = SubmitSolutionRequest.builder()
+                .problemId(0L)
+                .contestId(MOCKED_CONTEST_ID)
+                .languageType(LanguageType.CPP11)
+                .code(MOCKED_CODE)
+                .build();
+
+        try {
+            contestService.submit(submitSolutionRequest);
+            Assertions.fail();
+        } catch (PortableException e) {
+            Assertions.assertEquals("A-08-008", e.getCode());
+        }
+    }
+
+    @Test
+    void testSubmitWithParticipant() throws PortableException {
+        userContextBuilder.withNormalLoginIn(MOCKED_USER_ID);
+
+        contest.setAccessType(ContestAccessType.PUBLIC);
+        contest.setDataId(MOCKED_CONTEST_MONGO_ID);
+        contest.setStartTime(new Date());
+        contest.setDuration(1000);
+        problem.setDataId(MOCKED_PROBLEM_MONGO_ID);
+        problemData.setTestName(new ArrayList<>());
+        publicContestData.set_id(MOCKED_CONTEST_MONGO_ID);
+        publicContestData.setCoAuthor(new HashSet<>());
+        publicContestData.setProblemList(new ArrayList<BaseContestData.ContestProblemData>() {{
+            add(BaseContestData.ContestProblemData.builder()
+                    .problemId(MOCKED_PROBLEM_ID)
+                    .acceptCount(5)
+                    .submissionCount(10)
+                    .build());
+        }});
+        publicContestData.setFreezeTime(0);
+
+        Mockito.when(contestManager.getContestById(MOCKED_CONTEST_ID)).thenReturn(Optional.of(contest));
+        Mockito.when(contestDataManager.getPublicContestDataById(MOCKED_CONTEST_MONGO_ID)).thenReturn(publicContestData);
+        contestVisitTypeMockedStatic.when(() -> ContestVisitType.checkPermission(Mockito.any(), Mockito.any())).thenReturn(ContestVisitType.PARTICIPANT);
+        Mockito.when(problemManager.getProblemById(MOCKED_PROBLEM_ID)).thenReturn(Optional.of(problem));
+        Mockito.when(problemDataManager.getProblemData(MOCKED_PROBLEM_MONGO_ID)).thenReturn(problemData);
+        Mockito.when(solutionManager.newSolution()).thenCallRealMethod();
+        Mockito.when(solutionDataManager.newSolutionData(Mockito.any())).thenCallRealMethod();
+
+        Mockito.doAnswer(invocationOnMock -> {
+            SolutionData solutionData = invocationOnMock.getArgument(0);
+            solutionData.set_id(MOCKED_SOLUTION_MONGO_ID);
+            return null;
+        }).when(solutionDataManager).insertSolutionData(Mockito.any());
+        Mockito.doAnswer(invocationOnMock -> {
+            Solution solution = invocationOnMock.getArgument(0);
+            solution.setId(MOCKED_SOLUTION_ID);
+            return null;
+        }).when(solutionManager).insertSolution(Mockito.any());
+
+        SubmitSolutionRequest submitSolutionRequest = SubmitSolutionRequest.builder()
+                .problemId(Long.valueOf(MOCKED_PROBLEM_INDEX))
+                .contestId(MOCKED_CONTEST_ID)
+                .languageType(LanguageType.CPP11)
+                .code(MOCKED_CODE)
+                .build();
+
+        Long retVal = contestService.submit(submitSolutionRequest);
+
+        Assertions.assertEquals(MOCKED_SOLUTION_ID, retVal);
+
+        /// region 校验写入的提交数据
+
+        ArgumentCaptor<SolutionData> solutionDataArgumentCaptor = ArgumentCaptor.forClass(SolutionData.class);
+        Mockito.verify(solutionDataManager).insertSolutionData(solutionDataArgumentCaptor.capture());
+        SolutionData solutionDataCP = solutionDataArgumentCaptor.getValue();
+        Assertions.assertEquals(MOCKED_CODE, solutionDataCP.getCode());
+
+        /// endregion
+
+        /// region 校验写入的提交
+
+        ArgumentCaptor<Solution> solutionArgumentCaptor = ArgumentCaptor.forClass(Solution.class);
+        Mockito.verify(solutionManager).insertSolution(solutionArgumentCaptor.capture());
+        Solution solutionCP = solutionArgumentCaptor.getValue();
+        Assertions.assertEquals(MOCKED_USER_ID, solutionCP.getUserId());
+        Assertions.assertEquals(MOCKED_PROBLEM_ID, solutionCP.getProblemId());
+        Assertions.assertEquals(MOCKED_CONTEST_ID, solutionCP.getContestId());
+        Assertions.assertEquals(SolutionType.CONTEST, solutionCP.getSolutionType());
+
+        /// endregion
+    }
+
+    @Test
+    void testSubmitWithAdmin() throws PortableException {
+        userContextBuilder.withNormalLoginIn(MOCKED_USER_ID);
+
+        contest.setAccessType(ContestAccessType.PUBLIC);
+        contest.setDataId(MOCKED_CONTEST_MONGO_ID);
+        contest.setStartTime(new Date(0));
+        contest.setDuration(1);
+        problem.setDataId(MOCKED_PROBLEM_MONGO_ID);
+        problemData.setTestName(new ArrayList<>());
+        publicContestData.set_id(MOCKED_CONTEST_MONGO_ID);
+        publicContestData.setCoAuthor(new HashSet<>());
+        publicContestData.setProblemList(new ArrayList<BaseContestData.ContestProblemData>() {{
+            add(BaseContestData.ContestProblemData.builder()
+                    .problemId(MOCKED_PROBLEM_ID)
+                    .acceptCount(5)
+                    .submissionCount(10)
+                    .build());
+        }});
+        publicContestData.setFreezeTime(0);
+
+        Mockito.when(contestManager.getContestById(MOCKED_CONTEST_ID)).thenReturn(Optional.of(contest));
+        Mockito.when(contestDataManager.getPublicContestDataById(MOCKED_CONTEST_MONGO_ID)).thenReturn(publicContestData);
+        contestVisitTypeMockedStatic.when(() -> ContestVisitType.checkPermission(Mockito.any(), Mockito.any())).thenReturn(ContestVisitType.ADMIN);
+        Mockito.when(problemManager.getProblemById(MOCKED_PROBLEM_ID)).thenReturn(Optional.of(problem));
+        Mockito.when(problemDataManager.getProblemData(MOCKED_PROBLEM_MONGO_ID)).thenReturn(problemData);
+        Mockito.when(solutionManager.newSolution()).thenCallRealMethod();
+        Mockito.when(solutionDataManager.newSolutionData(Mockito.any())).thenCallRealMethod();
+
+        Mockito.doAnswer(invocationOnMock -> {
+            SolutionData solutionData = invocationOnMock.getArgument(0);
+            solutionData.set_id(MOCKED_SOLUTION_MONGO_ID);
+            return null;
+        }).when(solutionDataManager).insertSolutionData(Mockito.any());
+        Mockito.doAnswer(invocationOnMock -> {
+            Solution solution = invocationOnMock.getArgument(0);
+            solution.setId(MOCKED_SOLUTION_ID);
+            return null;
+        }).when(solutionManager).insertSolution(Mockito.any());
+
+        SubmitSolutionRequest submitSolutionRequest = SubmitSolutionRequest.builder()
+                .problemId(Long.valueOf(MOCKED_PROBLEM_INDEX))
+                .contestId(MOCKED_CONTEST_ID)
+                .languageType(LanguageType.CPP11)
+                .code(MOCKED_CODE)
+                .build();
+
+        Long retVal = contestService.submit(submitSolutionRequest);
+
+        Assertions.assertEquals(MOCKED_SOLUTION_ID, retVal);
+
+        /// region 校验写入的提交数据
+
+        ArgumentCaptor<SolutionData> solutionDataArgumentCaptor = ArgumentCaptor.forClass(SolutionData.class);
+        Mockito.verify(solutionDataManager).insertSolutionData(solutionDataArgumentCaptor.capture());
+        SolutionData solutionDataCP = solutionDataArgumentCaptor.getValue();
+        Assertions.assertEquals(MOCKED_CODE, solutionDataCP.getCode());
+
+        /// endregion
+
+        /// region 校验写入的提交
+
+        ArgumentCaptor<Solution> solutionArgumentCaptor = ArgumentCaptor.forClass(Solution.class);
+        Mockito.verify(solutionManager).insertSolution(solutionArgumentCaptor.capture());
+        Solution solutionCP = solutionArgumentCaptor.getValue();
+        Assertions.assertEquals(MOCKED_USER_ID, solutionCP.getUserId());
+        Assertions.assertEquals(MOCKED_PROBLEM_ID, solutionCP.getProblemId());
+        Assertions.assertEquals(MOCKED_CONTEST_ID, solutionCP.getContestId());
+        Assertions.assertEquals(SolutionType.TEST_CONTEST, solutionCP.getSolutionType());
+
+        /// endregion
     }
 
     @Test

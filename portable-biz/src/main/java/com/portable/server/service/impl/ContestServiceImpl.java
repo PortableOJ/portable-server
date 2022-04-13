@@ -311,9 +311,10 @@ public class ContestServiceImpl implements ContestService {
             }
         }
 
-        BaseContestData.ContestProblemData contestProblemData = contestPackage.getContestData()
-                .getProblemList()
-                .get(Math.toIntExact(submitSolutionRequest.getProblemId()));
+        BaseContestData.ContestProblemData contestProblemData = contestPackage.getContestData().atProblem(
+                Math.toIntExact(submitSolutionRequest.getProblemId()),
+                submitSolutionRequest.getContestId()
+        );
 
         Problem problem = problemManager.getProblemById(contestProblemData.getProblemId())
                 .orElseThrow(PortableException.from("S-07-001", submitSolutionRequest.getContestId()));
@@ -621,11 +622,19 @@ public class ContestServiceImpl implements ContestService {
         // 在数据完成输入后，再解除旧题目的锁定状态
         setProblemContestId(lastProblemList, contestContentRequest.getId(), null);
 
+        // 解除之前的批量用户的锁定状态
         if (lastBatchId != null) {
             batchManager.updateBatchContest(lastBatchId, null);
         }
     }
 
+    /**
+     * 更新比赛的各种锁定状态
+     *
+     * @param contestPackage 比赛数据
+     * @param problemIdList  题目 ID 列表
+     * @throws PortableException 题目不存在则抛出
+     */
     private void updateContestLock(@NotNull ContestPackage contestPackage, List<Long> problemIdList) throws PortableException {
         // 锁定题目状态
         setProblemContestId(problemIdList, null, contestPackage.contest.getId());
