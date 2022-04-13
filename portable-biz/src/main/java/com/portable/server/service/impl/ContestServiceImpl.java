@@ -49,6 +49,7 @@ import com.portable.server.util.UserContext;
 import lombok.Builder;
 import lombok.Data;
 import org.apache.logging.log4j.util.Strings;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
@@ -171,15 +172,14 @@ public class ContestServiceImpl implements ContestService {
         if (!contestPackage.getContest().isStarted() && !ContestVisitType.CO_AUTHOR.approve(contestVisitType)) {
             throw PortableException.of("A-08-019", contestId);
         }
-        if (problemIndex >= contestPackage.getContestData().getProblemList().size() || problemIndex < 0) {
-            throw PortableException.of("A-08-018", contestId, problemIndex);
-        }
-        BaseContestData.ContestProblemData contestProblemData = contestPackage.getContestData().getProblemList().get(problemIndex);
+        BaseContestData.ContestProblemData contestProblemData = contestPackage.getContestData().atProblem(problemIndex, contestId);
         Problem problem = problemManager.getProblemById(contestProblemData.getProblemId())
                 .orElseThrow(PortableException.from("S-07-001", contestId));
         ProblemData problemData = problemDataManager.getProblemData(problem.getDataId());
         User user = userManager.getAccountById(problem.getOwner()).orElse(null);
         ProblemDetailResponse problemDetailResponse = ProblemDetailResponse.of(problem, problemData, user);
+        problemDetailResponse.setAcceptCount(contestProblemData.getAcceptCount());
+        problemDetailResponse.setSubmissionCount(contestProblemData.getSubmissionCount());
         problemDetailResponse.setId(Long.valueOf(problemIndex));
         return problemDetailResponse;
     }
@@ -545,7 +545,8 @@ public class ContestServiceImpl implements ContestService {
                 coAuthor);
     }
 
-    private ContestAdminDetailResponse getContestDetailAdmin(ContestPackage contestPackage,
+    @NotNull
+    private ContestAdminDetailResponse getContestDetailAdmin(@NotNull ContestPackage contestPackage,
                                                              User owner,
                                                              List<ProblemListResponse> problemListResponses,
                                                              List<Boolean> problemLock,
@@ -575,7 +576,7 @@ public class ContestServiceImpl implements ContestService {
                 inviteUserSet);
     }
 
-    private void checkSameProblem(ContestContentRequest contestContentRequest) throws PortableException {
+    private void checkSameProblem(@NotNull ContestContentRequest contestContentRequest) throws PortableException {
         // 校验题目是否有重复
         Set<Long> problemIdSet = new HashSet<>(contestContentRequest.getProblemList());
         if (!Objects.equals(problemIdSet.size(), contestContentRequest.getProblemList().size())) {
@@ -591,7 +592,7 @@ public class ContestServiceImpl implements ContestService {
         }
     }
 
-    private void setContestContentToContestData(ContestContentRequest contestContentRequest, BaseContestData contestData) throws PortableException {
+    private void setContestContentToContestData(@NotNull ContestContentRequest contestContentRequest, BaseContestData contestData) throws PortableException {
         // 过滤掉不存在的邀请用户和邀请的合作出题人
         Set<Long> coAuthorIdSet = userManager.changeUserHandleToUserId(contestContentRequest.getCoAuthor())
                 .filter(aLong -> !Objects.isNull(aLong))
@@ -627,7 +628,7 @@ public class ContestServiceImpl implements ContestService {
         }
     }
 
-    private void updateContestLock(ContestPackage contestPackage, List<Long> problemIdList) throws PortableException {
+    private void updateContestLock(@NotNull ContestPackage contestPackage, List<Long> problemIdList) throws PortableException {
         // 锁定题目状态
         setProblemContestId(problemIdList, null, contestPackage.contest.getId());
         // 若为提供账号的比赛，则修改批量账号的绑定权限
@@ -639,7 +640,7 @@ public class ContestServiceImpl implements ContestService {
         }
     }
 
-    private void setProblemContestId(List<Long> problemIdList, Long fromContestId, Long toContestId) throws PortableException {
+    private void setProblemContestId(@NotNull List<Long> problemIdList, Long fromContestId, Long toContestId) throws PortableException {
         problemIdList.stream()
                 .filter(problemId -> {
                     Optional<Problem> problemOptional = problemManager.getProblemById(problemId);
@@ -664,20 +665,26 @@ public class ContestServiceImpl implements ContestService {
                 .orElseThrow(PortableException.from("S-03-001"));
     }
 
-    private PageResponse<SolutionListResponse, Void> getSolutionList(ContestPackage contestPackage, PageRequest<SolutionListQueryRequest> pageRequest, SolutionType solutionType) throws PortableException {
+    @NotNull
+    private PageResponse<SolutionListResponse, Void> getSolutionList(ContestPackage contestPackage, @NotNull PageRequest<SolutionListQueryRequest> pageRequest, SolutionType solutionType) throws PortableException {
         SolutionListQueryRequest queryData = pageRequest.getQueryData();
 
+        // 如果请求了指定问题的话，就不需要再重复查询指定的问题了
+        Problem queryProblem = null;
         if (queryData.getProblemId() != null) {
             queryData.setProblemId(contestPackage.getContestData()
-                    .getProblemList()
-                    .get(Math.toIntExact(queryData.getProblemId()))
+                    .atProblem(Math.toIntExact(queryData.getProblemId()), contestPackage.getContest().getId())
                     .getProblemId());
+            queryProblem = problemManager.getProblemById(queryData.getProblemId()).orElse(null);
         }
 
-        // 当提供了 userhandle 的时候，若用户不存在，则抛出错误，若为空值，则当作不设置条件
         Long userId = null;
+        // 如果是询问指定的用户，那么就没有必要继续去数据库查询用户的昵称了
+        User queryUser = null;
         if (Strings.isNotBlank(queryData.getUserHandle())) {
-            userId = userManager.changeHandleToUserId(queryData.getUserHandle()).orElseThrow(PortableException.from("A-01-001"));
+            // 当提供了 userhandle 的时候，若用户不存在，则抛出错误，若为空值，则当作不设置条件
+            queryUser = userManager.getAccountByHandle(queryData.getUserHandle()).orElseThrow(PortableException.from("A-01-001"));
+            userId = queryUser.getId();
         }
 
         Integer solutionCount = solutionManager.countSolution(solutionType,
@@ -698,10 +705,13 @@ public class ContestServiceImpl implements ContestService {
         );
 
         Map<Long, Integer> problemIdToProblemIndexMap = contestPackage.getContestData().idToIndex();
+        final Problem finalQueryProblem = queryProblem;
+        final User finalQueryUser = queryUser;
         List<SolutionListResponse> solutionListResponseList = solutionList.stream()
+                .parallel()
                 .map(solution -> {
-                    User user = userManager.getAccountById(solution.getUserId()).orElse(null);
-                    Problem problem = problemManager.getProblemById(solution.getProblemId()).orElse(null);
+                    User user = Objects.isNull(finalQueryUser) ? userManager.getAccountById(solution.getUserId()).orElse(null) : finalQueryUser;
+                    Problem problem = Objects.isNull(finalQueryProblem) ? problemManager.getProblemById(solution.getProblemId()).orElse(null) : finalQueryProblem;
                     SolutionListResponse solutionListResponse = SolutionListResponse.of(solution, user, problem);
                     solutionListResponse.setProblemId(Long.valueOf(problemIdToProblemIndexMap.get(solution.getProblemId())));
                     return solutionListResponse;

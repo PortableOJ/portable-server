@@ -19,11 +19,14 @@ import com.portable.server.model.problem.Problem;
 import com.portable.server.model.problem.ProblemData;
 import com.portable.server.model.request.PageRequest;
 import com.portable.server.model.request.contest.ContestAuth;
+import com.portable.server.model.request.solution.SolutionListQueryRequest;
 import com.portable.server.model.response.PageResponse;
 import com.portable.server.model.response.contest.ContestAdminDetailResponse;
 import com.portable.server.model.response.contest.ContestDetailResponse;
 import com.portable.server.model.response.contest.ContestInfoResponse;
 import com.portable.server.model.response.contest.ContestListResponse;
+import com.portable.server.model.response.problem.ProblemDetailResponse;
+import com.portable.server.model.response.solution.SolutionListResponse;
 import com.portable.server.model.solution.Solution;
 import com.portable.server.model.user.User;
 import com.portable.server.support.impl.ContestSupportImpl;
@@ -31,6 +34,7 @@ import com.portable.server.support.impl.JudgeSupportImpl;
 import com.portable.server.type.ContestAccessType;
 import com.portable.server.type.ContestVisitType;
 import com.portable.server.type.SolutionStatusType;
+import com.portable.server.type.SolutionType;
 import com.portable.server.util.test.MockedValueMaker;
 import com.portable.server.util.test.UserContextBuilder;
 import org.junit.jupiter.api.AfterEach;
@@ -45,6 +49,7 @@ import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
@@ -96,6 +101,8 @@ class ContestServiceImplTest {
     private PasswordContestData passwordContestData;
     private PrivateContestData privateContestData;
     private BatchContestData batchContestData;
+
+    private static final Integer MOCKED_PROBLEM_INDEX = 0;
 
     private static final Long MOCKED_USER_ID = MockedValueMaker.mLong();
     private static final Long MOCKED_CONTEST_ID = MockedValueMaker.mLong();
@@ -591,11 +598,188 @@ class ContestServiceImplTest {
     }
 
     @Test
-    void getContestProblem() {
+    void testGetContestProblemWithNoAccess() throws PortableException {
+        contest.setAccessType(ContestAccessType.PUBLIC);
+        contest.setDataId(MOCKED_CONTEST_MONGO_ID);
+        Mockito.when(contestManager.getContestById(MOCKED_CONTEST_ID)).thenReturn(Optional.of(contest));
+        Mockito.when(contestDataManager.getPublicContestDataById(MOCKED_CONTEST_MONGO_ID)).thenReturn(publicContestData);
+        contestVisitTypeMockedStatic.when(() -> ContestVisitType.checkPermission(Mockito.any(), Mockito.any())).thenReturn(ContestVisitType.NO_ACCESS);
+
+        try {
+            contestService.getContestProblem(MOCKED_CONTEST_ID, MOCKED_PROBLEM_INDEX);
+            Assertions.fail();
+        } catch (PortableException e) {
+            Assertions.assertEquals("A-08-004", e.getCode());
+        }
     }
 
     @Test
-    void getContestStatusList() {
+    void testGetContestProblemWithNotStart() throws PortableException {
+        contest.setAccessType(ContestAccessType.PUBLIC);
+        contest.setDataId(MOCKED_CONTEST_MONGO_ID);
+        contest.setStartTime(new Date(new Date().getTime() + 10000));
+        Mockito.when(contestManager.getContestById(MOCKED_CONTEST_ID)).thenReturn(Optional.of(contest));
+        Mockito.when(contestDataManager.getPublicContestDataById(MOCKED_CONTEST_MONGO_ID)).thenReturn(publicContestData);
+        contestVisitTypeMockedStatic.when(() -> ContestVisitType.checkPermission(Mockito.any(), Mockito.any())).thenReturn(ContestVisitType.VISIT);
+
+        try {
+            contestService.getContestProblem(MOCKED_CONTEST_ID, MOCKED_PROBLEM_INDEX);
+            Assertions.fail();
+        } catch (PortableException e) {
+            Assertions.assertEquals("A-08-019", e.getCode());
+        }
+    }
+
+    @Test
+    void testGetContestProblemWithIndexOutOfBound() throws PortableException {
+        contest.setAccessType(ContestAccessType.PUBLIC);
+        contest.setDataId(MOCKED_CONTEST_MONGO_ID);
+        contest.setStartTime(new Date(0));
+        publicContestData.setProblemList(new ArrayList<>());
+        Mockito.when(contestManager.getContestById(MOCKED_CONTEST_ID)).thenReturn(Optional.of(contest));
+        Mockito.when(contestDataManager.getPublicContestDataById(MOCKED_CONTEST_MONGO_ID)).thenReturn(publicContestData);
+        contestVisitTypeMockedStatic.when(() -> ContestVisitType.checkPermission(Mockito.any(), Mockito.any())).thenReturn(ContestVisitType.VISIT);
+
+        try {
+            contestService.getContestProblem(MOCKED_CONTEST_ID, MOCKED_PROBLEM_INDEX);
+            Assertions.fail();
+        } catch (PortableException e) {
+            Assertions.assertEquals("A-08-018", e.getCode());
+        }
+    }
+
+    @Test
+    void testGetContestProblemWithProblemMiss() throws PortableException {
+        contest.setAccessType(ContestAccessType.PUBLIC);
+        contest.setDataId(MOCKED_CONTEST_MONGO_ID);
+        contest.setStartTime(new Date(0));
+        publicContestData.setProblemList(new ArrayList<BaseContestData.ContestProblemData>() {{
+            add(BaseContestData.ContestProblemData.builder()
+                    .problemId(MOCKED_PROBLEM_ID)
+                    .build());
+        }});
+        Mockito.when(contestManager.getContestById(MOCKED_CONTEST_ID)).thenReturn(Optional.of(contest));
+        Mockito.when(contestDataManager.getPublicContestDataById(MOCKED_CONTEST_MONGO_ID)).thenReturn(publicContestData);
+        contestVisitTypeMockedStatic.when(() -> ContestVisitType.checkPermission(Mockito.any(), Mockito.any())).thenReturn(ContestVisitType.VISIT);
+        Mockito.when(problemManager.getProblemById(MOCKED_PROBLEM_ID)).thenReturn(Optional.empty());
+
+        try {
+            contestService.getContestProblem(MOCKED_CONTEST_ID, MOCKED_PROBLEM_INDEX);
+            Assertions.fail();
+        } catch (PortableException e) {
+            Assertions.assertEquals("S-07-001", e.getCode());
+        }
+    }
+
+    @Test
+    void testGetContestProblemWithSuccess() throws PortableException {
+        contest.setAccessType(ContestAccessType.PUBLIC);
+        contest.setDataId(MOCKED_CONTEST_MONGO_ID);
+        contest.setStartTime(new Date(0));
+        problem.setDataId(MOCKED_PROBLEM_MONGO_ID);
+        problem.setOwner(MOCKED_USER_ID);
+        problem.setTitle(MOCKED_PROBLEM_TITLE);
+        problem.setAcceptCount(6);
+        problem.setSubmissionCount(11);
+        publicContestData.setProblemList(new ArrayList<BaseContestData.ContestProblemData>() {{
+            add(BaseContestData.ContestProblemData.builder()
+                    .problemId(MOCKED_PROBLEM_ID)
+                    .acceptCount(5)
+                    .submissionCount(10)
+                    .build());
+        }});
+        Mockito.when(contestManager.getContestById(MOCKED_CONTEST_ID)).thenReturn(Optional.of(contest));
+        Mockito.when(contestDataManager.getPublicContestDataById(MOCKED_CONTEST_MONGO_ID)).thenReturn(publicContestData);
+        contestVisitTypeMockedStatic.when(() -> ContestVisitType.checkPermission(Mockito.any(), Mockito.any())).thenReturn(ContestVisitType.VISIT);
+        Mockito.when(problemManager.getProblemById(MOCKED_PROBLEM_ID)).thenReturn(Optional.of(problem));
+        Mockito.when(problemDataManager.getProblemData(MOCKED_PROBLEM_MONGO_ID)).thenReturn(problemData);
+        Mockito.when(userManager.getAccountById(MOCKED_USER_ID)).thenReturn(Optional.of(user));
+
+        ProblemDetailResponse retVal = contestService.getContestProblem(MOCKED_CONTEST_ID, MOCKED_PROBLEM_INDEX);
+
+        /// region 校验返回值
+
+        Assertions.assertEquals(Long.valueOf(MOCKED_PROBLEM_INDEX), retVal.getId());
+        Assertions.assertEquals(MOCKED_PROBLEM_TITLE, retVal.getTitle());
+        Assertions.assertEquals(5, retVal.getAcceptCount());
+        Assertions.assertEquals(10, retVal.getSubmissionCount());
+
+        /// endregion
+    }
+
+    @Test
+    void testGetContestStatusListWithNoAccess() throws PortableException {
+        contest.setAccessType(ContestAccessType.PUBLIC);
+        contest.setDataId(MOCKED_CONTEST_MONGO_ID);
+        Mockito.when(contestManager.getContestById(MOCKED_CONTEST_ID)).thenReturn(Optional.of(contest));
+        Mockito.when(contestDataManager.getPublicContestDataById(MOCKED_CONTEST_MONGO_ID)).thenReturn(publicContestData);
+        contestVisitTypeMockedStatic.when(() -> ContestVisitType.checkPermission(Mockito.any(), Mockito.any())).thenReturn(ContestVisitType.NO_ACCESS);
+
+        PageRequest<SolutionListQueryRequest> pageRequest = PageRequest.<SolutionListQueryRequest>builder()
+                .pageSize(10)
+                .pageNum(1)
+                .queryData(SolutionListQueryRequest.builder()
+                        .problemId(MOCKED_PROBLEM_INDEX.longValue())
+                        .statusType(SolutionStatusType.ACCEPT)
+                        .userHandle(MOCKED_USER_HANDLE)
+                        .build())
+                .build();
+
+        try {
+            contestService.getContestStatusList(MOCKED_CONTEST_ID, pageRequest);
+            Assertions.fail();
+        } catch (PortableException e) {
+            Assertions.assertEquals("A-08-004", e.getCode());
+        }
+    }
+
+    @Test
+    void testGetContestStatusListWithSuccess() throws PortableException {
+        contest.setAccessType(ContestAccessType.PUBLIC);
+        contest.setDataId(MOCKED_CONTEST_MONGO_ID);
+        solution.setProblemId(MOCKED_PROBLEM_ID);
+        solution.setUserId(MOCKED_USER_ID);
+        solution.setStatus(SolutionStatusType.ACCEPT);
+        problem.setTitle(MOCKED_PROBLEM_TITLE);
+        user.setHandle(MOCKED_USER_HANDLE);
+        publicContestData.setProblemList(new ArrayList<BaseContestData.ContestProblemData>() {{
+            add(BaseContestData.ContestProblemData.builder()
+                    .problemId(MOCKED_PROBLEM_ID)
+                    .acceptCount(5)
+                    .submissionCount(10)
+                    .build());
+        }});
+
+        Mockito.when(contestManager.getContestById(MOCKED_CONTEST_ID)).thenReturn(Optional.of(contest));
+        Mockito.when(contestDataManager.getPublicContestDataById(MOCKED_CONTEST_MONGO_ID)).thenReturn(publicContestData);
+        contestVisitTypeMockedStatic.when(() -> ContestVisitType.checkPermission(Mockito.any(), Mockito.any())).thenReturn(ContestVisitType.VISIT);
+        Mockito.when(problemManager.getProblemById(MOCKED_PROBLEM_ID)).thenReturn(Optional.of(problem));
+        Mockito.when(userManager.getAccountByHandle(MOCKED_USER_HANDLE)).thenReturn(Optional.of(user));
+        Mockito.when(solutionManager.countSolution(SolutionType.CONTEST, MOCKED_USER_ID, MOCKED_CONTEST_ID, MOCKED_PROBLEM_ID, SolutionStatusType.ACCEPT)).thenReturn(100);
+        Mockito.when(solutionManager.selectSolutionByPage(10, 0, SolutionType.CONTEST, MOCKED_USER_ID, MOCKED_CONTEST_ID, MOCKED_PROBLEM_ID, SolutionStatusType.ACCEPT))
+                .thenReturn(Collections.singletonList(solution));
+
+        PageRequest<SolutionListQueryRequest> pageRequest = PageRequest.<SolutionListQueryRequest>builder()
+                .pageSize(10)
+                .pageNum(1)
+                .queryData(SolutionListQueryRequest.builder()
+                        .problemId(MOCKED_PROBLEM_INDEX.longValue())
+                        .statusType(SolutionStatusType.ACCEPT)
+                        .userHandle(MOCKED_USER_HANDLE)
+                        .build())
+                .build();
+
+        PageResponse<SolutionListResponse, Void> retVal = contestService.getContestStatusList(MOCKED_CONTEST_ID, pageRequest);
+
+        /// region 校验返回值
+
+        Assertions.assertEquals(100, retVal.getTotalNum());
+        Assertions.assertEquals(1, retVal.getData().size());
+        Assertions.assertEquals(MOCKED_USER_HANDLE, retVal.getData().get(0).getUserHandle());
+        Assertions.assertEquals(MOCKED_PROBLEM_TITLE, retVal.getData().get(0).getProblemTitle());
+        Assertions.assertEquals(SolutionStatusType.ACCEPT, retVal.getData().get(0).getStatus());
+
+        /// endregion
     }
 
     @Test

@@ -1,5 +1,6 @@
 package com.portable.server.model.contest;
 
+import com.portable.server.exception.PortableException;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -93,9 +94,11 @@ public abstract class BaseContestData {
                 .collect(Collectors.toMap(i -> problemList.get(i).getProblemId(), i -> i));
     }
 
-    public Map<Integer, Long> indexToId() {
-        return IntStream.range(0, problemList.size())
-                .boxed()
-                .collect(Collectors.toMap(i -> i, i -> problemList.get(i).getProblemId()));
+    public ContestProblemData atProblem(Integer index, Long contestId) throws PortableException {
+        if (index < 0 || index >= problemList.size()) {
+            throw PortableException.of("A-08-018", contestId, index);
+        }
+        return problemList.get(index);
     }
+
 }

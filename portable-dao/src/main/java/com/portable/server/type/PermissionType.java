@@ -3,9 +3,6 @@ package com.portable.server.type;
 import com.portable.server.exception.ExceptionTextType;
 import lombok.Getter;
 
-import java.util.HashSet;
-import java.util.Set;
-
 /**
  * 权限类型
  *
@@ -87,9 +84,5 @@ public enum PermissionType implements ExceptionTextType {
 
     PermissionType(String text) {
         this.text = text;
-    }
-
-    public static Set<PermissionType> defaultPermission() {
-        return new HashSet<>();
     }
 }
