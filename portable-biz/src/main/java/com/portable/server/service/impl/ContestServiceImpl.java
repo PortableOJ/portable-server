@@ -410,6 +410,7 @@ public class ContestServiceImpl implements ContestService {
             // 比赛已经结束，仅允许修改比赛公告和封榜时间
             contestData.setAnnouncement(contestContentRequest.getAnnouncement());
             contestData.setFreezeTime(contestContentRequest.getFreezeTime());
+            contestData.setPenaltyTime(contestContentRequest.getPenaltyTime());
             contestDataManager.saveContestData(contestData);
             contestManager.updateTitle(contestContentRequest.getId(), contestContentRequest.getTitle());
         }
