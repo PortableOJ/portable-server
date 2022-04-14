@@ -50,8 +50,8 @@ public class ContestManagerImpl implements ContestManager {
     }
 
     @Override
-    public void newContest(Contest contest) {
-        contestMapper.newContest(contest);
+    public void insertContest(Contest contest) {
+        contestMapper.insertContest(contest);
     }
 
     @Override

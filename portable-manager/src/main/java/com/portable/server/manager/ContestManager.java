@@ -52,7 +52,7 @@ public interface ContestManager {
      *
      * @param contest 比赛的信息
      */
-    void newContest(Contest contest);
+    void insertContest(Contest contest);
 
     /**
      * 更新比赛的所有者

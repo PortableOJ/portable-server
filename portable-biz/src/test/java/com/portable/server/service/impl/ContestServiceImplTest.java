@@ -1820,6 +1820,396 @@ class ContestServiceImplTest {
     }
 
     @Test
+    void testCreateContestWithPublicSuccess() throws PortableException {
+        userContextBuilder.withNormalLoginIn(MOCKED_USER_ID);
+
+        problem.setDataId(MOCKED_PROBLEM_MONGO_ID);
+        problemData.setContestId(null);
+
+        Long otherUserId = MockedValueMaker.mLong();
+        Date startTime = MockedValueMaker.mDate();
+        Integer duration = MockedValueMaker.mInt();
+
+        Mockito.when(contestManager.newContest()).thenCallRealMethod();
+        Mockito.when(contestDataManager.newContestData(Mockito.any())).thenCallRealMethod();
+        Mockito.when(problemManager.checkProblemListExist(Mockito.any())).thenReturn(new ArrayList<>());
+        Mockito.when(userManager.changeUserHandleToUserId(Mockito.any())).thenReturn(new HashSet<Long>() {{
+            add(otherUserId);
+        }});
+        Mockito.doAnswer(invocationOnMock -> {
+            PublicContestData publicContestData = invocationOnMock.getArgument(0);
+            publicContestData.set_id(MOCKED_CONTEST_MONGO_ID);
+            return null;
+        }).when(contestDataManager).insertContestData(Mockito.any());
+
+        Mockito.doAnswer(invocationOnMock -> {
+            Contest contest = invocationOnMock.getArgument(0);
+            contest.setId(MOCKED_CONTEST_ID);
+            return null;
+        }).when(contestManager).insertContest(Mockito.any());
+        Mockito.when(problemManager.getProblemById(MOCKED_PROBLEM_ID)).thenReturn(Optional.of(problem));
+        Mockito.when(problemDataManager.getProblemData(MOCKED_PROBLEM_MONGO_ID)).thenReturn(problemData);
+
+        ContestContentRequest contestContentRequest = ContestContentRequest.builder()
+                .id(null)
+                .title(MOCKED_CONTEST_TITLE)
+                .startTime(startTime)
+                .duration(duration)
+                .accessType(ContestAccessType.PUBLIC)
+                .password(null)
+                .inviteUserSet(null)
+                .batchId(null)
+                .problemList(Collections.singletonList(MOCKED_PROBLEM_ID))
+                .coAuthor(new HashSet<String>() {{
+                    add(MOCKED_USER_HANDLE);
+                }})
+                .freezeTime(0)
+                .announcement(MockedValueMaker.mString())
+                .penaltyTime(20)
+                .build();
+
+        Long retVal = contestService.createContest(contestContentRequest);
+
+        Assertions.assertEquals(MOCKED_CONTEST_ID, retVal);
+
+        /// region 校验写入的比赛数据
+
+        ArgumentCaptor<PublicContestData> publicContestDataArgumentCaptor = ArgumentCaptor.forClass(PublicContestData.class);
+        Mockito.verify(contestDataManager).insertContestData(publicContestDataArgumentCaptor.capture());
+        PublicContestData publicContestDataCP = publicContestDataArgumentCaptor.getValue();
+        Assertions.assertEquals(1, publicContestDataCP.getProblemList().size());
+        Assertions.assertEquals(MOCKED_PROBLEM_ID, publicContestDataCP.getProblemList().get(0).getProblemId());
+        Assertions.assertEquals(0, publicContestDataCP.getProblemList().get(0).getAcceptCount());
+        Assertions.assertEquals(0, publicContestDataCP.getProblemList().get(0).getSubmissionCount());
+        Assertions.assertEquals(contestContentRequest.getAnnouncement(), publicContestDataCP.getAnnouncement());
+        Assertions.assertEquals(1, publicContestDataCP.getCoAuthor().size());
+        Assertions.assertTrue(publicContestDataCP.getCoAuthor().contains(otherUserId));
+
+        /// endregion
+
+        /// region 校验写入比赛数据
+
+        ArgumentCaptor<Contest> contestArgumentCaptor = ArgumentCaptor.forClass(Contest.class);
+        Mockito.verify(contestManager).insertContest(contestArgumentCaptor.capture());
+        Contest contestCP = contestArgumentCaptor.getValue();
+        Assertions.assertEquals(MOCKED_CONTEST_MONGO_ID, contestCP.getDataId());
+        Assertions.assertEquals(MOCKED_CONTEST_TITLE, contestCP.getTitle());
+        Assertions.assertEquals(ContestAccessType.PUBLIC, contestCP.getAccessType());
+        Assertions.assertEquals(startTime, contestCP.getStartTime());
+        Assertions.assertEquals(duration, contestCP.getDuration());
+
+        /// endregion
+
+        /// region 校验写入的题目数据
+
+        ArgumentCaptor<ProblemData> problemDataArgumentCaptor = ArgumentCaptor.forClass(ProblemData.class);
+        Mockito.verify(problemDataManager).updateProblemData(problemDataArgumentCaptor.capture());
+        ProblemData problemDataCP = problemDataArgumentCaptor.getValue();
+        Assertions.assertEquals(MOCKED_CONTEST_ID, problemDataCP.getContestId());
+
+        /// endregion
+    }
+
+    @Test
+    void testCreateContestWithPasswordSuccess() throws PortableException {
+        userContextBuilder.withNormalLoginIn(MOCKED_USER_ID);
+
+        problem.setDataId(MOCKED_PROBLEM_MONGO_ID);
+        problemData.setContestId(null);
+
+        String password = MockedValueMaker.mString();
+        Long otherUserId = MockedValueMaker.mLong();
+        Date startTime = MockedValueMaker.mDate();
+        Integer duration = MockedValueMaker.mInt();
+
+        Mockito.when(contestManager.newContest()).thenCallRealMethod();
+        Mockito.when(contestDataManager.newContestData(Mockito.any())).thenCallRealMethod();
+        Mockito.when(problemManager.checkProblemListExist(Mockito.any())).thenReturn(new ArrayList<>());
+        Mockito.when(userManager.changeUserHandleToUserId(Mockito.any())).thenReturn(new HashSet<Long>() {{
+            add(otherUserId);
+        }});
+        Mockito.doAnswer(invocationOnMock -> {
+            PasswordContestData passwordContestData = invocationOnMock.getArgument(0);
+            passwordContestData.set_id(MOCKED_CONTEST_MONGO_ID);
+            return null;
+        }).when(contestDataManager).insertContestData(Mockito.any());
+
+        Mockito.doAnswer(invocationOnMock -> {
+            Contest contest = invocationOnMock.getArgument(0);
+            contest.setId(MOCKED_CONTEST_ID);
+            return null;
+        }).when(contestManager).insertContest(Mockito.any());
+        Mockito.when(problemManager.getProblemById(MOCKED_PROBLEM_ID)).thenReturn(Optional.of(problem));
+        Mockito.when(problemDataManager.getProblemData(MOCKED_PROBLEM_MONGO_ID)).thenReturn(problemData);
+
+        ContestContentRequest contestContentRequest = ContestContentRequest.builder()
+                .id(null)
+                .title(MOCKED_CONTEST_TITLE)
+                .startTime(startTime)
+                .duration(duration)
+                .accessType(ContestAccessType.PASSWORD)
+                .password(password)
+                .inviteUserSet(null)
+                .batchId(null)
+                .problemList(Collections.singletonList(MOCKED_PROBLEM_ID))
+                .coAuthor(new HashSet<String>() {{
+                    add(MOCKED_USER_HANDLE);
+                }})
+                .freezeTime(0)
+                .announcement(MockedValueMaker.mString())
+                .penaltyTime(20)
+                .build();
+
+        Long retVal = contestService.createContest(contestContentRequest);
+
+        Assertions.assertEquals(MOCKED_CONTEST_ID, retVal);
+
+        /// region 校验写入的比赛数据
+
+        ArgumentCaptor<PasswordContestData> passwordContestDataArgumentCaptor = ArgumentCaptor.forClass(PasswordContestData.class);
+        Mockito.verify(contestDataManager).insertContestData(passwordContestDataArgumentCaptor.capture());
+        PasswordContestData passwordContestDataCP = passwordContestDataArgumentCaptor.getValue();
+        Assertions.assertEquals(1, passwordContestDataCP.getProblemList().size());
+        Assertions.assertEquals(MOCKED_PROBLEM_ID, passwordContestDataCP.getProblemList().get(0).getProblemId());
+        Assertions.assertEquals(0, passwordContestDataCP.getProblemList().get(0).getAcceptCount());
+        Assertions.assertEquals(0, passwordContestDataCP.getProblemList().get(0).getSubmissionCount());
+        Assertions.assertEquals(password, passwordContestDataCP.getPassword());
+        Assertions.assertEquals(contestContentRequest.getAnnouncement(), passwordContestDataCP.getAnnouncement());
+        Assertions.assertEquals(1, passwordContestDataCP.getCoAuthor().size());
+        Assertions.assertTrue(passwordContestDataCP.getCoAuthor().contains(otherUserId));
+
+        /// endregion
+
+        /// region 校验写入比赛数据
+
+        ArgumentCaptor<Contest> contestArgumentCaptor = ArgumentCaptor.forClass(Contest.class);
+        Mockito.verify(contestManager).insertContest(contestArgumentCaptor.capture());
+        Contest contestCP = contestArgumentCaptor.getValue();
+        Assertions.assertEquals(MOCKED_CONTEST_MONGO_ID, contestCP.getDataId());
+        Assertions.assertEquals(MOCKED_CONTEST_TITLE, contestCP.getTitle());
+        Assertions.assertEquals(ContestAccessType.PASSWORD, contestCP.getAccessType());
+        Assertions.assertEquals(startTime, contestCP.getStartTime());
+        Assertions.assertEquals(duration, contestCP.getDuration());
+
+        /// endregion
+
+        /// region 校验写入的题目数据
+
+        ArgumentCaptor<ProblemData> problemDataArgumentCaptor = ArgumentCaptor.forClass(ProblemData.class);
+        Mockito.verify(problemDataManager).updateProblemData(problemDataArgumentCaptor.capture());
+        ProblemData problemDataCP = problemDataArgumentCaptor.getValue();
+        Assertions.assertEquals(MOCKED_CONTEST_ID, problemDataCP.getContestId());
+
+        /// endregion
+    }
+
+    @Test
+    void testCreateContestWithPrivateSuccess() throws PortableException {
+        userContextBuilder.withNormalLoginIn(MOCKED_USER_ID);
+
+        problem.setDataId(MOCKED_PROBLEM_MONGO_ID);
+        problemData.setContestId(null);
+
+        Long otherUserId = MockedValueMaker.mLong();
+        Long anotherUserId = MockedValueMaker.mLong();
+        String anotherUserHandle = MockedValueMaker.mString();
+        Date startTime = MockedValueMaker.mDate();
+        Integer duration = MockedValueMaker.mInt();
+
+        Mockito.when(contestManager.newContest()).thenCallRealMethod();
+        Mockito.when(contestDataManager.newContestData(Mockito.any())).thenCallRealMethod();
+        Mockito.when(problemManager.checkProblemListExist(Mockito.any())).thenReturn(new ArrayList<>());
+        Mockito.when(userManager.changeUserHandleToUserId(new HashSet<String>() {{
+            add(MOCKED_USER_HANDLE);
+        }})).thenReturn(new HashSet<Long>() {{
+            add(otherUserId);
+        }});
+        Mockito.when(userManager.changeUserHandleToUserId(new HashSet<String>() {{
+            add(anotherUserHandle);
+        }})).thenReturn(new HashSet<Long>() {{
+            add(anotherUserId);
+        }});
+        Mockito.doAnswer(invocationOnMock -> {
+            PrivateContestData privateContestData = invocationOnMock.getArgument(0);
+            privateContestData.set_id(MOCKED_CONTEST_MONGO_ID);
+            return null;
+        }).when(contestDataManager).insertContestData(Mockito.any());
+        Mockito.doAnswer(invocationOnMock -> {
+            Contest contest = invocationOnMock.getArgument(0);
+            contest.setId(MOCKED_CONTEST_ID);
+            return null;
+        }).when(contestManager).insertContest(Mockito.any());
+        Mockito.when(problemManager.getProblemById(MOCKED_PROBLEM_ID)).thenReturn(Optional.of(problem));
+        Mockito.when(problemDataManager.getProblemData(MOCKED_PROBLEM_MONGO_ID)).thenReturn(problemData);
+
+        ContestContentRequest contestContentRequest = ContestContentRequest.builder()
+                .id(null)
+                .title(MOCKED_CONTEST_TITLE)
+                .startTime(startTime)
+                .duration(duration)
+                .accessType(ContestAccessType.PRIVATE)
+                .password(null)
+                .inviteUserSet(new HashSet<String>() {{
+                    add(anotherUserHandle);
+                }})
+                .batchId(null)
+                .problemList(Collections.singletonList(MOCKED_PROBLEM_ID))
+                .coAuthor(new HashSet<String>() {{
+                    add(MOCKED_USER_HANDLE);
+                }})
+                .freezeTime(0)
+                .announcement(MockedValueMaker.mString())
+                .penaltyTime(20)
+                .build();
+
+        Long retVal = contestService.createContest(contestContentRequest);
+
+        Assertions.assertEquals(MOCKED_CONTEST_ID, retVal);
+
+        /// region 校验写入的比赛数据
+
+        ArgumentCaptor<PrivateContestData> privateContestDataArgumentCaptor = ArgumentCaptor.forClass(PrivateContestData.class);
+        Mockito.verify(contestDataManager).insertContestData(privateContestDataArgumentCaptor.capture());
+        PrivateContestData privateContestDataCP = privateContestDataArgumentCaptor.getValue();
+        Assertions.assertEquals(1, privateContestDataCP.getProblemList().size());
+        Assertions.assertEquals(MOCKED_PROBLEM_ID, privateContestDataCP.getProblemList().get(0).getProblemId());
+        Assertions.assertEquals(0, privateContestDataCP.getProblemList().get(0).getAcceptCount());
+        Assertions.assertEquals(0, privateContestDataCP.getProblemList().get(0).getSubmissionCount());
+        Assertions.assertEquals(contestContentRequest.getAnnouncement(), privateContestDataCP.getAnnouncement());
+        Assertions.assertEquals(1, privateContestDataCP.getCoAuthor().size());
+        Assertions.assertTrue(privateContestDataCP.getCoAuthor().contains(otherUserId));
+        Assertions.assertTrue(privateContestDataCP.getInviteUserSet().contains(anotherUserId));
+
+        /// endregion
+
+        /// region 校验写入比赛数据
+
+        ArgumentCaptor<Contest> contestArgumentCaptor = ArgumentCaptor.forClass(Contest.class);
+        Mockito.verify(contestManager).insertContest(contestArgumentCaptor.capture());
+        Contest contestCP = contestArgumentCaptor.getValue();
+        Assertions.assertEquals(MOCKED_CONTEST_MONGO_ID, contestCP.getDataId());
+        Assertions.assertEquals(MOCKED_CONTEST_TITLE, contestCP.getTitle());
+        Assertions.assertEquals(ContestAccessType.PRIVATE, contestCP.getAccessType());
+        Assertions.assertEquals(startTime, contestCP.getStartTime());
+        Assertions.assertEquals(duration, contestCP.getDuration());
+
+        /// endregion
+
+        /// region 校验写入的题目数据
+
+        ArgumentCaptor<ProblemData> problemDataArgumentCaptor = ArgumentCaptor.forClass(ProblemData.class);
+        Mockito.verify(problemDataManager).updateProblemData(problemDataArgumentCaptor.capture());
+        ProblemData problemDataCP = problemDataArgumentCaptor.getValue();
+        Assertions.assertEquals(MOCKED_CONTEST_ID, problemDataCP.getContestId());
+
+        /// endregion
+    }
+
+    @Test
+    void testCreateContestWithBatchSuccess() throws PortableException {
+        userContextBuilder.withNormalLoginIn(MOCKED_USER_ID);
+
+        batch.setOwner(MOCKED_USER_ID);
+        problem.setDataId(MOCKED_PROBLEM_MONGO_ID);
+        problemData.setContestId(null);
+
+        Long otherUserId = MockedValueMaker.mLong();
+        Long anotherUserId = MockedValueMaker.mLong();
+        String anotherUserHandle = MockedValueMaker.mString();
+        Date startTime = MockedValueMaker.mDate();
+        Integer duration = MockedValueMaker.mInt();
+
+        Mockito.when(contestManager.newContest()).thenCallRealMethod();
+        Mockito.when(contestDataManager.newContestData(Mockito.any())).thenCallRealMethod();
+        Mockito.when(problemManager.checkProblemListExist(Mockito.any())).thenReturn(new ArrayList<>());
+        Mockito.when(batchManager.selectBatchById(MOCKED_BATCH_ID)).thenReturn(Optional.of(batch));
+        Mockito.when(userManager.changeUserHandleToUserId(new HashSet<String>() {{
+            add(MOCKED_USER_HANDLE);
+        }})).thenReturn(new HashSet<Long>() {{
+            add(otherUserId);
+        }});
+        Mockito.doAnswer(invocationOnMock -> {
+            BatchContestData batchContestData = invocationOnMock.getArgument(0);
+            batchContestData.set_id(MOCKED_CONTEST_MONGO_ID);
+            return null;
+        }).when(contestDataManager).insertContestData(Mockito.any());
+        Mockito.doAnswer(invocationOnMock -> {
+            Contest contest = invocationOnMock.getArgument(0);
+            contest.setId(MOCKED_CONTEST_ID);
+            return null;
+        }).when(contestManager).insertContest(Mockito.any());
+        Mockito.when(problemManager.getProblemById(MOCKED_PROBLEM_ID)).thenReturn(Optional.of(problem));
+        Mockito.when(problemDataManager.getProblemData(MOCKED_PROBLEM_MONGO_ID)).thenReturn(problemData);
+
+        ContestContentRequest contestContentRequest = ContestContentRequest.builder()
+                .id(null)
+                .title(MOCKED_CONTEST_TITLE)
+                .startTime(startTime)
+                .duration(duration)
+                .accessType(ContestAccessType.BATCH)
+                .password(null)
+                .inviteUserSet(null)
+                .batchId(MOCKED_BATCH_ID)
+                .problemList(Collections.singletonList(MOCKED_PROBLEM_ID))
+                .coAuthor(new HashSet<String>() {{
+                    add(MOCKED_USER_HANDLE);
+                }})
+                .freezeTime(0)
+                .announcement(MockedValueMaker.mString())
+                .penaltyTime(20)
+                .build();
+
+        Long retVal = contestService.createContest(contestContentRequest);
+
+        Assertions.assertEquals(MOCKED_CONTEST_ID, retVal);
+
+        /// region 校验写入的比赛数据
+
+        ArgumentCaptor<BatchContestData> batchContestDataArgumentCaptor = ArgumentCaptor.forClass(BatchContestData.class);
+        Mockito.verify(contestDataManager).insertContestData(batchContestDataArgumentCaptor.capture());
+        BatchContestData batchContestDataCP = batchContestDataArgumentCaptor.getValue();
+        Assertions.assertEquals(1, batchContestDataCP.getProblemList().size());
+        Assertions.assertEquals(MOCKED_PROBLEM_ID, batchContestDataCP.getProblemList().get(0).getProblemId());
+        Assertions.assertEquals(0, batchContestDataCP.getProblemList().get(0).getAcceptCount());
+        Assertions.assertEquals(0, batchContestDataCP.getProblemList().get(0).getSubmissionCount());
+        Assertions.assertEquals(contestContentRequest.getAnnouncement(), batchContestDataCP.getAnnouncement());
+        Assertions.assertEquals(1, batchContestDataCP.getCoAuthor().size());
+        Assertions.assertTrue(batchContestDataCP.getCoAuthor().contains(otherUserId));
+        Assertions.assertEquals(MOCKED_BATCH_ID, batchContestDataCP.getBatchId());
+
+        /// endregion
+
+        /// region 校验写入比赛数据
+
+        ArgumentCaptor<Contest> contestArgumentCaptor = ArgumentCaptor.forClass(Contest.class);
+        Mockito.verify(contestManager).insertContest(contestArgumentCaptor.capture());
+        Contest contestCP = contestArgumentCaptor.getValue();
+        Assertions.assertEquals(MOCKED_CONTEST_MONGO_ID, contestCP.getDataId());
+        Assertions.assertEquals(MOCKED_CONTEST_TITLE, contestCP.getTitle());
+        Assertions.assertEquals(ContestAccessType.BATCH, contestCP.getAccessType());
+        Assertions.assertEquals(startTime, contestCP.getStartTime());
+        Assertions.assertEquals(duration, contestCP.getDuration());
+
+        /// endregion
+
+        /// region 校验写入的题目数据
+
+        ArgumentCaptor<ProblemData> problemDataArgumentCaptor = ArgumentCaptor.forClass(ProblemData.class);
+        Mockito.verify(problemDataManager).updateProblemData(problemDataArgumentCaptor.capture());
+        ProblemData problemDataCP = problemDataArgumentCaptor.getValue();
+        Assertions.assertEquals(MOCKED_CONTEST_ID, problemDataCP.getContestId());
+
+        /// endregion
+
+        /// region 校验更新了批量用户组
+
+        Mockito.verify(batchManager).updateBatchContest(null, null);
+        Mockito.verify(batchManager).updateBatchContest(MOCKED_BATCH_ID, MOCKED_CONTEST_ID);
+
+        /// endregion
+    }
+
+    @Test
     void updateContest() {
     }
 
