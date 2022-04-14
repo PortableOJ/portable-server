@@ -354,7 +354,7 @@ public class ContestServiceImpl implements ContestService {
 
         contestDataManager.insertContestData(contestData);
         contest.setDataId(contestData.get_id());
-        contestManager.newContest(contest);
+        contestManager.insertContest(contest);
 
         ContestPackage contestPackage = ContestPackage.builder()
                 .contest(contest)
@@ -625,8 +625,6 @@ public class ContestServiceImpl implements ContestService {
         setProblemContestId(lastProblemList, contestContentRequest.getId(), null);
 
         contestContentRequest.toContestData(contestData, coAuthorIdSet, inviteUserIdSet);
-
-
     }
 
     /**
@@ -649,28 +647,28 @@ public class ContestServiceImpl implements ContestService {
     }
 
     private void setProblemContestId(@NotNull List<Long> problemIdList, Long fromContestId, Long toContestId) throws PortableException {
-        problemIdList.stream()
+        long notExistProblemCount = problemIdList.stream()
                 .filter(problemId -> {
-                    Optional<Problem> problemOptional = problemManager.getProblemById(problemId);
-                    if (!problemOptional.isPresent()) {
-                        return true;
-                    }
-                    Problem problem = problemOptional.get();
-
-                    ProblemData problemData;
                     try {
-                        problemData = problemDataManager.getProblemData(problem.getDataId());
+                        Problem problem = problemManager.getProblemById(problemId).orElseThrow(PortableException.from("A-04-001", problemId));
+                        ProblemData problemData = problemDataManager.getProblemData(problem.getDataId());
+                        if (Objects.equals(problemData.getContestId(), fromContestId)) {
+                            problemData.setContestId(toContestId);
+                            problemDataManager.updateProblemData(problemData);
+                        }
+                        return false;
                     } catch (PortableException e) {
+                        // 通常，写入前都校验过题目都数据是否存在
+                        // 且系统中不允许删除题目，
+                        // 所以这里逻辑上不会抛出错误
+                        // 除非直接修改数据库的值
                         return true;
                     }
-                    if (Objects.equals(problemData.getContestId(), fromContestId)) {
-                        problemData.setContestId(toContestId);
-                        problemDataManager.updateProblemData(problemData);
-                    }
-                    return false;
                 })
-                .findAny()
-                .orElseThrow(PortableException.from("S-03-001"));
+                .count();
+        if (notExistProblemCount > 0) {
+            throw PortableException.of("S-03-001");
+        }
     }
 
     @NotNull
