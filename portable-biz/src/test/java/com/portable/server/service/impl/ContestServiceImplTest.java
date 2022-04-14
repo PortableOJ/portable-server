@@ -9,6 +9,7 @@ import com.portable.server.manager.impl.ProblemManagerImpl;
 import com.portable.server.manager.impl.SolutionDataManagerImpl;
 import com.portable.server.manager.impl.SolutionManagerImpl;
 import com.portable.server.manager.impl.UserManagerImpl;
+import com.portable.server.model.batch.Batch;
 import com.portable.server.model.contest.BaseContestData;
 import com.portable.server.model.contest.BatchContestData;
 import com.portable.server.model.contest.Contest;
@@ -21,6 +22,7 @@ import com.portable.server.model.problem.Problem;
 import com.portable.server.model.problem.ProblemData;
 import com.portable.server.model.request.PageRequest;
 import com.portable.server.model.request.contest.ContestAuth;
+import com.portable.server.model.request.contest.ContestContentRequest;
 import com.portable.server.model.request.contest.ContestRankPageRequest;
 import com.portable.server.model.request.solution.SolutionListQueryRequest;
 import com.portable.server.model.request.solution.SubmitSolutionRequest;
@@ -58,6 +60,7 @@ import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
@@ -102,6 +105,7 @@ class ContestServiceImplTest {
     private ContestSupportImpl contestSupport;
 
     private User user;
+    private Batch batch;
     private Contest contest;
     private Problem problem;
     private ProblemData problemData;
@@ -119,6 +123,7 @@ class ContestServiceImplTest {
     private static final Long MOCKED_CONTEST_ID = MockedValueMaker.mLong();
     private static final Long MOCKED_SOLUTION_ID = MockedValueMaker.mLong();
     private static final Long MOCKED_PROBLEM_ID = MockedValueMaker.mLong();
+    private static final Long MOCKED_BATCH_ID = MockedValueMaker.mLong();
 
     private static final String MOCKED_CONTEST_MONGO_ID = MockedValueMaker.mString();
     private static final String MOCKED_CONTEST_TITLE = MockedValueMaker.mString();
@@ -136,6 +141,9 @@ class ContestServiceImplTest {
     void setUp() {
         user = User.builder()
                 .id(MOCKED_USER_ID)
+                .build();
+        batch = Batch.builder()
+                .id(MOCKED_BATCH_ID)
                 .build();
         contest = Contest.builder()
                 .id(MOCKED_CONTEST_ID)
@@ -1682,7 +1690,133 @@ class ContestServiceImplTest {
     }
 
     @Test
-    void createContest() {
+    void testCreateContestWithSameProblem() throws PortableException {
+        Mockito.when(contestManager.newContest()).thenCallRealMethod();
+        Mockito.when(contestDataManager.newContestData(Mockito.any())).thenCallRealMethod();
+
+        ContestContentRequest contestContentRequest = ContestContentRequest.builder()
+                .id(null)
+                .title(MOCKED_CONTEST_TITLE)
+                .startTime(new Date())
+                .duration(10)
+                .accessType(ContestAccessType.PUBLIC)
+                .password(null)
+                .inviteUserSet(null)
+                .batchId(null)
+                .problemList(Arrays.asList(MOCKED_PROBLEM_ID, MOCKED_PROBLEM_ID))
+                .coAuthor(new HashSet<>())
+                .freezeTime(0)
+                .announcement(MockedValueMaker.mString())
+                .penaltyTime(20)
+                .build();
+
+        try {
+            contestService.createContest(contestContentRequest);
+            Assertions.fail();
+        } catch (PortableException e) {
+            Assertions.assertEquals("A-08-020", e.getCode());
+        }
+    }
+
+    @Test
+    void testCreateContestWithNotExistProblem() throws PortableException {
+        Mockito.when(contestManager.newContest()).thenCallRealMethod();
+        Mockito.when(contestDataManager.newContestData(Mockito.any())).thenCallRealMethod();
+        Mockito.when(problemManager.checkProblemListExist(Mockito.any())).thenAnswer(invocationOnMock -> {
+            List<Long> problemList = invocationOnMock.getArgument(0);
+            if (problemList.contains(MOCKED_PROBLEM_ID)) {
+                return Collections.singletonList(MOCKED_PROBLEM_ID);
+            }
+            return new ArrayList<>();
+        });
+
+        ContestContentRequest contestContentRequest = ContestContentRequest.builder()
+                .id(null)
+                .title(MOCKED_CONTEST_TITLE)
+                .startTime(new Date())
+                .duration(10)
+                .accessType(ContestAccessType.PRIVATE)
+                .password(null)
+                .inviteUserSet(null)
+                .batchId(null)
+                .problemList(Arrays.asList(MOCKED_PROBLEM_ID, MockedValueMaker.mLong()))
+                .coAuthor(new HashSet<>())
+                .freezeTime(0)
+                .announcement(MockedValueMaker.mString())
+                .penaltyTime(20)
+                .build();
+
+        try {
+            contestService.createContest(contestContentRequest);
+            Assertions.fail();
+        } catch (PortableException e) {
+            Assertions.assertEquals("A-08-010", e.getCode());
+        }
+    }
+
+    @Test
+    void testCreateContestWithNotExistBatch() throws PortableException {
+        Mockito.when(contestManager.newContest()).thenCallRealMethod();
+        Mockito.when(contestDataManager.newContestData(Mockito.any())).thenCallRealMethod();
+        Mockito.when(problemManager.checkProblemListExist(Mockito.any())).thenReturn(new ArrayList<>());
+        Mockito.when(batchManager.selectBatchById(MOCKED_BATCH_ID)).thenReturn(Optional.empty());
+
+        ContestContentRequest contestContentRequest = ContestContentRequest.builder()
+                .id(null)
+                .title(MOCKED_CONTEST_TITLE)
+                .startTime(new Date())
+                .duration(10)
+                .accessType(ContestAccessType.BATCH)
+                .password(null)
+                .inviteUserSet(null)
+                .batchId(MOCKED_BATCH_ID)
+                .problemList(Arrays.asList(MOCKED_PROBLEM_ID, MockedValueMaker.mLong()))
+                .coAuthor(new HashSet<>())
+                .freezeTime(0)
+                .announcement(MockedValueMaker.mString())
+                .penaltyTime(20)
+                .build();
+
+        try {
+            contestService.createContest(contestContentRequest);
+            Assertions.fail();
+        } catch (PortableException e) {
+            Assertions.assertEquals("A-10-006", e.getCode());
+        }
+    }
+
+    @Test
+    void testCreateContestWithNotOwnerBatch() throws PortableException {
+        userContextBuilder.withNormalLoginIn();
+
+        batch.setOwner(MOCKED_USER_ID);
+        Mockito.when(contestManager.newContest()).thenCallRealMethod();
+        Mockito.when(contestDataManager.newContestData(Mockito.any())).thenCallRealMethod();
+        Mockito.when(problemManager.checkProblemListExist(Mockito.any())).thenReturn(new ArrayList<>());
+        Mockito.when(batchManager.selectBatchById(MOCKED_BATCH_ID)).thenReturn(Optional.of(batch));
+
+        ContestContentRequest contestContentRequest = ContestContentRequest.builder()
+                .id(null)
+                .title(MOCKED_CONTEST_TITLE)
+                .startTime(new Date())
+                .duration(10)
+                .accessType(ContestAccessType.BATCH)
+                .password(null)
+                .inviteUserSet(null)
+                .batchId(MOCKED_BATCH_ID)
+                .problemList(Arrays.asList(MOCKED_PROBLEM_ID, MockedValueMaker.mLong()))
+                .coAuthor(new HashSet<>())
+                .freezeTime(0)
+                .announcement(MockedValueMaker.mString())
+                .penaltyTime(20)
+                .build();
+
+        try {
+            contestService.createContest(contestContentRequest);
+            Assertions.fail();
+        } catch (PortableException e) {
+            Assertions.assertEquals("A-10-008", e.getCode());
+        }
     }
 
     @Test

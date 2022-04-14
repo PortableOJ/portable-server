@@ -45,6 +45,7 @@ import com.portable.server.type.ContestAccessType;
 import com.portable.server.type.ContestVisitType;
 import com.portable.server.type.ProblemAccessType;
 import com.portable.server.type.SolutionType;
+import com.portable.server.util.ObjectUtils;
 import com.portable.server.util.UserContext;
 import lombok.Builder;
 import lombok.Data;
@@ -344,16 +345,16 @@ public class ContestServiceImpl implements ContestService {
 
     @Override
     public Long createContest(ContestContentRequest contestContentRequest) throws PortableException {
-        Contest contest = contestManager.insertContest();
+        Contest contest = contestManager.newContest();
         BaseContestData contestData = contestDataManager.newContestData(contestContentRequest.getAccessType());
         contestContentRequest.toContest(contest);
         contest.setOwner(UserContext.ctx().getId());
-        checkSameProblem(contestContentRequest);
+        checkContestData(contestContentRequest);
         setContestContentToContestData(contestContentRequest, contestData);
 
         contestDataManager.insertContestData(contestData);
         contest.setDataId(contestData.get_id());
-        contestManager.insertContest(contest);
+        contestManager.newContest(contest);
 
         ContestPackage contestPackage = ContestPackage.builder()
                 .contest(contest)
@@ -382,7 +383,7 @@ public class ContestServiceImpl implements ContestService {
             if (contest.isStarted()) {
                 throw PortableException.of("A-08-012");
             }
-            checkSameProblem(contestContentRequest);
+            checkContestData(contestContentRequest);
             setContestContentToContestData(contestContentRequest, contestData);
 
             contestManager.updateStartTime(contestContentRequest.getId(), contestContentRequest.getStartTime());
@@ -394,7 +395,7 @@ public class ContestServiceImpl implements ContestService {
         } else if (contest.isStarted() && !contest.isEnd()) {
             // 已经开始的比赛不允许修改比赛开始时间
             contestContentRequest.setStartTime(contest.getStartTime());
-            checkSameProblem(contestContentRequest);
+            checkContestData(contestContentRequest);
             // 下面的函数已经保证了不会删除题目
             contestContentRequest.toContestData(contestData);
             contestDataManager.saveContestData(contestData);
@@ -560,7 +561,7 @@ public class ContestServiceImpl implements ContestService {
                 PrivateContestData privateContestData = (PrivateContestData) contestPackage.getContestData();
                 inviteUserSet = privateContestData.getInviteUserSet().stream()
                         .map(aLong -> userManager.getAccountById(aLong).orElse(null))
-                        .filter(user -> !Objects.isNull(user))
+                        .filter(ObjectUtils::isNotNull)
                         .collect(Collectors.toSet());
                 break;
             default:
@@ -575,9 +576,10 @@ public class ContestServiceImpl implements ContestService {
                 inviteUserSet);
     }
 
-    private void checkSameProblem(@NotNull ContestContentRequest contestContentRequest) throws PortableException {
+    private void checkContestData(@NotNull ContestContentRequest contestContentRequest) throws PortableException {
         // 校验题目是否有重复
         Set<Long> problemIdSet = new HashSet<>(contestContentRequest.getProblemList());
+        // 去除重复
         if (!Objects.equals(problemIdSet.size(), contestContentRequest.getProblemList().size())) {
             throw PortableException.of("A-08-020");
         }
@@ -589,43 +591,42 @@ public class ContestServiceImpl implements ContestService {
                     .collect(Collectors.joining(", "));
             throw PortableException.of("A-08-010", notExistProblem);
         }
-    }
 
-    private void setContestContentToContestData(@NotNull ContestContentRequest contestContentRequest, BaseContestData contestData) throws PortableException {
-        // 过滤掉不存在的邀请用户和邀请的合作出题人
-        Set<Long> coAuthorIdSet = userManager.changeUserHandleToUserId(contestContentRequest.getCoAuthor())
-                .filter(aLong -> !Objects.isNull(aLong))
-                .collect(Collectors.toSet());
-        Set<Long> inviteUserIdSet = null;
-        if (contestContentRequest.getInviteUserSet() != null) {
-            inviteUserIdSet = userManager.changeUserHandleToUserId(contestContentRequest.getInviteUserSet())
-                    .filter(aLong -> !Objects.isNull(aLong))
-                    .collect(Collectors.toSet());
-        }
-        Long lastBatchId = null;
         // 校验批量用户组是否存在
-        if (ContestAccessType.BATCH.equals(contestContentRequest.getAccessType()) && contestContentRequest.getBatchId() != null) {
+        if (ContestAccessType.BATCH.equals(contestContentRequest.getAccessType())) {
             Batch batch = batchManager.selectBatchById(contestContentRequest.getBatchId())
                     .orElseThrow(PortableException.from("A-10-006", contestContentRequest.getBatchId()));
             if (!Objects.equals(batch.getOwner(), UserContext.ctx().getId())) {
                 throw PortableException.of("A-10-008");
             }
-
-            lastBatchId = ((BatchContestData) contestData).getBatchId();
         }
+    }
+
+    private void setContestContentToContestData(@NotNull ContestContentRequest contestContentRequest, BaseContestData contestData) throws PortableException {
+        // 过滤掉不存在的邀请用户和邀请的合作出题人
+        Set<Long> coAuthorIdSet = userManager.changeUserHandleToUserId(contestContentRequest.getCoAuthor());
+
+        Set<Long> inviteUserIdSet = null;
+        if (ContestAccessType.PRIVATE.equals(contestContentRequest.getAccessType())) {
+            inviteUserIdSet = userManager.changeUserHandleToUserId(contestContentRequest.getInviteUserSet());
+        }
+
+        // 解除之前的批量用户的锁定状态
+        if (ContestAccessType.BATCH.equals(contestContentRequest.getAccessType())) {
+            Long lastBatchId = ((BatchContestData) contestData).getBatchId();
+            batchManager.updateBatchContest(lastBatchId, null);
+        }
+
         List<Long> lastProblemList = contestData.getProblemList().stream()
                 .map(BaseContestData.ContestProblemData::getProblemId)
                 .collect(Collectors.toList());
 
-        contestContentRequest.toContestData(contestData, coAuthorIdSet, inviteUserIdSet);
-
         // 在数据完成输入后，再解除旧题目的锁定状态
         setProblemContestId(lastProblemList, contestContentRequest.getId(), null);
 
-        // 解除之前的批量用户的锁定状态
-        if (lastBatchId != null) {
-            batchManager.updateBatchContest(lastBatchId, null);
-        }
+        contestContentRequest.toContestData(contestData, coAuthorIdSet, inviteUserIdSet);
+
+
     }
 
     /**
@@ -719,8 +720,8 @@ public class ContestServiceImpl implements ContestService {
         List<SolutionListResponse> solutionListResponseList = solutionList.stream()
                 .parallel()
                 .map(solution -> {
-                    User user = Objects.isNull(finalQueryUser) ? userManager.getAccountById(solution.getUserId()).orElse(null) : finalQueryUser;
-                    Problem problem = Objects.isNull(finalQueryProblem) ? problemManager.getProblemById(solution.getProblemId()).orElse(null) : finalQueryProblem;
+                    User user = ObjectUtils.isNull(finalQueryUser) ? userManager.getAccountById(solution.getUserId()).orElse(null) : finalQueryUser;
+                    Problem problem = ObjectUtils.isNull(finalQueryProblem) ? problemManager.getProblemById(solution.getProblemId()).orElse(null) : finalQueryProblem;
                     SolutionListResponse solutionListResponse = SolutionListResponse.of(solution, user, problem);
                     solutionListResponse.setProblemId(Long.valueOf(problemIdToProblemIndexMap.get(solution.getProblemId())));
                     return solutionListResponse;

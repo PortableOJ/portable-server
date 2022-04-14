@@ -122,8 +122,8 @@ public class FileKitImpl implements FileKit {
             throw PortableException.of("S-04-009", filePath);
         }
         return Arrays.stream(files)
-                // sorry for testing on macbook
-                .filter(file -> !".DS_Store".equals(file.getName()))
+                // ignore file
+                .filter(file -> !file.getName().startsWith("."))
                 .collect(Collectors.toList());
     }
 

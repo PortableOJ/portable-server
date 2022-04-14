@@ -5,12 +5,15 @@ import com.portable.server.manager.UserManager;
 import com.portable.server.mapper.UserMapper;
 import com.portable.server.model.user.User;
 import com.portable.server.type.AccountType;
+import com.portable.server.util.ObjectUtils;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.Optional;
-import java.util.stream.Stream;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * @author shiroha
@@ -88,10 +91,15 @@ public class UserManagerImpl implements UserManager {
     }
 
     @Override
-    public Stream<Long> changeUserHandleToUserId(Collection<String> handleList) {
+    public Set<Long> changeUserHandleToUserId(Collection<String> handleList) {
+        if (ObjectUtils.isNull(handleList)) {
+            return new HashSet<>();
+        }
         return handleList.stream()
                 .parallel()
-                .map(s -> changeHandleToUserId(s).orElse(null));
+                .map(s -> changeHandleToUserId(s).orElse(null))
+                .filter(ObjectUtils::isNotNull)
+                .collect(Collectors.toSet());
     }
 
     @Override

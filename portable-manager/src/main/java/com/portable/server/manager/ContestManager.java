@@ -19,7 +19,7 @@ public interface ContestManager {
      * @return 比赛实体
      */
     @NotNull
-    Contest insertContest();
+    Contest newContest();
 
     /**
      * 获取所有的比赛数目
@@ -52,7 +52,7 @@ public interface ContestManager {
      *
      * @param contest 比赛的信息
      */
-    void insertContest(Contest contest);
+    void newContest(Contest contest);
 
     /**
      * 更新比赛的所有者

@@ -20,7 +20,6 @@ import javax.annotation.Resource;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.ExecutionException;
@@ -137,7 +136,7 @@ public class UserContext implements AutoCloseable {
         try {
             UserContext userContext = USER_CACHE.get(userId);
             LOCAL.set(userContext);
-            return !Objects.isNull(userContext.getId());
+            return ObjectUtils.isNotNull(userContext.getId());
         } catch (ExecutionException ignored) {
         }
         return false;
@@ -152,7 +151,7 @@ public class UserContext implements AutoCloseable {
     }
 
     public static void set(User user) throws PortableException {
-        if (Objects.isNull(user)) {
+        if (ObjectUtils.isNull(user)) {
             throw PortableException.of("A-02-001");
         }
 

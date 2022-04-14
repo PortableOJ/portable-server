@@ -4,13 +4,13 @@ import com.portable.server.model.contest.BaseContestData;
 import com.portable.server.model.contest.Contest;
 import com.portable.server.model.user.User;
 import com.portable.server.type.ContestAccessType;
+import com.portable.server.util.ObjectUtils;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Date;
-import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -83,7 +83,7 @@ public class ContestInfoResponse {
         this.ownerHandle = owner == null ? "" : owner.getHandle();
         this.coAuthor = coAuthor.stream()
                 .parallel()
-                .filter(user -> !Objects.isNull(user))
+                .filter(ObjectUtils::isNotNull)
                 .map(User::getHandle)
                 .collect(Collectors.toSet());
         this.freezeTime = contestData.getFreezeTime();

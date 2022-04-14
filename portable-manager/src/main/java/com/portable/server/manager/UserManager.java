@@ -6,7 +6,7 @@ import org.apache.ibatis.annotations.Param;
 
 import java.util.Collection;
 import java.util.Optional;
-import java.util.stream.Stream;
+import java.util.Set;
 
 /**
  * @author shiroha
@@ -47,7 +47,7 @@ public interface UserManager {
      * @param handleList 用户昵称列表
      * @return 用户 id 列表
      */
-    Stream<Long> changeUserHandleToUserId(Collection<String> handleList);
+    Set<Long> changeUserHandleToUserId(Collection<String> handleList);
 
     /**
      * 根据用户的 id 获取账号

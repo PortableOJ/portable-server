@@ -5,12 +5,12 @@ import com.portable.server.mapper.ProblemMapper;
 import com.portable.server.model.problem.Problem;
 import com.portable.server.type.ProblemAccessType;
 import com.portable.server.type.ProblemStatusType;
+import com.portable.server.util.ObjectUtils;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -69,7 +69,7 @@ public class ProblemManagerImpl implements ProblemManager {
                     Optional<Problem> problem = getProblemById(aLong);
                     return !problem.isPresent() ? aLong : null;
                 })
-                .filter(aLong -> !Objects.isNull(aLong))
+                .filter(ObjectUtils::isNotNull)
                 .collect(Collectors.toList());
     }
 
