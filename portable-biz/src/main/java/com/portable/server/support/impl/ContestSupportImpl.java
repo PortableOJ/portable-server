@@ -95,7 +95,7 @@ public class ContestSupportImpl implements ContestSupport {
     @Scheduled(fixedDelayString = "${portable.contest.rank.update}")
     public void updateRank() {
         Date now = new Date();
-        // entrySet 完全没有拷贝，所以这里替换的方式可以保证后续的数据仍然能够正确保存至此
+        // entrySet 是不拷贝，所以这里替换的方式可以保证后续的数据仍然能够正确保存至此
         Set<Map.Entry<Long, Date>> cachedRankList = CACHED_RANK.entrySet();
         CACHED_RANK = new ConcurrentHashMap<>(CACHED_RANK.size());
         cachedRankList.stream()
@@ -126,12 +126,14 @@ public class ContestSupportImpl implements ContestSupport {
 
     @Override
     public void ensureRank(Long contestId) throws PortableException {
+        // 已经有缓存了
         if (CACHED_RANK.containsKey(contestId)) {
             addTraceRank(contestId);
             return;
         }
         boolean needMake = false;
         try {
+            // 检查是否有正在生成此比赛的榜单的线程，如果有，则等待
             synchronized (ON_MAKING_CONTEST) {
                 if (ON_MAKING_CONTEST.contains(contestId)) {
                     do {
@@ -143,6 +145,7 @@ public class ContestSupportImpl implements ContestSupport {
                 }
             }
             if (needMake) {
+                // 限制单次最大同时生成的榜单数量
                 synchronized (MAX_RANK_MAKER) {
                     while (RANK_MAKER >= MAX_RANK_MAKER) {
                         this.wait();
@@ -189,7 +192,7 @@ public class ContestSupportImpl implements ContestSupport {
                 .orElseThrow(PortableException.from("A-08-002", contestId));
         BaseContestData contestData = contestDataManager.getBaseContestDataById(contest.getDataId(), contest.getAccessType());
         if (contestData == null) {
-            throw PortableException.of("S-07-002", contestId);
+            throw PortableException.of("S-07-002");
         }
         // 删除之前记录的通过数量
         contestData.getProblemList().forEach(BaseContestData.ContestProblemData::init);

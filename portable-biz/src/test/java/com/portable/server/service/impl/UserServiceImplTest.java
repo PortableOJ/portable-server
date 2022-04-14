@@ -23,6 +23,7 @@ import com.portable.server.type.OrganizationType;
 import com.portable.server.type.PermissionType;
 import com.portable.server.util.ImageUtils;
 import com.portable.server.util.UserContext;
+import com.portable.server.util.test.MockedValueMaker;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -62,17 +63,17 @@ class UserServiceImplTest {
     @Mock
     private GridFsManagerImpl gridFsManager;
 
-    private static final String MOCKED_ROOT_NAME = "MOCKED_ROOT_NAME";
-    private static final String MOCKED_ROOT_PASSWORD = "MOCKED_ROOT_PASSWORD";
-    private static final String MOCKED_ROOT_PASSWORD_ENCODED = "MOCKED_ROOT_PASSWORD_ENCODED";
-    private static final String MOCKED_MONGO_ID = "MOCKED_MONGO_ID";
-    private static final String MOCKED_HANDLE = "MOCKED_HANDLE";
-    private static final String MOCKED_INPUT_PASSWORD = "MOCKED_INPUT_PASSWORD";
-    private static final String MOCKED_IP = "MOCKED_IP";
-    private static final String MOCKED_OTHER_IP = "MOCKED_OTHER_IP";
-    private static final Long MOCKED_ID = 0L;
-    private static final Long MOCKED_BATCH_ID = 1L;
-    private static final Long MOCKED_CONTEST_ID = 2L;
+    private static final String MOCKED_ROOT_NAME = MockedValueMaker.mString();
+    private static final String MOCKED_ROOT_PASSWORD = MockedValueMaker.mString();
+    private static final String MOCKED_ROOT_PASSWORD_ENCODED = MockedValueMaker.mString();
+    private static final String MOCKED_MONGO_ID = MockedValueMaker.mString();
+    private static final String MOCKED_HANDLE = MockedValueMaker.mString();
+    private static final String MOCKED_INPUT_PASSWORD = MockedValueMaker.mString();
+    private static final String MOCKED_IP = MockedValueMaker.mString();
+    private static final String MOCKED_OTHER_IP = MockedValueMaker.mString();
+    private static final Long MOCKED_ID = MockedValueMaker.mLong();
+    private static final Long MOCKED_BATCH_ID = MockedValueMaker.mLong();
+    private static final Long MOCKED_CONTEST_ID = MockedValueMaker.mLong();
 
     private User user;
     private Batch batch;
@@ -883,7 +884,7 @@ class UserServiceImplTest {
         user.setDataId(MOCKED_MONGO_ID);
         user.setType(AccountType.BATCH);
         batchUserData.setBatchId(MOCKED_BATCH_ID);
-        batch.setOwner(MOCKED_ID + 1);
+        batch.setOwner(MockedValueMaker.mLong());
         userContext.setId(MOCKED_ID);
 
         Mockito.when(userManager.getAccountByHandle(MOCKED_HANDLE)).thenReturn(Optional.of(user));
@@ -1403,7 +1404,7 @@ class UserServiceImplTest {
         user.setDataId(MOCKED_MONGO_ID);
         user.setType(AccountType.BATCH);
         batchUserData.setBatchId(MOCKED_BATCH_ID);
-        batch.setOwner(MOCKED_ID + 1);
+        batch.setOwner(MockedValueMaker.mLong());
         userContext.setId(MOCKED_ID);
 
         Mockito.when(userManager.getAccountByHandle(MOCKED_HANDLE)).thenReturn(Optional.of(user));

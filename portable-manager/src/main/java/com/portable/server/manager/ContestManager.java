@@ -19,7 +19,7 @@ public interface ContestManager {
      * @return 比赛实体
      */
     @NotNull
-    Contest insertContest();
+    Contest newContest();
 
     /**
      * 获取所有的比赛数目

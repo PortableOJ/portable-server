@@ -14,8 +14,9 @@ import com.portable.server.model.response.PageResponse;
 import com.portable.server.model.response.batch.BatchListResponse;
 import com.portable.server.model.response.batch.CreateBatchResponse;
 import com.portable.server.model.user.User;
-import com.portable.server.tool.UserContextBuilder;
 import com.portable.server.type.BatchStatusType;
+import com.portable.server.util.test.MockedValueMaker;
+import com.portable.server.util.test.UserContextBuilder;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -50,12 +51,12 @@ class BatchServiceImplTest {
     @Mock
     private BatchManagerImpl batchManager;
 
-    private static final Long MOCKED_USER_ID = 1L;
-    private static final Long MOCKED_BATCH_ID = 2L;
-    private static final Long MOCKED_CONTEST_ID = 3L;
+    private static final Long MOCKED_USER_ID = MockedValueMaker.mLong();
+    private static final Long MOCKED_BATCH_ID = MockedValueMaker.mLong();
+    private static final Long MOCKED_CONTEST_ID = MockedValueMaker.mLong();
 
-    private static final String MOCKED_CONTEST_TITLE = "MOCKED_CONTEST_TITLE";
-    private static final String MOCKED_BATCh_PREFIX = "MOCKED_BATCh_PREFIX";
+    private static final String MOCKED_CONTEST_TITLE = MockedValueMaker.mString();
+    private static final String MOCKED_BATCh_PREFIX = MockedValueMaker.mString();
 
     private Batch batch;
     private Contest contest;
@@ -188,7 +189,7 @@ class BatchServiceImplTest {
 
     @Test
     void testChangeStatusWithNotOwner() {
-        userContextBuilder.withNormalLoginIn(MOCKED_USER_ID + 1);
+        userContextBuilder.withNormalLoginIn(MockedValueMaker.mLong());
 
         batch.setOwner(MOCKED_USER_ID);
         batch.setStatus(BatchStatusType.DISABLE);

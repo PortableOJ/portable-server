@@ -53,10 +53,6 @@ public class ImageUtils {
                     .size(AVATAR_WIDTH, AVATAR_HEIGHT)
                     .keepAspectRatio(false)
                     .toOutputStream(circularByteBuffer.getOutputStream());
-        } catch (IOException e) {
-            throw PortableException.of("B-01-001");
-        }
-        try {
             circularByteBuffer.getOutputStream().close();
         } catch (IOException e) {
             throw PortableException.of("B-01-001");

@@ -7,12 +7,12 @@ import com.portable.server.model.user.BatchUserData;
 import com.portable.server.model.user.NormalUserData;
 import com.portable.server.repo.UserDataRepo;
 import com.portable.server.type.OrganizationType;
-import com.portable.server.type.PermissionType;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.Optional;
 
 /**
@@ -31,7 +31,7 @@ public class UserDataManagerImpl implements UserDataManager {
                 .organization(OrganizationType.STUDENT)
                 .submission(0)
                 .accept(0)
-                .permissionTypeSet(PermissionType.defaultPermission())
+                .permissionTypeSet(new HashSet<>())
                 .email(null)
                 .avatar(null)
                 .build();

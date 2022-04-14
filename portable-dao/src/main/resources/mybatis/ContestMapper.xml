@@ -39,11 +39,10 @@
         WHERE id = #{id}
     </select>
 
-    <insert id="newContest" parameterMap="Contest" useGeneratedKeys="true" keyProperty="id">
+    <insert id="insertContest" parameterMap="Contest" useGeneratedKeys="true" keyProperty="id">
         INSERT INTO contest
-        (data_id, owner, title, start_time, duration, access_type)
-        VALUES
-        (#{dataId}, #{owner}, #{title}, #{startTime}, #{duration}, #{accessType})
+            (data_id, owner, title, start_time, duration, access_type)
+        VALUES (#{dataId}, #{owner}, #{title}, #{startTime}, #{duration}, #{accessType})
     </insert>
 
     <update id="updateOwner">

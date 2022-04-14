@@ -34,15 +34,13 @@ import com.portable.server.type.JudgeCodeType;
 import com.portable.server.type.PermissionType;
 import com.portable.server.type.ProblemAccessType;
 import com.portable.server.type.ProblemStatusType;
+import com.portable.server.type.ProblemVisitType;
 import com.portable.server.type.SolutionStatusType;
 import com.portable.server.type.SolutionType;
 import com.portable.server.util.StreamUtils;
 import com.portable.server.util.UserContext;
 import lombok.Builder;
 import lombok.Data;
-import lombok.Getter;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
@@ -68,73 +66,6 @@ public class ProblemServiceImpl implements ProblemService {
         private Problem problem;
         private ProblemData problemData;
         private Contest contest;
-    }
-
-    @Getter
-    public enum UserToProblemAccessType {
-
-        /**
-         * 无访问权限
-         */
-        NO_ACCESS(false, false),
-
-        /**
-         * 查看与提交
-         */
-        VIEW(true, false),
-
-        /**
-         * 完全的访问权限
-         */
-        FULL_ACCESS(true, true),
-        ;
-
-        private final Boolean viewProblem;
-        private final Boolean editProblem;
-
-        UserToProblemAccessType(Boolean viewProblem, Boolean editProblem) {
-            this.viewProblem = viewProblem;
-            this.editProblem = editProblem;
-        }
-
-        public static UserToProblemAccessType of(@NotNull Problem problem, @Nullable Contest contest) {
-            if (UserContext.ctx().getPermissionTypeSet().contains(PermissionType.CREATE_AND_EDIT_PROBLEM)) {
-                // 题目拥有者拥有完整权限
-                if (Objects.equals(problem.getOwner(), UserContext.ctx().getId())) {
-                    return FULL_ACCESS;
-                }
-
-                // 题目第一次绑定的比赛的拥有者，在比赛结束前拥有完整权限
-                if (contest != null && Objects.equals(contest.getOwner(), UserContext.ctx().getId()) && !contest.isEnd()) {
-                    return FULL_ACCESS;
-                }
-            }
-
-            UserToProblemAccessType resultAccessType;
-            switch (problem.getAccessType()) {
-                case PUBLIC:
-                    resultAccessType = VIEW;
-                    break;
-                case HIDDEN:
-                    if (UserContext.ctx().isLogin()
-                            && UserContext.ctx().getPermissionTypeSet().contains(PermissionType.VIEW_HIDDEN_PROBLEM)) {
-                        resultAccessType = VIEW;
-                    } else {
-                        resultAccessType = NO_ACCESS;
-                    }
-                    break;
-                case PRIVATE:
-                default:
-                    return NO_ACCESS;
-            }
-
-            if (UserToProblemAccessType.VIEW.equals(resultAccessType)
-                    && UserContext.ctx().isLogin()
-                    && UserContext.ctx().getPermissionTypeSet().contains(PermissionType.EDIT_NOT_OWNER_PROBLEM)) {
-                return FULL_ACCESS;
-            }
-            return resultAccessType;
-        }
     }
 
     @Resource
@@ -184,7 +115,7 @@ public class ProblemServiceImpl implements ProblemService {
                 .parallel()
                 .map(problem -> {
                     if (isLogin) {
-                        Solution solution = solutionManager.selectLastSolutionByUserIdAndProblemId(userId, problem.getId()).orElse(null);
+                        Solution solution = solutionManager.selectLastSolution(userId, problem.getId()).orElse(null);
                         return ProblemListResponse.of(problem, solution);
                     }
                     return ProblemListResponse.of(problem, null);
@@ -516,7 +447,7 @@ public class ProblemServiceImpl implements ProblemService {
 
     private ProblemPackage getForViewProblem(Long id) throws PortableException {
         ProblemPackage problemPackage = getProblemPackage(id);
-        UserToProblemAccessType accessType = UserToProblemAccessType.of(problemPackage.getProblem(), problemPackage.getContest());
+        ProblemVisitType accessType = ProblemVisitType.of(problemPackage.getProblem(), problemPackage.getContest());
         if (accessType.getViewProblem()) {
             return problemPackage;
         }
@@ -525,7 +456,7 @@ public class ProblemServiceImpl implements ProblemService {
 
     private ProblemPackage getForViewProblemTest(Long id) throws PortableException {
         ProblemPackage problemPackage = getProblemPackage(id);
-        UserToProblemAccessType accessType = UserToProblemAccessType.of(problemPackage.getProblem(), problemPackage.getContest());
+        ProblemVisitType accessType = ProblemVisitType.of(problemPackage.getProblem(), problemPackage.getContest());
         boolean viewAndShare = accessType.getViewProblem() && problemPackage.getProblemData().getShareTest();
         if (accessType.getEditProblem() || viewAndShare) {
             return problemPackage;
@@ -535,7 +466,7 @@ public class ProblemServiceImpl implements ProblemService {
 
     private ProblemPackage getForFullAccessProblem(Long id) throws PortableException {
         ProblemPackage problemPackage = getProblemPackage(id);
-        UserToProblemAccessType accessType = UserToProblemAccessType.of(problemPackage.getProblem(), problemPackage.getContest());
+        ProblemVisitType accessType = ProblemVisitType.of(problemPackage.getProblem(), problemPackage.getContest());
         if (accessType.getEditProblem()) {
             return problemPackage;
         }

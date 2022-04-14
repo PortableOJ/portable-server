@@ -6,6 +6,7 @@ import com.portable.server.model.judge.entity.JudgeContainer;
 import com.portable.server.model.judge.entity.UpdateJudgeContainer;
 import com.portable.server.support.impl.JudgeSupportImpl;
 import com.portable.server.type.SolutionStatusType;
+import com.portable.server.util.test.MockedValueMaker;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -28,6 +29,8 @@ class JudgeServiceImplTest {
     @Mock
     private JudgeSupportImpl judgeSupport;
 
+    private static final String MOCKED_CODE = MockedValueMaker.mString();
+
     @BeforeEach
     void setUp() {
     }
@@ -39,7 +42,7 @@ class JudgeServiceImplTest {
     @Test
     void testGetServerCode() {
         ServiceVerifyCode serviceVerifyCode = ServiceVerifyCode.builder()
-                .code("CODE")
+                .code(MOCKED_CODE)
                 .temporary(false)
                 .build();
 
@@ -47,13 +50,13 @@ class JudgeServiceImplTest {
 
         ServiceVerifyCode retVal = judgeService.getServiceCode();
 
-        Assertions.assertEquals("CODE", retVal.getCode());
+        Assertions.assertEquals(MOCKED_CODE, retVal.getCode());
     }
 
     @Test
     void testGetTheServerCodeFirstTime() {
         ServiceVerifyCode serviceVerifyCode = ServiceVerifyCode.builder()
-                .code("CODE")
+                .code(MOCKED_CODE)
                 .temporary(false)
                 .build();
 
@@ -63,7 +66,7 @@ class JudgeServiceImplTest {
 
         String retVal2 = judgeService.getTheServiceCodeFirstTime();
 
-        Assertions.assertEquals("CODE", retVal);
+        Assertions.assertEquals(MOCKED_CODE, retVal);
         Assertions.assertNull(retVal2);
     }
 

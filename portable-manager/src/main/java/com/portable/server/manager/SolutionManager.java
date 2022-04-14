@@ -68,7 +68,7 @@ public interface SolutionManager {
      * @param problemId 题目的 ID
      * @return 提交的问题的
      */
-    Optional<Solution> selectLastSolutionByUserIdAndProblemId(Long userId, Long problemId);
+    Optional<Solution> selectLastSolution(Long userId, Long problemId);
 
     /**
      * 获取目标用户的目标题目以及目标比赛的最后一次提交的结果
@@ -78,7 +78,7 @@ public interface SolutionManager {
      * @param contestId 比赛的 ID
      * @return 提交的问题的
      */
-    Optional<Solution> selectLastSolutionByUserIdAndProblemIdAndContestId(Long userId, Long problemId, Long contestId);
+    Optional<Solution> selectContestLastSolution(Long userId, Long problemId, Long contestId);
 
     /**
      * 新增一个 solution

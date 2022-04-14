@@ -21,7 +21,7 @@ import com.portable.server.model.response.problem.ProblemDetailResponse;
 import com.portable.server.model.response.solution.SolutionDetailResponse;
 import com.portable.server.model.response.solution.SolutionListResponse;
 import com.portable.server.service.ContestService;
-import com.portable.server.type.ContestVisitPermission;
+import com.portable.server.type.ContestVisitType;
 import com.portable.server.type.PermissionType;
 import com.portable.server.type.SolutionStatusType;
 import com.portable.server.validation.Insert;
@@ -61,7 +61,7 @@ public class ContestController {
 
     @NeedLogin
     @PostMapping("/auth")
-    public Response<ContestVisitPermission> authorizeContest(@Validated @RequestBody ContestAuth contestAuth) throws PortableException {
+    public Response<ContestVisitType> authorizeContest(@Validated @RequestBody ContestAuth contestAuth) throws PortableException {
         return Response.ofOk(contestService.authorizeContest(contestAuth));
     }
 

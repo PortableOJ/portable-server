@@ -22,7 +22,7 @@ public class ContestManagerImpl implements ContestManager {
     private ContestMapper contestMapper;
 
     @Override
-    public @NotNull Contest insertContest() {
+    public @NotNull Contest newContest() {
         return Contest.builder()
                 .id(null)
                 .dataId(null)
@@ -51,7 +51,7 @@ public class ContestManagerImpl implements ContestManager {
 
     @Override
     public void insertContest(Contest contest) {
-        contestMapper.newContest(contest);
+        contestMapper.insertContest(contest);
     }
 
     @Override

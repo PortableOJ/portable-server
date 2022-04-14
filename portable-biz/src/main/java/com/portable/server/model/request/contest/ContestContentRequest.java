@@ -9,6 +9,7 @@ import com.portable.server.model.contest.PrivateContestData;
 import com.portable.server.type.ContestAccessType;
 import com.portable.server.validation.Insert;
 import com.portable.server.validation.Update;
+import lombok.Builder;
 import lombok.Data;
 import org.hibernate.validator.constraints.Range;
 
@@ -27,6 +28,7 @@ import java.util.stream.Collectors;
  * @author shiroha
  */
 @Data
+@Builder
 public class ContestContentRequest {
 
     /**

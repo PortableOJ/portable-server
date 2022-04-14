@@ -17,7 +17,7 @@ import com.portable.server.model.response.contest.ContestRankListResponse;
 import com.portable.server.model.response.problem.ProblemDetailResponse;
 import com.portable.server.model.response.solution.SolutionDetailResponse;
 import com.portable.server.model.response.solution.SolutionListResponse;
-import com.portable.server.type.ContestVisitPermission;
+import com.portable.server.type.ContestVisitType;
 
 /**
  * @author shiroha
@@ -33,11 +33,12 @@ public interface ContestService {
 
     /**
      * 通过密码认证比赛
+     *
      * @param contestAuth 验证信息
-     * @throws PortableException 比赛 id 错误或者密码错误时抛出
      * @return 访问权限
+     * @throws PortableException 比赛 id 错误或者密码错误时抛出
      */
-    ContestVisitPermission authorizeContest(ContestAuth contestAuth) throws PortableException;
+    ContestVisitType authorizeContest(ContestAuth contestAuth) throws PortableException;
 
     /**
      * 获取比赛的简介
