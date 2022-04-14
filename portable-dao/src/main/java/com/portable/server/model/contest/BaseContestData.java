@@ -20,6 +20,7 @@ import java.util.stream.IntStream;
 @Data
 @SuperBuilder
 @NoArgsConstructor
+@AllArgsConstructor
 public abstract class BaseContestData {
 
     /**
@@ -55,6 +56,7 @@ public abstract class BaseContestData {
 
     @Data
     @Builder
+    @NoArgsConstructor
     @AllArgsConstructor
     public static class ContestProblemData {
 

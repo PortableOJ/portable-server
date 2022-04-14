@@ -3,8 +3,10 @@ package com.portable.server.model.request.solution;
 import com.portable.server.model.solution.Solution;
 import com.portable.server.model.solution.SolutionData;
 import com.portable.server.type.LanguageType;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
@@ -14,6 +16,8 @@ import javax.validation.constraints.Size;
  */
 @Data
 @Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class SubmitSolutionRequest {
 
     /**

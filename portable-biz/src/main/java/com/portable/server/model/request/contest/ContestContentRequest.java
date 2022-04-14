@@ -9,8 +9,10 @@ import com.portable.server.model.contest.PrivateContestData;
 import com.portable.server.type.ContestAccessType;
 import com.portable.server.validation.Insert;
 import com.portable.server.validation.Update;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.hibernate.validator.constraints.Range;
 
 import javax.validation.constraints.Future;
@@ -29,6 +31,8 @@ import java.util.stream.Collectors;
  */
 @Data
 @Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class ContestContentRequest {
 
     /**

@@ -39,8 +39,10 @@ import com.portable.server.type.SolutionStatusType;
 import com.portable.server.type.SolutionType;
 import com.portable.server.util.StreamUtils;
 import com.portable.server.util.UserContext;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
@@ -62,6 +64,8 @@ public class ProblemServiceImpl implements ProblemService {
 
     @Data
     @Builder
+    @NoArgsConstructor
+    @AllArgsConstructor
     public static class ProblemPackage {
         private Problem problem;
         private ProblemData problemData;

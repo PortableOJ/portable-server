@@ -1,14 +1,18 @@
 package com.portable.server.model.batch;
 
 import com.portable.server.type.BatchStatusType;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 /**
  * @author shiroha
  */
 @Data
 @Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class Batch {
 
     /**

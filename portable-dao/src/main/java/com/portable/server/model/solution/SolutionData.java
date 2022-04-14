@@ -1,11 +1,12 @@
 package com.portable.server.model.solution;
 
 import com.portable.server.type.SolutionStatusType;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.Id;
 
-import java.util.List;
 import java.util.Map;
 
 /**
@@ -13,6 +14,8 @@ import java.util.Map;
  */
 @Data
 @Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class SolutionData {
 
     /**
@@ -44,6 +47,8 @@ public class SolutionData {
 
     @Data
     @Builder
+    @NoArgsConstructor
+    @AllArgsConstructor
     public static class JudgeReportMsg {
 
         /**

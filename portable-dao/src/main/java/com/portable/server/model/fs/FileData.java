@@ -1,7 +1,9 @@
 package com.portable.server.model.fs;
 
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.io.InputStream;
 
@@ -10,6 +12,8 @@ import java.io.InputStream;
  */
 @Data
 @Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class FileData {
 
     /**

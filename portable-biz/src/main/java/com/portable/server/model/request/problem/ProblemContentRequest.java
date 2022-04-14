@@ -2,8 +2,10 @@ package com.portable.server.model.request.problem;
 
 import com.portable.server.model.problem.Problem;
 import com.portable.server.model.problem.ProblemData;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
@@ -15,6 +17,8 @@ import java.util.List;
  */
 @Data
 @Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class ProblemContentRequest {
 
     /**

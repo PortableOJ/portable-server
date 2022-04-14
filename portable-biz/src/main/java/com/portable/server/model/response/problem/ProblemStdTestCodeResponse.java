@@ -3,8 +3,10 @@ package com.portable.server.model.response.problem;
 import com.portable.server.model.problem.ProblemData;
 import com.portable.server.type.LanguageType;
 import com.portable.server.type.SolutionStatusType;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -27,6 +29,8 @@ public class ProblemStdTestCodeResponse {
 
     @Data
     @Builder
+    @NoArgsConstructor
+    @AllArgsConstructor
     public static class StdCode {
 
         /**

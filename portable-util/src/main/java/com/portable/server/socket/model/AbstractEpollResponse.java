@@ -1,8 +1,10 @@
 package com.portable.server.socket.model;
 
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import java.nio.charset.StandardCharsets;
 import java.util.LinkedList;
@@ -16,6 +18,8 @@ public abstract class AbstractEpollResponse {
 
     @Getter
     @Builder
+    @NoArgsConstructor
+    @AllArgsConstructor
     private static class KeyValue {
         private String key;
         private String value;

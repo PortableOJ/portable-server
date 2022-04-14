@@ -3,14 +3,18 @@ package com.portable.server.model.problem;
 import com.portable.server.exception.PortableException;
 import com.portable.server.type.ProblemAccessType;
 import com.portable.server.type.ProblemStatusType;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 /**
  * @author shiroha
  */
 @Data
 @Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class Problem {
 
     /**

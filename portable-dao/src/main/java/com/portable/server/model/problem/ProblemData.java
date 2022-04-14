@@ -5,8 +5,10 @@ import com.portable.server.type.JudgeCodeType;
 import com.portable.server.type.LanguageType;
 import com.portable.server.type.ProblemType;
 import com.portable.server.type.SolutionStatusType;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.Id;
 
 import java.util.Date;
@@ -20,6 +22,8 @@ import java.util.Map;
  */
 @Data
 @Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class ProblemData {
 
     @Id
@@ -123,6 +127,8 @@ public class ProblemData {
 
     @Data
     @Builder
+    @NoArgsConstructor
+    @AllArgsConstructor
     public static class Example {
 
         /**
@@ -143,6 +149,8 @@ public class ProblemData {
 
     @Data
     @Builder
+    @NoArgsConstructor
+    @AllArgsConstructor
     public static class StdCode {
 
         /**

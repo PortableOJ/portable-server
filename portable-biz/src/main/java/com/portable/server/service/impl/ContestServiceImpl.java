@@ -47,8 +47,10 @@ import com.portable.server.type.ProblemAccessType;
 import com.portable.server.type.SolutionType;
 import com.portable.server.util.ObjectUtils;
 import com.portable.server.util.UserContext;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.apache.logging.log4j.util.Strings;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.stereotype.Component;
@@ -73,6 +75,8 @@ public class ContestServiceImpl implements ContestService {
 
     @Data
     @Builder
+    @NoArgsConstructor
+    @AllArgsConstructor
     public static class ContestPackage {
         private Contest contest;
         private BaseContestData contestData;

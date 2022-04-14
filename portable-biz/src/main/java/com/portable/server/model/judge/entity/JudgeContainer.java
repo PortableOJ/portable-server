@@ -3,8 +3,10 @@ package com.portable.server.model.judge.entity;
 import com.portable.server.model.judge.work.SolutionJudgeWork;
 import com.portable.server.model.judge.work.TestJudgeWork;
 import com.portable.server.model.response.judge.HeartbeatResponse;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.util.Date;
 import java.util.List;
@@ -16,6 +18,8 @@ import java.util.Set;
  */
 @Data
 @Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class JudgeContainer {
 
     /**

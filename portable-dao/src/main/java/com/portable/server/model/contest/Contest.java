@@ -1,9 +1,10 @@
 package com.portable.server.model.contest;
 
 import com.portable.server.type.ContestAccessType;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
-import org.checkerframework.checker.units.qual.C;
+import lombok.NoArgsConstructor;
 
 import java.util.Calendar;
 import java.util.Date;
@@ -13,6 +14,8 @@ import java.util.Date;
  */
 @Data
 @Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class Contest {
 
     /**

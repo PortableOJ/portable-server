@@ -1,8 +1,10 @@
 package com.portable.server.model.request.batch;
 
 import com.portable.server.model.batch.Batch;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.hibernate.validator.constraints.Range;
 
 import javax.validation.constraints.NotNull;
@@ -13,6 +15,8 @@ import javax.validation.constraints.Pattern;
  */
 @Data
 @Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class BatchRequest {
 
     /**

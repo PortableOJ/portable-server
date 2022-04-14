@@ -34,6 +34,8 @@ public class BatchUserData extends BaseUserData {
 
     @Data
     @Builder
+    @NoArgsConstructor
+    @AllArgsConstructor
     public static class IpRecord {
 
         /**

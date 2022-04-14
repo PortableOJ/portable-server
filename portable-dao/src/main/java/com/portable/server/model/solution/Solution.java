@@ -3,8 +3,10 @@ package com.portable.server.model.solution;
 import com.portable.server.type.LanguageType;
 import com.portable.server.type.SolutionStatusType;
 import com.portable.server.type.SolutionType;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.util.Date;
 
@@ -13,6 +15,8 @@ import java.util.Date;
  */
 @Data
 @Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class Solution {
 
     /**
