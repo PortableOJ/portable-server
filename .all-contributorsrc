@@ -1,0 +1,28 @@
+{
+  "files": [
+    "README.md"
+  ],
+  "imageSize": 100,
+  "commit": false,
+  "contributors": [
+    {
+      "login": "Hukeqing",
+      "name": "Mauve",
+      "avatar_url": "https://avatars.githubusercontent.com/u/47495915?v=4",
+      "profile": "http://hukeqing.github.io",
+      "contributions": [
+        "test",
+        "code",
+        "ideas",
+        "maintenance",
+        "review"
+      ]
+    }
+  ],
+  "contributorsPerLine": 7,
+  "projectName": "portable-server",
+  "projectOwner": "PortableOJ",
+  "repoType": "github",
+  "repoHost": "https://github.com",
+  "skipCi": true
+}
