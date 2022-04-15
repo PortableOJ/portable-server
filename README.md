@@ -1,4 +1,7 @@
 <div align="center">
+<!-- ALL-CONTRIBUTORS-BADGE:START - Do not remove or modify this section -->
+[![All Contributors](https://img.shields.io/badge/all_contributors-1-orange.svg?style=flat-square)](#contributors-)
+<!-- ALL-CONTRIBUTORS-BADGE:END -->
    <img src="https://github.com/PortableOJ/portable-docs/blob/master/img/favicon.png?raw=true" alt="MEVCL"/>
    <br>
    <h1>Portable Online Judge</h1>
@@ -58,3 +61,22 @@
 - 根据 code review 内的评论，解决其中所有的问题
 - 由 「我」 同意 pull request，并等待后续的测试完成后，「我」 将会把 release 代码同步至 master
 - 至此，你已经完成了整个提交流程，你可以选择删除掉 fork 的仓库或者保留它
+## Contributors ✨
+
+Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/docs/en/emoji-key)):
+
+<!-- ALL-CONTRIBUTORS-LIST:START - Do not remove or modify this section -->
+<!-- prettier-ignore-start -->
+<!-- markdownlint-disable -->
+<table>
+  <tr>
+    <td align="center"><a href="http://hukeqing.github.io"><img src="https://avatars.githubusercontent.com/u/47495915?v=4?s=100" width="100px;" alt=""/><br /><sub><b>Mauve</b></sub></a><br /><a href="https://github.com/PortableOJ/portable-server/commits?author=Hukeqing" title="Tests">⚠️</a> <a href="https://github.com/PortableOJ/portable-server/commits?author=Hukeqing" title="Code">💻</a> <a href="#ideas-Hukeqing" title="Ideas, Planning, & Feedback">🤔</a> <a href="#maintenance-Hukeqing" title="Maintenance">🚧</a> <a href="https://github.com/PortableOJ/portable-server/pulls?q=is%3Apr+reviewed-by%3AHukeqing" title="Reviewed Pull Requests">👀</a></td>
+  </tr>
+</table>
+
+<!-- markdownlint-restore -->
+<!-- prettier-ignore-end -->
+
+<!-- ALL-CONTRIBUTORS-LIST:END -->
+
+This project follows the [all-contributors](https://github.com/all-contributors/all-contributors) specification. Contributions of any kind welcome!
