@@ -47,7 +47,7 @@ public interface UserManager {
      * @param handleList 用户昵称列表
      * @return 用户 id 列表
      */
-    Set<Long> changeUserHandleToUserId(Collection<String> handleList);
+    Set<Long> changeHandleToUserId(Collection<String> handleList);
 
     /**
      * 根据用户的 id 获取账号
