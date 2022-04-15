@@ -1,11 +1,13 @@
 <div align="center">
-<!-- ALL-CONTRIBUTORS-BADGE:START - Do not remove or modify this section -->
-[![All Contributors](https://img.shields.io/badge/all_contributors-1-orange.svg?style=flat-square)](#contributors-)
-<!-- ALL-CONTRIBUTORS-BADGE:END -->
    <img src="https://github.com/PortableOJ/portable-docs/blob/master/img/favicon.png?raw=true" alt="MEVCL"/>
    <br>
    <h1>Portable Online Judge</h1>
    <p>一个高性能、分布式、易部署的开源 Online Judge 系统</p>
+<!-- ALL-CONTRIBUTORS-BADGE:START - Do not remove or modify this section -->
+<a href="https://github.com/PortableOJ/portable-server/blob/master/README.md"><img src="https://img.shields.io/badge/all_contributors-1-orange.svg" alt="Contributors"></a>
+<!-- ALL-CONTRIBUTORS-BADGE:END -->
+  <a href="/LICENSE"><img src="https://img.shields.io/badge/license-GPL%203.0-blue.svg" alt="GPL 3.0 LICENSE"></a>
+  <a href="https://github.com/PortableOJ/portable-server/actions/"><img src="https://github.com/PortableOJ/portable-server/actions/workflows/maven-docker.yml/badge.svg" alt="Build status"></a>
 </div>
 
 # LICENSE
@@ -61,6 +63,7 @@
 - 根据 code review 内的评论，解决其中所有的问题
 - 由 「我」 同意 pull request，并等待后续的测试完成后，「我」 将会把 release 代码同步至 master
 - 至此，你已经完成了整个提交流程，你可以选择删除掉 fork 的仓库或者保留它
+
 ## Contributors ✨
 
 Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/docs/en/emoji-key)):

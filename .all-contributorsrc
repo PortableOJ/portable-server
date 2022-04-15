@@ -9,7 +9,7 @@
       "login": "Hukeqing",
       "name": "Mauve",
       "avatar_url": "https://avatars.githubusercontent.com/u/47495915?v=4",
-      "profile": "http://hukeqing.github.io",
+      "profile": "https://hukeqing.github.io",
       "contributions": [
         "test",
         "code",
@@ -19,6 +19,7 @@
       ]
     }
   ],
+  "badgeTemplate": "<a href="https://github.com/PortableOJ/portable-server/blob/master/README.md"><img src="https://img.shields.io/badge/all_contributors-<%= contributors.length %>-orange.svg" alt="Contributors"></a>",
   "contributorsPerLine": 7,
   "projectName": "portable-server",
   "projectOwner": "PortableOJ",
