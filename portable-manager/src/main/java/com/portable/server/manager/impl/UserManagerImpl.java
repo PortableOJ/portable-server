@@ -91,7 +91,7 @@ public class UserManagerImpl implements UserManager {
     }
 
     @Override
-    public Set<Long> changeUserHandleToUserId(Collection<String> handleList) {
+    public Set<Long> changeHandleToUserId(Collection<String> handleList) {
         if (ObjectUtils.isNull(handleList)) {
             return new HashSet<>();
         }
