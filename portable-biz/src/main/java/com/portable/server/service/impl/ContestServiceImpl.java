@@ -337,8 +337,6 @@ public class ContestServiceImpl implements ContestService {
 
         // 普通参赛选手提交至普通提交列表
         if (ContestVisitType.PARTICIPANT.equals(contestVisitType)) {
-            contestProblemData.setSubmissionCount(contestProblemData.getSubmissionCount() + 1);
-            contestDataManager.saveContestData(contestPackage.getContestData());
             solution.setSolutionType(SolutionType.CONTEST);
         } else {
             solution.setSolutionType(SolutionType.TEST_CONTEST);

@@ -19,6 +19,7 @@ import org.springframework.stereotype.Component;
 import javax.annotation.Resource;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -203,48 +204,41 @@ public class ContestSupportImpl implements ContestSupport {
         Date freezeTime = calendar.getTime();
 
         Map<Long, Integer> problemIndexMap = contestData.idToIndex();
+        // 保存用户到用户记录到映射
+        Map<Long, ContestRankItem> userIdContestRankMap = new ConcurrentHashMap<>(128);
+        // 保存首 A 情况，题目 -> 用户 id
+        Map<Integer, Long> firstAcceptMap = new HashMap<>(contestData.getProblemList().size());
         // 通过分页获取，减轻 io 负担
         Integer totalSolution = solutionManager.countSolution(SolutionType.CONTEST, null, contestId, null, null);
         // + 1 导致多取出一页空白并不影响使用，同时可以尽量避免并发导致的少了部分提交的问题，此处计算页数不需要精确
         int totalPageNum = totalSolution / MAKE_RANK_PAGE_SIZE + 1;
-        Map<Long, ContestRankItem> userIdContestRankMap = new ConcurrentHashMap<>(128);
         for (int i = 0; i < totalPageNum; i++) {
             Integer offset = i * MAKE_RANK_PAGE_SIZE;
             List<Solution> solutionList = solutionManager.selectSolutionByPage(MAKE_RANK_PAGE_SIZE, offset,
                     SolutionType.CONTEST, null, contestId, null, null);
             // 先并行创建不存在的参加者
             solutionList.stream()
-                    .parallel()
-                    .peek(solution -> {
-                        if (!SolutionStatusType.ACCEPT.equals(solution.getStatus())) {
-                            return;
-                        }
-                        Integer problemIndex = problemIndexMap.get(solution.getProblemId());
-                        contestData.getProblemList().get(problemIndex).addAccept();
-                    })
-                    .unordered()
+                    .parallel().unordered()
                     .map(Solution::getUserId)
                     .distinct()
                     .filter(aLong -> !userIdContestRankMap.containsKey(aLong))
-                    .forEach(aLong -> userIdContestRankMap.put(aLong, ContestRankItem.builder()
-                            .rank(0)
-                            .userId(aLong)
-                            .totalCost(0L)
-                            .totalSolve(0)
-                            .submitStatus(new ConcurrentHashMap<>(0))
-                            .noFreezeSubmitStatus(new ConcurrentHashMap<>(0))
-                            .build()));
+                    .forEach(aLong -> userIdContestRankMap.put(aLong, ContestRankItem.newItem(aLong)));
             solutionList.forEach(solution -> {
+                // 统计提交/通过数量
+                Integer problemIndex = problemIndexMap.get(solution.getProblemId());
+                contestData.getProblemList().get(problemIndex).incSubmit();
+                if (SolutionStatusType.ACCEPT.equals(solution.getStatus())) {
+                    firstAcceptMap.put(problemIndex, solution.getUserId());
+                    contestData.getProblemList().get(problemIndex).incAccept();
+                }
+                // 统计榜单
                 ContestRankItem contestRankItem = userIdContestRankMap.get(solution.getUserId());
-                contestRankItem.addSolution(solution,
-                        problemIndexMap.get(solution.getProblemId()),
-                        contest.getStartTime(),
-                        freezeTime
-                );
+                contestRankItem.addSolution(solution, problemIndexMap.get(solution.getProblemId()), contest.getStartTime(), freezeTime);
             });
         }
         contestDataManager.saveContestData(contestData);
-
+        // 保存首 A 信息
+        firstAcceptMap.forEach((integer, aLong) -> userIdContestRankMap.get(aLong).setFirstBlood(integer));
         List<ContestRankItem> contestRankItemList = userIdContestRankMap.values().stream()
                 .parallel()
                 .peek(contestRankItem -> contestRankItem.calCost(contestData.getPenaltyTime(), true))

@@ -2,11 +2,12 @@ package com.portable.server.model.contest;
 
 import com.portable.server.model.solution.Solution;
 import com.portable.server.type.SolutionStatusType;
+import com.portable.server.util.ObjectUtils;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.springframework.lang.Nullable;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.Date;
 
@@ -40,6 +41,11 @@ public class ContestRankProblemStatus {
     private Integer runningSubmit;
 
     /**
+     * 是否是首个 Accept
+     */
+    private Boolean firstBlood;
+
+    /**
      * 添加评测
      *
      * @param solution   提交的信息
@@ -47,8 +53,7 @@ public class ContestRankProblemStatus {
      * @param freezeTime 比赛冻结时间
      * @param freeze     是否启用封榜
      */
-    @Nullable
-    public void add(Solution solution, Date startTime, Date freezeTime, Boolean freeze) {
+    public void add(@NotNull Solution solution, @NotNull Date startTime, @NotNull Date freezeTime, @NotNull Boolean freeze) {
         if (freeze && freezeTime.before(solution.getSubmitTime())) {
             runningSubmit++;
         } else {
@@ -57,11 +62,19 @@ public class ContestRankProblemStatus {
             } else if (solution.getStatus().getPenalty()) {
                 penaltyTimes++;
             } else if (SolutionStatusType.ACCEPT.equals(solution.getStatus())) {
+                // 榜单是从后往前的，所以当遇到了一个 ac 的题目之后，
+                // 说明之前的统计信息都是这次 ac 之后的提交，不应该被计算在内
                 firstSolveId = solution.getId();
                 solveTime = (solution.getSubmitTime().getTime() - startTime.getTime()) / 1000;
                 penaltyTimes = 0;
                 runningSubmit = 0;
             }
+        }
+    }
+
+    public void setFirstBlood() {
+        if (ObjectUtils.isNotNull(firstSolveId)) {
+            firstBlood = true;
         }
     }
 }
