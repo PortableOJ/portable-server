@@ -63,8 +63,8 @@ public class ContestRankItem implements Comparable<ContestRankItem> {
         ContestRankProblemStatus freezeStatus;
         ContestRankProblemStatus noFreezeStatus;
         if (!submitStatus.containsKey(problemIndex)) {
-            freezeStatus = ContestRankProblemStatus.builder().firstSolveId(null).solveTime(null).penaltyTimes(0).runningSubmit(0).build();
-            noFreezeStatus = ContestRankProblemStatus.builder().firstSolveId(null).solveTime(null).penaltyTimes(0).runningSubmit(0).build();
+            freezeStatus = ContestRankProblemStatus.newProblem();
+            noFreezeStatus = ContestRankProblemStatus.newProblem();
             submitStatus.put(problemIndex, freezeStatus);
             noFreezeSubmitStatus.put(problemIndex, noFreezeStatus);
         } else {

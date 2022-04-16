@@ -77,4 +77,14 @@ public class ContestRankProblemStatus {
             firstBlood = true;
         }
     }
+
+    public static ContestRankProblemStatus newProblem() {
+        return ContestRankProblemStatus.builder()
+                .firstSolveId(null)
+                .solveTime(null)
+                .penaltyTimes(0)
+                .runningSubmit(0)
+                .firstBlood(false)
+                .build();
+    }
 }
