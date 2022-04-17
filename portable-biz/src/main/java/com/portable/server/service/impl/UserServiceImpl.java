@@ -263,12 +263,9 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public void resetPassword(String handle, String newPassword) throws PortableException {
-        User user = userManager.getAccountByHandle(handle)
-                .orElseThrow(PortableException.from("A-01-001"));
-        if (!user.getType().getIsNormal()) {
-            throw PortableException.of("A-02-003");
-        }
-        userManager.updatePassword(user.getId(), BCryptEncoder.encoder(newPassword));
+        organizationCheck(handle);
+        Long userId = userManager.changeHandleToUserId(handle).orElseThrow(PortableException.from("A-01-001"));
+        userManager.updatePassword(userId, BCryptEncoder.encoder(newPassword));
     }
 
     @Override
