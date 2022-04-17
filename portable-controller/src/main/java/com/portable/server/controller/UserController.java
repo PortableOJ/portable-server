@@ -151,7 +151,7 @@ public class UserController {
     @NeedLogin(normal = true)
     @PostMapping("/resetPassword")
     @PermissionRequirement(PermissionType.RESET_PASSWORD)
-    public Response<Void> resetPassword(HttpServletRequest request, @Validated @RequestBody ResetPasswordRequest resetPasswordRequest) throws PortableException {
+    public Response<Void> resetPassword(@Validated @RequestBody ResetPasswordRequest resetPasswordRequest) throws PortableException {
         userService.resetPassword(resetPasswordRequest.getHandle(), resetPasswordRequest.getNewPassword());
         return Response.ofOk();
     }
