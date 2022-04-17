@@ -1073,7 +1073,7 @@ class ContestServiceImplTest {
 
         Mockito.when(contestManager.getContestById(MOCKED_CONTEST_ID)).thenReturn(Optional.of(contest));
         Mockito.when(contestDataManager.getPublicContestDataById(MOCKED_CONTEST_MONGO_ID)).thenReturn(publicContestData);
-        contestVisitTypeMockedStatic.when(() -> ContestVisitType.checkPermission(Mockito.any(), Mockito.any())).thenReturn(ContestVisitType.VISIT);
+        contestVisitTypeMockedStatic.when(() -> ContestVisitType.checkPermission(Mockito.any(), Mockito.any())).thenReturn(ContestVisitType.ADMIN);
         Mockito.when(solutionDataManager.getSolutionData(MOCKED_SOLUTION_MONGO_ID)).thenReturn(solutionData);
 
         SolutionDetailResponse retVal = contestService.getContestSolution(MOCKED_SOLUTION_ID);
