@@ -217,8 +217,7 @@ public class ContestServiceImpl implements ContestService {
         Long curUserId = UserContext.ctx().getId();
         boolean endContest = contestPackage.getContest().isEnd();
         boolean self = Objects.equals(solution.getUserId(), curUserId);
-        boolean admin = Objects.equals(contestPackage.getContest().getOwner(), curUserId)
-                || contestPackage.getContestData().getCoAuthor().contains(curUserId);
+        boolean admin = ContestVisitType.CO_AUTHOR.approve(contestVisitType);
         if (endContest || self || admin) {
             SolutionData solutionData = solutionDataManager.getSolutionData(solution.getDataId());
             User user = userManager.getAccountById(solution.getUserId()).orElse(null);
