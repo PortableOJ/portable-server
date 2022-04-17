@@ -121,6 +121,15 @@ public interface UserService {
     void updatePassword(UpdatePasswordRequest updatePasswordRequest) throws PortableException;
 
     /**
+     * 重制其他用户的密码
+     *
+     * @param handle      用户昵称
+     * @param newPassword 用户密码
+     * @throws PortableException 密码错误则抛出
+     */
+    void resetPassword(String handle, String newPassword) throws PortableException;
+
+    /**
      * 清理批量用户的 IP 记录（这会导致之前的 IP 记录被清理）
      *
      * @param handle 用户的 handle

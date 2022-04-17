@@ -22,6 +22,11 @@ public enum PermissionType implements ExceptionTextType {
     GRANT("授权"),
 
     /**
+     * 重置其他用户的密码
+     */
+    RESET_PASSWORD("重置密码"),
+
+    /**
      * 查看隐藏题目
      */
     VIEW_HIDDEN_PROBLEM("查看隐藏题目"),

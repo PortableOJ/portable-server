@@ -262,6 +262,16 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public void resetPassword(String handle, String newPassword) throws PortableException {
+        User user = userManager.getAccountByHandle(handle)
+                .orElseThrow(PortableException.from("A-01-001"));
+        if (!user.getType().getIsNormal()) {
+            throw PortableException.of("A-02-003");
+        }
+        userManager.updatePassword(user.getId(), BCryptEncoder.encoder(newPassword));
+    }
+
+    @Override
     public void clearBatchUserIpList(String handle) throws PortableException {
         BatchUserPackage batchUserPackage = checkBatchUser(handle);
         batchUserPackage.getUserData().setIpList(new ArrayList<>());

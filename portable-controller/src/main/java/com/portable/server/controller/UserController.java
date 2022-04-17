@@ -9,6 +9,7 @@ import com.portable.server.model.request.user.LoginRequest;
 import com.portable.server.model.request.user.OrganizationChangeRequest;
 import com.portable.server.model.request.user.PermissionRequest;
 import com.portable.server.model.request.user.RegisterRequest;
+import com.portable.server.model.request.user.ResetPasswordRequest;
 import com.portable.server.model.request.user.UpdatePasswordRequest;
 import com.portable.server.model.response.Response;
 import com.portable.server.model.response.user.BaseUserInfoResponse;
@@ -144,6 +145,14 @@ public class UserController {
         UserContext.set(UserContext.getNullUser());
         HttpSession httpSession = request.getSession();
         httpSession.removeAttribute(RequestSessionConstant.USER_ID);
+        return Response.ofOk();
+    }
+
+    @NeedLogin(normal = true)
+    @PostMapping("/resetPassword")
+    @PermissionRequirement(PermissionType.RESET_PASSWORD)
+    public Response<Void> resetPassword(HttpServletRequest request, @Validated @RequestBody ResetPasswordRequest resetPasswordRequest) throws PortableException {
+        userService.resetPassword(resetPasswordRequest.getHandle(), resetPasswordRequest.getNewPassword());
         return Response.ofOk();
     }
 
