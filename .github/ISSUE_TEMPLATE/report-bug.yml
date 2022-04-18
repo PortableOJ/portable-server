@@ -58,6 +58,13 @@ body:
   - type: textarea
     id: main
     attributes:
+      label: 请详细描述你遇到的问题
+      description: 你遇到的问题是什么？你觉得应该发生什么？但是实际上发生了什么？
+    validations:
+      required: true
+  - type: textarea
+    id: main
+    attributes:
       label: 请详细描述你发生此问题的操作
       description: 你是如何遇到者问题的
       value: |
