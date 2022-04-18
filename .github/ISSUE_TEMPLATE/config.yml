@@ -1,0 +1,6 @@
+blank_issues_enabled: false
+contact_links:
+  - name: 转到讨论区
+    url: https://github.com/PortableOJ/portable-server/discussions
+    about: Issues 用于反馈 Bug, 新的功能建议和提问答疑请到讨论区发起
+ 
