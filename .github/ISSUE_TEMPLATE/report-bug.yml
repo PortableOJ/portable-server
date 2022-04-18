@@ -52,7 +52,7 @@ body:
         - Apple M 系列
         - 其他 CPU
   - type: input
-    id: os-bit
+    id: version
     attributes:
       label: 【类型2 & 类型3】你使用的 Portable 系统版本
   - type: textarea
