@@ -29,6 +29,8 @@
 
 请前往 [官方文档](https://portableoj.github.io/portable-docs) 以获取更加详细的帮助
 
+或者前往 [Discussions](https://github.com/PortableOJ/portable-server/discussions) 来寻求帮助
+
 # 项目相关仓库链接
 
 - [前端](https://github.com/PortableOJ/portable-web)
@@ -41,9 +43,13 @@
 
 # 贡献本项目
 
-## 提出系统错误/更新意见
+## 提出系统错误
 
-请前往 [Issues](https://github.com/PortableOJ/portable-server/issues) 来发起一个提交
+请前往 [Issues](https://github.com/PortableOJ/portable-server/issues) 来发起一个 Issue
+
+## 希望能增加新功能
+
+请前往 [Discussions](https://github.com/PortableOJ/portable-server/discussions) 来发起一个讨论
 
 ## 我希望由我来更新代码
 
