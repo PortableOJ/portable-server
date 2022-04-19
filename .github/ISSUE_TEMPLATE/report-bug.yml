@@ -1,0 +1,77 @@
+name: 错误反馈
+description: 功能运行不正常 / 失效
+body:
+  - type: checkboxes
+    id: is-issue
+    attributes:
+      label: 请确认你遇到的是一个「问题」而不是其他的内容
+      description: 如果你希望提出什么新功能，又或者你希望寻求帮助，请前往 [讨论区](https://github.com/PortableOJ/portable-server/discussions)。
+      options:
+        - label: 我确认我发现的是一个问题
+#         - required: true
+
+  - type: checkboxes
+    id: no-same-issue
+    attributes:
+      label: 我确认没有在 ISSUES 中找到和我的问题相同的问题
+      description: 相同的问题毫无意义，这只会徒增我们的负担，请检查
+      options:
+        - label: 我确认我发现的是新的一个问题
+#         - required: true
+
+  - type: dropdown
+    id: issue-user-type
+    attributes:
+      label: 你在项目中的角色是什么
+      description: 请注意：后面的类型表示你在本次答卷中的类型，请针对类型作答，若没有标注，则所有类型均需要作答
+      options:
+        - 我是一个基于此项目进行开发的开发者（类型1）
+        - 我是一个部署了此项目的某个实例的管理员（类型2）
+        - 我是一个使用此项目的用户（类型3）
+    validations:
+      required: true
+  - type: dropdown
+    id: os-type
+    attributes:
+      label: 【类型1 & 类型2】你的操作系统是什么
+      options:
+        - macOS
+        - Dpkg Linux(Like Ubuntu)
+        - RPM Linux(Like centOS)
+        - Other Linux
+        - Windows
+        - 其他操作系统
+  - type: dropdown
+    id: os-bit
+    attributes:
+      label: 【类型1 & 类型2】请选择：你的 CPU 是什么
+      options:
+        - Intel 32位
+        - Intel 64位
+        - AMD 64位
+        - Apple M 系列
+        - 其他 CPU
+  - type: input
+    id: version
+    attributes:
+      label: 【类型2 & 类型3】你使用的 Portable 系统版本
+  - type: textarea
+    id: title
+    attributes:
+      label: 请详细描述你遇到的问题
+      description: 你遇到的问题是什么？你觉得应该发生什么？但是实际上发生了什么？
+    validations:
+      required: true
+  - type: textarea
+    id: main
+    attributes:
+      label: 请详细描述你发生此问题的操作
+      description: 你是如何遇到者问题的
+      value: |
+        1.
+        2.
+        3.
+        ...
+    validations:
+      required: true
+      
