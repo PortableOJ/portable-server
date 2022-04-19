@@ -107,15 +107,13 @@ public class UserManagerImpl implements UserManager {
         if (id == null) {
             return Optional.empty();
         }
-        return Optional.ofNullable(redisValueKit.get(REDIS_USER_ID_TO_DATA_PREFIX, id, User.class)
-                .orElseGet(() -> {
-                    User user = userMapper.selectAccountById(id);
-                    if (user != null) {
-                        redisValueKit.set(REDIS_USER_ID_TO_DATA_PREFIX, id, user, REDIS_USER_ID_TO_DATA_TIME);
-                        redisValueKit.set(REDIS_USER_HANDLE_TO_ID_PREFIX, user.getHandle(), id, REDIS_USER_HANDLE_TO_ID_TIME);
-                    }
-                    return user;
-                }));
+        User user = redisValueKit.get(REDIS_USER_ID_TO_DATA_PREFIX, id, User.class)
+                .orElseGet(() -> userMapper.selectAccountById(id));
+        if (ObjectUtils.isNotNull(user)) {
+            redisValueKit.set(REDIS_USER_ID_TO_DATA_PREFIX, id, user, REDIS_USER_ID_TO_DATA_TIME);
+            redisValueKit.set(REDIS_USER_HANDLE_TO_ID_PREFIX, user.getHandle(), id, REDIS_USER_HANDLE_TO_ID_TIME);
+        }
+        return Optional.ofNullable(user);
     }
 
     @Override
