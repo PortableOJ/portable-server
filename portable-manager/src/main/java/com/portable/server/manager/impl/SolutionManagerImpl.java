@@ -1,10 +1,12 @@
 package com.portable.server.manager.impl;
 
+import com.portable.server.kit.RedisValueKit;
 import com.portable.server.manager.SolutionManager;
 import com.portable.server.mapper.SolutionMapper;
 import com.portable.server.model.solution.Solution;
 import com.portable.server.type.SolutionStatusType;
 import com.portable.server.type.SolutionType;
+import com.portable.server.util.ObjectUtils;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
@@ -23,6 +25,12 @@ public class SolutionManagerImpl implements SolutionManager {
 
     @Resource
     private SolutionMapper solutionMapper;
+
+    @Resource
+    private RedisValueKit redisValueKit;
+
+    private static final String REDIS_PREFIX = "SOLUTION_ID";
+    private static final Long REDIS_TIME = 5L;
 
     @Override
     public Solution newSolution() {
@@ -61,7 +69,14 @@ public class SolutionManagerImpl implements SolutionManager {
 
     @Override
     public Optional<Solution> selectSolutionById(Long id) {
-        return Optional.ofNullable(solutionMapper.selectSolutionById(id));
+        if (ObjectUtils.isNull(id)) {
+            return Optional.empty();
+        }
+        Solution solution = redisValueKit.get(REDIS_PREFIX, id, Solution.class).orElseGet(() -> solutionMapper.selectSolutionById(id));
+        if (ObjectUtils.isNotNull(solution)) {
+            redisValueKit.set(REDIS_PREFIX, id, solution, REDIS_TIME);
+        }
+        return Optional.ofNullable(solution);
     }
 
     @Override
@@ -82,11 +97,25 @@ public class SolutionManagerImpl implements SolutionManager {
     @Override
     public void updateStatus(Long id, SolutionStatusType statusType) {
         solutionMapper.updateStatus(id, statusType);
+        Optional<Solution> solutionOptional = redisValueKit.get(REDIS_PREFIX, id, Solution.class);
+        if (solutionOptional.isPresent()) {
+            Solution solution = solutionOptional.get();
+            solution.setStatus(statusType);
+            redisValueKit.set(REDIS_PREFIX, id, solution, REDIS_TIME);
+        }
     }
 
     @Override
     public void updateCostAndStatus(Long id, SolutionStatusType statusType, Integer timeCost, Integer memoryCost) {
         solutionMapper.updateCostAndStatus(id, statusType, timeCost, memoryCost);
+        Optional<Solution> solutionOptional = redisValueKit.get(REDIS_PREFIX, id, Solution.class);
+        if (solutionOptional.isPresent()) {
+            Solution solution = solutionOptional.get();
+            solution.setStatus(statusType);
+            solution.setTimeCost(ObjectUtils.max(solution.getTimeCost(), timeCost, Integer::compareTo));
+            solution.setMemoryCost(ObjectUtils.max(solution.getMemoryCost(), memoryCost, Integer::compareTo));
+            redisValueKit.set(REDIS_PREFIX, id, solution, REDIS_TIME);
+        }
     }
 
     @Override
