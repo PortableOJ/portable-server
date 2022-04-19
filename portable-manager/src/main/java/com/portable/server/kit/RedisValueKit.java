@@ -3,6 +3,7 @@ package com.portable.server.kit;
 import com.portable.server.model.RedisKeyAndExpire;
 
 import java.util.Optional;
+import java.util.function.Consumer;
 
 /**
  * @author shiroha
@@ -50,6 +51,18 @@ public interface RedisValueKit {
      * @return 返回值
      */
     <T> Optional<T> get(String prefix, Object key, Class<T> clazz);
+
+    /**
+     * 变更数据
+     *
+     * @param prefix   key 的前缀
+     * @param key      key 值
+     * @param clazz    值的类型
+     * @param time     新的缓存时间
+     * @param consumer 变换方式
+     * @param <T>      数据类型
+     */
+    <T> void getPeek(String prefix, Object key, Class<T> clazz, Long time, Consumer<T> consumer);
 
     /**
      * 检查是否存在此 key

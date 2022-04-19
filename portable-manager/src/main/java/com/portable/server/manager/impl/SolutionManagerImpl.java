@@ -29,6 +29,9 @@ public class SolutionManagerImpl implements SolutionManager {
     @Resource
     private RedisValueKit redisValueKit;
 
+    /**
+     * redis 的 key 和过期时间
+     */
     private static final String REDIS_PREFIX = "SOLUTION_ID";
     private static final Long REDIS_TIME = 5L;
 
@@ -97,25 +100,17 @@ public class SolutionManagerImpl implements SolutionManager {
     @Override
     public void updateStatus(Long id, SolutionStatusType statusType) {
         solutionMapper.updateStatus(id, statusType);
-        Optional<Solution> solutionOptional = redisValueKit.get(REDIS_PREFIX, id, Solution.class);
-        if (solutionOptional.isPresent()) {
-            Solution solution = solutionOptional.get();
-            solution.setStatus(statusType);
-            redisValueKit.set(REDIS_PREFIX, id, solution, REDIS_TIME);
-        }
+        redisValueKit.getPeek(REDIS_PREFIX, id, Solution.class, REDIS_TIME, solution -> solution.setStatus(statusType));
     }
 
     @Override
     public void updateCostAndStatus(Long id, SolutionStatusType statusType, Integer timeCost, Integer memoryCost) {
         solutionMapper.updateCostAndStatus(id, statusType, timeCost, memoryCost);
-        Optional<Solution> solutionOptional = redisValueKit.get(REDIS_PREFIX, id, Solution.class);
-        if (solutionOptional.isPresent()) {
-            Solution solution = solutionOptional.get();
+        redisValueKit.getPeek(REDIS_PREFIX, id, Solution.class, REDIS_TIME, solution -> {
             solution.setStatus(statusType);
             solution.setTimeCost(ObjectUtils.max(solution.getTimeCost(), timeCost, Integer::compareTo));
             solution.setMemoryCost(ObjectUtils.max(solution.getMemoryCost(), memoryCost, Integer::compareTo));
-            redisValueKit.set(REDIS_PREFIX, id, solution, REDIS_TIME);
-        }
+        });
     }
 
     @Override

@@ -124,31 +124,21 @@ public class UserManagerImpl implements UserManager {
     @Override
     public void updateHandle(Long id, String handle) {
         userMapper.updateHandle(id, handle);
-        Optional<User> userOptional = redisValueKit.get(REDIS_USER_ID_TO_DATA_PREFIX, id, User.class);
-        if (userOptional.isPresent()) {
-            userOptional.get().setHandle(handle);
-            redisValueKit.set(REDIS_USER_ID_TO_DATA_PREFIX, id, userOptional.get(), REDIS_USER_ID_TO_DATA_TIME);
+        redisValueKit.getPeek(REDIS_USER_ID_TO_DATA_PREFIX, id, User.class, REDIS_USER_ID_TO_DATA_TIME, user -> {
+            user.setHandle(handle);
             redisValueKit.set(REDIS_USER_HANDLE_TO_ID_PREFIX, handle, id, REDIS_USER_HANDLE_TO_ID_TIME);
-        }
+        });
     }
 
     @Override
     public void updatePassword(Long id, String password) {
         userMapper.updatePassword(id, password);
-        Optional<User> userOptional = redisValueKit.get(REDIS_USER_ID_TO_DATA_PREFIX, id, User.class);
-        if (userOptional.isPresent()) {
-            userOptional.get().setPassword(password);
-            redisValueKit.set(REDIS_USER_ID_TO_DATA_PREFIX, id, userOptional.get(), REDIS_USER_ID_TO_DATA_TIME);
-        }
+        redisValueKit.getPeek(REDIS_USER_ID_TO_DATA_PREFIX, id, User.class, REDIS_USER_ID_TO_DATA_TIME, user -> user.setPassword(password));
     }
 
     @Override
     public void updateUserType(Long id, AccountType accountType) {
         userMapper.updateUserType(id, accountType);
-        Optional<User> userOptional = redisValueKit.get(REDIS_USER_ID_TO_DATA_PREFIX, id, User.class);
-        if (userOptional.isPresent()) {
-            userOptional.get().setType(accountType);
-            redisValueKit.set(REDIS_USER_ID_TO_DATA_PREFIX, id, userOptional.get(), REDIS_USER_ID_TO_DATA_TIME);
-        }
+        redisValueKit.getPeek(REDIS_USER_ID_TO_DATA_PREFIX, id, User.class, REDIS_USER_ID_TO_DATA_TIME, user -> user.setType(accountType));
     }
 }

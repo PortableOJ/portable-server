@@ -1,5 +1,6 @@
 package com.portable.server.manager.impl;
 
+import com.portable.server.kit.RedisValueKit;
 import com.portable.server.manager.ProblemManager;
 import com.portable.server.mapper.ProblemMapper;
 import com.portable.server.model.problem.Problem;
@@ -22,6 +23,15 @@ public class ProblemManagerImpl implements ProblemManager {
 
     @Resource
     private ProblemMapper problemMapper;
+
+    @Resource
+    private RedisValueKit redisValueKit;
+
+    /**
+     * redis 的 key 和过期时间
+     */
+    private static final String REDIS_PREFIX = "SOLUTION_ID";
+    private static final Long REDIS_TIME = 30L;
 
     @Override
     public @NotNull Problem newProblem() {
@@ -59,7 +69,15 @@ public class ProblemManagerImpl implements ProblemManager {
 
     @Override
     public @NotNull Optional<Problem> getProblemById(Long id) {
-        return Optional.ofNullable(problemMapper.selectProblemById(id));
+        if (ObjectUtils.isNull(id)) {
+            return Optional.empty();
+        }
+        Problem problem = redisValueKit.get(REDIS_PREFIX, id, Problem.class)
+                .orElse(problemMapper.selectProblemById(id));
+        if (ObjectUtils.isNotNull(problem)) {
+            redisValueKit.set(REDIS_PREFIX, id, problem, REDIS_TIME);
+        }
+        return Optional.ofNullable(problem);
     }
 
     @Override
@@ -81,26 +99,35 @@ public class ProblemManagerImpl implements ProblemManager {
     @Override
     public void updateProblemTitle(Long id, String newTitle) {
         problemMapper.updateProblemTitle(id, newTitle);
+        redisValueKit.getPeek(REDIS_PREFIX, id, Problem.class, REDIS_TIME, problem -> problem.setTitle(newTitle));
     }
 
     @Override
     public void updateProblemAccessStatus(Long id, ProblemAccessType newStatus) {
         problemMapper.updateProblemAccess(id, newStatus);
+        redisValueKit.getPeek(REDIS_PREFIX, id, Problem.class, REDIS_TIME, problem -> problem.setAccessType(newStatus));
+
     }
 
     @Override
     public void updateProblemStatus(Long id, ProblemStatusType statusType) {
         problemMapper.updateProblemStatus(id, statusType);
+        redisValueKit.getPeek(REDIS_PREFIX, id, Problem.class, REDIS_TIME, problem -> problem.setStatusType(statusType));
     }
 
     @Override
     public void updateProblemCount(Long id, Integer submitCount, Integer acceptCount) {
         problemMapper.updateProblemCount(id, submitCount, acceptCount);
+        redisValueKit.getPeek(REDIS_PREFIX, id, Problem.class, REDIS_TIME, problem -> {
+            problem.setAcceptCount(problem.getSubmissionCount() + submitCount);
+            problem.setAcceptCount(problem.getAcceptCount() + acceptCount);
+        });
     }
 
     @Override
     public void updateProblemOwner(Long id, Long newOwner) {
         problemMapper.updateProblemOwner(id, newOwner);
+        redisValueKit.getPeek(REDIS_PREFIX, id, Problem.class, REDIS_TIME, problem -> problem.setOwner(newOwner));
     }
 
     @Override

@@ -12,6 +12,7 @@ import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
 import java.util.Optional;
 import java.util.concurrent.TimeUnit;
+import java.util.function.Consumer;
 
 /**
  * @author shiroha
@@ -63,6 +64,15 @@ public class RedisValueKitImpl extends BaseRedisKit implements RedisValueKit {
             res = JsonUtils.toObject(value, clazz);
         }
         return Optional.ofNullable(clazz.cast(res));
+    }
+
+    @Override
+    public <T> void getPeek(String prefix, Object key, Class<T> clazz, Long time, Consumer<T> consumer) {
+        Optional<T> tOptional = get(prefix, key, clazz);
+        if (tOptional.isPresent()) {
+            consumer.accept(tOptional.get());
+            set(prefix, key, tOptional.get(), time);
+        }
     }
 
     @Override
