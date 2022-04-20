@@ -860,7 +860,7 @@ class ContestServiceImplTest {
         Mockito.when(problemManager.getProblemById(MOCKED_PROBLEM_ID)).thenReturn(Optional.of(problem));
         Mockito.when(userManager.getAccountByHandle(MOCKED_USER_HANDLE)).thenReturn(Optional.of(user));
         Mockito.when(solutionManager.countSolution(SolutionType.CONTEST, MOCKED_USER_ID, MOCKED_CONTEST_ID, MOCKED_PROBLEM_ID, SolutionStatusType.ACCEPT)).thenReturn(100);
-        Mockito.when(solutionManager.selectSolutionByPage(10, 0, SolutionType.CONTEST, MOCKED_USER_ID, MOCKED_CONTEST_ID, MOCKED_PROBLEM_ID, SolutionStatusType.ACCEPT, Mockito.any(), Mockito.any()))
+        Mockito.when(solutionManager.selectSolutionByPage(10, 0, SolutionType.CONTEST, MOCKED_USER_ID, MOCKED_CONTEST_ID, MOCKED_PROBLEM_ID, SolutionStatusType.ACCEPT, null, null))
                 .thenReturn(Collections.singletonList(solution));
 
         PageRequest<SolutionListQueryRequest> pageRequest = PageRequest.<SolutionListQueryRequest>builder()
@@ -870,6 +870,8 @@ class ContestServiceImplTest {
                         .problemId(MOCKED_PROBLEM_INDEX.longValue())
                         .statusType(SolutionStatusType.ACCEPT)
                         .userHandle(MOCKED_USER_HANDLE)
+                        .afterId(null)
+                        .beforeId(null)
                         .build())
                 .build();
 
@@ -1216,7 +1218,7 @@ class ContestServiceImplTest {
         Mockito.when(problemManager.getProblemById(MOCKED_PROBLEM_ID)).thenReturn(Optional.of(problem));
         Mockito.when(userManager.getAccountByHandle(MOCKED_USER_HANDLE)).thenReturn(Optional.of(user));
         Mockito.when(solutionManager.countSolution(SolutionType.TEST_CONTEST, MOCKED_USER_ID, MOCKED_CONTEST_ID, MOCKED_PROBLEM_ID, SolutionStatusType.ACCEPT)).thenReturn(100);
-        Mockito.when(solutionManager.selectSolutionByPage(10, 0, SolutionType.TEST_CONTEST, MOCKED_USER_ID, MOCKED_CONTEST_ID, MOCKED_PROBLEM_ID, SolutionStatusType.ACCEPT, Mockito.any(), Mockito.any()))
+        Mockito.when(solutionManager.selectSolutionByPage(10, 0, SolutionType.TEST_CONTEST, MOCKED_USER_ID, MOCKED_CONTEST_ID, MOCKED_PROBLEM_ID, SolutionStatusType.ACCEPT, null, null))
                 .thenReturn(Collections.singletonList(solution));
 
         PageRequest<SolutionListQueryRequest> pageRequest = PageRequest.<SolutionListQueryRequest>builder()
@@ -1226,6 +1228,8 @@ class ContestServiceImplTest {
                         .problemId(MOCKED_PROBLEM_INDEX.longValue())
                         .statusType(SolutionStatusType.ACCEPT)
                         .userHandle(MOCKED_USER_HANDLE)
+                        .beforeId(null)
+                        .afterId(null)
                         .build())
                 .build();
 
