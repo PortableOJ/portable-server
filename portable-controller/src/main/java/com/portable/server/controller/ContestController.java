@@ -96,16 +96,16 @@ public class ContestController {
                                                                                    Integer pageSize,
                                                                                    String userHandle,
                                                                                    Long problemId,
+                                                                                   Long beforeId,
+                                                                                   Long afterId,
                                                                                    SolutionStatusType statusType) throws PortableException {
         PageRequest<SolutionListQueryRequest> pageRequest = PageRequest.<SolutionListQueryRequest>builder()
                 .pageNum(pageNum)
                 .pageSize(pageSize)
                 .queryData(SolutionListQueryRequest.builder()
-                        .userHandle(userHandle)
-                        .problemId(problemId)
-                        .statusType(statusType)
-                        .build()
-                )
+                        .userHandle(userHandle).problemId(problemId).statusType(statusType)
+                        .beforeId(beforeId).afterId(afterId)
+                        .build())
                 .build();
         pageRequest.verify();
         return Response.ofOk(contestService.getContestStatusList(contestId, pageRequest));
@@ -124,16 +124,16 @@ public class ContestController {
                                                                                        Integer pageSize,
                                                                                        String userHandle,
                                                                                        Long problemId,
+                                                                                       Long beforeId,
+                                                                                       Long afterId,
                                                                                        SolutionStatusType statusType) throws PortableException {
         PageRequest<SolutionListQueryRequest> pageRequest = PageRequest.<SolutionListQueryRequest>builder()
                 .pageNum(pageNum)
                 .pageSize(pageSize)
                 .queryData(SolutionListQueryRequest.builder()
-                        .userHandle(userHandle)
-                        .problemId(problemId)
-                        .statusType(statusType)
-                        .build()
-                )
+                        .userHandle(userHandle).problemId(problemId).statusType(statusType)
+                        .beforeId(beforeId).afterId(afterId)
+                        .build())
                 .build();
         pageRequest.verify();
         return Response.ofOk(contestService.getContestTestStatusList(contestId, pageRequest));

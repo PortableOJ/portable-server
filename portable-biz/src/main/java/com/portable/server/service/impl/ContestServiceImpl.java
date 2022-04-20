@@ -715,7 +715,7 @@ public class ContestServiceImpl implements ContestService {
                 solutionType,
                 userId, contestPackage.getContest().getId(),
                 queryData.getProblemId(), queryData.getStatusType(),
-                null, null);
+                queryData.getBeforeId(), queryData.getAfterId());
 
         Map<Long, Integer> problemIdToProblemIndexMap = contestPackage.getContestData().idToIndex();
         final Problem finalQueryProblem = queryProblem;

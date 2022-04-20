@@ -29,4 +29,14 @@ public class SolutionListQueryRequest {
      * 仅查看此状态的提交
      */
     private SolutionStatusType statusType;
+
+    /**
+     * 限制在哪个 id 之前
+     */
+    private Long beforeId;
+
+    /**
+     * 限制在哪个 id 之后
+     */
+    private Long afterId;
 }

@@ -53,17 +53,15 @@ public class SolutionServiceImpl implements SolutionService {
             userId = userManager.changeHandleToUserId(queryRequest.getUserHandle()).orElseThrow(PortableException.from("A-01-001"));
         }
         Integer solutionCount = solutionManager.countSolution(
-                SolutionType.PUBLIC,
-                userId,
-                null,
-                queryRequest.getProblemId(),
-                queryRequest.getStatusType()
+                SolutionType.PUBLIC, userId, null,
+                queryRequest.getProblemId(), queryRequest.getStatusType()
         );
         PageResponse<SolutionListResponse, Void> response = PageResponse.of(pageRequest, solutionCount);
         List<Solution> solutionList = solutionManager.selectSolutionByPage(
                 response.getPageSize(), response.offset(),
                 SolutionType.PUBLIC, userId, null,
-                queryRequest.getProblemId(), queryRequest.getStatusType(), null, null);
+                queryRequest.getProblemId(), queryRequest.getStatusType(),
+                queryRequest.getBeforeId(), queryRequest.getAfterId());
 
         List<SolutionListResponse> solutionListResponseList = solutionList.stream()
                 .parallel()
