@@ -36,10 +36,12 @@ public interface SolutionMapper {
      * @param pageSize     每页数量
      * @param offset       偏移量
      * @param solutionType 需要获取的提交类型
-     * @param userId       用户 ID
-     * @param contestId    比赛的 id
-     * @param problemId    问题 ID
+     * @param userId       用户 ID，若为 null，则为请求所有的
+     * @param contestId    比赛的 id，若为 null，则为请求所有的
+     * @param problemId    问题 ID，若为 null，则为请求所有的
      * @param statusType   状态，若为 null，则为请求所有的
+     * @param beforeId     前序情况，表示只需要此值之前发生的新的提交，若为 null，则忽略
+     * @param afterId      后续情况，表示只需要此值之后发生的新的提交，若为 null，则忽略
      * @return 提交列表
      */
     List<Solution> selectSolutionByPage(@Param("pageSize") Integer pageSize,
@@ -48,7 +50,9 @@ public interface SolutionMapper {
                                         @Param("userId") Long userId,
                                         @Param("contestId") Long contestId,
                                         @Param("problemId") Long problemId,
-                                        @Param("statusType") List<SolutionStatusType> statusType);
+                                        @Param("statusType") List<SolutionStatusType> statusType,
+                                        @Param("beforeId") Long beforeId,
+                                        @Param("afterId") Long afterId);
 
     /**
      * 过滤不是此用户的提交

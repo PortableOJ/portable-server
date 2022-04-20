@@ -61,14 +61,9 @@ public class SolutionServiceImpl implements SolutionService {
         );
         PageResponse<SolutionListResponse, Void> response = PageResponse.of(pageRequest, solutionCount);
         List<Solution> solutionList = solutionManager.selectSolutionByPage(
-                response.getPageSize(),
-                response.offset(),
-                SolutionType.PUBLIC,
-                userId,
-                null,
-                queryRequest.getProblemId(),
-                queryRequest.getStatusType()
-        );
+                response.getPageSize(), response.offset(),
+                SolutionType.PUBLIC, userId, null,
+                queryRequest.getProblemId(), queryRequest.getStatusType(), null, null);
 
         List<SolutionListResponse> solutionListResponseList = solutionList.stream()
                 .parallel()

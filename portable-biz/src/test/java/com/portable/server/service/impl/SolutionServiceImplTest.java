@@ -114,7 +114,7 @@ class SolutionServiceImplTest {
 
         Mockito.when(userManager.changeHandleToUserId(MOCKED_USER_HANDLE)).thenReturn(Optional.of(MOCKED_USER_ID));
         Mockito.when(solutionManager.countSolution(SolutionType.PUBLIC, MOCKED_USER_ID, null, MOCKED_PROBLEM_ID, SolutionStatusType.ACCEPT)).thenReturn(100);
-        Mockito.when(solutionManager.selectSolutionByPage(10, 10, SolutionType.PUBLIC, MOCKED_USER_ID, null, MOCKED_PROBLEM_ID, SolutionStatusType.ACCEPT)).thenReturn(Collections.singletonList(solution));
+        Mockito.when(solutionManager.selectSolutionByPage(10, 10, SolutionType.PUBLIC, MOCKED_USER_ID, null, MOCKED_PROBLEM_ID, SolutionStatusType.ACCEPT, Mockito.any(), Mockito.any())).thenReturn(Collections.singletonList(solution));
         Mockito.when(userManager.getAccountById(MOCKED_USER_ID)).thenReturn(Optional.of(user));
         Mockito.when(problemManager.getProblemById(MOCKED_PROBLEM_ID)).thenReturn(Optional.of(problem));
 

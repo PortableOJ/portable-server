@@ -860,7 +860,7 @@ class ContestServiceImplTest {
         Mockito.when(problemManager.getProblemById(MOCKED_PROBLEM_ID)).thenReturn(Optional.of(problem));
         Mockito.when(userManager.getAccountByHandle(MOCKED_USER_HANDLE)).thenReturn(Optional.of(user));
         Mockito.when(solutionManager.countSolution(SolutionType.CONTEST, MOCKED_USER_ID, MOCKED_CONTEST_ID, MOCKED_PROBLEM_ID, SolutionStatusType.ACCEPT)).thenReturn(100);
-        Mockito.when(solutionManager.selectSolutionByPage(10, 0, SolutionType.CONTEST, MOCKED_USER_ID, MOCKED_CONTEST_ID, MOCKED_PROBLEM_ID, SolutionStatusType.ACCEPT))
+        Mockito.when(solutionManager.selectSolutionByPage(10, 0, SolutionType.CONTEST, MOCKED_USER_ID, MOCKED_CONTEST_ID, MOCKED_PROBLEM_ID, SolutionStatusType.ACCEPT, Mockito.any(), Mockito.any()))
                 .thenReturn(Collections.singletonList(solution));
 
         PageRequest<SolutionListQueryRequest> pageRequest = PageRequest.<SolutionListQueryRequest>builder()
@@ -1216,7 +1216,7 @@ class ContestServiceImplTest {
         Mockito.when(problemManager.getProblemById(MOCKED_PROBLEM_ID)).thenReturn(Optional.of(problem));
         Mockito.when(userManager.getAccountByHandle(MOCKED_USER_HANDLE)).thenReturn(Optional.of(user));
         Mockito.when(solutionManager.countSolution(SolutionType.TEST_CONTEST, MOCKED_USER_ID, MOCKED_CONTEST_ID, MOCKED_PROBLEM_ID, SolutionStatusType.ACCEPT)).thenReturn(100);
-        Mockito.when(solutionManager.selectSolutionByPage(10, 0, SolutionType.TEST_CONTEST, MOCKED_USER_ID, MOCKED_CONTEST_ID, MOCKED_PROBLEM_ID, SolutionStatusType.ACCEPT))
+        Mockito.when(solutionManager.selectSolutionByPage(10, 0, SolutionType.TEST_CONTEST, MOCKED_USER_ID, MOCKED_CONTEST_ID, MOCKED_PROBLEM_ID, SolutionStatusType.ACCEPT, Mockito.any(), Mockito.any()))
                 .thenReturn(Collections.singletonList(solution));
 
         PageRequest<SolutionListQueryRequest> pageRequest = PageRequest.<SolutionListQueryRequest>builder()

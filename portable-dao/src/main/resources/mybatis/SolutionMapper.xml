@@ -56,6 +56,12 @@
         SELECT *
         FROM solution
         <where>
+            <if test="beforeId != null">
+                AND id &lt; #{beforeId}
+            </if>
+            <if test="afterId != null">
+                AND id &gt; #{afterId}
+            </if>
             <if test="solutionType != null">
                 AND solution_type = #{solutionType}
             </if>

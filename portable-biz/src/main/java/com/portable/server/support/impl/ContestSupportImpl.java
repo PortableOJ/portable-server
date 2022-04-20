@@ -13,6 +13,7 @@ import com.portable.server.model.solution.Solution;
 import com.portable.server.support.ContestSupport;
 import com.portable.server.type.SolutionStatusType;
 import com.portable.server.type.SolutionType;
+import com.portable.server.util.ObjectUtils;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
@@ -208,14 +209,14 @@ public class ContestSupportImpl implements ContestSupport {
         Map<Long, ContestRankItem> userIdContestRankMap = new ConcurrentHashMap<>(128);
         // 保存首 A 情况，题目 -> 用户 id
         Map<Integer, Long> firstAcceptMap = new HashMap<>(contestData.getProblemList().size());
-        // 通过分页获取，减轻 io 负担
+        // 通过分页获取，减轻 io 负担。+ 1 导致多取出一页空白并不影响使用，同时可以尽量避免并发导致的少了部分提交的问题，此处计算页数不需要精确
         Integer totalSolution = solutionManager.countSolution(SolutionType.CONTEST, null, contestId, null, null);
-        // + 1 导致多取出一页空白并不影响使用，同时可以尽量避免并发导致的少了部分提交的问题，此处计算页数不需要精确
         int totalPageNum = totalSolution / MAKE_RANK_PAGE_SIZE + 1;
+        // 通过 beforeId 来加速数据库搜索（因为 id 字段是 uk，所以提供 id 的范围之后效率会很高）
+        Long beforeId = null;
         for (int i = 0; i < totalPageNum; i++) {
-            Integer offset = i * MAKE_RANK_PAGE_SIZE;
-            List<Solution> solutionList = solutionManager.selectSolutionByPage(MAKE_RANK_PAGE_SIZE, offset,
-                    SolutionType.CONTEST, null, contestId, null, null);
+            List<Solution> solutionList = solutionManager.selectSolutionByPage(MAKE_RANK_PAGE_SIZE, 0,
+                    SolutionType.CONTEST, null, contestId, null, null, beforeId, null);
             // 先并行创建不存在的参加者
             solutionList.stream()
                     .parallel().unordered()
@@ -223,18 +224,23 @@ public class ContestSupportImpl implements ContestSupport {
                     .distinct()
                     .filter(aLong -> !userIdContestRankMap.containsKey(aLong))
                     .forEach(aLong -> userIdContestRankMap.put(aLong, ContestRankItem.newItem(aLong)));
-            solutionList.forEach(solution -> {
-                // 统计提交/通过数量
-                Integer problemIndex = problemIndexMap.get(solution.getProblemId());
-                contestData.getProblemList().get(problemIndex).incSubmit();
-                if (SolutionStatusType.ACCEPT.equals(solution.getStatus())) {
-                    firstAcceptMap.put(problemIndex, solution.getUserId());
-                    contestData.getProblemList().get(problemIndex).incAccept();
-                }
-                // 统计榜单
-                ContestRankItem contestRankItem = userIdContestRankMap.get(solution.getUserId());
-                contestRankItem.addSolution(solution, problemIndexMap.get(solution.getProblemId()), contest.getStartTime(), freezeTime);
-            });
+            beforeId = solutionList.stream()
+                    .map(solution -> {
+                        // 统计提交/通过数量
+                        Integer problemIndex = problemIndexMap.get(solution.getProblemId());
+                        contestData.getProblemList().get(problemIndex).incSubmit();
+                        if (SolutionStatusType.ACCEPT.equals(solution.getStatus())) {
+                            firstAcceptMap.put(problemIndex, solution.getUserId());
+                            contestData.getProblemList().get(problemIndex).incAccept();
+                        }
+                        // 统计榜单
+                        ContestRankItem contestRankItem = userIdContestRankMap.get(solution.getUserId());
+                        contestRankItem.addSolution(solution, problemIndexMap.get(solution.getProblemId()), contest.getStartTime(), freezeTime);
+                        return solution.getId();
+                    }).min(Long::compareTo).orElse(null);
+            if (ObjectUtils.isNull(beforeId)) {
+                break;
+            }
         }
         contestDataManager.saveContestData(contestData);
         // 保存首 A 信息

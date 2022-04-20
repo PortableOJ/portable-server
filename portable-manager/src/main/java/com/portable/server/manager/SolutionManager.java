@@ -41,14 +41,24 @@ public interface SolutionManager {
      * @param contestId    比赛 id
      * @param problemId    问题 id
      * @param statusType   状态
+     * @param beforeId     应当早于某个 id
+     * @param afterId      应当晚于某个 id
      * @return 提交列表
      */
-    List<Solution> selectSolutionByPage(Integer pageSize, Integer offset, SolutionType solutionType, Long userId, Long contestId, Long problemId, SolutionStatusType statusType);
+    List<Solution> selectSolutionByPage(Integer pageSize,
+                                        Integer offset,
+                                        SolutionType solutionType,
+                                        Long userId,
+                                        Long contestId,
+                                        Long problemId,
+                                        SolutionStatusType statusType,
+                                        Long beforeId,
+                                        Long afterId);
 
     /**
      * 分页获取提交信息
      *
-     * @param pageSize     单页大小
+     * @param pageSize 单页大小
      * @return 提交列表
      */
     List<Solution> selectSolutionLastNotEndSolution(Integer pageSize);

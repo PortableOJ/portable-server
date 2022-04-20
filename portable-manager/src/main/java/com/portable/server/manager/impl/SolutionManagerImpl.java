@@ -58,8 +58,8 @@ public class SolutionManagerImpl implements SolutionManager {
     }
 
     @Override
-    public List<Solution> selectSolutionByPage(Integer pageSize, Integer offset, SolutionType solutionType, Long userId, Long contestId, Long problemId, SolutionStatusType statusType) {
-        return solutionMapper.selectSolutionByPage(pageSize, offset, solutionType, userId, contestId, problemId, statusType == null ? null : Collections.singletonList(statusType));
+    public List<Solution> selectSolutionByPage(Integer pageSize, Integer offset, SolutionType solutionType, Long userId, Long contestId, Long problemId, SolutionStatusType statusType, Long beforeId, Long afterId) {
+        return solutionMapper.selectSolutionByPage(pageSize, offset, solutionType, userId, contestId, problemId, statusType == null ? null : Collections.singletonList(statusType), beforeId, afterId);
     }
 
     @Override
@@ -67,7 +67,7 @@ public class SolutionManagerImpl implements SolutionManager {
         List<SolutionStatusType> solutionStatusTypeList = Arrays.stream(SolutionStatusType.values())
                 .filter(solutionStatusType -> !solutionStatusType.getEndingResult())
                 .collect(Collectors.toList());
-        return solutionMapper.selectSolutionByPage(pageSize, 0, null, null, null, null, solutionStatusTypeList);
+        return solutionMapper.selectSolutionByPage(pageSize, 0, null, null, null, null, solutionStatusTypeList, null, null);
     }
 
     @Override
