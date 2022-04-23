@@ -1,6 +1,7 @@
 package com.portable.server.util.test;
 
 import com.portable.server.type.AccountType;
+import com.portable.server.type.ContestVisitType;
 import com.portable.server.type.PermissionType;
 import com.portable.server.util.UserContext;
 import org.mockito.MockedStatic;
@@ -47,13 +48,13 @@ public class UserContextBuilder {
 
     public UserContextLogined withBatchLoginIn() {
         userContext.setId(MockedValueMaker.mLong());
-        userContext.setType(AccountType.NORMAL);
+        userContext.setType(AccountType.BATCH);
         return userContextLogined;
     }
 
     public UserContextLogined withBatchLoginIn(Long id) {
         userContext.setId(id);
-        userContext.setType(AccountType.NORMAL);
+        userContext.setType(AccountType.BATCH);
         return userContextLogined;
     }
 
@@ -75,6 +76,14 @@ public class UserContextBuilder {
 
         public void withHandle(String handle) {
             userContext.setHandle(handle);
+        }
+
+        public void withContestCache(Long contestId, ContestVisitType cache) {
+            userContext.getContestVisitPermissionMap().put(contestId, cache);
+        }
+
+        public void withContestId(Long contestId) {
+            userContext.setContestId(contestId);
         }
     }
 }

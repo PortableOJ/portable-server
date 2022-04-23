@@ -5,6 +5,7 @@ import com.portable.server.model.contest.Contest;
 import com.portable.server.model.contest.PrivateContestData;
 import com.portable.server.util.UserContext;
 import lombok.Getter;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.Objects;
 
@@ -46,11 +47,13 @@ public enum ContestVisitType {
         this.code = code;
     }
 
-    public Boolean approve(ContestVisitType contestVisitType) {
+    @NotNull
+    public Boolean approve(@NotNull ContestVisitType contestVisitType) {
         return this.code <= contestVisitType.getCode();
     }
 
-    public static ContestVisitType checkPermission(Contest contest, BaseContestData contestData) {
+    @NotNull
+    public static ContestVisitType checkPermission(@NotNull Contest contest, @NotNull BaseContestData contestData) {
         UserContext userContext = UserContext.ctx();
         ContestVisitType contestVisitType = userContext.getContestVisitPermissionMap().get(contest.getId());
         if (contestVisitType != null) {
