@@ -1,5 +1,5 @@
 <div align="center">
-   <img src="https://github.com/PortableOJ/portable-docs/blob/master/img/favicon.png?raw=true" alt="MEVCL"/>
+   <img src="https://github.com/PortableOJ/portable-docs/blob/master/img/favicon.png?raw=true" alt="Portable OJ"/>
    <br>
    <h1>Portable Online Judge</h1>
    <p>一个高性能、分布式、易部署的开源 Online Judge 系统</p>
