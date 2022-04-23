@@ -38,32 +38,24 @@
 
 # 贡献本项目
 
-## 提出系统错误
+## 我发现了系统错误
 
-请前往 [Issues](https://github.com/PortableOJ/portable-server/issues) 来发起一个 Issue
+请根据下列操作进行
 
-## 希望能增加新功能
+- 前往 [Issues](https://github.com/PortableOJ/portable-server/issues)
+- 查询是否已经有一个 open 状态的 Issue，且和我发现的相关的系统错误内容？若有，则不需要做任何事情
+- 查询是否已经有一个 close 状态的 Issue，且和我发现的相关的系统错误内容
+  - 请阅读其中的内容
+  - 是否已经对这个问题给出了最终的答复？若是，则不需要做任何事情
+- 请创建一个新的 Issues 并根据要求描述你的问题
 
-请前往 [Discussions](https://github.com/PortableOJ/portable-server/discussions) 来发起一个讨论
+## 我希望能增加新功能，或者讨论与分享内容
+
+- 前往 [Discussions](https://github.com/PortableOJ/portable-server/discussions) 并根据「讨论区指南」中的说明创建新的讨论
 
 ## 我希望由我来更新代码
 
-请依照下面的步骤进行
-
-- fork 本仓库
-- 从 master 处创建一个分支，其名称格式为 \<type\>/\<name\>。其中 \<type\> 为变更类型，请在下列选项中选择，而 \<name\> 为变更的具体内容，请使用小写字母并用 「-」 作为分隔符。例如
-  feature/blog-system
-    * feature: 新增功能
-    * bugfix: 修复 bug
-    * docs: 文档等其他的相关更新
-- 在此新分支上，完成你的开发
-- 测试你开发完成的程序，并逐一检查你新增加的功能是否完整合理
-- 为你的开发添加单元测试，请保证此时，所有的单元测试均通过，且核心代码部分的单元测试覆盖率达到 80% 以上
-- 向本仓库提交 pull request，**请 pull 至最新的 release 分支**，而不是 master 分支
-- 等待 「我」 对你的代码进行 code review
-- 根据 code review 内的评论，解决其中所有的问题
-- 由 「我」 同意 pull request，并等待后续的测试完成后，「我」 将会把 release 代码同步至 master
-- 至此，你已经完成了整个提交流程，你可以选择删除掉 fork 的仓库或者保留它
+请详细阅读 [CONTRIBUTING](./CONTRIBUTING.md) 的内容，并根据规范来提交你的代码。如果不依照规范提交，你的代码很有可能被拒绝
 
 # LICENSE
 
