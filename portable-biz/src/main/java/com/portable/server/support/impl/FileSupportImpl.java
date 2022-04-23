@@ -22,7 +22,7 @@ public class FileSupportImpl implements FileSupport {
     private FileKit fileKit;
 
     @PostConstruct
-    private void init() throws PortableException {
+    public void init() throws PortableException {
         fileKit.createDirIfNotExist(PROBLEM_DIR_NAME);
     }
 
