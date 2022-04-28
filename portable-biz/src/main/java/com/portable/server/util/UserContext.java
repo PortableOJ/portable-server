@@ -20,6 +20,7 @@ import javax.annotation.Resource;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.ExecutionException;
@@ -29,7 +30,7 @@ import java.util.concurrent.TimeUnit;
  * @author shiroha
  */
 @Data
-public class UserContext implements AutoCloseable {
+public class UserContext {
 
     @Resource
     private RedisValueKit redisValueKit;
@@ -136,7 +137,7 @@ public class UserContext implements AutoCloseable {
         try {
             UserContext userContext = USER_CACHE.get(userId);
             LOCAL.set(userContext);
-            return ObjectUtils.isNotNull(userContext.getId());
+            return Objects.nonNull(userContext.getId());
         } catch (ExecutionException ignored) {
         }
         return false;
@@ -151,7 +152,7 @@ public class UserContext implements AutoCloseable {
     }
 
     public static void set(User user) throws PortableException {
-        if (ObjectUtils.isNull(user)) {
+        if (Objects.isNull(user)) {
             throw PortableException.of("A-02-001");
         }
 
@@ -214,7 +215,6 @@ public class UserContext implements AutoCloseable {
         set(this);
     }
 
-    @Override
     public void close() {
         LOCAL.remove();
     }

@@ -7,7 +7,6 @@ import com.portable.server.model.contest.Contest;
 import com.portable.server.model.contest.PasswordContestData;
 import com.portable.server.model.response.problem.ProblemListResponse;
 import com.portable.server.model.user.User;
-import com.portable.server.util.ObjectUtils;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
@@ -16,6 +15,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.HashSet;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -73,7 +73,7 @@ public class ContestAdminDetailResponse extends ContestDetailResponse {
                 } else {
                     this.inviteUserSet = inviteUserSet.stream()
                             .parallel()
-                            .filter(ObjectUtils::isNotNull)
+                            .filter(Objects::nonNull)
                             .map(User::getHandle)
                             .collect(Collectors.toSet());
                 }

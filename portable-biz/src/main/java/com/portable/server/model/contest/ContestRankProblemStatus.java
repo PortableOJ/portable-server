@@ -2,7 +2,6 @@ package com.portable.server.model.contest;
 
 import com.portable.server.model.solution.Solution;
 import com.portable.server.type.SolutionStatusType;
-import com.portable.server.util.ObjectUtils;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -10,6 +9,7 @@ import lombok.NoArgsConstructor;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Date;
+import java.util.Objects;
 
 /**
  * @author shiroha
@@ -73,7 +73,7 @@ public class ContestRankProblemStatus {
     }
 
     public void setFirstBlood() {
-        if (ObjectUtils.isNotNull(firstSolveId)) {
+        if (Objects.nonNull(firstSolveId)) {
             firstBlood = true;
         }
     }

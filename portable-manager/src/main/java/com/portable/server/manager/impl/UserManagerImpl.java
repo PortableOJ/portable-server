@@ -5,12 +5,12 @@ import com.portable.server.manager.UserManager;
 import com.portable.server.mapper.UserMapper;
 import com.portable.server.model.user.User;
 import com.portable.server.type.AccountType;
-import com.portable.server.util.ObjectUtils;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -92,13 +92,13 @@ public class UserManagerImpl implements UserManager {
 
     @Override
     public Set<Long> changeHandleToUserId(Collection<String> handleList) {
-        if (ObjectUtils.isNull(handleList)) {
+        if (Objects.isNull(handleList)) {
             return new HashSet<>();
         }
         return handleList.stream()
                 .parallel()
                 .map(s -> changeHandleToUserId(s).orElse(null))
-                .filter(ObjectUtils::isNotNull)
+                .filter(Objects::nonNull)
                 .collect(Collectors.toSet());
     }
 
@@ -109,7 +109,7 @@ public class UserManagerImpl implements UserManager {
         }
         User user = redisValueKit.get(REDIS_USER_ID_TO_DATA_PREFIX, id, User.class)
                 .orElseGet(() -> userMapper.selectAccountById(id));
-        if (ObjectUtils.isNotNull(user)) {
+        if (Objects.nonNull(user)) {
             redisValueKit.set(REDIS_USER_ID_TO_DATA_PREFIX, id, user, REDIS_USER_ID_TO_DATA_TIME);
             redisValueKit.set(REDIS_USER_HANDLE_TO_ID_PREFIX, user.getHandle(), id, REDIS_USER_HANDLE_TO_ID_TIME);
         }

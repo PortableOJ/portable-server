@@ -14,7 +14,6 @@ import org.springframework.web.servlet.HandlerInterceptor;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.Arrays;
-import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
@@ -33,26 +32,20 @@ public class PermissionInterceptor implements HandlerInterceptor {
         }
         HandlerMethod handlerMethod = (HandlerMethod) handler;
 
-        PermissionRequirement classRequirement = handlerMethod.getMethod().getDeclaringClass().getAnnotation(PermissionRequirement.class);
-        PermissionRequirement methodRequirement = handlerMethod.getMethodAnnotation(PermissionRequirement.class);
-        String needPermission = checkPermission(classRequirement) + checkPermission(methodRequirement);
-        if (!Strings.isBlank(needPermission)) {
-            throw PortableException.of("A-02-002", needPermission);
-        }
-        return true;
-    }
-
-    private String checkPermission(PermissionRequirement permissionRequirement) {
+        PermissionRequirement permissionRequirement = handlerMethod.getMethodAnnotation(PermissionRequirement.class);
         if (permissionRequirement == null) {
-            return "";
+            return true;
         }
-        List<String> needPermission = Arrays.stream(permissionRequirement.value())
+        String needPermission = Arrays.stream(permissionRequirement.value())
                 .map(permissionType -> UserContext.ctx().getPermissionTypeSet().contains(permissionType)
                         ? null
                         : permissionType)
                 .filter(Objects::nonNull)
                 .map(PermissionType::getText)
-                .collect(Collectors.toList());
-        return String.join(",", needPermission);
+                .collect(Collectors.joining(", "));
+        if (!Strings.isBlank(needPermission)) {
+            throw PortableException.of("A-02-002", needPermission);
+        }
+        return true;
     }
 }

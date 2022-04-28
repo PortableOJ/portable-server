@@ -9,6 +9,10 @@ import java.lang.annotation.Target;
  * @author shiroha
  */
 @Retention(RetentionPolicy.RUNTIME)
-@Target({ElementType.METHOD, ElementType.TYPE})
+@Target({ElementType.METHOD})
 public @interface CheckCaptcha {
+
+    int value() default -1;
+
+    String name() default "default";
 }

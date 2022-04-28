@@ -45,7 +45,6 @@ import com.portable.server.type.ContestAccessType;
 import com.portable.server.type.ContestVisitType;
 import com.portable.server.type.ProblemAccessType;
 import com.portable.server.type.SolutionType;
-import com.portable.server.util.ObjectUtils;
 import com.portable.server.util.UserContext;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -568,7 +567,7 @@ public class ContestServiceImpl implements ContestService {
                 PrivateContestData privateContestData = (PrivateContestData) contestPackage.getContestData();
                 inviteUserSet = privateContestData.getInviteUserSet().stream()
                         .map(aLong -> userManager.getAccountById(aLong).orElse(null))
-                        .filter(ObjectUtils::isNotNull)
+                        .filter(Objects::nonNull)
                         .collect(Collectors.toSet());
                 break;
             default:
@@ -723,8 +722,8 @@ public class ContestServiceImpl implements ContestService {
         List<SolutionListResponse> solutionListResponseList = solutionList.stream()
                 .parallel()
                 .map(solution -> {
-                    User user = ObjectUtils.isNull(finalQueryUser) ? userManager.getAccountById(solution.getUserId()).orElse(null) : finalQueryUser;
-                    Problem problem = ObjectUtils.isNull(finalQueryProblem) ? problemManager.getProblemById(solution.getProblemId()).orElse(null) : finalQueryProblem;
+                    User user = Objects.isNull(finalQueryUser) ? userManager.getAccountById(solution.getUserId()).orElse(null) : finalQueryUser;
+                    Problem problem = Objects.isNull(finalQueryProblem) ? problemManager.getProblemById(solution.getProblemId()).orElse(null) : finalQueryProblem;
                     SolutionListResponse solutionListResponse = SolutionListResponse.of(solution, user, problem);
                     solutionListResponse.setProblemId(Long.valueOf(problemIdToProblemIndexMap.get(solution.getProblemId())));
                     return solutionListResponse;

@@ -22,9 +22,8 @@ public class CaptchaInterceptor implements HandlerInterceptor {
     @Override
     public boolean preHandle(@NonNull HttpServletRequest request, @NonNull HttpServletResponse response, @NonNull Object handler) throws Exception {
         HandlerMethod handlerMethod = (HandlerMethod) handler;
-        CheckCaptcha classRequirement = handlerMethod.getMethod().getDeclaringClass().getAnnotation(CheckCaptcha.class);
         CheckCaptcha methodRequirement = handlerMethod.getMethodAnnotation(CheckCaptcha.class);
-        if (classRequirement == null && methodRequirement == null) {
+        if (methodRequirement == null) {
             return true;
         }
         HttpSession httpSession = request.getSession();
