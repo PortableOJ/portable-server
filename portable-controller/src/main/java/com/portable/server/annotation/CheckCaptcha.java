@@ -12,7 +12,13 @@ import java.lang.annotation.Target;
 @Target({ElementType.METHOD})
 public @interface CheckCaptcha {
 
-    int value() default -1;
+    /**
+     * 间隔多少毫秒就需要检查
+     */
+    long value() default -1;
 
+    /**
+     * 相同的名字将会被同时记录
+     */
     String name() default "default";
 }

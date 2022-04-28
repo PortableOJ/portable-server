@@ -27,17 +27,22 @@ public class CaptchaInterceptor implements HandlerInterceptor {
             return true;
         }
         HttpSession httpSession = request.getSession();
-        String captchaAnswer = (String) httpSession.getAttribute(RequestSessionConstant.CAPTCHA);
-        String captchaValue = request.getHeader(RequestSessionConstant.CAPTCHA);
-        if (captchaAnswer == null || captchaValue == null) {
-            throw PortableException.of("A-00-002");
+        String lastRequestString = (String) httpSession.getAttribute(RequestSessionConstant.CAPTCHA_REQUEAR_PREFIX + methodRequirement.name());
+        boolean timeIn = lastRequestString != null && (System.currentTimeMillis() - Long.parseLong(lastRequestString)) < methodRequirement.value();
+        if (timeIn || methodRequirement.value() < 0) {
+            String captchaAnswer = (String) httpSession.getAttribute(RequestSessionConstant.CAPTCHA);
+            String captchaValue = request.getHeader(RequestSessionConstant.CAPTCHA);
+            if (captchaAnswer == null || captchaValue == null) {
+                throw PortableException.of("A-00-002");
+            }
+            captchaAnswer = captchaAnswer.toLowerCase();
+            captchaValue = captchaValue.toLowerCase();
+            httpSession.removeAttribute(RequestSessionConstant.CAPTCHA);
+            if (!Objects.equals(captchaAnswer, captchaValue)) {
+                throw PortableException.of("A-00-002");
+            }
         }
-        captchaAnswer = captchaAnswer.toLowerCase();
-        captchaValue = captchaValue.toLowerCase();
-        httpSession.removeAttribute(RequestSessionConstant.CAPTCHA);
-        if (Objects.equals(captchaAnswer, captchaValue)) {
-            return true;
-        }
-        throw PortableException.of("A-00-002");
+        httpSession.setAttribute(RequestSessionConstant.CAPTCHA_REQUEAR_PREFIX + methodRequirement.name(), System.currentTimeMillis());
+        return true;
     }
 }
