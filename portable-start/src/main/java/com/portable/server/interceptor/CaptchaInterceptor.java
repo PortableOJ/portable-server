@@ -30,6 +30,8 @@ public class CaptchaInterceptor implements HandlerInterceptor {
         String lastRequestString = (String) httpSession.getAttribute(RequestSessionConstant.CAPTCHA_REQUEAR_PREFIX + methodRequirement.name());
         boolean timeIn = lastRequestString != null && (System.currentTimeMillis() - Long.parseLong(lastRequestString)) < methodRequirement.value();
         if (timeIn || methodRequirement.value() < 0) {
+            // 当获取过之后，就应该移除掉
+            httpSession.removeAttribute(RequestSessionConstant.CAPTCHA);
             String captchaAnswer = (String) httpSession.getAttribute(RequestSessionConstant.CAPTCHA);
             String captchaValue = request.getHeader(RequestSessionConstant.CAPTCHA);
             if (captchaAnswer == null || captchaValue == null) {
@@ -37,7 +39,6 @@ public class CaptchaInterceptor implements HandlerInterceptor {
             }
             captchaAnswer = captchaAnswer.toLowerCase();
             captchaValue = captchaValue.toLowerCase();
-            httpSession.removeAttribute(RequestSessionConstant.CAPTCHA);
             if (!Objects.equals(captchaAnswer, captchaValue)) {
                 throw PortableException.of("A-00-002");
             }
