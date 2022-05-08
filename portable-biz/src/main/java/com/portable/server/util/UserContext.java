@@ -119,7 +119,7 @@ public class UserContext {
                     @Override
                     public UserContext load(@NonNull Long aLong) {
                         Optional<UserContext> optionalUserContext = staticRedisValueKit.get(USER_CONTEST_CACHE_PREFIX, aLong.toString(), UserContext.class);
-                        return optionalUserContext.orElse(getNullUser());
+                        return optionalUserContext.orElseGet(UserContext::getNullUser);
                     }
                 });
     }

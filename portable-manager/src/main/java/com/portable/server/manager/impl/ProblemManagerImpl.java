@@ -73,7 +73,7 @@ public class ProblemManagerImpl implements ProblemManager {
             return Optional.empty();
         }
         Problem problem = redisValueKit.get(REDIS_PREFIX, id, Problem.class)
-                .orElse(problemMapper.selectProblemById(id));
+                .orElseGet(() -> problemMapper.selectProblemById(id));
         if (Objects.nonNull(problem)) {
             redisValueKit.set(REDIS_PREFIX, id, problem, REDIS_TIME);
         }
