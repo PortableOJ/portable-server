@@ -35,6 +35,8 @@ public class UserContext {
     @Resource
     private RedisValueKit redisValueKit;
 
+    /// region 用户信息
+
     /**
      * 当前用户 id
      */
@@ -76,6 +78,15 @@ public class UserContext {
     private Map<Long, ContestVisitType> contestVisitPermissionMap;
 
     /**
+     * 用户上一次使用某个业务的统计器
+     */
+    private Map<String, Long> userCaptchaMap;
+
+    /// endregion
+
+    /// region 静态变量
+
+    /**
      * 当前登陆的用户信息
      */
     private static final ThreadLocal<UserContext> LOCAL;
@@ -110,6 +121,8 @@ public class UserContext {
      */
     private static final String USER_CONTEST_CACHE_PREFIX = "USER_CONTEST";
 
+    /// endregion
+
     static {
         LOCAL = ThreadLocal.withInitial(UserContext::new);
         USER_CACHE = CacheBuilder.newBuilder()
@@ -125,7 +138,7 @@ public class UserContext {
     }
 
     @PostConstruct
-    public void  init() {
+    public void init() {
         UserContext.staticRedisValueKit = this.redisValueKit;
     }
 
@@ -200,9 +213,10 @@ public class UserContext {
         userContext.setDataId(null);
         userContext.setType(null);
         userContext.setOrganization(null);
+        userContext.setContestId(null);
         userContext.setPermissionTypeSet(new HashSet<>());
         userContext.setContestVisitPermissionMap(new HashMap<>(0));
-        userContext.setContestId(null);
+        userContext.setUserCaptchaMap(new HashMap<>(0));
         return userContext;
     }
 
