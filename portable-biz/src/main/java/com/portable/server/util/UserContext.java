@@ -228,8 +228,4 @@ public class UserContext {
         contestVisitPermissionMap.put(contestId, contestVisitType);
         set(this);
     }
-
-    public void close() {
-        LOCAL.remove();
-    }
 }
