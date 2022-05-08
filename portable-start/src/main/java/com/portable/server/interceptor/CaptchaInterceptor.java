@@ -33,7 +33,8 @@ public class CaptchaInterceptor implements HandlerInterceptor {
         }
         UserContext userContext = UserContext.ctx();
         Long lastRequest = userContext.getUserCaptchaMap().get(methodRequirement.name());
-        boolean timeIn = lastRequest != null && (System.currentTimeMillis() - lastRequest) < methodRequirement.value();
+        Long curTime = System.currentTimeMillis();
+        boolean timeIn = lastRequest != null && (curTime - lastRequest) < methodRequirement.value();
         if (timeIn || methodRequirement.value() < 0) {
             String captchaValue = request.getHeader(RequestSessionConstant.CAPTCHA);
             if (captchaAnswer == null || captchaValue == null) {
@@ -43,6 +44,7 @@ public class CaptchaInterceptor implements HandlerInterceptor {
                 throw PortableException.of("A-00-002");
             }
         }
+        userContext.getUserCaptchaMap().put(methodRequirement.name(), curTime);
         return true;
     }
 }
