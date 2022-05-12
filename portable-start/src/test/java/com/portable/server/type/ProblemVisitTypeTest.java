@@ -2,8 +2,8 @@ package com.portable.server.type;
 
 import com.portable.server.model.contest.Contest;
 import com.portable.server.model.problem.Problem;
-import com.portable.server.util.test.MockedValueMaker;
-import com.portable.server.util.test.UserContextBuilder;
+import com.portable.server.test.MockedValueMaker;
+import com.portable.server.test.UserContextBuilder;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;

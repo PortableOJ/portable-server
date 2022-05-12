@@ -1,4 +1,4 @@
-package com.portable.server.service.impl;
+package com.portable.server.impl;
 
 import com.portable.server.encryption.BCryptEncoder;
 import com.portable.server.exception.PortableException;
@@ -17,13 +17,14 @@ import com.portable.server.model.response.user.NormalUserInfoResponse;
 import com.portable.server.model.user.BatchUserData;
 import com.portable.server.model.user.NormalUserData;
 import com.portable.server.model.user.User;
+import com.portable.server.service.impl.UserServiceImpl;
+import com.portable.server.test.MockedValueMaker;
 import com.portable.server.type.AccountType;
 import com.portable.server.type.BatchStatusType;
 import com.portable.server.type.OrganizationType;
 import com.portable.server.type.PermissionType;
 import com.portable.server.util.ImageUtils;
 import com.portable.server.util.UserContext;
-import com.portable.server.util.test.MockedValueMaker;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
