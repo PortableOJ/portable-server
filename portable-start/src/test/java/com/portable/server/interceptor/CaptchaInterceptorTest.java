@@ -202,4 +202,32 @@ class CaptchaInterceptorTest {
 
         Mockito.verify(request, Mockito.never()).getHeader(RequestSessionConstant.CAPTCHA);
     }
+
+    @Test
+    void testPreHandleWithInTime() throws Exception {
+        HttpServletRequest request = Mockito.mock(HttpServletRequest.class);
+        HttpSession httpSession = Mockito.mock(HttpSession.class);
+        Mockito.when(httpSession.getAttribute(RequestSessionConstant.CAPTCHA)).thenReturn("abc");
+        Mockito.when(request.getHeader(RequestSessionConstant.CAPTCHA)).thenReturn("ABC");
+        Mockito.when(request.getSession()).thenReturn(httpSession);
+
+        HttpServletResponse response = Mockito.mock(HttpServletResponse.class);
+
+        HandlerMethod handler = Mockito.mock(HandlerMethod.class);
+        CheckCaptcha methodRequirement = Mockito.mock(CheckCaptcha.class);
+        Mockito.when(methodRequirement.name()).thenReturn("default");
+        Mockito.when(methodRequirement.value()).thenReturn(10000L);
+        Mockito.when(handler.getMethodAnnotation(CheckCaptcha.class)).thenReturn(methodRequirement);
+
+        UserContext userContext = new UserContext();
+        userContext.setUserCaptchaMap(new HashMap<>(1));
+        userContext.getUserCaptchaMap().put("default", System.currentTimeMillis() - 1000L);
+        Mockito.when(UserContext.ctx()).thenReturn(userContext);
+
+        boolean retVal = captchaInterceptor.preHandle(request, response, handler);
+
+        Assertions.assertTrue(retVal);
+
+        Assertions.assertTrue(System.currentTimeMillis() - userContext.getUserCaptchaMap().get("default") < 1000);
+    }
 }
