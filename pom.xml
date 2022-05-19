@@ -27,7 +27,7 @@
     <properties>
         <java.version>1.8</java.version>
         <security.version>5.5.1</security.version>
-        <spring.version>2.6.4</spring.version>
+        <spring.version>2.6.7</spring.version>
         <lombok.version>1.18.20</lombok.version>
         <commons.version>2.5</commons.version>
         <guava.version>30.1.1-jre</guava.version>
@@ -101,6 +101,12 @@
             <dependency>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-starter-web</artifactId>
+                <version>${spring.version}</version>
+            </dependency>
+            <!-- spring AOP -->
+            <dependency>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-starter-aop</artifactId>
                 <version>${spring.version}</version>
             </dependency>
             <!--lombok-->
@@ -204,6 +210,7 @@
                 <artifactId>utils</artifactId>
                 <version>${ostermiller.version}</version>
             </dependency>
+            <!--@NotNull 注解等-->
             <dependency>
                 <groupId>org.jetbrains</groupId>
                 <artifactId>annotations</artifactId>
