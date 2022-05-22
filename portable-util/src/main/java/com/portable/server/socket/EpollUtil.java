@@ -11,7 +11,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.InetSocketAddress;
@@ -22,6 +21,7 @@ import java.nio.channels.Selector;
 import java.nio.channels.ServerSocketChannel;
 import java.nio.channels.SocketChannel;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 import java.util.Iterator;
 import java.util.Set;
 import java.util.concurrent.ExecutionException;
@@ -79,8 +79,7 @@ public class EpollUtil {
     public static void initEpollSocket(Integer port, EpollManager epollManager) {
         EpollUtil.epollManager = epollManager;
 
-        try {
-            ServerSocketChannel serverSocketChannel = ServerSocketChannel.open();
+        try (ServerSocketChannel serverSocketChannel = ServerSocketChannel.open()) {
             serverSocketChannel.bind(new InetSocketAddress(port));
             serverSocketChannel.configureBlocking(false);
             selector = Selector.open();
@@ -206,7 +205,7 @@ public class EpollUtil {
     }
 
     private static void writeFile(SocketChannel channel, File file) throws IOException {
-        try (InputStream inputStream = new FileInputStream(file)) {
+        try (InputStream inputStream = Files.newInputStream(file.toPath())) {
             int bytesRead;
             for (byte[] buffer = new byte[Constant.BUFFER_LEN]; (bytesRead = inputStream.read(buffer)) > 0; ) {
                 write(channel, buffer, bytesRead);
