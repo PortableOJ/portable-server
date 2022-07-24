@@ -1,4 +1,4 @@
-package com.portable.server.service.impl;
+package com.portable.server.impl;
 
 import com.portable.server.exception.PortableException;
 import com.portable.server.manager.impl.ProblemManagerImpl;
@@ -14,11 +14,12 @@ import com.portable.server.model.response.solution.SolutionListResponse;
 import com.portable.server.model.solution.Solution;
 import com.portable.server.model.solution.SolutionData;
 import com.portable.server.model.user.User;
+import com.portable.server.service.impl.SolutionServiceImpl;
+import com.portable.server.test.MockedValueMaker;
+import com.portable.server.test.UserContextBuilder;
 import com.portable.server.type.PermissionType;
 import com.portable.server.type.SolutionStatusType;
 import com.portable.server.type.SolutionType;
-import com.portable.server.util.test.MockedValueMaker;
-import com.portable.server.util.test.UserContextBuilder;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;

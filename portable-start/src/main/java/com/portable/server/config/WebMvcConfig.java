@@ -2,7 +2,6 @@ package com.portable.server.config;
 
 import com.portable.server.interceptor.CaptchaInterceptor;
 import com.portable.server.interceptor.NeedLoginInterceptor;
-import com.portable.server.interceptor.PermissionInterceptor;
 import com.portable.server.util.UserContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -30,18 +29,12 @@ public class WebMvcConfig implements WebMvcConfigurer {
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
         registry.addInterceptor(needLoginInterceptor()).addPathPatterns("/api/**");
-        registry.addInterceptor(permissionInterceptor()).addPathPatterns("/api/**");
         registry.addInterceptor(captchaInterceptor()).addPathPatterns("/api/**");
     }
 
     @Bean
     public NeedLoginInterceptor needLoginInterceptor() {
         return new NeedLoginInterceptor();
-    }
-
-    @Bean
-    public PermissionInterceptor permissionInterceptor() {
-        return new PermissionInterceptor();
     }
 
     @Bean

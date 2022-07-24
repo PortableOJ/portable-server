@@ -1,4 +1,4 @@
-package com.portable.server.util.test;
+package com.portable.server.test;
 
 import java.util.Date;
 import java.util.UUID;

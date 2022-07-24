@@ -49,19 +49,14 @@ public class NeedLoginInterceptor implements HandlerInterceptor {
         }
 
         HandlerMethod handlerMethod = (HandlerMethod) handler;
-        NeedLogin classRequirement = handlerMethod.getMethod().getDeclaringClass().getAnnotation(NeedLogin.class);
         NeedLogin methodRequirement = handlerMethod.getMethodAnnotation(NeedLogin.class);
-        if (!checkLogin(classRequirement) && !checkLogin(methodRequirement)) {
+        if (methodRequirement == null) {
             // 不需要登录
             return true;
-        }
-
-        if (isNormal == null) {
+        } else if (isNormal == null) {
             throw PortableException.of("A-02-001");
-        }
-
-        // 不可能是标准用户时
-        if (checkNormal(classRequirement) || checkNormal(methodRequirement)) {
+        } else if (methodRequirement.normal()) {
+            // 不可能是标准用户时
             throw PortableException.of("A-01-011");
         }
         return true;
@@ -71,25 +66,4 @@ public class NeedLoginInterceptor implements HandlerInterceptor {
     public void postHandle(@NonNull HttpServletRequest request, @NonNull HttpServletResponse response, @NonNull Object handler, ModelAndView modelAndView) {
         UserContext.remove();
     }
-
-    /**
-     * 需要登录则返回 true
-     *
-     * @param needLogin 是否需要登录的注解
-     * @return 是否需要登录
-     */
-    private Boolean checkLogin(NeedLogin needLogin) {
-        return needLogin != null && needLogin.value();
-    }
-
-    /**
-     * 需要登录为标准用户
-     *
-     * @param needLogin 是否需要登录的注解
-     * @return 是否需要登录为标准用户
-     */
-    private Boolean checkNormal(NeedLogin needLogin) {
-        return needLogin != null && needLogin.normal();
-    }
-
 }

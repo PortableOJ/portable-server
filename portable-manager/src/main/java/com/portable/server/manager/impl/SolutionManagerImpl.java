@@ -14,6 +14,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -72,11 +73,11 @@ public class SolutionManagerImpl implements SolutionManager {
 
     @Override
     public Optional<Solution> selectSolutionById(Long id) {
-        if (ObjectUtils.isNull(id)) {
+        if (Objects.isNull(id)) {
             return Optional.empty();
         }
         Solution solution = redisValueKit.get(REDIS_PREFIX, id, Solution.class).orElseGet(() -> solutionMapper.selectSolutionById(id));
-        if (ObjectUtils.isNotNull(solution)) {
+        if (Objects.nonNull(solution)) {
             redisValueKit.set(REDIS_PREFIX, id, solution, REDIS_TIME);
         }
         return Optional.ofNullable(solution);

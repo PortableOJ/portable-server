@@ -13,7 +13,6 @@ import com.portable.server.model.solution.Solution;
 import com.portable.server.support.ContestSupport;
 import com.portable.server.type.SolutionStatusType;
 import com.portable.server.type.SolutionType;
-import com.portable.server.util.ObjectUtils;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
@@ -23,6 +22,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
@@ -238,7 +238,7 @@ public class ContestSupportImpl implements ContestSupport {
                         contestRankItem.addSolution(solution, problemIndexMap.get(solution.getProblemId()), contest.getStartTime(), freezeTime);
                         return solution.getId();
                     }).min(Long::compareTo).orElse(null);
-            if (ObjectUtils.isNull(beforeId)) {
+            if (Objects.isNull(beforeId)) {
                 break;
             }
         }

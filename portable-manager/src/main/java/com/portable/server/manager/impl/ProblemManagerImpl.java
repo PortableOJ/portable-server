@@ -6,12 +6,12 @@ import com.portable.server.mapper.ProblemMapper;
 import com.portable.server.model.problem.Problem;
 import com.portable.server.type.ProblemAccessType;
 import com.portable.server.type.ProblemStatusType;
-import com.portable.server.util.ObjectUtils;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -30,7 +30,7 @@ public class ProblemManagerImpl implements ProblemManager {
     /**
      * redis 的 key 和过期时间
      */
-    private static final String REDIS_PREFIX = "SOLUTION_ID";
+    private static final String REDIS_PREFIX = "PROBLEM_ID";
     private static final Long REDIS_TIME = 30L;
 
     @Override
@@ -69,12 +69,12 @@ public class ProblemManagerImpl implements ProblemManager {
 
     @Override
     public @NotNull Optional<Problem> getProblemById(Long id) {
-        if (ObjectUtils.isNull(id)) {
+        if (Objects.isNull(id)) {
             return Optional.empty();
         }
         Problem problem = redisValueKit.get(REDIS_PREFIX, id, Problem.class)
-                .orElse(problemMapper.selectProblemById(id));
-        if (ObjectUtils.isNotNull(problem)) {
+                .orElseGet(() -> problemMapper.selectProblemById(id));
+        if (Objects.nonNull(problem)) {
             redisValueKit.set(REDIS_PREFIX, id, problem, REDIS_TIME);
         }
         return Optional.ofNullable(problem);
@@ -87,7 +87,7 @@ public class ProblemManagerImpl implements ProblemManager {
                     Optional<Problem> problem = getProblemById(aLong);
                     return !problem.isPresent() ? aLong : null;
                 })
-                .filter(ObjectUtils::isNotNull)
+                .filter(Objects::nonNull)
                 .collect(Collectors.toList());
     }
 

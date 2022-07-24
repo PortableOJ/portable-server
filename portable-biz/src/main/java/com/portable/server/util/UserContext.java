@@ -20,6 +20,7 @@ import javax.annotation.Resource;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.ExecutionException;
@@ -29,10 +30,12 @@ import java.util.concurrent.TimeUnit;
  * @author shiroha
  */
 @Data
-public class UserContext implements AutoCloseable {
+public class UserContext {
 
     @Resource
     private RedisValueKit redisValueKit;
+
+    /// region 用户信息
 
     /**
      * 当前用户 id
@@ -75,6 +78,15 @@ public class UserContext implements AutoCloseable {
     private Map<Long, ContestVisitType> contestVisitPermissionMap;
 
     /**
+     * 用户上一次使用某个业务的统计器
+     */
+    private Map<String, Long> userCaptchaMap;
+
+    /// endregion
+
+    /// region 静态变量
+
+    /**
      * 当前登陆的用户信息
      */
     private static final ThreadLocal<UserContext> LOCAL;
@@ -109,6 +121,8 @@ public class UserContext implements AutoCloseable {
      */
     private static final String USER_CONTEST_CACHE_PREFIX = "USER_CONTEST";
 
+    /// endregion
+
     static {
         LOCAL = ThreadLocal.withInitial(UserContext::new);
         USER_CACHE = CacheBuilder.newBuilder()
@@ -118,13 +132,13 @@ public class UserContext implements AutoCloseable {
                     @Override
                     public UserContext load(@NonNull Long aLong) {
                         Optional<UserContext> optionalUserContext = staticRedisValueKit.get(USER_CONTEST_CACHE_PREFIX, aLong.toString(), UserContext.class);
-                        return optionalUserContext.orElse(getNullUser());
+                        return optionalUserContext.orElseGet(UserContext::getNullUser);
                     }
                 });
     }
 
     @PostConstruct
-    public void  init() {
+    public void init() {
         UserContext.staticRedisValueKit = this.redisValueKit;
     }
 
@@ -136,7 +150,7 @@ public class UserContext implements AutoCloseable {
         try {
             UserContext userContext = USER_CACHE.get(userId);
             LOCAL.set(userContext);
-            return ObjectUtils.isNotNull(userContext.getId());
+            return Objects.nonNull(userContext.getId());
         } catch (ExecutionException ignored) {
         }
         return false;
@@ -151,7 +165,7 @@ public class UserContext implements AutoCloseable {
     }
 
     public static void set(User user) throws PortableException {
-        if (ObjectUtils.isNull(user)) {
+        if (Objects.isNull(user)) {
             throw PortableException.of("A-02-001");
         }
 
@@ -199,9 +213,10 @@ public class UserContext implements AutoCloseable {
         userContext.setDataId(null);
         userContext.setType(null);
         userContext.setOrganization(null);
+        userContext.setContestId(null);
         userContext.setPermissionTypeSet(new HashSet<>());
         userContext.setContestVisitPermissionMap(new HashMap<>(0));
-        userContext.setContestId(null);
+        userContext.setUserCaptchaMap(new HashMap<>(0));
         return userContext;
     }
 
@@ -212,10 +227,5 @@ public class UserContext implements AutoCloseable {
     public void addContestVisit(Long contestId, ContestVisitType contestVisitType) {
         contestVisitPermissionMap.put(contestId, contestVisitType);
         set(this);
-    }
-
-    @Override
-    public void close() {
-        LOCAL.remove();
     }
 }

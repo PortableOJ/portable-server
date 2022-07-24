@@ -1,12 +1,13 @@
-package com.portable.server.service.impl;
+package com.portable.server.impl;
 
 import com.portable.server.exception.PortableException;
 import com.portable.server.model.ServiceVerifyCode;
 import com.portable.server.model.judge.entity.JudgeContainer;
 import com.portable.server.model.judge.entity.UpdateJudgeContainer;
+import com.portable.server.service.impl.JudgeServiceImpl;
 import com.portable.server.support.impl.JudgeSupportImpl;
+import com.portable.server.test.MockedValueMaker;
 import com.portable.server.type.SolutionStatusType;
-import com.portable.server.util.test.MockedValueMaker;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;

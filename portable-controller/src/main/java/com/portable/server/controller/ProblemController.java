@@ -1,5 +1,6 @@
 package com.portable.server.controller;
 
+import com.portable.server.annotation.CheckCaptcha;
 import com.portable.server.annotation.NeedLogin;
 import com.portable.server.annotation.PermissionRequirement;
 import com.portable.server.exception.PortableException;
@@ -288,6 +289,7 @@ public class ProblemController {
 
     @NeedLogin(normal = true)
     @PostMapping("/submit")
+    @CheckCaptcha(value = 60000, name = "submit")
     public Response<Long> submit(@Validated @RequestBody SubmitSolutionRequest submitSolutionRequest) throws PortableException {
         return Response.ofOk(problemService.submit(submitSolutionRequest));
     }

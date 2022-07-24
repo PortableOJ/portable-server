@@ -7,11 +7,9 @@ import com.portable.server.constant.Constant;
 import com.portable.server.socket.model.AbstractEpollResponse;
 import com.portable.server.socket.model.BufferReader;
 import lombok.NonNull;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.InetSocketAddress;
@@ -22,13 +20,19 @@ import java.nio.channels.Selector;
 import java.nio.channels.ServerSocketChannel;
 import java.nio.channels.SocketChannel;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 import java.util.Iterator;
 import java.util.Set;
+import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 
 /**
  * @author shiroha
  */
+@Slf4j
 public class EpollUtil {
 
     /**
@@ -56,10 +60,7 @@ public class EpollUtil {
      */
     private static final Long DDOS_CACHE_SIZE = 100L;
 
-    /**
-     * 日志
-     */
-    private static final Logger LOGGER;
+    public static ThreadPoolExecutor threadPoolExecutor;
 
     static {
         RETURN_BUFFER.put(Constant.RETURN_BYTE);
@@ -73,14 +74,16 @@ public class EpollUtil {
                         return 0;
                     }
                 });
-        LOGGER = LoggerFactory.getLogger(EpollUtil.class);
     }
 
-    public static void initEpollSocket(Integer port, EpollManager epollManager) {
+    public static void initEpollSocket(Integer port, EpollManager epollManager, Integer threadPoolSize) {
         EpollUtil.epollManager = epollManager;
+        threadPoolExecutor = new ThreadPoolExecutor(threadPoolSize, threadPoolSize,
+                100, TimeUnit.MINUTES,
+                new ArrayBlockingQueue<>(10),
+                Executors.defaultThreadFactory(), new ThreadPoolExecutor.CallerRunsPolicy());
 
-        try {
-            ServerSocketChannel serverSocketChannel = ServerSocketChannel.open();
+        try (ServerSocketChannel serverSocketChannel = ServerSocketChannel.open()) {
             serverSocketChannel.bind(new InetSocketAddress(port));
             serverSocketChannel.configureBlocking(false);
             selector = Selector.open();
@@ -144,7 +147,7 @@ public class EpollUtil {
                 if (socketAddress instanceof InetSocketAddress) {
                     String ddosHost = ((InetSocketAddress) socketAddress).getHostName();
                     DDOS_IP.put(ddosHost, 1);
-                    LOGGER.error("非法的连接, 来自: {}", ddosHost);
+                    log.error("非法的连接, 来自: {}", ddosHost);
                 }
                 client.close();
                 key.cancel();
@@ -206,7 +209,7 @@ public class EpollUtil {
     }
 
     private static void writeFile(SocketChannel channel, File file) throws IOException {
-        try (InputStream inputStream = new FileInputStream(file)) {
+        try (InputStream inputStream = Files.newInputStream(file.toPath())) {
             int bytesRead;
             for (byte[] buffer = new byte[Constant.BUFFER_LEN]; (bytesRead = inputStream.read(buffer)) > 0; ) {
                 write(channel, buffer, bytesRead);

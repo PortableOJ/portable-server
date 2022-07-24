@@ -5,6 +5,7 @@ import com.portable.server.socket.annotation.EpollMethod;
 import com.portable.server.socket.annotation.EpollParam;
 import com.portable.server.socket.model.MethodDescribe;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Component;
 
@@ -37,6 +38,12 @@ public class EpollManager {
     @Resource
     private ApplicationContext applicationContext;
 
+    @Value("${portable.socket.port}")
+    private Integer socketPort;
+
+    @Value("${portable.socket.thread.size}")
+    private Integer socketThreadSize;
+
     static {
         CLASS_SET = new HashSet<>();
         ADDRESS_THREAD_LOCAL = new ThreadLocal<>();
@@ -52,7 +59,7 @@ public class EpollManager {
         closeMethod = new ArrayList<>();
         if (runner == null) {
             //noinspection AlibabaAvoidManuallyCreateThread
-            runner = new Thread(() -> EpollUtil.initEpollSocket(9090, this));
+            runner = new Thread(() -> EpollUtil.initEpollSocket(socketPort, this, socketThreadSize));
             runner.start();
         }
         clearClass();
@@ -263,4 +270,5 @@ public class EpollManager {
         paramMap.put(key, value);
         return ++pos;
     }
+
 }

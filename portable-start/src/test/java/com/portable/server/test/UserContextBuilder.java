@@ -1,4 +1,4 @@
-package com.portable.server.util.test;
+package com.portable.server.test;
 
 import com.portable.server.type.AccountType;
 import com.portable.server.type.ContestVisitType;

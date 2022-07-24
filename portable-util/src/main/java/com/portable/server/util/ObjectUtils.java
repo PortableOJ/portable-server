@@ -7,14 +7,6 @@ import java.util.Comparator;
  */
 public class ObjectUtils {
 
-    public static Boolean isNull(Object o) {
-        return o == null;
-    }
-
-    public static Boolean isNotNull(Object o) {
-        return o != null;
-    }
-
     public static <T> T max(T a, T b, Comparator<? super T> c) {
         if (a == null) {
             return b;
