@@ -30,7 +30,7 @@ public class ProblemManagerImpl implements ProblemManager {
     /**
      * redis 的 key 和过期时间
      */
-    private static final String REDIS_PREFIX = "SOLUTION_ID";
+    private static final String REDIS_PREFIX = "PROBLEM_ID";
     private static final Long REDIS_TIME = 30L;
 
     @Override
