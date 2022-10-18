@@ -1,15 +1,11 @@
 package com.portable.server.type;
 
+import java.io.InputStream;
+
 import com.portable.server.exception.ExceptionTextType;
 import com.portable.server.exception.PortableException;
-import lombok.Getter;
-import org.springframework.core.io.ClassPathResource;
-import org.springframework.util.ResourceUtils;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
+import lombok.Getter;
 
 /**
  * 使用的 Judge 模式
@@ -38,7 +34,7 @@ public enum JudgeCodeType implements ExceptionTextType {
         this.text = text;
     }
 
-    public InputStream getCode() throws PortableException {
+    public InputStream getCode() {
         if (this == DIY) {
             throw PortableException.of("S-01-006");
         }

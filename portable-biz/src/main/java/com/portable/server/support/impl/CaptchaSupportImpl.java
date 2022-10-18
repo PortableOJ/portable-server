@@ -1,16 +1,5 @@
 package com.portable.server.support.impl;
 
-import com.portable.server.exception.PortableException;
-import com.portable.server.kit.FileKit;
-import com.portable.server.support.CaptchaSupport;
-import com.portable.server.util.ImageUtils;
-import com.portable.server.util.StreamUtils;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.scheduling.annotation.Scheduled;
-import org.springframework.stereotype.Component;
-
-import javax.annotation.PostConstruct;
-import javax.annotation.Resource;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -18,6 +7,19 @@ import java.io.OutputStream;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
+
+import javax.annotation.PostConstruct;
+import javax.annotation.Resource;
+
+import com.portable.server.exception.PortableException;
+import com.portable.server.kit.FileKit;
+import com.portable.server.support.CaptchaSupport;
+import com.portable.server.util.ImageUtils;
+import com.portable.server.util.StreamUtils;
+
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.stereotype.Component;
 
 /**
  * @author shiroha
@@ -59,7 +61,7 @@ public class CaptchaSupportImpl implements CaptchaSupport {
     private Integer updateCaptcha;
 
     @PostConstruct
-    public void init() throws PortableException {
+    public void init() {
         fileKit.createDirIfNotExist(CAPTCHA_PATH);
         List<File> captchaHistoryList = fileKit.getDirectoryFile(CAPTCHA_PATH);
         cacheCaptcha = captchaHistoryList.stream()
@@ -74,7 +76,7 @@ public class CaptchaSupportImpl implements CaptchaSupport {
     }
 
     @Override
-    public String getCaptcha(OutputStream outputStream) throws PortableException {
+    public String getCaptcha(OutputStream outputStream) {
         Integer pos;
         synchronized (this) {
             pos = curPoint;
@@ -101,7 +103,7 @@ public class CaptchaSupportImpl implements CaptchaSupport {
     }
 
     @Scheduled(fixedDelayString = "${portable.captcha.update}")
-    public void reduceImage() throws PortableException {
+    public void reduceImage() {
         OutputStream outputStream = fileKit.saveFileOrOverwrite(getCaptchaPath(CAPTCHA_TMP_NAME));
         String name = ImageUtils.createCaptcha(outputStream);
         if (!fileKit.moveFile(getCaptchaPath(CAPTCHA_TMP_NAME), getCaptchaPath(name))) {

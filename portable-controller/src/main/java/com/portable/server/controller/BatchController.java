@@ -1,8 +1,9 @@
 package com.portable.server.controller;
 
+import javax.annotation.Resource;
+
 import com.portable.server.annotation.NeedLogin;
 import com.portable.server.annotation.PermissionRequirement;
-import com.portable.server.exception.PortableException;
 import com.portable.server.model.request.PageRequest;
 import com.portable.server.model.request.batch.BatchIpLockUpdateRequest;
 import com.portable.server.model.request.batch.BatchRequest;
@@ -13,14 +14,13 @@ import com.portable.server.model.response.batch.BatchListResponse;
 import com.portable.server.model.response.batch.CreateBatchResponse;
 import com.portable.server.service.BatchService;
 import com.portable.server.type.PermissionType;
+
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-
-import javax.annotation.Resource;
 
 /**
  * @author shiroha
@@ -48,14 +48,14 @@ public class BatchController {
     @NeedLogin
     @PostMapping("/new")
     @PermissionRequirement(PermissionType.CREATE_AND_EDIT_BATCH)
-    public Response<CreateBatchResponse> create(@Validated @RequestBody BatchRequest batchRequest) throws PortableException {
+    public Response<CreateBatchResponse> create(@Validated @RequestBody BatchRequest batchRequest) {
         return Response.ofOk(batchService.create(batchRequest));
     }
 
     @NeedLogin
     @PostMapping("/updateStatus")
     @PermissionRequirement(PermissionType.CREATE_AND_EDIT_BATCH)
-    public Response<Void> updateStatus(@Validated @RequestBody BatchStatusUpdateRequest request) throws PortableException {
+    public Response<Void> updateStatus(@Validated @RequestBody BatchStatusUpdateRequest request) {
         batchService.changeStatus(request.getId(), request.getNewStatus());
         return Response.ofOk();
     }
@@ -63,14 +63,14 @@ public class BatchController {
     @NeedLogin
     @GetMapping("/check")
     @PermissionRequirement(PermissionType.CREATE_AND_EDIT_BATCH)
-    public Response<BatchListResponse> getBatch(Long id) throws PortableException {
+    public Response<BatchListResponse> getBatch(Long id) {
         return Response.ofOk(batchService.getBatch(id));
     }
 
     @NeedLogin
     @PostMapping("/updateIpLock")
     @PermissionRequirement(PermissionType.CREATE_AND_EDIT_BATCH)
-    public Response<Void> updateIpLock(@Validated @RequestBody BatchIpLockUpdateRequest request) throws PortableException {
+    public Response<Void> updateIpLock(@Validated @RequestBody BatchIpLockUpdateRequest request) {
         batchService.changeBatchIpLock(request.getId(), request.getIpLock());
         return Response.ofOk();
     }

@@ -1,5 +1,7 @@
 package com.portable.server.service;
 
+import java.io.InputStream;
+
 import com.portable.server.exception.PortableException;
 import com.portable.server.model.request.user.LoginRequest;
 import com.portable.server.model.request.user.RegisterRequest;
@@ -9,8 +11,6 @@ import com.portable.server.model.response.user.BatchAdminUserInfoResponse;
 import com.portable.server.model.response.user.NormalUserInfoResponse;
 import com.portable.server.type.OrganizationType;
 import com.portable.server.type.PermissionType;
-
-import java.io.InputStream;
 
 /**
  * 用户服务模块
@@ -27,7 +27,7 @@ public interface UserService {
      * @return 用户的信息
      * @throws PortableException 遇到意外情况抛出错误
      */
-    BaseUserInfoResponse login(LoginRequest loginRequest, String ip) throws PortableException;
+    BaseUserInfoResponse login(LoginRequest loginRequest, String ip);
 
     /**
      * 注册普通用户
@@ -36,7 +36,7 @@ public interface UserService {
      * @return 注册成功的用户信息
      * @throws PortableException 遇到意外情况抛出错误
      */
-    NormalUserInfoResponse register(RegisterRequest registerRequest) throws PortableException;
+    NormalUserInfoResponse register(RegisterRequest registerRequest);
 
     /**
      * 获取当前登录的用户
@@ -44,7 +44,7 @@ public interface UserService {
      * @return 用户信息
      * @throws PortableException 不存在则抛出错误
      */
-    BaseUserInfoResponse check() throws PortableException;
+    BaseUserInfoResponse check();
 
     /**
      * 根据用户的 handle 获取用户的信息
@@ -53,7 +53,7 @@ public interface UserService {
      * @return 用户信息
      * @throws PortableException 不存在则抛出错误
      */
-    BaseUserInfoResponse getUserInfo(String handle) throws PortableException;
+    BaseUserInfoResponse getUserInfo(String handle);
 
     /**
      * 根据用户的 handle 获取批量用户的管理员级别信息
@@ -62,7 +62,7 @@ public interface UserService {
      * @return 用户信息
      * @throws PortableException 不存在则抛出错误
      */
-    BatchAdminUserInfoResponse getBatchUserInfo(String handle) throws PortableException;
+    BatchAdminUserInfoResponse getBatchUserInfo(String handle);
 
     /**
      * 修改用户所在组织
@@ -71,7 +71,7 @@ public interface UserService {
      * @param newOrganization 被修改至的组织
      * @throws PortableException 遇到意外情况抛出错误
      */
-    void changeOrganization(String targetHandle, OrganizationType newOrganization) throws PortableException;
+    void changeOrganization(String targetHandle, OrganizationType newOrganization);
 
     /**
      * 添加权限
@@ -80,7 +80,7 @@ public interface UserService {
      * @param newPermission 新增加的权限
      * @throws PortableException 遇到意外情况抛出错误
      */
-    void addPermission(String targetHandle, PermissionType newPermission) throws PortableException;
+    void addPermission(String targetHandle, PermissionType newPermission);
 
     /**
      * 移除权限
@@ -89,7 +89,7 @@ public interface UserService {
      * @param permission   移除的权限
      * @throws PortableException 遇到意外情况抛出错误
      */
-    void removePermission(String targetHandle, PermissionType permission) throws PortableException;
+    void removePermission(String targetHandle, PermissionType permission);
 
     /**
      * 上传头像
@@ -110,7 +110,7 @@ public interface UserService {
                         Integer left,
                         Integer top,
                         Integer width,
-                        Integer height) throws PortableException;
+                        Integer height);
 
     /**
      * 更新用户的密码
@@ -118,7 +118,7 @@ public interface UserService {
      * @param updatePasswordRequest 密码
      * @throws PortableException 密码错误则抛出
      */
-    void updatePassword(UpdatePasswordRequest updatePasswordRequest) throws PortableException;
+    void updatePassword(UpdatePasswordRequest updatePasswordRequest);
 
     /**
      * 重制其他用户的密码
@@ -127,7 +127,7 @@ public interface UserService {
      * @param newPassword 用户密码
      * @throws PortableException 密码错误则抛出
      */
-    void resetPassword(String handle, String newPassword) throws PortableException;
+    void resetPassword(String handle, String newPassword);
 
     /**
      * 清理批量用户的 IP 记录（这会导致之前的 IP 记录被清理）
@@ -135,5 +135,5 @@ public interface UserService {
      * @param handle 用户的 handle
      * @throws PortableException 用户不是批量用户时抛出
      */
-    void clearBatchUserIpList(String handle) throws PortableException;
+    void clearBatchUserIpList(String handle);
 }

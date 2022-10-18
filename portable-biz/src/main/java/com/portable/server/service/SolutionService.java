@@ -19,7 +19,7 @@ public interface SolutionService {
      * @return 公共提交列表
      * @throws PortableException 分页时若没有提供正确的用户昵称的时候则抛出错误
      */
-    PageResponse<SolutionListResponse, Void> getPublicStatus(PageRequest<SolutionListQueryRequest> pageRequest) throws PortableException;
+    PageResponse<SolutionListResponse, Void> getPublicStatus(PageRequest<SolutionListQueryRequest> pageRequest);
 
     /**
      * 获取公共提交中的某次详细信息
@@ -27,5 +27,5 @@ public interface SolutionService {
      * @return 提交的内容
      * @throws PortableException 出现非法访问或不存在此提交则抛出错误
      */
-    SolutionDetailResponse getSolution(Long id) throws PortableException;
+    SolutionDetailResponse getSolution(Long id);
 }

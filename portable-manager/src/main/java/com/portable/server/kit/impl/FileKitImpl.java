@@ -1,12 +1,5 @@
 package com.portable.server.kit.impl;
 
-import com.portable.server.exception.PortableException;
-import com.portable.server.kit.FileKit;
-import com.portable.server.util.StreamUtils;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Component;
-
-import javax.annotation.PostConstruct;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -18,6 +11,15 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import javax.annotation.PostConstruct;
+
+import com.portable.server.exception.PortableException;
+import com.portable.server.kit.FileKit;
+import com.portable.server.util.StreamUtils;
+
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
+
 /**
  * @author shiroha
  */
@@ -28,7 +30,7 @@ public class FileKitImpl implements FileKit {
     private String homeDir;
 
     @PostConstruct
-    private void init() throws PortableException {
+    private void init() {
         File file = new File(homeDir);
         if (!file.exists() && !file.mkdirs()) {
             throw PortableException.of("S-04-001");
@@ -36,7 +38,7 @@ public class FileKitImpl implements FileKit {
     }
 
     @Override
-    public void createDirIfNotExist(String dir) throws PortableException {
+    public void createDirIfNotExist(String dir) {
         File file = getFile(dir);
         if (!file.exists() && !file.mkdirs()) {
             throw PortableException.of("S-04-001");
@@ -44,7 +46,7 @@ public class FileKitImpl implements FileKit {
     }
 
     @Override
-    public void saveFileOrOverwrite(String filePath, InputStream inputStream) throws PortableException {
+    public void saveFileOrOverwrite(String filePath, InputStream inputStream) {
         try {
             File file = getFile(filePath);
             if (!file.exists() && !file.createNewFile()) {
@@ -58,7 +60,7 @@ public class FileKitImpl implements FileKit {
     }
 
     @Override
-    public OutputStream saveFileOrOverwrite(String filePath) throws PortableException {
+    public OutputStream saveFileOrOverwrite(String filePath) {
         try {
             File file = getFile(filePath);
             if (!file.exists() && !file.createNewFile()) {
@@ -71,7 +73,7 @@ public class FileKitImpl implements FileKit {
     }
 
     @Override
-    public void saveFileOrOverwrite(String filePath, byte[] inputStream) throws PortableException {
+    public void saveFileOrOverwrite(String filePath, byte[] inputStream) {
         try {
             File file = getFile(filePath);
             if (!file.exists() && !file.createNewFile()) {
@@ -85,7 +87,7 @@ public class FileKitImpl implements FileKit {
     }
 
     @Override
-    public void appendFile(String filePath, byte[] inputStream) throws PortableException {
+    public void appendFile(String filePath, byte[] inputStream) {
         try {
             File file = getFile(filePath);
             if (!file.exists()) {
@@ -99,7 +101,7 @@ public class FileKitImpl implements FileKit {
     }
 
     @Override
-    public void deleteFileIfExist(String filePath) throws PortableException {
+    public void deleteFileIfExist(String filePath) {
         File file = getFile(filePath);
         if (file.exists() && !file.delete()) {
             throw PortableException.of("S-04-007", filePath);
@@ -107,7 +109,7 @@ public class FileKitImpl implements FileKit {
     }
 
     @Override
-    public InputStream getFileInput(String filePath) throws PortableException {
+    public InputStream getFileInput(String filePath) {
         try {
             return new FileInputStream(getFile(filePath));
         } catch (FileNotFoundException e) {
@@ -116,7 +118,7 @@ public class FileKitImpl implements FileKit {
     }
 
     @Override
-    public List<File> getDirectoryFile(String filePath) throws PortableException {
+    public List<File> getDirectoryFile(String filePath) {
         File[] files = getFile(filePath).listFiles();
         if (files == null) {
             throw PortableException.of("S-04-009", filePath);

@@ -3,6 +3,7 @@ package com.portable.server.manager;
 import com.portable.server.exception.PortableException;
 import com.portable.server.model.problem.ProblemData;
 import com.portable.server.model.solution.SolutionData;
+
 import org.jetbrains.annotations.NotNull;
 
 /**
@@ -26,7 +27,7 @@ public interface SolutionDataManager {
      * @throws PortableException 不存在此提交时抛出错误
      */
     @NotNull
-    SolutionData getSolutionData(String dataId) throws PortableException;
+    SolutionData getSolutionData(String dataId);
 
     /**
      * 新增一个提交内容

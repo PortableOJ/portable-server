@@ -1,8 +1,17 @@
 package com.portable.server.util;
 
-import com.google.common.cache.CacheBuilder;
-import com.google.common.cache.CacheLoader;
-import com.google.common.cache.LoadingCache;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.Set;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
+
+import javax.annotation.PostConstruct;
+import javax.annotation.Resource;
+
 import com.portable.server.exception.PortableException;
 import com.portable.server.kit.RedisValueKit;
 import com.portable.server.model.batch.Batch;
@@ -12,19 +21,12 @@ import com.portable.server.type.AccountType;
 import com.portable.server.type.ContestVisitType;
 import com.portable.server.type.OrganizationType;
 import com.portable.server.type.PermissionType;
+
+import com.google.common.cache.CacheBuilder;
+import com.google.common.cache.CacheLoader;
+import com.google.common.cache.LoadingCache;
 import lombok.Data;
 import lombok.NonNull;
-
-import javax.annotation.PostConstruct;
-import javax.annotation.Resource;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.Set;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.TimeUnit;
 
 /**
  * @author shiroha
@@ -164,7 +166,7 @@ public class UserContext {
         }
     }
 
-    public static void set(User user) throws PortableException {
+    public static void set(User user) {
         if (Objects.isNull(user)) {
             throw PortableException.of("A-02-001");
         }
@@ -177,7 +179,7 @@ public class UserContext {
         set(userContext);
     }
 
-    public static void set(NormalUserData normalUserData) throws PortableException {
+    public static void set(NormalUserData normalUserData) {
         if (normalUserData == null) {
             throw PortableException.of("A-02-001");
         }
@@ -188,7 +190,7 @@ public class UserContext {
         set(userContext);
     }
 
-    public static void set(Batch batch) throws PortableException {
+    public static void set(Batch batch) {
         if (batch == null) {
             throw PortableException.of("A-02-001");
         }

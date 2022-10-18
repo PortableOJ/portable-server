@@ -1,7 +1,10 @@
 package com.portable.server.controller;
 
+import javax.annotation.Resource;
+import javax.validation.constraints.Min;
+import javax.validation.constraints.NotNull;
+
 import com.portable.server.annotation.NeedLogin;
-import com.portable.server.exception.PortableException;
 import com.portable.server.model.request.PageRequest;
 import com.portable.server.model.request.solution.SolutionListQueryRequest;
 import com.portable.server.model.response.PageResponse;
@@ -10,14 +13,11 @@ import com.portable.server.model.response.solution.SolutionDetailResponse;
 import com.portable.server.model.response.solution.SolutionListResponse;
 import com.portable.server.service.SolutionService;
 import com.portable.server.type.SolutionStatusType;
+
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-
-import javax.annotation.Resource;
-import javax.validation.constraints.Min;
-import javax.validation.constraints.NotNull;
 
 /**
  * @author shiroha
@@ -37,7 +37,7 @@ public class SolutionController {
                                                                                     Long problemId,
                                                                                     Long beforeId,
                                                                                     Long afterId,
-                                                                                    SolutionStatusType statusType) throws PortableException {
+                                                                                    SolutionStatusType statusType) {
         PageRequest<SolutionListQueryRequest> pageRequest = PageRequest.<SolutionListQueryRequest>builder()
                 .pageNum(pageNum)
                 .pageSize(pageSize)
@@ -52,7 +52,7 @@ public class SolutionController {
 
     @NeedLogin(normal = true)
     @GetMapping("/getSolution")
-    public Response<SolutionDetailResponse> getSolution(@NotNull(message = "A-05-001") @Min(value = 1, message = "A-05-001") Long id) throws PortableException {
+    public Response<SolutionDetailResponse> getSolution(@NotNull(message = "A-05-001") @Min(value = 1, message = "A-05-001") Long id) {
         return Response.ofOk(solutionService.getSolution(id));
     }
 }

@@ -1,10 +1,10 @@
 package com.portable.server.service;
 
-import com.portable.server.exception.PortableException;
-import com.portable.server.type.FileStoreType;
-
 import java.io.InputStream;
 import java.io.OutputStream;
+
+import com.portable.server.exception.PortableException;
+import com.portable.server.type.FileStoreType;
 
 /**
  * @author shiroha
@@ -19,7 +19,7 @@ public interface FileService {
      * @return 图片的 id
      * @throws PortableException 类型不匹配则抛出
      */
-    String uploadImage(InputStream inputStream, String name, String contentType) throws PortableException;
+    String uploadImage(InputStream inputStream, String name, String contentType);
 
     /**
      * 获取文件
@@ -29,5 +29,5 @@ public interface FileService {
      * @return 文件类型
      * @throws PortableException 类型不匹配则抛出
      */
-    String get(String id, FileStoreType type, OutputStream outputStream) throws PortableException;
+    String get(String id, FileStoreType type, OutputStream outputStream);
 }

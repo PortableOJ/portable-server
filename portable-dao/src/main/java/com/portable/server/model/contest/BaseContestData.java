@@ -1,18 +1,19 @@
 package com.portable.server.model.contest;
 
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
+
 import com.portable.server.exception.PortableException;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
 import org.springframework.data.annotation.Id;
-
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 
 /**
  * @author shiroha
@@ -101,7 +102,7 @@ public abstract class BaseContestData {
                 .collect(Collectors.toMap(i -> problemList.get(i).getProblemId(), i -> i));
     }
 
-    public ContestProblemData atProblem(Integer index, Long contestId) throws PortableException {
+    public ContestProblemData atProblem(Integer index, Long contestId) {
         if (index < 0 || index >= problemList.size()) {
             throw PortableException.of("A-08-018", contestId, index);
         }

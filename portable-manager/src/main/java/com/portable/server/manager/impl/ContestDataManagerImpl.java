@@ -1,5 +1,11 @@
 package com.portable.server.manager.impl;
 
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Optional;
+
+import javax.annotation.Resource;
+
 import com.portable.server.exception.PortableException;
 import com.portable.server.manager.ContestDataManager;
 import com.portable.server.model.contest.BaseContestData;
@@ -9,12 +15,8 @@ import com.portable.server.model.contest.PrivateContestData;
 import com.portable.server.model.contest.PublicContestData;
 import com.portable.server.repo.ContestDataRepo;
 import com.portable.server.type.ContestAccessType;
-import org.springframework.stereotype.Component;
 
-import javax.annotation.Resource;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.Optional;
+import org.springframework.stereotype.Component;
 
 /**
  * @author shiroha
@@ -26,7 +28,7 @@ public class ContestDataManagerImpl implements ContestDataManager {
     private ContestDataRepo contestDataRepo;
 
     @Override
-    public BaseContestData newContestData(ContestAccessType accessType) throws PortableException {
+    public BaseContestData newContestData(ContestAccessType accessType) {
         switch (accessType) {
             case PUBLIC:
                 return PublicContestData.builder()
@@ -69,7 +71,7 @@ public class ContestDataManagerImpl implements ContestDataManager {
     }
 
     @Override
-    public BaseContestData getBaseContestDataById(String datId, ContestAccessType accessType) throws PortableException {
+    public BaseContestData getBaseContestDataById(String datId, ContestAccessType accessType) {
         switch (accessType) {
             case PUBLIC:
                 return getPublicContestDataById(datId);
@@ -85,22 +87,22 @@ public class ContestDataManagerImpl implements ContestDataManager {
     }
 
     @Override
-    public PublicContestData getPublicContestDataById(String datId) throws PortableException {
+    public PublicContestData getPublicContestDataById(String datId) {
         return Optional.ofNullable(contestDataRepo.getPublicContestDataById(datId)).orElseThrow(PortableException.from("S-07-002"));
     }
 
     @Override
-    public PasswordContestData getPasswordContestDataById(String datId) throws PortableException {
+    public PasswordContestData getPasswordContestDataById(String datId) {
         return Optional.ofNullable(contestDataRepo.getPasswordContestDataById(datId)).orElseThrow(PortableException.from("S-07-002"));
     }
 
     @Override
-    public PrivateContestData getPrivateContestDataById(String datId) throws PortableException {
+    public PrivateContestData getPrivateContestDataById(String datId) {
         return Optional.ofNullable(contestDataRepo.getPrivateContestDataById(datId)).orElseThrow(PortableException.from("S-07-002"));
     }
 
     @Override
-    public BatchContestData getBatchContestDataById(String datId) throws PortableException {
+    public BatchContestData getBatchContestDataById(String datId) {
         return Optional.ofNullable(contestDataRepo.getBatchContestDataById(datId)).orElseThrow(PortableException.from("S-07-002"));
     }
 

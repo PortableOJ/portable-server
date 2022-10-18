@@ -1,12 +1,17 @@
 package com.portable.server.impl;
 
-import com.Ostermiller.util.CircularByteBuffer;
-import com.alibaba.fastjson.JSONObject;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.util.Map;
+
 import com.portable.server.exception.PortableException;
 import com.portable.server.service.impl.CommonServiceImpl;
 import com.portable.server.support.impl.CaptchaSupportImpl;
 import com.portable.server.test.MockedValueMaker;
 import com.portable.server.util.StreamUtils;
+
+import com.Ostermiller.util.CircularByteBuffer;
+import com.alibaba.fastjson.JSONObject;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -16,10 +21,6 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
-
-import java.io.IOException;
-import java.io.OutputStream;
-import java.util.Map;
 
 @ExtendWith(MockitoExtension.class)
 class CommonServiceImplTest {
@@ -56,13 +57,13 @@ class CommonServiceImplTest {
     }
 
     @Test
-    void testGetEnumDescWithSucceess() throws PortableException {
+    void testGetEnumDescWithSucceess() {
         Map<String, JSONObject> retVal = commonService.getEnumDesc("AccountType");
         Assertions.assertTrue(retVal.containsKey("NORMAL"));
     }
 
     @Test
-    void getCaptcha() throws PortableException, IOException {
+    void getCaptcha() throws IOException {
         String MOCKED_CAPTCHA_VALUE = MockedValueMaker.mString();
         String MOCKED_CAPTCHA_BUFFER = MockedValueMaker.mString();
         Mockito.when(captchaSupport.getCaptcha(Mockito.any())).thenAnswer(invocationOnMock -> {

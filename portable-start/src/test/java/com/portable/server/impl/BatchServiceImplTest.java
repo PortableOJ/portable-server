@@ -1,5 +1,10 @@
 package com.portable.server.impl;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.IntStream;
+
 import com.portable.server.encryption.BCryptEncoder;
 import com.portable.server.exception.PortableException;
 import com.portable.server.manager.impl.BatchManagerImpl;
@@ -18,6 +23,7 @@ import com.portable.server.service.impl.BatchServiceImpl;
 import com.portable.server.test.MockedValueMaker;
 import com.portable.server.test.UserContextBuilder;
 import com.portable.server.type.BatchStatusType;
+
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -28,11 +34,6 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.stream.IntStream;
 
 @ExtendWith(MockitoExtension.class)
 class BatchServiceImplTest {
@@ -133,7 +134,7 @@ class BatchServiceImplTest {
     }
 
     @Test
-    void testCreateWithSuccess() throws PortableException {
+    void testCreateWithSuccess() {
         userContextBuilder.withNormalLoginIn(MOCKED_USER_ID);
 
         Mockito.when(batchManager.selectBatchByPrefix(MOCKED_BATCh_PREFIX)).thenReturn(Optional.empty());
@@ -205,7 +206,7 @@ class BatchServiceImplTest {
     }
 
     @Test
-    void testChangeStatusWithSuccess() throws PortableException {
+    void testChangeStatusWithSuccess() {
         userContextBuilder.withNormalLoginIn(MOCKED_USER_ID);
 
         batch.setOwner(MOCKED_USER_ID);
@@ -218,7 +219,7 @@ class BatchServiceImplTest {
     }
 
     @Test
-    void getBatchWithContetSuccess() throws PortableException {
+    void getBatchWithContetSuccess() {
         userContextBuilder.withNormalLoginIn(MOCKED_USER_ID);
 
         batch.setOwner(MOCKED_USER_ID);
@@ -235,7 +236,7 @@ class BatchServiceImplTest {
     }
 
     @Test
-    void changeBatchIpLock() throws PortableException {
+    void changeBatchIpLock() {
         userContextBuilder.withNormalLoginIn(MOCKED_USER_ID);
 
         batch.setOwner(MOCKED_USER_ID);

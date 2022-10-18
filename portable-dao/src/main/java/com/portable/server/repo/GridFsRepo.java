@@ -1,19 +1,21 @@
 package com.portable.server.repo;
 
-import com.mongodb.client.gridfs.model.GridFSFile;
+import java.io.IOException;
+import java.io.InputStream;
+
+import javax.annotation.Resource;
+
 import com.portable.server.exception.PortableException;
 import com.portable.server.model.fs.FileData;
 import com.portable.server.type.FileStoreType;
+
+import com.mongodb.client.gridfs.model.GridFSFile;
 import org.bson.types.ObjectId;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.data.mongodb.gridfs.GridFsResource;
 import org.springframework.data.mongodb.gridfs.GridFsTemplate;
 import org.springframework.stereotype.Repository;
-
-import javax.annotation.Resource;
-import java.io.IOException;
-import java.io.InputStream;
 
 /**
  * @author shiroha
@@ -24,7 +26,7 @@ public class GridFsRepo {
     @Resource
     private GridFsTemplate gridFsTemplate;
 
-    public String saveFile(InputStream inputStream, String name, String contentType, FileStoreType fileStoreType) throws PortableException {
+    public String saveFile(InputStream inputStream, String name, String contentType, FileStoreType fileStoreType) {
         if (!fileStoreType.getContentTypePattern().matcher(contentType).matches()) {
             throw PortableException.of("A-09-001", contentType, fileStoreType);
         }
@@ -36,7 +38,7 @@ public class GridFsRepo {
         gridFsTemplate.delete(new Query(Criteria.where("_id").is(id)));
     }
 
-    public FileData getFile(String id, FileStoreType fileStoreType) throws PortableException {
+    public FileData getFile(String id, FileStoreType fileStoreType) {
         GridFSFile file = gridFsTemplate.findOne(new Query(Criteria.where("_id").is(id)));
         if (file == null) {
             return fileStoreType.getFile();

@@ -1,5 +1,14 @@
 package com.portable.server.service.impl;
 
+import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.Random;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
+
+import javax.annotation.Resource;
+
 import com.portable.server.encryption.BCryptEncoder;
 import com.portable.server.exception.PortableException;
 import com.portable.server.manager.BatchManager;
@@ -18,15 +27,8 @@ import com.portable.server.model.user.User;
 import com.portable.server.service.BatchService;
 import com.portable.server.type.BatchStatusType;
 import com.portable.server.util.UserContext;
-import org.springframework.stereotype.Component;
 
-import javax.annotation.Resource;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.Random;
-import java.util.stream.Collectors;
-import java.util.stream.IntStream;
+import org.springframework.stereotype.Component;
 
 /**
  * @author shiroha
@@ -82,7 +84,7 @@ public class BatchServiceImpl implements BatchService {
     }
 
     @Override
-    public CreateBatchResponse create(BatchRequest request) throws PortableException {
+    public CreateBatchResponse create(BatchRequest request) {
         Batch batch;
         synchronized (this) {
             Optional<Batch> batchOptional = batchManager.selectBatchByPrefix(request.getPrefix());
@@ -122,13 +124,13 @@ public class BatchServiceImpl implements BatchService {
     }
 
     @Override
-    public void changeStatus(Long id, BatchStatusType statusType) throws PortableException {
+    public void changeStatus(Long id, BatchStatusType statusType) {
         getBatchData(id);
         batchManager.updateBatchStatus(id, statusType);
     }
 
     @Override
-    public BatchListResponse getBatch(Long id) throws PortableException {
+    public BatchListResponse getBatch(Long id) {
         Batch batch = getBatchData(id);
         Contest contest = null;
         if (batch.getContestId() != null) {
@@ -138,12 +140,12 @@ public class BatchServiceImpl implements BatchService {
     }
 
     @Override
-    public void changeBatchIpLock(Long id, Boolean ipLock) throws PortableException {
+    public void changeBatchIpLock(Long id, Boolean ipLock) {
         getBatchData(id);
         batchManager.updateBatchIpLock(id, ipLock);
     }
 
-    private Batch getBatchData(Long id) throws PortableException {
+    private Batch getBatchData(Long id) {
         Batch batch = batchManager.selectBatchById(id)
                 .orElseThrow(PortableException.from("A-10-006", id));
         if (!Objects.equals(batch.getOwner(), UserContext.ctx().getId())) {

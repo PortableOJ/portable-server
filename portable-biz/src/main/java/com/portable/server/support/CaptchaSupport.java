@@ -1,8 +1,8 @@
 package com.portable.server.support;
 
-import com.portable.server.exception.PortableException;
-
 import java.io.OutputStream;
+
+import com.portable.server.exception.PortableException;
 
 /**
  * @author shiroha
@@ -15,5 +15,5 @@ public interface CaptchaSupport {
      * @return 验证值
      * @throws PortableException 获取失败则抛出
      */
-    String getCaptcha(OutputStream outputStream) throws PortableException;
+    String getCaptcha(OutputStream outputStream);
 }

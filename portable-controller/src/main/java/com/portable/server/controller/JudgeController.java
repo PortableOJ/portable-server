@@ -1,8 +1,15 @@
 package com.portable.server.controller;
 
+import java.io.IOException;
+import java.io.OutputStream;
+import java.nio.charset.StandardCharsets;
+import java.util.List;
+
+import javax.annotation.Resource;
+import javax.servlet.http.HttpServletResponse;
+
 import com.portable.server.annotation.NeedLogin;
 import com.portable.server.annotation.PermissionRequirement;
-import com.portable.server.exception.PortableException;
 import com.portable.server.model.ServiceVerifyCode;
 import com.portable.server.model.judge.entity.JudgeContainer;
 import com.portable.server.model.judge.entity.UpdateJudgeContainer;
@@ -10,19 +17,13 @@ import com.portable.server.model.request.IdRequest;
 import com.portable.server.model.response.Response;
 import com.portable.server.service.JudgeService;
 import com.portable.server.type.PermissionType;
+
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-
-import javax.annotation.Resource;
-import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
-import java.io.OutputStream;
-import java.nio.charset.StandardCharsets;
-import java.util.List;
 
 /**
  * @author shiroha
@@ -66,7 +67,7 @@ public class JudgeController {
     @NeedLogin(normal = true)
     @PostMapping("/updateJudge")
     @PermissionRequirement(PermissionType.MANAGER_JUDGE)
-    public Response<Void> updateJudgeContainer(@Validated @RequestBody UpdateJudgeContainer updateJudgeContainer) throws PortableException {
+    public Response<Void> updateJudgeContainer(@Validated @RequestBody UpdateJudgeContainer updateJudgeContainer) {
         judgeService.updateJudgeContainer(updateJudgeContainer);
         return Response.ofOk();
     }
@@ -74,7 +75,7 @@ public class JudgeController {
     @NeedLogin(normal = true)
     @PostMapping("/killJudge")
     @PermissionRequirement(PermissionType.MANAGER_JUDGE)
-    public Response<Void> killJudge(@Validated @RequestBody IdRequest idRequest) throws PortableException {
+    public Response<Void> killJudge(@Validated @RequestBody IdRequest idRequest) {
         judgeService.killJudge(idRequest.getId());
         return Response.ofOk();
     }

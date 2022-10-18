@@ -4,6 +4,7 @@ import com.portable.server.exception.PortableException;
 import com.portable.server.model.user.BaseUserData;
 import com.portable.server.model.user.BatchUserData;
 import com.portable.server.model.user.NormalUserData;
+
 import org.jetbrains.annotations.NotNull;
 
 /**
@@ -35,7 +36,7 @@ public interface UserDataManager {
      * @throws PortableException ID 不存在时则抛出
      */
     @NotNull
-    NormalUserData getNormalUserDataById(String dataId) throws PortableException;
+    NormalUserData getNormalUserDataById(String dataId);
 
     /**
      * 通过用户的数据 id 获取批量用户账号
@@ -45,7 +46,7 @@ public interface UserDataManager {
      * @throws PortableException ID 不存在时则抛出
      */
     @NotNull
-    BatchUserData getBatchUserDataById(String dataId) throws PortableException;
+    BatchUserData getBatchUserDataById(String dataId);
 
     /**
      * 新增一个普通用户数据

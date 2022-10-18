@@ -1,5 +1,14 @@
 package com.portable.server.impl;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Optional;
+
 import com.portable.server.exception.PortableException;
 import com.portable.server.manager.impl.BatchManagerImpl;
 import com.portable.server.manager.impl.ContestDataManagerImpl;
@@ -50,6 +59,7 @@ import com.portable.server.type.LanguageType;
 import com.portable.server.type.ProblemAccessType;
 import com.portable.server.type.SolutionStatusType;
 import com.portable.server.type.SolutionType;
+
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -61,15 +71,6 @@ import org.mockito.Mock;
 import org.mockito.MockedStatic;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Optional;
 
 @ExtendWith(MockitoExtension.class)
 class ContestServiceImplTest {
@@ -230,7 +231,7 @@ class ContestServiceImplTest {
     }
 
     @Test
-    void testAuthorizeContestWithNoContestData() throws PortableException {
+    void testAuthorizeContestWithNoContestData() {
         contest.setAccessType(ContestAccessType.PRIVATE);
         contest.setDataId(MOCKED_CONTEST_MONGO_ID);
         Mockito.when(contestManager.getContestById(MOCKED_CONTEST_ID)).thenReturn(Optional.of(contest));
@@ -250,7 +251,7 @@ class ContestServiceImplTest {
     }
 
     @Test
-    void testAuthorizeContestWithNoPasswordVisit() throws PortableException {
+    void testAuthorizeContestWithNoPasswordVisit() {
         contest.setAccessType(ContestAccessType.BATCH);
         contest.setDataId(MOCKED_CONTEST_MONGO_ID);
         Mockito.when(contestManager.getContestById(MOCKED_CONTEST_ID)).thenReturn(Optional.of(contest));
@@ -268,7 +269,7 @@ class ContestServiceImplTest {
     }
 
     @Test
-    void testAuthorizeContestWithPasswordPublicVisit() throws PortableException {
+    void testAuthorizeContestWithPasswordPublicVisit() {
         contest.setAccessType(ContestAccessType.PUBLIC);
         contest.setDataId(MOCKED_CONTEST_MONGO_ID);
         Mockito.when(contestManager.getContestById(MOCKED_CONTEST_ID)).thenReturn(Optional.of(contest));
@@ -286,7 +287,7 @@ class ContestServiceImplTest {
     }
 
     @Test
-    void testAuthorizeContestWithNoPasswordAdmin() throws PortableException {
+    void testAuthorizeContestWithNoPasswordAdmin() {
         contest.setAccessType(ContestAccessType.PUBLIC);
         contest.setDataId(MOCKED_CONTEST_MONGO_ID);
         Mockito.when(contestManager.getContestById(MOCKED_CONTEST_ID)).thenReturn(Optional.of(contest));
@@ -304,7 +305,7 @@ class ContestServiceImplTest {
     }
 
     @Test
-    void testAuthorizeContestWithPasswordFailAdmin() throws PortableException {
+    void testAuthorizeContestWithPasswordFailAdmin() {
         contest.setAccessType(ContestAccessType.PASSWORD);
         contest.setDataId(MOCKED_CONTEST_MONGO_ID);
         passwordContestData.setPassword(MockedValueMaker.mString());
@@ -323,7 +324,7 @@ class ContestServiceImplTest {
     }
 
     @Test
-    void testAuthorizeContestWithPasswordFail() throws PortableException {
+    void testAuthorizeContestWithPasswordFail() {
         contest.setAccessType(ContestAccessType.PASSWORD);
         contest.setDataId(MOCKED_CONTEST_MONGO_ID);
         passwordContestData.setPassword(MockedValueMaker.mString());
@@ -345,7 +346,7 @@ class ContestServiceImplTest {
     }
 
     @Test
-    void testAuthorizeContestWithPasswordSuccess() throws PortableException {
+    void testAuthorizeContestWithPasswordSuccess() {
         contest.setAccessType(ContestAccessType.PASSWORD);
         contest.setDataId(MOCKED_CONTEST_MONGO_ID);
         passwordContestData.setPassword(MockedValueMaker.mString());
@@ -364,7 +365,7 @@ class ContestServiceImplTest {
     }
 
     @Test
-    void testGetContestInfoWithNoAccess() throws PortableException {
+    void testGetContestInfoWithNoAccess() {
         contest.setAccessType(ContestAccessType.PRIVATE);
         contest.setDataId(MOCKED_CONTEST_MONGO_ID);
         passwordContestData.setPassword(MockedValueMaker.mString());
@@ -381,7 +382,7 @@ class ContestServiceImplTest {
     }
 
     @Test
-    void testGetContestInfoWithSuccess() throws PortableException {
+    void testGetContestInfoWithSuccess() {
         contest.setAccessType(ContestAccessType.PRIVATE);
         contest.setDataId(MOCKED_CONTEST_MONGO_ID);
         contest.setTitle(MOCKED_CONTEST_TITLE);
@@ -406,7 +407,7 @@ class ContestServiceImplTest {
     }
 
     @Test
-    void testGetContestDataWithNotStart() throws PortableException {
+    void testGetContestDataWithNotStart() {
         contest.setAccessType(ContestAccessType.PRIVATE);
         contest.setDataId(MOCKED_CONTEST_MONGO_ID);
         contest.setTitle(MOCKED_CONTEST_TITLE);
@@ -426,7 +427,7 @@ class ContestServiceImplTest {
     }
 
     @Test
-    void testGetContestDataWithErrorProblem() throws PortableException {
+    void testGetContestDataWithErrorProblem() {
         contest.setAccessType(ContestAccessType.PRIVATE);
         contest.setDataId(MOCKED_CONTEST_MONGO_ID);
         contest.setTitle(MOCKED_CONTEST_TITLE);
@@ -456,7 +457,7 @@ class ContestServiceImplTest {
     }
 
     @Test
-    void testGetContestDataWithSuccess() throws PortableException {
+    void testGetContestDataWithSuccess() {
         Long loginUserId = MockedValueMaker.mLong();
         userContextBuilder.withNormalLoginIn(loginUserId);
         contest.setAccessType(ContestAccessType.PRIVATE);
@@ -500,7 +501,7 @@ class ContestServiceImplTest {
     }
 
     @Test
-    void getContestAdminDataWithParticipant() throws PortableException {
+    void getContestAdminDataWithParticipant() {
         Long loginUserId = MockedValueMaker.mLong();
         userContextBuilder.withNormalLoginIn(loginUserId);
         contest.setAccessType(ContestAccessType.PRIVATE);
@@ -532,7 +533,7 @@ class ContestServiceImplTest {
     }
 
     @Test
-    void getContestAdminDataWith() throws PortableException {
+    void getContestAdminDataWith() {
         Long loginUserId = MockedValueMaker.mLong();
         Long otherUserId = MockedValueMaker.mLong();
         userContextBuilder.withNormalLoginIn(loginUserId);
@@ -625,7 +626,7 @@ class ContestServiceImplTest {
     }
 
     @Test
-    void testGetContestProblemWithNoAccess() throws PortableException {
+    void testGetContestProblemWithNoAccess() {
         contest.setAccessType(ContestAccessType.PUBLIC);
         contest.setDataId(MOCKED_CONTEST_MONGO_ID);
         Mockito.when(contestManager.getContestById(MOCKED_CONTEST_ID)).thenReturn(Optional.of(contest));
@@ -641,7 +642,7 @@ class ContestServiceImplTest {
     }
 
     @Test
-    void testGetContestProblemWithNotStart() throws PortableException {
+    void testGetContestProblemWithNotStart() {
         contest.setAccessType(ContestAccessType.PUBLIC);
         contest.setDataId(MOCKED_CONTEST_MONGO_ID);
         contest.setStartTime(new Date(new Date().getTime() + 10000));
@@ -658,7 +659,7 @@ class ContestServiceImplTest {
     }
 
     @Test
-    void testGetContestProblemWithIndexOutOfBound() throws PortableException {
+    void testGetContestProblemWithIndexOutOfBound() {
         contest.setAccessType(ContestAccessType.PUBLIC);
         contest.setDataId(MOCKED_CONTEST_MONGO_ID);
         contest.setStartTime(new Date(0));
@@ -676,7 +677,7 @@ class ContestServiceImplTest {
     }
 
     @Test
-    void testGetContestProblemWithProblemMiss() throws PortableException {
+    void testGetContestProblemWithProblemMiss() {
         contest.setAccessType(ContestAccessType.PUBLIC);
         contest.setDataId(MOCKED_CONTEST_MONGO_ID);
         contest.setStartTime(new Date(0));
@@ -699,7 +700,7 @@ class ContestServiceImplTest {
     }
 
     @Test
-    void testGetContestProblemWithSuccess() throws PortableException {
+    void testGetContestProblemWithSuccess() {
         contest.setAccessType(ContestAccessType.PUBLIC);
         contest.setDataId(MOCKED_CONTEST_MONGO_ID);
         contest.setStartTime(new Date(0));
@@ -735,7 +736,7 @@ class ContestServiceImplTest {
     }
 
     @Test
-    void testGetContestStatusListWithNoAccess() throws PortableException {
+    void testGetContestStatusListWithNoAccess() {
         contest.setAccessType(ContestAccessType.PUBLIC);
         contest.setDataId(MOCKED_CONTEST_MONGO_ID);
         Mockito.when(contestManager.getContestById(MOCKED_CONTEST_ID)).thenReturn(Optional.of(contest));
@@ -761,7 +762,7 @@ class ContestServiceImplTest {
     }
 
     @Test
-    void testGetContestStatusListWithIndexOutOfBound() throws PortableException {
+    void testGetContestStatusListWithIndexOutOfBound() {
         contest.setAccessType(ContestAccessType.PUBLIC);
         publicContestData.set_id(MOCKED_CONTEST_MONGO_ID);
         contest.setDataId(MOCKED_CONTEST_MONGO_ID);
@@ -795,7 +796,7 @@ class ContestServiceImplTest {
     }
 
     @Test
-    void testGetContestStatusListWithNoUser() throws PortableException {
+    void testGetContestStatusListWithNoUser() {
         contest.setAccessType(ContestAccessType.PUBLIC);
         publicContestData.set_id(MOCKED_CONTEST_MONGO_ID);
         contest.setDataId(MOCKED_CONTEST_MONGO_ID);
@@ -837,7 +838,7 @@ class ContestServiceImplTest {
     }
 
     @Test
-    void testGetContestStatusListWithSuccess() throws PortableException {
+    void testGetContestStatusListWithSuccess() {
         contest.setAccessType(ContestAccessType.PUBLIC);
         contest.setDataId(MOCKED_CONTEST_MONGO_ID);
         publicContestData.set_id(MOCKED_CONTEST_MONGO_ID);
@@ -902,7 +903,7 @@ class ContestServiceImplTest {
     }
 
     @Test
-    void testGetContestSolutionWithNoAccess() throws PortableException {
+    void testGetContestSolutionWithNoAccess() {
         solution.setContestId(MOCKED_CONTEST_ID);
         solution.setDataId(MOCKED_SOLUTION_MONGO_ID);
         contest.setDataId(MOCKED_CONTEST_MONGO_ID);
@@ -921,7 +922,7 @@ class ContestServiceImplTest {
     }
 
     @Test
-    void testGetContestSolutionWithNotEndNotSelfNotAdmin() throws PortableException {
+    void testGetContestSolutionWithNotEndNotSelfNotAdmin() {
         userContextBuilder.withNormalLoginIn();
 
         contest.setAccessType(ContestAccessType.PUBLIC);
@@ -952,7 +953,7 @@ class ContestServiceImplTest {
     }
 
     @Test
-    void testGetContestSolutionWithEndNotSelfNotAdmin() throws PortableException {
+    void testGetContestSolutionWithEndNotSelfNotAdmin() {
         userContextBuilder.withNormalLoginIn();
 
         contest.setAccessType(ContestAccessType.PUBLIC);
@@ -999,7 +1000,7 @@ class ContestServiceImplTest {
     }
 
     @Test
-    void testGetContestSolutionWithNotEndSelfNotAdmin() throws PortableException {
+    void testGetContestSolutionWithNotEndSelfNotAdmin() {
         userContextBuilder.withNormalLoginIn(MOCKED_USER_ID);
 
         contest.setAccessType(ContestAccessType.PUBLIC);
@@ -1046,7 +1047,7 @@ class ContestServiceImplTest {
     }
 
     @Test
-    void testGetContestSolutionWithNotEndNotSelfAdmin() throws PortableException {
+    void testGetContestSolutionWithNotEndNotSelfAdmin() {
         userContextBuilder.withNormalLoginIn(MOCKED_USER_ID);
 
         contest.setAccessType(ContestAccessType.PUBLIC);
@@ -1093,7 +1094,7 @@ class ContestServiceImplTest {
     }
 
     @Test
-    void testGetContestTestStatusListWithParticipant() throws PortableException {
+    void testGetContestTestStatusListWithParticipant() {
         contest.setAccessType(ContestAccessType.PUBLIC);
         contest.setDataId(MOCKED_CONTEST_MONGO_ID);
         Mockito.when(contestManager.getContestById(MOCKED_CONTEST_ID)).thenReturn(Optional.of(contest));
@@ -1119,7 +1120,7 @@ class ContestServiceImplTest {
     }
 
     @Test
-    void testGetContestTestStatusListWithIndexOutOfBound() throws PortableException {
+    void testGetContestTestStatusListWithIndexOutOfBound() {
         contest.setAccessType(ContestAccessType.PUBLIC);
         publicContestData.set_id(MOCKED_CONTEST_MONGO_ID);
         contest.setDataId(MOCKED_CONTEST_MONGO_ID);
@@ -1153,7 +1154,7 @@ class ContestServiceImplTest {
     }
 
     @Test
-    void testGetContestTestStatusListWithNoUser() throws PortableException {
+    void testGetContestTestStatusListWithNoUser() {
         contest.setAccessType(ContestAccessType.PUBLIC);
         publicContestData.set_id(MOCKED_CONTEST_MONGO_ID);
         contest.setDataId(MOCKED_CONTEST_MONGO_ID);
@@ -1195,7 +1196,7 @@ class ContestServiceImplTest {
     }
 
     @Test
-    void testGetContestTestStatusListWithSuccess() throws PortableException {
+    void testGetContestTestStatusListWithSuccess() {
         contest.setAccessType(ContestAccessType.PUBLIC);
         contest.setDataId(MOCKED_CONTEST_MONGO_ID);
         publicContestData.set_id(MOCKED_CONTEST_MONGO_ID);
@@ -1260,7 +1261,7 @@ class ContestServiceImplTest {
     }
 
     @Test
-    void testGetContestTestSolutionWithNoAccess() throws PortableException {
+    void testGetContestTestSolutionWithNoAccess() {
         solution.setContestId(MOCKED_CONTEST_ID);
         solution.setDataId(MOCKED_SOLUTION_MONGO_ID);
         contest.setDataId(MOCKED_CONTEST_MONGO_ID);
@@ -1279,7 +1280,7 @@ class ContestServiceImplTest {
     }
 
     @Test
-    void testGetContestTestSolutionWithNotEndNotSelfAdmin() throws PortableException {
+    void testGetContestTestSolutionWithNotEndNotSelfAdmin() {
         userContextBuilder.withNormalLoginIn(MOCKED_USER_ID);
 
         contest.setAccessType(ContestAccessType.PUBLIC);
@@ -1325,7 +1326,7 @@ class ContestServiceImplTest {
     }
 
     @Test
-    void testGetContestRankWithNoAccess() throws PortableException {
+    void testGetContestRankWithNoAccess() {
         contest.setAccessType(ContestAccessType.PUBLIC);
         contest.setDataId(MOCKED_CONTEST_MONGO_ID);
         contest.setStartTime(new Date());
@@ -1363,7 +1364,7 @@ class ContestServiceImplTest {
     }
 
     @Test
-    void testGetContestRankWithNoFreezeNoAccess() throws PortableException {
+    void testGetContestRankWithNoFreezeNoAccess() {
 
         contest.setAccessType(ContestAccessType.PUBLIC);
         contest.setDataId(MOCKED_CONTEST_MONGO_ID);
@@ -1402,7 +1403,7 @@ class ContestServiceImplTest {
     }
 
     @Test
-    void testGetContestRankWithSuccess() throws PortableException {
+    void testGetContestRankWithSuccess() {
         userContextBuilder.withNormalLoginIn(MOCKED_USER_ID).withHandle(MOCKED_USER_HANDLE);
 
         ContestRankItem contestRankItem = ContestRankItem.builder()
@@ -1473,7 +1474,7 @@ class ContestServiceImplTest {
     }
 
     @Test
-    void testSubmitWithVisit() throws PortableException {
+    void testSubmitWithVisit() {
         contest.setAccessType(ContestAccessType.PUBLIC);
         contest.setDataId(MOCKED_CONTEST_MONGO_ID);
         publicContestData.set_id(MOCKED_CONTEST_MONGO_ID);
@@ -1498,7 +1499,7 @@ class ContestServiceImplTest {
     }
 
     @Test
-    void testSubmitWithNotStart() throws PortableException {
+    void testSubmitWithNotStart() {
         contest.setAccessType(ContestAccessType.PUBLIC);
         contest.setDataId(MOCKED_CONTEST_MONGO_ID);
         contest.setStartTime(new Date(new Date().getTime() + 10000));
@@ -1524,7 +1525,7 @@ class ContestServiceImplTest {
     }
 
     @Test
-    void testSubmitWithIsEnd() throws PortableException {
+    void testSubmitWithIsEnd() {
         contest.setAccessType(ContestAccessType.PUBLIC);
         contest.setDataId(MOCKED_CONTEST_MONGO_ID);
         contest.setStartTime(new Date(0));
@@ -1551,7 +1552,7 @@ class ContestServiceImplTest {
     }
 
     @Test
-    void testSubmitWithParticipant() throws PortableException {
+    void testSubmitWithParticipant() {
         userContextBuilder.withNormalLoginIn(MOCKED_USER_ID);
 
         contest.setAccessType(ContestAccessType.PUBLIC);
@@ -1624,7 +1625,7 @@ class ContestServiceImplTest {
     }
 
     @Test
-    void testSubmitWithAdmin() throws PortableException {
+    void testSubmitWithAdmin() {
         userContextBuilder.withNormalLoginIn(MOCKED_USER_ID);
 
         contest.setAccessType(ContestAccessType.PUBLIC);
@@ -1697,7 +1698,7 @@ class ContestServiceImplTest {
     }
 
     @Test
-    void testCreateContestWithSameProblem() throws PortableException {
+    void testCreateContestWithSameProblem() {
         Mockito.when(contestManager.newContest()).thenCallRealMethod();
         Mockito.when(contestDataManager.newContestData(Mockito.any())).thenCallRealMethod();
 
@@ -1726,7 +1727,7 @@ class ContestServiceImplTest {
     }
 
     @Test
-    void testCreateContestWithNotExistProblem() throws PortableException {
+    void testCreateContestWithNotExistProblem() {
         Mockito.when(contestManager.newContest()).thenCallRealMethod();
         Mockito.when(contestDataManager.newContestData(Mockito.any())).thenCallRealMethod();
         Mockito.when(problemManager.checkProblemListExist(Mockito.any())).thenAnswer(invocationOnMock -> {
@@ -1762,7 +1763,7 @@ class ContestServiceImplTest {
     }
 
     @Test
-    void testCreateContestWithNotExistBatch() throws PortableException {
+    void testCreateContestWithNotExistBatch() {
         Mockito.when(contestManager.newContest()).thenCallRealMethod();
         Mockito.when(contestDataManager.newContestData(Mockito.any())).thenCallRealMethod();
         Mockito.when(problemManager.checkProblemListExist(Mockito.any())).thenReturn(new ArrayList<>());
@@ -1793,7 +1794,7 @@ class ContestServiceImplTest {
     }
 
     @Test
-    void testCreateContestWithNotOwnerBatch() throws PortableException {
+    void testCreateContestWithNotOwnerBatch() {
         userContextBuilder.withNormalLoginIn();
 
         batch.setOwner(MOCKED_USER_ID);
@@ -1827,7 +1828,7 @@ class ContestServiceImplTest {
     }
 
     @Test
-    void testCreateContestWithPublicSuccess() throws PortableException {
+    void testCreateContestWithPublicSuccess() {
         userContextBuilder.withNormalLoginIn(MOCKED_USER_ID);
 
         problem.setDataId(MOCKED_PROBLEM_MONGO_ID);
@@ -1918,7 +1919,7 @@ class ContestServiceImplTest {
     }
 
     @Test
-    void testCreateContestWithPasswordSuccess() throws PortableException {
+    void testCreateContestWithPasswordSuccess() {
         userContextBuilder.withNormalLoginIn(MOCKED_USER_ID);
 
         problem.setDataId(MOCKED_PROBLEM_MONGO_ID);
@@ -2011,7 +2012,7 @@ class ContestServiceImplTest {
     }
 
     @Test
-    void testCreateContestWithPrivateSuccess() throws PortableException {
+    void testCreateContestWithPrivateSuccess() {
         userContextBuilder.withNormalLoginIn(MOCKED_USER_ID);
 
         problem.setDataId(MOCKED_PROBLEM_MONGO_ID);
@@ -2113,7 +2114,7 @@ class ContestServiceImplTest {
     }
 
     @Test
-    void testCreateContestWithBatchSuccess() throws PortableException {
+    void testCreateContestWithBatchSuccess() {
         userContextBuilder.withNormalLoginIn(MOCKED_USER_ID);
 
         batch.setOwner(MOCKED_USER_ID);
@@ -2215,7 +2216,7 @@ class ContestServiceImplTest {
     }
 
     @Test
-    void testUpdateContestWithNoAccess() throws PortableException {
+    void testUpdateContestWithNoAccess() {
         contest.setAccessType(ContestAccessType.PUBLIC);
         contest.setDataId(MOCKED_CONTEST_MONGO_ID);
         publicContestData.set_id(MOCKED_CONTEST_MONGO_ID);
@@ -2254,7 +2255,7 @@ class ContestServiceImplTest {
     }
 
     @Test
-    void testUpdateContestWithNotStartToStart() throws PortableException {
+    void testUpdateContestWithNotStartToStart() {
         contest.setAccessType(ContestAccessType.PUBLIC);
         contest.setDataId(MOCKED_CONTEST_MONGO_ID);
         contest.setStartTime(new Date(new Date().getTime() + 10000));
@@ -2295,7 +2296,7 @@ class ContestServiceImplTest {
     }
 
     @Test
-    void testUpdateContestWithNotStartSameProblem() throws PortableException {
+    void testUpdateContestWithNotStartSameProblem() {
         contest.setAccessType(ContestAccessType.PUBLIC);
         contest.setDataId(MOCKED_CONTEST_MONGO_ID);
         contest.setStartTime(new Date(new Date().getTime() + 10000));
@@ -2336,7 +2337,7 @@ class ContestServiceImplTest {
     }
 
     @Test
-    void testUpdateContestWithNotStartSuccess() throws PortableException {
+    void testUpdateContestWithNotStartSuccess() {
         contest.setAccessType(ContestAccessType.PUBLIC);
         contest.setDataId(MOCKED_CONTEST_MONGO_ID);
         contest.setStartTime(new Date(new Date().getTime() + 10000));
@@ -2413,7 +2414,7 @@ class ContestServiceImplTest {
     }
 
     @Test
-    void testUpdateContestWithNotEndDeleteProblem() throws PortableException {
+    void testUpdateContestWithNotEndDeleteProblem() {
         contest.setAccessType(ContestAccessType.PUBLIC);
         contest.setDataId(MOCKED_CONTEST_MONGO_ID);
         contest.setStartTime(new Date(new Date().getTime() - 1000));
@@ -2487,7 +2488,7 @@ class ContestServiceImplTest {
     }
 
     @Test
-    void testUpdateContestWithNotEndSuccess() throws PortableException {
+    void testUpdateContestWithNotEndSuccess() {
         contest.setAccessType(ContestAccessType.PUBLIC);
         contest.setDataId(MOCKED_CONTEST_MONGO_ID);
         contest.setStartTime(new Date(new Date().getTime() - 1000));
@@ -2562,7 +2563,7 @@ class ContestServiceImplTest {
     }
 
     @Test
-    void testUpdateContestWithEndSuccess() throws PortableException {
+    void testUpdateContestWithEndSuccess() {
         contest.setAccessType(ContestAccessType.PUBLIC);
         contest.setDataId(MOCKED_CONTEST_MONGO_ID);
         contest.setStartTime(new Date(0));
@@ -2627,7 +2628,7 @@ class ContestServiceImplTest {
     }
 
     @Test
-    void testAddContestProblemWithNoAccess() throws PortableException {
+    void testAddContestProblemWithNoAccess() {
         contest.setAccessType(ContestAccessType.PUBLIC);
         contest.setDataId(MOCKED_CONTEST_MONGO_ID);
 
@@ -2648,7 +2649,7 @@ class ContestServiceImplTest {
     }
 
     @Test
-    void testAddContestProblemWithNoProblem() throws PortableException {
+    void testAddContestProblemWithNoProblem() {
         userContextBuilder.withNormalLoginIn(MockedValueMaker.mLong());
 
         contest.setAccessType(ContestAccessType.PUBLIC);
@@ -2673,7 +2674,7 @@ class ContestServiceImplTest {
     }
 
     @Test
-    void testAddContestProblemWithNotOwnerProblem() throws PortableException {
+    void testAddContestProblemWithNotOwnerProblem() {
         userContextBuilder.withNormalLoginIn();
 
         contest.setAccessType(ContestAccessType.PUBLIC);
@@ -2700,7 +2701,7 @@ class ContestServiceImplTest {
     }
 
     @Test
-    void testAddContestProblemWithNotPrivate() throws PortableException {
+    void testAddContestProblemWithNotPrivate() {
         userContextBuilder.withNormalLoginIn(MOCKED_USER_ID);
 
         contest.setAccessType(ContestAccessType.PUBLIC);
@@ -2727,7 +2728,7 @@ class ContestServiceImplTest {
     }
 
     @Test
-    void testAddContestProblemWithExistProblem() throws PortableException {
+    void testAddContestProblemWithExistProblem() {
         userContextBuilder.withNormalLoginIn(MOCKED_USER_ID);
 
         contest.setAccessType(ContestAccessType.PUBLIC);
@@ -2761,7 +2762,7 @@ class ContestServiceImplTest {
     }
 
     @Test
-    void testAddContestProblemWithSuccess() throws PortableException {
+    void testAddContestProblemWithSuccess() {
         userContextBuilder.withNormalLoginIn(MOCKED_USER_ID);
 
         contest.setAccessType(ContestAccessType.PUBLIC);

@@ -28,7 +28,7 @@ public interface BatchService {
      * @return 创建的用户信息
      * @throws PortableException 已经存在则抛出错误
      */
-    CreateBatchResponse create(BatchRequest request) throws PortableException;
+    CreateBatchResponse create(BatchRequest request);
 
     /**
      * 更新批量用户的状态
@@ -37,7 +37,7 @@ public interface BatchService {
      * @param statusType 新的状态
      * @throws PortableException 无权限则抛出
      */
-    void changeStatus(Long id, BatchStatusType statusType) throws PortableException;
+    void changeStatus(Long id, BatchStatusType statusType);
 
     /**
      * 查找自己拥有的批量用户组
@@ -46,7 +46,7 @@ public interface BatchService {
      * @return 用户组信息
      * @throws PortableException 无权限则抛出
      */
-    BatchListResponse getBatch(Long id) throws PortableException;
+    BatchListResponse getBatch(Long id);
 
     /**
      * 更新批量用户组的 ip 锁状态
@@ -55,5 +55,5 @@ public interface BatchService {
      * @param ipLock 新的锁状态
      * @throws PortableException 不存在此组则抛出
      */
-    void changeBatchIpLock(Long id, Boolean ipLock) throws PortableException;
+    void changeBatchIpLock(Long id, Boolean ipLock);
 }

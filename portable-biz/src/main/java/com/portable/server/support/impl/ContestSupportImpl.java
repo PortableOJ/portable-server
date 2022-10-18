@@ -1,5 +1,20 @@
 package com.portable.server.support.impl;
 
+import java.util.Calendar;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentSkipListSet;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
+
+import javax.annotation.Resource;
+
 import com.portable.server.exception.PortableException;
 import com.portable.server.kit.RedisHashKit;
 import com.portable.server.kit.RedisListKit;
@@ -13,22 +28,9 @@ import com.portable.server.model.solution.Solution;
 import com.portable.server.support.ContestSupport;
 import com.portable.server.type.SolutionStatusType;
 import com.portable.server.type.SolutionType;
+
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
-
-import javax.annotation.Resource;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentSkipListSet;
-import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 
 /**
  * @author shiroha
@@ -127,7 +129,7 @@ public class ContestSupportImpl implements ContestSupport {
     }
 
     @Override
-    public void ensureRank(Long contestId) throws PortableException {
+    public void ensureRank(Long contestId) {
         // 已经有缓存了
         if (CACHED_RANK.containsKey(contestId)) {
             addTraceRank(contestId);
@@ -189,7 +191,7 @@ public class ContestSupportImpl implements ContestSupport {
         return optionalContestRankItem.orElse(null);
     }
 
-    private void makeRank(Long contestId) throws PortableException {
+    private void makeRank(Long contestId) {
         Contest contest = contestManager.getContestById(contestId)
                 .orElseThrow(PortableException.from("A-08-002", contestId));
         BaseContestData contestData = contestDataManager.getBaseContestDataById(contest.getDataId(), contest.getAccessType());

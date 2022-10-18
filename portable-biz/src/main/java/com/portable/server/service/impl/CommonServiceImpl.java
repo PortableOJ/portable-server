@@ -1,14 +1,5 @@
 package com.portable.server.service.impl;
 
-import com.alibaba.fastjson.JSONObject;
-import com.portable.server.exception.PortableException;
-import com.portable.server.service.CommonService;
-import com.portable.server.support.CaptchaSupport;
-import com.portable.server.util.DateTimeUtils;
-import org.springframework.stereotype.Component;
-
-import javax.annotation.PostConstruct;
-import javax.annotation.Resource;
 import java.io.OutputStream;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
@@ -17,6 +8,17 @@ import java.util.Base64;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+
+import javax.annotation.PostConstruct;
+import javax.annotation.Resource;
+
+import com.portable.server.exception.PortableException;
+import com.portable.server.service.CommonService;
+import com.portable.server.support.CaptchaSupport;
+import com.portable.server.util.DateTimeUtils;
+
+import com.alibaba.fastjson.JSONObject;
+import org.springframework.stereotype.Component;
 
 /**
  * @author shiroha
@@ -57,7 +59,7 @@ public class CommonServiceImpl implements CommonService {
     }
 
     @Override
-    public Map<String, JSONObject> getEnumDesc(String name) throws PortableException {
+    public Map<String, JSONObject> getEnumDesc(String name) {
         if (enumDescMap.containsKey(name)) {
             return enumDescMap.get(name);
         }
@@ -102,7 +104,7 @@ public class CommonServiceImpl implements CommonService {
     }
 
     @Override
-    public String getCaptcha(OutputStream outputStream) throws PortableException {
+    public String getCaptcha(OutputStream outputStream) {
         return captchaSupport.getCaptcha(outputStream);
     }
 }

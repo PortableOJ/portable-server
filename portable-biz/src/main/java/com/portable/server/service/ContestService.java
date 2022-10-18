@@ -38,7 +38,7 @@ public interface ContestService {
      * @return 访问权限
      * @throws PortableException 比赛 id 错误或者密码错误时抛出
      */
-    ContestVisitType authorizeContest(ContestAuth contestAuth) throws PortableException;
+    ContestVisitType authorizeContest(ContestAuth contestAuth);
 
     /**
      * 获取比赛的简介
@@ -46,7 +46,7 @@ public interface ContestService {
      * @throws PortableException 比赛不存在或者无权访问则抛出错误
      * @return 比赛的详情
      */
-    ContestInfoResponse getContestInfo(Long contestId) throws PortableException;
+    ContestInfoResponse getContestInfo(Long contestId);
 
     /**
      * 获取比赛的详情
@@ -54,7 +54,7 @@ public interface ContestService {
      * @throws PortableException 比赛不存在或者无权访问则抛出错误
      * @return 比赛的详情
      */
-    ContestDetailResponse getContestData(Long contestId) throws PortableException;
+    ContestDetailResponse getContestData(Long contestId);
 
     /**
      * 获取比赛的管理员级别信息
@@ -62,7 +62,7 @@ public interface ContestService {
      * @return 比赛的详情
      * @throws PortableException 没有权限或者没有此比赛时抛出
      */
-    ContestAdminDetailResponse getContestAdminData(Long contestId) throws PortableException;
+    ContestAdminDetailResponse getContestAdminData(Long contestId);
 
     /**
      * 查看比赛中的题目信息
@@ -71,7 +71,7 @@ public interface ContestService {
      * @return 比赛的详情
      * @throws PortableException 没有权限或没有此比赛时抛出
      */
-    ProblemDetailResponse getContestProblem(Long contestId, Integer problemIndex) throws PortableException;
+    ProblemDetailResponse getContestProblem(Long contestId, Integer problemIndex);
 
     /**
      * 获取比赛的所有提交信息
@@ -80,7 +80,7 @@ public interface ContestService {
      * @return 比赛的提交列表
      * @throws PortableException 没有权限或没有此比赛时抛出
      */
-    PageResponse<SolutionListResponse, Void> getContestStatusList(Long contestId, PageRequest<SolutionListQueryRequest> pageRequest) throws PortableException;
+    PageResponse<SolutionListResponse, Void> getContestStatusList(Long contestId, PageRequest<SolutionListQueryRequest> pageRequest);
 
     /**
      * 查看比赛中的提交信息
@@ -88,7 +88,7 @@ public interface ContestService {
      * @return 提交详情
      * @throws PortableException 没有权限或没有此比赛时抛出
      */
-    SolutionDetailResponse getContestSolution(Long solutionId) throws PortableException;
+    SolutionDetailResponse getContestSolution(Long solutionId);
 
     /**
      * 获取比赛的所有<span color="red">测试</span>提交信息
@@ -97,7 +97,7 @@ public interface ContestService {
      * @return 比赛的提交列表
      * @throws PortableException 没有权限或没有此比赛时抛出
      */
-    PageResponse<SolutionListResponse, Void> getContestTestStatusList(Long contestId, PageRequest<SolutionListQueryRequest> pageRequest) throws PortableException;
+    PageResponse<SolutionListResponse, Void> getContestTestStatusList(Long contestId, PageRequest<SolutionListQueryRequest> pageRequest);
 
     /**
      * 查看比赛中的<span color="red">测试</span>提交信息
@@ -105,7 +105,7 @@ public interface ContestService {
      * @return 提交详情
      * @throws PortableException 没有权限或没有此比赛时抛出
      */
-    SolutionDetailResponse getContestTestSolution(Long solutionId) throws PortableException;
+    SolutionDetailResponse getContestTestSolution(Long solutionId);
 
     /**
      * 获取比赛的榜单
@@ -115,7 +115,7 @@ public interface ContestService {
      * @return 比赛榜单
      * @throws PortableException 创建比赛榜单出错时抛出
      */
-    PageResponse<ContestRankListResponse, ContestRankListResponse> getContestRank(Long contestId, PageRequest<ContestRankPageRequest> pageRequest) throws PortableException;
+    PageResponse<ContestRankListResponse, ContestRankListResponse> getContestRank(Long contestId, PageRequest<ContestRankPageRequest> pageRequest);
 
     /**
      * 提交代码
@@ -123,7 +123,7 @@ public interface ContestService {
      * @return 提交的 id
      * @throws PortableException 没有权限或没有此比赛时抛出
      */
-    Long submit(SubmitSolutionRequest submitSolutionRequest) throws PortableException;
+    Long submit(SubmitSolutionRequest submitSolutionRequest);
 
     /**
      * 创建比赛
@@ -131,7 +131,7 @@ public interface ContestService {
      * @return 比赛创建后的 id
      * @throws PortableException 没有权限或没有此比赛时抛出
      */
-    Long createContest(ContestContentRequest contestContentRequest) throws PortableException;
+    Long createContest(ContestContentRequest contestContentRequest);
 
     /**
      * 更新比赛的信息
@@ -139,7 +139,7 @@ public interface ContestService {
      * @param contestContentRequest 比赛的更新后信息
      * @throws PortableException 无权或者数据非法则抛出
      */
-    void updateContest(ContestContentRequest contestContentRequest) throws PortableException;
+    void updateContest(ContestContentRequest contestContentRequest);
 
     /**
      * 比赛合作出题人新增题目
@@ -147,5 +147,5 @@ public interface ContestService {
      * @param contestAddProblem 比赛增加的题目
      * @throws PortableException 无权或者数据非法则抛出
      */
-    void addContestProblem(ContestAddProblem contestAddProblem) throws PortableException;
+    void addContestProblem(ContestAddProblem contestAddProblem);
 }

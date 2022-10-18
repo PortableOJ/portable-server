@@ -1,5 +1,12 @@
 package com.portable.server.manager.impl;
 
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Optional;
+
+import javax.annotation.Resource;
+
 import com.portable.server.exception.PortableException;
 import com.portable.server.manager.ProblemDataManager;
 import com.portable.server.model.problem.ProblemData;
@@ -8,14 +15,9 @@ import com.portable.server.type.JudgeCodeType;
 import com.portable.server.type.LanguageType;
 import com.portable.server.type.ProblemType;
 import com.portable.server.type.SolutionStatusType;
+
 import org.jetbrains.annotations.NotNull;
 import org.springframework.stereotype.Component;
-
-import javax.annotation.Resource;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Optional;
 
 /**
  * @author shiroha
@@ -59,7 +61,7 @@ public class ProblemDataManagerImpl implements ProblemDataManager {
     }
 
     @Override
-    public @NotNull ProblemData getProblemData(String dataId) throws PortableException {
+    public @NotNull ProblemData getProblemData(String dataId) {
         return Optional.ofNullable(problemDataRepo.getProblemData(dataId))
                 .orElseThrow(PortableException.from("S-03-001"));
     }

@@ -1,19 +1,20 @@
 package com.portable.server.model.problem;
 
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
+
 import com.portable.server.exception.PortableException;
 import com.portable.server.type.JudgeCodeType;
 import com.portable.server.type.LanguageType;
 import com.portable.server.type.ProblemType;
 import com.portable.server.type.SolutionStatusType;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.Id;
-
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
 
 /**
  * 题目详细信息
@@ -183,13 +184,13 @@ public class ProblemData {
         }
     }
 
-    public void findTest(String name) throws PortableException {
+    public void findTest(String name) {
         if (!testName.contains(name)) {
             throw PortableException.of("A-04-006");
         }
     }
 
-    public StdCode findStdCode(String name) throws PortableException {
+    public StdCode findStdCode(String name) {
         StdCode showStdCode = testCodeList.stream()
                 .filter(stdCode -> stdCode.getName().equals(name))
                 .findAny()

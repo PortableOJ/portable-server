@@ -1,5 +1,11 @@
 package com.portable.server.model.response.contest;
 
+import java.util.HashSet;
+import java.util.List;
+import java.util.Objects;
+import java.util.Set;
+import java.util.stream.Collectors;
+
 import com.portable.server.exception.PortableException;
 import com.portable.server.model.contest.BaseContestData;
 import com.portable.server.model.contest.BatchContestData;
@@ -7,17 +13,12 @@ import com.portable.server.model.contest.Contest;
 import com.portable.server.model.contest.PasswordContestData;
 import com.portable.server.model.response.problem.ProblemListResponse;
 import com.portable.server.model.user.User;
+
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-
-import java.util.HashSet;
-import java.util.List;
-import java.util.Objects;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 /**
  * @author shiroha
@@ -58,7 +59,7 @@ public class ContestAdminDetailResponse extends ContestDetailResponse {
                                @NotNull List<ProblemListResponse> problemList,
                                @NotNull Set<User> coAuthor,
                                @NotNull List<Boolean> problemLock,
-                               @Nullable Set<User> inviteUserSet) throws PortableException {
+                               @Nullable Set<User> inviteUserSet) {
         super(contest, contestData, owner, problemList, coAuthor);
         switch (contest.getAccessType()) {
             case PUBLIC:
@@ -97,7 +98,7 @@ public class ContestAdminDetailResponse extends ContestDetailResponse {
                                                 List<ProblemListResponse> problemList,
                                                 Set<User> coAuthor,
                                                 List<Boolean> problemLock,
-                                                Set<User> inviteUserSet) throws PortableException {
+                                                Set<User> inviteUserSet) {
         return new ContestAdminDetailResponse(contest,
                 contestData,
                 owner,

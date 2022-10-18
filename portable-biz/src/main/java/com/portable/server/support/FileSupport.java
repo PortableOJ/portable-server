@@ -1,9 +1,8 @@
 package com.portable.server.support;
 
-import com.portable.server.exception.PortableException;
-import com.portable.server.type.LanguageType;
-
 import java.io.InputStream;
+
+import com.portable.server.exception.PortableException;
 
 /**
  * @author shiroha
@@ -17,7 +16,7 @@ public interface FileSupport {
      * @param problemId 问题 ID
      * @throws PortableException 出现问题则抛出错误
      */
-    void createProblem(Long problemId) throws PortableException;
+    void createProblem(Long problemId);
 
     /**
      * 获取测试输入的文件流
@@ -26,7 +25,7 @@ public interface FileSupport {
      * @return 测试数据输入流
      * @throws PortableException 出现问题则抛出错误
      */
-    InputStream getTestInput(Long problemId, String testName) throws PortableException;
+    InputStream getTestInput(Long problemId, String testName);
 
     /**
      * 获取测试输出的文件流
@@ -35,7 +34,7 @@ public interface FileSupport {
      * @return 测试数据输出流
      * @throws PortableException 出现问题则抛出错误
      */
-    InputStream getTestOutput(Long problemId, String testName) throws PortableException;
+    InputStream getTestOutput(Long problemId, String testName);
 
     /**
      * 保存测试输入文件流
@@ -44,7 +43,7 @@ public interface FileSupport {
      * @param inputStream 输入流
      * @throws PortableException 出现问题则抛出错误
      */
-    void saveTestInput(Long problemId, String testName, InputStream inputStream) throws PortableException;
+    void saveTestInput(Long problemId, String testName, InputStream inputStream);
 
     /**
      * 保存测试输出文件流
@@ -53,7 +52,7 @@ public interface FileSupport {
      * @param inputStream 输入流
      * @throws PortableException 出现问题则抛出错误
      */
-    void saveTestOutput(Long problemId, String testName, InputStream inputStream) throws PortableException;
+    void saveTestOutput(Long problemId, String testName, InputStream inputStream);
 
     /**
      * 创建一个新的测试输出文件
@@ -62,7 +61,7 @@ public interface FileSupport {
      * @param value 开头的字符串
      * @throws PortableException 出现问题则抛出错误
      */
-    void createTestOutput(Long problemId, String testName, byte[] value) throws PortableException;
+    void createTestOutput(Long problemId, String testName, byte[] value);
 
     /**
      * 创建一个新的测试输出文件
@@ -71,7 +70,7 @@ public interface FileSupport {
      * @param value 新增加的字符串
      * @throws PortableException 出现问题则抛出错误
      */
-    void appendTestOutput(Long problemId, String testName, byte[] value) throws PortableException;
+    void appendTestOutput(Long problemId, String testName, byte[] value);
 
     /**
      * 删除测试文件，包括输入输出
@@ -79,7 +78,7 @@ public interface FileSupport {
      * @param testName 测试数据名称
      * @throws PortableException 出现问题则抛出错误
      */
-    void removeTest(Long problemId, String testName) throws PortableException;
+    void removeTest(Long problemId, String testName);
 
     /// endregion
 }

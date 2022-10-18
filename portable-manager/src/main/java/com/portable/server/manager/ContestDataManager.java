@@ -19,7 +19,7 @@ public interface ContestDataManager {
      * @return 实体信息
      * @throws PortableException 不存在此类型的比赛时候抛出
      */
-    BaseContestData newContestData(ContestAccessType accessType) throws PortableException;
+    BaseContestData newContestData(ContestAccessType accessType);
 
     /**
      * 获取通用的比赛信息
@@ -28,7 +28,7 @@ public interface ContestDataManager {
      * @return 比赛信息
      * @throws PortableException 比赛类型错误则抛出
      */
-    BaseContestData getBaseContestDataById(String datId, ContestAccessType accessType) throws PortableException;
+    BaseContestData getBaseContestDataById(String datId, ContestAccessType accessType);
 
     /**
      * 获取公开的比赛信息
@@ -37,7 +37,7 @@ public interface ContestDataManager {
      * @return 比赛信息
      * @throws PortableException 不存在则抛出
      */
-    PublicContestData getPublicContestDataById(String datId) throws PortableException;
+    PublicContestData getPublicContestDataById(String datId);
 
     /**
      * 获取带密码的比赛信息
@@ -46,7 +46,7 @@ public interface ContestDataManager {
      * @return 比赛信息
      * @throws PortableException 不存在则抛出
      */
-    PasswordContestData getPasswordContestDataById(String datId) throws PortableException;
+    PasswordContestData getPasswordContestDataById(String datId);
 
     /**
      * 获取私有的比赛信息
@@ -55,7 +55,7 @@ public interface ContestDataManager {
      * @return 比赛信息
      * @throws PortableException 不存在则抛出
      */
-    PrivateContestData getPrivateContestDataById(String datId) throws PortableException;
+    PrivateContestData getPrivateContestDataById(String datId);
 
     /**
      * 获取提供账号邀请制的比赛信息
@@ -64,7 +64,7 @@ public interface ContestDataManager {
      * @return 比赛信息
      * @throws PortableException 不存在则抛出
      */
-    BatchContestData getBatchContestDataById(String datId) throws PortableException;
+    BatchContestData getBatchContestDataById(String datId);
 
     /**
      * 新建比赛

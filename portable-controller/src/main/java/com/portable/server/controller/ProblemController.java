@@ -1,5 +1,14 @@
 package com.portable.server.controller;
 
+import java.io.IOException;
+import java.util.List;
+
+import javax.annotation.Resource;
+import javax.servlet.http.HttpServletResponse;
+import javax.validation.constraints.Min;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Pattern;
+
 import com.portable.server.annotation.CheckCaptcha;
 import com.portable.server.annotation.NeedLogin;
 import com.portable.server.annotation.PermissionRequirement;
@@ -21,6 +30,7 @@ import com.portable.server.model.response.problem.ProblemListResponse;
 import com.portable.server.model.response.problem.ProblemStdTestCodeResponse;
 import com.portable.server.service.ProblemService;
 import com.portable.server.type.PermissionType;
+
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -28,14 +38,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
-
-import javax.annotation.Resource;
-import javax.servlet.http.HttpServletResponse;
-import javax.validation.constraints.Min;
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Pattern;
-import java.io.IOException;
-import java.util.List;
 
 /**
  * @author shiroha
@@ -72,20 +74,20 @@ public class ProblemController {
     }
 
     @GetMapping("/getData")
-    public Response<ProblemDetailResponse> getProblem(@NotNull(message = "A-04-001") @Min(value = 1, message = "A-04-001") Long id) throws PortableException {
+    public Response<ProblemDetailResponse> getProblem(@NotNull(message = "A-04-001") @Min(value = 1, message = "A-04-001") Long id) {
         return Response.ofOk(problemService.getProblem(id));
     }
 
     @NeedLogin(normal = true)
     @GetMapping("/getTestList")
-    public Response<List<String>> getTestList(@NotNull(message = "A-04-001") @Min(value = 1, message = "A-04-001") Long id) throws PortableException {
+    public Response<List<String>> getTestList(@NotNull(message = "A-04-001") @Min(value = 1, message = "A-04-001") Long id) {
         return Response.ofOk(problemService.getProblemTestList(id));
     }
 
     @NeedLogin(normal = true)
     @GetMapping("/getTestInputShow")
     public Response<String> getTestInputShow(@NotNull(message = "A-04-001") @Min(value = 1, message = "A-04-001") Long id,
-                                             String name) throws PortableException {
+                                             String name) {
         return Response.ofOk(problemService.showTestInput(
                 ProblemNameRequest.builder()
                         .id(id)
@@ -97,7 +99,7 @@ public class ProblemController {
     @NeedLogin(normal = true)
     @GetMapping("/getTestOutputShow")
     public Response<String> getTestOutputShow(@NotNull(message = "A-04-001") @Min(value = 1, message = "A-04-001") Long id,
-                                              String name) throws PortableException {
+                                              String name) {
         return Response.ofOk(problemService.showTestOutput(
                 ProblemNameRequest.builder()
                         .id(id)
@@ -110,7 +112,7 @@ public class ProblemController {
     @GetMapping("/getTestInput")
     public void getTestInput(HttpServletResponse response,
                              @NotNull(message = "A-04-001") @Min(value = 1, message = "A-04-001") Long id,
-                             String name) throws PortableException {
+                             String name) {
         try {
             problemService.downloadTestInput(
                     ProblemNameRequest.builder()
@@ -128,7 +130,7 @@ public class ProblemController {
     @GetMapping("/getTestOutput")
     public void getTestOutput(HttpServletResponse response,
                               @NotNull(message = "A-04-001") @Min(value = 1, message = "A-04-001") Long id,
-                              String name) throws PortableException {
+                              String name) {
         try {
             problemService.downloadTestOutput(
                     ProblemNameRequest.builder()
@@ -145,7 +147,7 @@ public class ProblemController {
     @NeedLogin(normal = true)
     @PostMapping("/newProblem")
     @PermissionRequirement(PermissionType.CREATE_AND_EDIT_PROBLEM)
-    public Response<Long> newProblem(@Validated @RequestBody ProblemContentRequest problemContentRequest) throws PortableException {
+    public Response<Long> newProblem(@Validated @RequestBody ProblemContentRequest problemContentRequest) {
         Problem problem = problemService.newProblem(problemContentRequest);
         return Response.ofOk(problem.getId());
     }
@@ -153,7 +155,7 @@ public class ProblemController {
     @NeedLogin(normal = true)
     @PostMapping("/updateContent")
     @PermissionRequirement(PermissionType.CREATE_AND_EDIT_PROBLEM)
-    public Response<Void> updateContent(@Validated @RequestBody ProblemContentRequest problemContentRequest) throws PortableException {
+    public Response<Void> updateContent(@Validated @RequestBody ProblemContentRequest problemContentRequest) {
         problemService.updateProblemContent(problemContentRequest);
         return Response.ofOk();
     }
@@ -161,7 +163,7 @@ public class ProblemController {
     @NeedLogin(normal = true)
     @PostMapping("/updateSetting")
     @PermissionRequirement(PermissionType.CREATE_AND_EDIT_PROBLEM)
-    public Response<Void> updateSetting(@Validated @RequestBody ProblemSettingRequest problemSettingRequest) throws PortableException {
+    public Response<Void> updateSetting(@Validated @RequestBody ProblemSettingRequest problemSettingRequest) {
         problemService.updateProblemSetting(problemSettingRequest);
         return Response.ofOk();
     }
@@ -169,7 +171,7 @@ public class ProblemController {
     @NeedLogin(normal = true)
     @PostMapping("/updateJudge")
     @PermissionRequirement(PermissionType.CREATE_AND_EDIT_PROBLEM)
-    public Response<Void> updateJudge(@Validated @RequestBody ProblemJudgeRequest problemJudgeRequest) throws PortableException {
+    public Response<Void> updateJudge(@Validated @RequestBody ProblemJudgeRequest problemJudgeRequest) {
         problemService.updateProblemJudge(problemJudgeRequest);
         return Response.ofOk();
     }
@@ -179,7 +181,7 @@ public class ProblemController {
     @PermissionRequirement(PermissionType.CREATE_AND_EDIT_PROBLEM)
     public Response<Void> addTest(@NotNull(message = "A-04-001") @Min(value = 1, message = "A-04-001") Long id,
                                   @NotNull(message = "A-04-001") @Pattern(regexp = "^[a-zA-Z0-9_\\-]{1,15}$", message = "A-04-012") String name,
-                                  @NotNull(message = "A-04-005") MultipartFile fileData) throws PortableException {
+                                  @NotNull(message = "A-04-005") MultipartFile fileData) {
         try {
             problemService.addProblemTest(
                     ProblemTestRequest.builder()
@@ -197,7 +199,7 @@ public class ProblemController {
     @NeedLogin(normal = true)
     @PostMapping("/removeTest")
     @PermissionRequirement(PermissionType.CREATE_AND_EDIT_PROBLEM)
-    public Response<Void> removeTest(@Validated @RequestBody ProblemNameRequest problemNameRequest) throws PortableException {
+    public Response<Void> removeTest(@Validated @RequestBody ProblemNameRequest problemNameRequest) {
         problemService.removeProblemTest(problemNameRequest);
         return Response.ofOk();
     }
@@ -205,14 +207,14 @@ public class ProblemController {
     @NeedLogin(normal = true)
     @GetMapping("/getStdTestCode")
     @PermissionRequirement(PermissionType.CREATE_AND_EDIT_PROBLEM)
-    public Response<ProblemStdTestCodeResponse> getStdTestCode(@NotNull(message = "A-04-001") @Min(value = 1, message = "A-04-001") Long id) throws PortableException {
+    public Response<ProblemStdTestCodeResponse> getStdTestCode(@NotNull(message = "A-04-001") @Min(value = 1, message = "A-04-001") Long id) {
         return Response.ofOk(problemService.getProblemStdTestCode(id));
     }
 
     @NeedLogin(normal = true)
     @PostMapping("/updateStdCode")
     @PermissionRequirement(PermissionType.CREATE_AND_EDIT_PROBLEM)
-    public Response<Void> updateStdCode(@Validated @RequestBody ProblemCodeRequest problemCodeRequest) throws PortableException {
+    public Response<Void> updateStdCode(@Validated @RequestBody ProblemCodeRequest problemCodeRequest) {
         problemService.updateProblemStdCode(problemCodeRequest);
         return Response.ofOk();
     }
@@ -220,7 +222,7 @@ public class ProblemController {
     @NeedLogin(normal = true)
     @PostMapping("/addTestCode")
     @PermissionRequirement(PermissionType.CREATE_AND_EDIT_PROBLEM)
-    public Response<Void> addTestCode(@Validated @RequestBody ProblemCodeRequest problemCodeRequest) throws PortableException {
+    public Response<Void> addTestCode(@Validated @RequestBody ProblemCodeRequest problemCodeRequest) {
         problemService.addProblemTestCode(problemCodeRequest);
         return Response.ofOk();
     }
@@ -228,7 +230,7 @@ public class ProblemController {
     @NeedLogin(normal = true)
     @PostMapping("/removeTestCode")
     @PermissionRequirement(PermissionType.CREATE_AND_EDIT_PROBLEM)
-    public Response<Void> removeTestCode(@Validated @RequestBody ProblemNameRequest problemNameRequest) throws PortableException {
+    public Response<Void> removeTestCode(@Validated @RequestBody ProblemNameRequest problemNameRequest) {
         problemService.removeProblemTestCode(problemNameRequest);
         return Response.ofOk();
     }
@@ -236,14 +238,14 @@ public class ProblemController {
     @NeedLogin(normal = true)
     @GetMapping("/getStdCodeShow")
     @PermissionRequirement(PermissionType.CREATE_AND_EDIT_PROBLEM)
-    public Response<String> getStdCodeShow(@NotNull(message = "A-04-001") @Min(value = 1, message = "A-04-001") Long id) throws PortableException {
+    public Response<String> getStdCodeShow(@NotNull(message = "A-04-001") @Min(value = 1, message = "A-04-001") Long id) {
         return Response.ofOk(problemService.showStdCode(id));
     }
 
     @NeedLogin(normal = true)
     @GetMapping("/getTestCodeShow")
     @PermissionRequirement(PermissionType.CREATE_AND_EDIT_PROBLEM)
-    public Response<String> getStdCodeShow(@NotNull(message = "A-04-001") @Min(value = 1, message = "A-04-001") Long id, String name) throws PortableException {
+    public Response<String> getStdCodeShow(@NotNull(message = "A-04-001") @Min(value = 1, message = "A-04-001") Long id, String name) {
         return Response.ofOk(problemService.showTestCode(
                 ProblemNameRequest.builder()
                         .id(id)
@@ -255,7 +257,7 @@ public class ProblemController {
     @NeedLogin(normal = true)
     @GetMapping("/getStdCode")
     @PermissionRequirement(PermissionType.CREATE_AND_EDIT_PROBLEM)
-    public void getStdCode(HttpServletResponse httpServletResponse, @NotNull(message = "A-04-001") @Min(value = 1, message = "A-04-001") Long id) throws PortableException {
+    public void getStdCode(HttpServletResponse httpServletResponse, @NotNull(message = "A-04-001") @Min(value = 1, message = "A-04-001") Long id) {
         try {
             problemService.downloadStdCode(id, httpServletResponse.getOutputStream());
         } catch (IOException e) {
@@ -266,7 +268,7 @@ public class ProblemController {
     @NeedLogin(normal = true)
     @GetMapping("/getTestCode")
     @PermissionRequirement(PermissionType.CREATE_AND_EDIT_PROBLEM)
-    public void getTestCode(HttpServletResponse httpServletResponse, @NotNull(message = "A-04-001") @Min(value = 1, message = "A-04-001") Long id, String name) throws PortableException {
+    public void getTestCode(HttpServletResponse httpServletResponse, @NotNull(message = "A-04-001") @Min(value = 1, message = "A-04-001") Long id, String name) {
         try {
             problemService.downloadTestCode(
                     ProblemNameRequest.builder()
@@ -282,7 +284,7 @@ public class ProblemController {
     @NeedLogin(normal = true)
     @PostMapping("/treatAndCheckProblem")
     @PermissionRequirement(PermissionType.CREATE_AND_EDIT_PROBLEM)
-    public Response<Void> treatAndCheckProblem(@Validated @RequestBody IdRequest idRequest) throws PortableException {
+    public Response<Void> treatAndCheckProblem(@Validated @RequestBody IdRequest idRequest) {
         problemService.treatAndCheckProblem(idRequest.getId());
         return Response.ofOk();
     }
@@ -290,7 +292,7 @@ public class ProblemController {
     @NeedLogin(normal = true)
     @PostMapping("/submit")
     @CheckCaptcha(value = 60000, name = "submit")
-    public Response<Long> submit(@Validated @RequestBody SubmitSolutionRequest submitSolutionRequest) throws PortableException {
+    public Response<Long> submit(@Validated @RequestBody SubmitSolutionRequest submitSolutionRequest) {
         return Response.ofOk(problemService.submit(submitSolutionRequest));
     }
 }

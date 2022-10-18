@@ -1,5 +1,9 @@
 package com.portable.server.impl;
 
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Optional;
+
 import com.portable.server.exception.PortableException;
 import com.portable.server.manager.impl.ProblemManagerImpl;
 import com.portable.server.manager.impl.SolutionDataManagerImpl;
@@ -20,6 +24,7 @@ import com.portable.server.test.UserContextBuilder;
 import com.portable.server.type.PermissionType;
 import com.portable.server.type.SolutionStatusType;
 import com.portable.server.type.SolutionType;
+
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -29,10 +34,6 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
-
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Optional;
 
 @ExtendWith(MockitoExtension.class)
 class SolutionServiceImplTest {
@@ -105,7 +106,7 @@ class SolutionServiceImplTest {
     }
 
     @Test
-    void testGetPublicStatusWithSuccess() throws PortableException {
+    void testGetPublicStatusWithSuccess() {
         user.setId(MOCKED_USER_ID);
         user.setHandle(MOCKED_USER_HANDLE);
         problem.setTitle(MOCKED_PROBLEM_TITLE);
@@ -188,7 +189,7 @@ class SolutionServiceImplTest {
     }
 
     @Test
-    void testGetSolutionWithNotOwnerPermission() throws PortableException {
+    void testGetSolutionWithNotOwnerPermission() {
         userContextBuilder.withNormalLoginIn(MockedValueMaker.mLong()).withPermission(PermissionType.VIEW_PUBLIC_SOLUTION);
 
         user.setHandle(MOCKED_USER_HANDLE);
@@ -215,7 +216,7 @@ class SolutionServiceImplTest {
     }
 
     @Test
-    void testGetSolutionWithOwner() throws PortableException {
+    void testGetSolutionWithOwner() {
         userContextBuilder.withNormalLoginIn(MOCKED_USER_ID);
 
         user.setHandle(MOCKED_USER_HANDLE);
@@ -243,7 +244,7 @@ class SolutionServiceImplTest {
     }
 
     @Test
-    void testGetSolutionWithNotOwnerPermissionAndMsg() throws PortableException {
+    void testGetSolutionWithNotOwnerPermissionAndMsg() {
         userContextBuilder.withNormalLoginIn(MockedValueMaker.mLong()).withPermission(PermissionType.VIEW_PUBLIC_SOLUTION, PermissionType.VIEW_SOLUTION_MESSAGE);
 
         user.setHandle(MOCKED_USER_HANDLE);

@@ -1,5 +1,11 @@
 package com.portable.server.service.impl;
 
+import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collectors;
+
+import javax.annotation.Resource;
+
 import com.portable.server.exception.PortableException;
 import com.portable.server.manager.ProblemManager;
 import com.portable.server.manager.SolutionDataManager;
@@ -18,13 +24,9 @@ import com.portable.server.service.SolutionService;
 import com.portable.server.type.PermissionType;
 import com.portable.server.type.SolutionType;
 import com.portable.server.util.UserContext;
+
 import org.apache.logging.log4j.util.Strings;
 import org.springframework.stereotype.Component;
-
-import javax.annotation.Resource;
-import java.util.List;
-import java.util.Objects;
-import java.util.stream.Collectors;
 
 /**
  * @author shiroha
@@ -45,7 +47,7 @@ public class SolutionServiceImpl implements SolutionService {
     private SolutionDataManager solutionDataManager;
 
     @Override
-    public PageResponse<SolutionListResponse, Void> getPublicStatus(PageRequest<SolutionListQueryRequest> pageRequest) throws PortableException {
+    public PageResponse<SolutionListResponse, Void> getPublicStatus(PageRequest<SolutionListQueryRequest> pageRequest) {
         SolutionListQueryRequest queryRequest = pageRequest.getQueryData();
         // 当提供了 userhandle 的时候，若用户不存在，则抛出错误，若为空值，则当作不设置条件
         Long userId = null;
@@ -76,7 +78,7 @@ public class SolutionServiceImpl implements SolutionService {
     }
 
     @Override
-    public SolutionDetailResponse getSolution(Long id) throws PortableException {
+    public SolutionDetailResponse getSolution(Long id) {
         Solution solution = solutionManager.selectSolutionById(id)
                 .orElseThrow(PortableException.from("A-05-001", id));
         if (!SolutionType.PUBLIC.equals(solution.getSolutionType())) {

@@ -1,5 +1,16 @@
 package com.portable.server.service.impl;
 
+import java.io.OutputStream;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Date;
+import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.stream.Collectors;
+
+import javax.annotation.Resource;
+
 import com.portable.server.exception.PortableException;
 import com.portable.server.manager.ContestManager;
 import com.portable.server.manager.ProblemDataManager;
@@ -39,22 +50,13 @@ import com.portable.server.type.SolutionStatusType;
 import com.portable.server.type.SolutionType;
 import com.portable.server.util.StreamUtils;
 import com.portable.server.util.UserContext;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
-
-import javax.annotation.Resource;
-import java.io.OutputStream;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Date;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.stream.Collectors;
 
 /**
  * @author shiroha
@@ -151,48 +153,48 @@ public class ProblemServiceImpl implements ProblemService {
     }
 
     @Override
-    public ProblemDetailResponse getProblem(Long id) throws PortableException {
+    public ProblemDetailResponse getProblem(Long id) {
         ProblemPackage problemPackage = getForViewProblem(id);
         User user = userManager.getAccountById(problemPackage.getProblem().getOwner()).orElse(null);
         return ProblemDetailResponse.of(problemPackage.getProblem(), problemPackage.getProblemData(), user);
     }
 
     @Override
-    public List<String> getProblemTestList(Long id) throws PortableException {
+    public List<String> getProblemTestList(Long id) {
         ProblemPackage problemPackage = getForViewProblemTest(id);
         return problemPackage.getProblemData().getTestName();
     }
 
     @Override
-    public String showTestInput(ProblemNameRequest problemNameRequest) throws PortableException {
+    public String showTestInput(ProblemNameRequest problemNameRequest) {
         ProblemPackage problemPackage = getForViewProblemTest(problemNameRequest.getId());
         problemPackage.getProblemData().findTest(problemNameRequest.getName());
         return StreamUtils.read(fileSupport.getTestInput(problemNameRequest.getId(), problemNameRequest.getName()), maxTestShowLen);
     }
 
     @Override
-    public String showTestOutput(ProblemNameRequest problemNameRequest) throws PortableException {
+    public String showTestOutput(ProblemNameRequest problemNameRequest) {
         ProblemPackage problemPackage = getForViewProblemTest(problemNameRequest.getId());
         problemPackage.getProblemData().findTest(problemNameRequest.getName());
         return StreamUtils.read(fileSupport.getTestOutput(problemNameRequest.getId(), problemNameRequest.getName()), maxTestShowLen);
     }
 
     @Override
-    public void downloadTestInput(ProblemNameRequest problemNameRequest, OutputStream outputStream) throws PortableException {
+    public void downloadTestInput(ProblemNameRequest problemNameRequest, OutputStream outputStream) {
         ProblemPackage problemPackage = getForViewProblemTest(problemNameRequest.getId());
         problemPackage.getProblemData().findTest(problemNameRequest.getName());
         StreamUtils.copy(fileSupport.getTestInput(problemNameRequest.getId(), problemNameRequest.getName()), outputStream);
     }
 
     @Override
-    public void downloadTestOutput(ProblemNameRequest problemNameRequest, OutputStream outputStream) throws PortableException {
+    public void downloadTestOutput(ProblemNameRequest problemNameRequest, OutputStream outputStream) {
         ProblemPackage problemPackage = getForViewProblemTest(problemNameRequest.getId());
         problemPackage.getProblemData().findTest(problemNameRequest.getName());
         StreamUtils.copy(fileSupport.getTestOutput(problemNameRequest.getId(), problemNameRequest.getName()), outputStream);
     }
 
     @Override
-    public Problem newProblem(ProblemContentRequest problemContentRequest) throws PortableException {
+    public Problem newProblem(ProblemContentRequest problemContentRequest) {
         Problem problem = problemManager.newProblem();
         ProblemData problemData = problemDataManager.newProblemData();
         problemContentRequest.toProblem(problem);
@@ -208,7 +210,7 @@ public class ProblemServiceImpl implements ProblemService {
     }
 
     @Override
-    public void updateProblemContent(ProblemContentRequest problemContentRequest) throws PortableException {
+    public void updateProblemContent(ProblemContentRequest problemContentRequest) {
         ProblemPackage problemPackage = getForFullAccessProblem(problemContentRequest.getId());
         problemContentRequest.toProblemData(problemPackage.getProblemData());
 
@@ -217,7 +219,7 @@ public class ProblemServiceImpl implements ProblemService {
     }
 
     @Override
-    public void updateProblemSetting(ProblemSettingRequest problemSettingRequest) throws PortableException {
+    public void updateProblemSetting(ProblemSettingRequest problemSettingRequest) {
         ProblemPackage problemPackage = getForEditProblem(problemSettingRequest.getId());
 
         // 发生题目访问权限更新
@@ -251,7 +253,7 @@ public class ProblemServiceImpl implements ProblemService {
     }
 
     @Override
-    public void updateProblemJudge(ProblemJudgeRequest problemJudgeRequest) throws PortableException {
+    public void updateProblemJudge(ProblemJudgeRequest problemJudgeRequest) {
         if (!JudgeCodeType.DIY.equals(problemJudgeRequest.getJudgeCodeType())) {
             problemJudgeRequest.setJudgeCode("");
         }
@@ -268,7 +270,7 @@ public class ProblemServiceImpl implements ProblemService {
     }
 
     @Override
-    public void addProblemTest(ProblemTestRequest problemTestRequest) throws PortableException {
+    public void addProblemTest(ProblemTestRequest problemTestRequest) {
         ProblemPackage problemPackage = getForEditProblem(problemTestRequest.getId());
 
         if (!problemPackage.getProblemData().getTestName().contains(problemTestRequest.getName())) {
@@ -287,7 +289,7 @@ public class ProblemServiceImpl implements ProblemService {
     }
 
     @Override
-    public void removeProblemTest(ProblemNameRequest problemNameRequest) throws PortableException {
+    public void removeProblemTest(ProblemNameRequest problemNameRequest) {
         ProblemPackage problemPackage = getForEditProblem(problemNameRequest.getId());
 
         problemPackage.getProblemData().findTest(problemNameRequest.getName());
@@ -307,7 +309,7 @@ public class ProblemServiceImpl implements ProblemService {
     }
 
     @Override
-    public ProblemStdTestCodeResponse getProblemStdTestCode(Long id) throws PortableException {
+    public ProblemStdTestCodeResponse getProblemStdTestCode(Long id) {
         ProblemPackage problemPackage = getForFullAccessProblem(id);
         ProblemStdTestCodeResponse problemStdTestCodeResponse = ProblemStdTestCodeResponse.of(problemPackage.getProblemData());
         problemStdTestCodeResponse.getTestCodeList().forEach(stdCode -> {
@@ -321,7 +323,7 @@ public class ProblemServiceImpl implements ProblemService {
     }
 
     @Override
-    public void updateProblemStdCode(ProblemCodeRequest problemCodeRequest) throws PortableException {
+    public void updateProblemStdCode(ProblemCodeRequest problemCodeRequest) {
         ProblemPackage problemPackage = getForEditProblem(problemCodeRequest.getId());
 
         problemCodeRequest.toStdCode(problemPackage.getProblemData().getStdCode());
@@ -337,7 +339,7 @@ public class ProblemServiceImpl implements ProblemService {
     }
 
     @Override
-    public void addProblemTestCode(ProblemCodeRequest problemStdCodeRequest) throws PortableException {
+    public void addProblemTestCode(ProblemCodeRequest problemStdCodeRequest) {
         ProblemPackage problemPackage = getForEditProblem(problemStdCodeRequest.getId());
 
         try {
@@ -361,38 +363,38 @@ public class ProblemServiceImpl implements ProblemService {
     }
 
     @Override
-    public void removeProblemTestCode(ProblemNameRequest problemNameRequest) throws PortableException {
+    public void removeProblemTestCode(ProblemNameRequest problemNameRequest) {
         ProblemPackage problemPackage = getForEditProblem(problemNameRequest.getId());
         problemPackage.getProblemData().getTestCodeList().removeIf(stdCode -> Objects.equals(stdCode.getName(), problemNameRequest.getName()));
         problemDataManager.updateProblemData(problemPackage.getProblemData());
     }
 
     @Override
-    public String showStdCode(Long id) throws PortableException {
+    public String showStdCode(Long id) {
         ProblemPackage problemPackage = getForFullAccessProblem(id);
         return problemPackage.getProblemData().getStdCode().getCode();
     }
 
     @Override
-    public String showTestCode(ProblemNameRequest problemNameRequest) throws PortableException {
+    public String showTestCode(ProblemNameRequest problemNameRequest) {
         ProblemPackage problemPackage = getForFullAccessProblem(problemNameRequest.getId());
         return problemPackage.getProblemData().findStdCode(problemNameRequest.getName()).getCode();
     }
 
     @Override
-    public void downloadStdCode(Long id, OutputStream outputStream) throws PortableException {
+    public void downloadStdCode(Long id, OutputStream outputStream) {
         ProblemPackage problemPackage = getForFullAccessProblem(id);
         StreamUtils.write(problemPackage.getProblemData().getStdCode().getCode(), outputStream);
     }
 
     @Override
-    public void downloadTestCode(ProblemNameRequest problemNameRequest, OutputStream outputStream) throws PortableException {
+    public void downloadTestCode(ProblemNameRequest problemNameRequest, OutputStream outputStream) {
         ProblemPackage problemPackage = getForFullAccessProblem(problemNameRequest.getId());
         StreamUtils.write(problemPackage.getProblemData().findStdCode(problemNameRequest.getName()).getCode(), outputStream);
     }
 
     @Override
-    public void treatAndCheckProblem(Long id) throws PortableException {
+    public void treatAndCheckProblem(Long id) {
         ProblemPackage problemPackage = getForEditProblem(id);
         // 已经是 normal 了
         if (problemPackage.getProblem().getStatusType().getChecked()) {
@@ -419,7 +421,7 @@ public class ProblemServiceImpl implements ProblemService {
     }
 
     @Override
-    public Long submit(SubmitSolutionRequest submitSolutionRequest) throws PortableException {
+    public Long submit(SubmitSolutionRequest submitSolutionRequest) {
         ProblemPackage problemPackage = getForViewProblem(submitSolutionRequest.getProblemId());
         if (!ProblemStatusType.NORMAL.equals(problemPackage.getProblem().getStatusType())) {
             throw PortableException.of("A-05-004", problemPackage.getProblem().getStatusType());
@@ -449,7 +451,7 @@ public class ProblemServiceImpl implements ProblemService {
         return solution.getId();
     }
 
-    private ProblemPackage getForViewProblem(Long id) throws PortableException {
+    private ProblemPackage getForViewProblem(Long id) {
         ProblemPackage problemPackage = getProblemPackage(id);
         ProblemVisitType accessType = ProblemVisitType.of(problemPackage.getProblem(), problemPackage.getContest());
         if (accessType.getViewProblem()) {
@@ -458,7 +460,7 @@ public class ProblemServiceImpl implements ProblemService {
         throw PortableException.of("A-02-004", id);
     }
 
-    private ProblemPackage getForViewProblemTest(Long id) throws PortableException {
+    private ProblemPackage getForViewProblemTest(Long id) {
         ProblemPackage problemPackage = getProblemPackage(id);
         ProblemVisitType accessType = ProblemVisitType.of(problemPackage.getProblem(), problemPackage.getContest());
         boolean viewAndShare = accessType.getViewProblem() && problemPackage.getProblemData().getShareTest();
@@ -468,7 +470,7 @@ public class ProblemServiceImpl implements ProblemService {
         throw PortableException.of("A-02-006");
     }
 
-    private ProblemPackage getForFullAccessProblem(Long id) throws PortableException {
+    private ProblemPackage getForFullAccessProblem(Long id) {
         ProblemPackage problemPackage = getProblemPackage(id);
         ProblemVisitType accessType = ProblemVisitType.of(problemPackage.getProblem(), problemPackage.getContest());
         if (accessType.getEditProblem()) {
@@ -477,7 +479,7 @@ public class ProblemServiceImpl implements ProblemService {
         throw PortableException.of("A-02-005", id);
     }
 
-    private ProblemPackage getForEditProblem(Long id) throws PortableException {
+    private ProblemPackage getForEditProblem(Long id) {
         ProblemPackage problemPackage = getForFullAccessProblem(id);
         if (problemPackage.getProblem().getStatusType().getOnTreatedOrCheck()) {
             throw PortableException.of("A-04-007");
@@ -485,7 +487,7 @@ public class ProblemServiceImpl implements ProblemService {
         return problemPackage;
     }
 
-    private ProblemPackage getProblemPackage(Long id) throws PortableException {
+    private ProblemPackage getProblemPackage(Long id) {
         Problem problem = problemManager.getProblemById(id)
                 .orElseThrow(PortableException.from("A-04-001", id));
         ProblemData problemData = problemDataManager.getProblemData(problem.getDataId());

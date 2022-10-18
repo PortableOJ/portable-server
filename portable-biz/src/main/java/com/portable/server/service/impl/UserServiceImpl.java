@@ -1,5 +1,16 @@
 package com.portable.server.service.impl;
 
+import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.stream.Collectors;
+
+import javax.annotation.PostConstruct;
+import javax.annotation.Resource;
+
 import com.portable.server.encryption.BCryptEncoder;
 import com.portable.server.exception.PortableException;
 import com.portable.server.manager.BatchManager;
@@ -24,6 +35,7 @@ import com.portable.server.type.OrganizationType;
 import com.portable.server.type.PermissionType;
 import com.portable.server.util.ImageUtils;
 import com.portable.server.util.UserContext;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -31,16 +43,6 @@ import lombok.NoArgsConstructor;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
-
-import javax.annotation.PostConstruct;
-import javax.annotation.Resource;
-import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.stream.Collectors;
 
 /**
  * @author shiroha
@@ -89,7 +91,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @PostConstruct
-    public void init() throws PortableException {
+    public void init() {
         // 创建 root 账户
         Optional<User> rootUser = userManager.getAccountByHandle(rootName);
         if (rootUser.isPresent()) {
@@ -111,7 +113,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public BaseUserInfoResponse login(LoginRequest loginRequest, String ip) throws PortableException {
+    public BaseUserInfoResponse login(LoginRequest loginRequest, String ip) {
         User user = userManager.getAccountByHandle(loginRequest.getHandle())
                 .orElseThrow(PortableException.from("A-01-001"));
         if (!BCryptEncoder.match(loginRequest.getPassword(), user.getPassword())) {
@@ -152,7 +154,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public synchronized NormalUserInfoResponse register(RegisterRequest registerRequest) throws PortableException {
+    public synchronized NormalUserInfoResponse register(RegisterRequest registerRequest) {
         Optional<User> userOptional = userManager.getAccountByHandle(registerRequest.getHandle());
         if (userOptional.isPresent()) {
             throw PortableException.of("A-01-003");
@@ -174,7 +176,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public BaseUserInfoResponse check() throws PortableException {
+    public BaseUserInfoResponse check() {
         UserContext userContext = UserContext.ctx();
         if (!userContext.isLogin()) {
             return null;
@@ -185,27 +187,27 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public BaseUserInfoResponse getUserInfo(String handle) throws PortableException {
+    public BaseUserInfoResponse getUserInfo(String handle) {
         User user = userManager.getAccountByHandle(handle)
                 .orElseThrow(PortableException.from("A-01-001"));
         return getUserBasicInfoResponse(user);
     }
 
     @Override
-    public BatchAdminUserInfoResponse getBatchUserInfo(String handle) throws PortableException {
+    public BatchAdminUserInfoResponse getBatchUserInfo(String handle) {
         BatchUserPackage batchUserPackage = checkBatchUser(handle);
         return BatchAdminUserInfoResponse.of(batchUserPackage.getUser(), batchUserPackage.getUserData(), batchUserPackage.getBatch(), true);
     }
 
     @Override
-    public void changeOrganization(String targetHandle, OrganizationType newOrganization) throws PortableException {
+    public void changeOrganization(String targetHandle, OrganizationType newOrganization) {
         NormalUserData targetUserData = organizationCheck(targetHandle);
         targetUserData.setOrganization(newOrganization);
         userDataManager.updateUserData(targetUserData);
     }
 
     @Override
-    public void addPermission(String targetHandle, PermissionType newPermission) throws PortableException {
+    public void addPermission(String targetHandle, PermissionType newPermission) {
         NormalUserData targetUserData = organizationCheck(targetHandle);
         if (!UserContext.ctx().getPermissionTypeSet().contains(newPermission)) {
             throw PortableException.of("A-02-007", newPermission);
@@ -218,7 +220,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public void removePermission(String targetHandle, PermissionType permission) throws PortableException {
+    public void removePermission(String targetHandle, PermissionType permission) {
         NormalUserData targetUserData = organizationCheck(targetHandle);
         if (!UserContext.ctx().getPermissionTypeSet().contains(permission)) {
             throw PortableException.of("A-02-007", permission);
@@ -234,7 +236,7 @@ public class UserServiceImpl implements UserService {
                                Integer left,
                                Integer top,
                                Integer width,
-                               Integer height) throws PortableException {
+                               Integer height) {
         UserContext userContext = UserContext.ctx();
         if (!userContext.getType().getIsNormal()) {
             throw PortableException.of("A-02-008", UserContext.ctx().getType());
@@ -248,7 +250,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public void updatePassword(UpdatePasswordRequest updatePasswordRequest) throws PortableException {
+    public void updatePassword(UpdatePasswordRequest updatePasswordRequest) {
         UserContext userContext = UserContext.ctx();
         if (!userContext.getType().getIsNormal()) {
             throw PortableException.of("A-01-011");
@@ -262,21 +264,21 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public void resetPassword(String handle, String newPassword) throws PortableException {
+    public void resetPassword(String handle, String newPassword) {
         organizationCheck(handle);
         Long userId = userManager.changeHandleToUserId(handle).orElseThrow(PortableException.from("A-01-001"));
         userManager.updatePassword(userId, BCryptEncoder.encoder(newPassword));
     }
 
     @Override
-    public void clearBatchUserIpList(String handle) throws PortableException {
+    public void clearBatchUserIpList(String handle) {
         BatchUserPackage batchUserPackage = checkBatchUser(handle);
         batchUserPackage.getUserData().setIpList(new ArrayList<>());
         userDataManager.updateUserData(batchUserPackage.getUserData());
     }
 
     @NotNull
-    private NormalUserData organizationCheck(String handle) throws PortableException {
+    private NormalUserData organizationCheck(String handle) {
         User user = userManager.getAccountByHandle(handle)
                 .orElseThrow(PortableException.from("A-01-001"));
         if (!user.getType().getIsNormal()) {
@@ -292,7 +294,7 @@ public class UserServiceImpl implements UserService {
         return targetUserData;
     }
 
-    private BaseUserInfoResponse getUserBasicInfoResponse(User user) throws PortableException {
+    private BaseUserInfoResponse getUserBasicInfoResponse(User user) {
         switch (user.getType()) {
             case LOCKED_NORMAL:
             case NORMAL:
@@ -309,7 +311,7 @@ public class UserServiceImpl implements UserService {
         }
     }
 
-    private BatchUserPackage checkBatchUser(String handle) throws PortableException {
+    private BatchUserPackage checkBatchUser(String handle) {
         User user = userManager.getAccountByHandle(handle).orElseThrow(PortableException.from("A-01-001"));
         if (!AccountType.BATCH.equals(user.getType())) {
             throw PortableException.of("A-01-014");

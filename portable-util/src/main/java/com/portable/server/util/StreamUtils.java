@@ -1,13 +1,13 @@
 package com.portable.server.util;
 
-import com.portable.server.constant.Constant;
-import com.portable.server.exception.PortableException;
-
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.charset.StandardCharsets;
+
+import com.portable.server.constant.Constant;
+import com.portable.server.exception.PortableException;
 
 /**
  * @author shiroha
@@ -16,7 +16,7 @@ public class StreamUtils {
 
     private static final Integer BUFFER_LEN = 4096;
 
-    public static void copy(InputStream inputStream, OutputStream outputStream) throws PortableException {
+    public static void copy(InputStream inputStream, OutputStream outputStream) {
         int bytesRead;
         try {
             for (byte[] buffer = new byte[BUFFER_LEN]; (bytesRead = inputStream.read(buffer)) != -1; ) {
@@ -30,7 +30,7 @@ public class StreamUtils {
         }
     }
 
-    public static void write(String string, OutputStream outputStream) throws PortableException {
+    public static void write(String string, OutputStream outputStream) {
         try {
             outputStream.write(string.getBytes(StandardCharsets.UTF_8));
         } catch (IOException e) {
@@ -38,7 +38,7 @@ public class StreamUtils {
         }
     }
 
-    public static void write(byte[] value, OutputStream outputStream) throws PortableException {
+    public static void write(byte[] value, OutputStream outputStream) {
         try {
             outputStream.write(value);
         } catch (IOException e) {
@@ -46,7 +46,7 @@ public class StreamUtils {
         }
     }
 
-    public static String read(InputStream inputStream) throws PortableException {
+    public static String read(InputStream inputStream) {
         ByteArrayOutputStream result = new ByteArrayOutputStream();
         int bytesRead;
         try {
@@ -60,7 +60,7 @@ public class StreamUtils {
         }
     }
 
-    public static String read(InputStream inputStream, Integer limit) throws PortableException {
+    public static String read(InputStream inputStream, Integer limit) {
         ByteArrayOutputStream result = new ByteArrayOutputStream();
         int bytesRead;
         try {

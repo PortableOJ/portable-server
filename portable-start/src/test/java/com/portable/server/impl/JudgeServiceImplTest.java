@@ -1,6 +1,8 @@
 package com.portable.server.impl;
 
-import com.portable.server.exception.PortableException;
+import java.util.ArrayList;
+import java.util.List;
+
 import com.portable.server.model.ServiceVerifyCode;
 import com.portable.server.model.judge.entity.JudgeContainer;
 import com.portable.server.model.judge.entity.UpdateJudgeContainer;
@@ -8,6 +10,7 @@ import com.portable.server.service.impl.JudgeServiceImpl;
 import com.portable.server.support.impl.JudgeSupportImpl;
 import com.portable.server.test.MockedValueMaker;
 import com.portable.server.type.SolutionStatusType;
+
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -17,9 +20,6 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
-
-import java.util.ArrayList;
-import java.util.List;
 
 @ExtendWith(MockitoExtension.class)
 class JudgeServiceImplTest {
@@ -84,7 +84,7 @@ class JudgeServiceImplTest {
     }
 
     @Test
-    void testUpdateJudgeContainer() throws PortableException {
+    void testUpdateJudgeContainer() {
         UpdateJudgeContainer updateJudgeContainer = UpdateJudgeContainer.builder()
                 .build();
 
@@ -94,7 +94,7 @@ class JudgeServiceImplTest {
     }
 
     @Test
-    void testKillJudge() throws PortableException {
+    void testKillJudge() {
         Long id = null;
 
         judgeService.killJudge(id);

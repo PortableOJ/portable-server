@@ -1,5 +1,18 @@
 package com.portable.server.service.impl;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
+
+import javax.annotation.Resource;
+
 import com.portable.server.exception.PortableException;
 import com.portable.server.manager.BatchManager;
 import com.portable.server.manager.ContestDataManager;
@@ -46,6 +59,7 @@ import com.portable.server.type.ContestVisitType;
 import com.portable.server.type.ProblemAccessType;
 import com.portable.server.type.SolutionType;
 import com.portable.server.util.UserContext;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -53,18 +67,6 @@ import lombok.NoArgsConstructor;
 import org.apache.logging.log4j.util.Strings;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.stereotype.Component;
-
-import javax.annotation.Resource;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.Set;
-import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 
 /**
  * @author shiroha
@@ -124,7 +126,7 @@ public class ContestServiceImpl implements ContestService {
     }
 
     @Override
-    public ContestVisitType authorizeContest(ContestAuth contestAuth) throws PortableException {
+    public ContestVisitType authorizeContest(ContestAuth contestAuth) {
         ContestPackage contestPackage = getContestPackage(contestAuth.getContestId());
         ContestVisitType contestVisitType = ContestVisitType.checkPermission(contestPackage.getContest(), contestPackage.getContestData());
 
@@ -151,22 +153,22 @@ public class ContestServiceImpl implements ContestService {
     }
 
     @Override
-    public ContestInfoResponse getContestInfo(Long contestId) throws PortableException {
+    public ContestInfoResponse getContestInfo(Long contestId) {
         return getContestDetail(contestId, true, false);
     }
 
     @Override
-    public ContestDetailResponse getContestData(Long contestId) throws PortableException {
+    public ContestDetailResponse getContestData(Long contestId) {
         return (ContestDetailResponse) getContestDetail(contestId, false, false);
     }
 
     @Override
-    public ContestAdminDetailResponse getContestAdminData(Long contestId) throws PortableException {
+    public ContestAdminDetailResponse getContestAdminData(Long contestId) {
         return (ContestAdminDetailResponse) getContestDetail(contestId, false, true);
     }
 
     @Override
-    public ProblemDetailResponse getContestProblem(Long contestId, Integer problemIndex) throws PortableException {
+    public ProblemDetailResponse getContestProblem(Long contestId, Integer problemIndex) {
         ContestPackage contestPackage = getContestPackage(contestId);
         ContestVisitType contestVisitType = ContestVisitType.checkPermission(contestPackage.getContest(), contestPackage.getContestData());
         if (!ContestVisitType.VISIT.approve(contestVisitType)) {
@@ -191,7 +193,7 @@ public class ContestServiceImpl implements ContestService {
     @Override
     public PageResponse<SolutionListResponse, Void> getContestStatusList(Long contestId,
                                                                          PageRequest<SolutionListQueryRequest> pageRequest)
-            throws PortableException {
+            {
         ContestPackage contestPackage = getContestPackage(contestId);
         ContestVisitType contestVisitType = ContestVisitType.checkPermission(contestPackage.getContest(), contestPackage.getContestData());
         if (!ContestVisitType.VISIT.approve(contestVisitType)) {
@@ -202,7 +204,7 @@ public class ContestServiceImpl implements ContestService {
 
     @Override
     public SolutionDetailResponse getContestSolution(Long solutionId)
-            throws PortableException {
+            {
         Solution solution = solutionManager.selectSolutionById(solutionId)
                 .orElseThrow(PortableException.from("A-05-001", solutionId));
         ContestPackage contestPackage = getContestPackage(solution.getContestId());
@@ -231,7 +233,7 @@ public class ContestServiceImpl implements ContestService {
     @Override
     public PageResponse<SolutionListResponse, Void> getContestTestStatusList(Long contestId,
                                                                              PageRequest<SolutionListQueryRequest> pageRequest)
-            throws PortableException {
+            {
         ContestPackage contestPackage = getContestPackage(contestId);
         ContestVisitType contestVisitType = ContestVisitType.checkPermission(contestPackage.getContest(), contestPackage.getContestData());
         if (!ContestVisitType.CO_AUTHOR.approve(contestVisitType)) {
@@ -241,7 +243,7 @@ public class ContestServiceImpl implements ContestService {
     }
 
     @Override
-    public SolutionDetailResponse getContestTestSolution(Long solutionId) throws PortableException {
+    public SolutionDetailResponse getContestTestSolution(Long solutionId) {
         Solution solution = solutionManager.selectSolutionById(solutionId)
                 .orElseThrow(PortableException.from("A-05-001", solutionId));
         ContestPackage contestPackage = getContestPackage(solution.getContestId());
@@ -262,7 +264,7 @@ public class ContestServiceImpl implements ContestService {
     @Override
     public PageResponse<ContestRankListResponse, ContestRankListResponse> getContestRank(Long contestId,
                                                                                          PageRequest<ContestRankPageRequest> pageRequest)
-            throws PortableException {
+            {
         ContestPackage contestPackage = getContestPackage(contestId);
         ContestVisitType contestVisitType = ContestVisitType.checkPermission(contestPackage.getContest(), contestPackage.getContestData());
         if (!ContestVisitType.VISIT.approve(contestVisitType)) {
@@ -304,7 +306,7 @@ public class ContestServiceImpl implements ContestService {
     }
 
     @Override
-    public Long submit(SubmitSolutionRequest submitSolutionRequest) throws PortableException {
+    public Long submit(SubmitSolutionRequest submitSolutionRequest) {
         ContestPackage contestPackage = getContestPackage(submitSolutionRequest.getContestId());
         ContestVisitType contestVisitType = ContestVisitType.checkPermission(contestPackage.getContest(), contestPackage.getContestData());
         if (!ContestVisitType.PARTICIPANT.approve(contestVisitType)) {
@@ -348,7 +350,7 @@ public class ContestServiceImpl implements ContestService {
     }
 
     @Override
-    public Long createContest(ContestContentRequest contestContentRequest) throws PortableException {
+    public Long createContest(ContestContentRequest contestContentRequest) {
         Contest contest = contestManager.newContest();
         BaseContestData contestData = contestDataManager.newContestData(contestContentRequest.getAccessType());
         contestContentRequest.toContest(contest);
@@ -369,7 +371,7 @@ public class ContestServiceImpl implements ContestService {
     }
 
     @Override
-    public void updateContest(ContestContentRequest contestContentRequest) throws PortableException {
+    public void updateContest(ContestContentRequest contestContentRequest) {
         ContestPackage contestPackage = getContestPackage(contestContentRequest.getId());
         Contest contest = contestPackage.getContest();
         BaseContestData contestData = contestPackage.getContestData();
@@ -418,7 +420,7 @@ public class ContestServiceImpl implements ContestService {
     }
 
     @Override
-    public void addContestProblem(ContestAddProblem contestAddProblem) throws PortableException {
+    public void addContestProblem(ContestAddProblem contestAddProblem) {
         ContestPackage contestPackage = getContestPackage(contestAddProblem.getContestId());
         ContestVisitType contestVisitType = ContestVisitType.checkPermission(contestPackage.getContest(), contestPackage.getContestData());
         if (!ContestVisitType.CO_AUTHOR.approve(contestVisitType)) {
@@ -443,7 +445,7 @@ public class ContestServiceImpl implements ContestService {
         updateContestLock(contestPackage, Collections.singletonList(contestAddProblem.getProblemId()));
     }
 
-    private ContestPackage getContestPackage(Long contestId) throws PortableException {
+    private ContestPackage getContestPackage(Long contestId) {
         Contest contest = contestManager.getContestById(contestId)
                 .orElseThrow(PortableException.from("A-08-002", contestId));
         BaseContestData contestData;
@@ -478,7 +480,7 @@ public class ContestServiceImpl implements ContestService {
      * @return 比赛详情
      * @throws PortableException 出现非法访问则抛出错误
      */
-    private ContestInfoResponse getContestDetail(Long contestId, Boolean info, Boolean admin) throws PortableException {
+    private ContestInfoResponse getContestDetail(Long contestId, Boolean info, Boolean admin) {
         ContestPackage contestPackage = getContestPackage(contestId);
         ContestVisitType contestVisitType = ContestVisitType.checkPermission(contestPackage.getContest(), contestPackage.getContestData());
 
@@ -556,7 +558,7 @@ public class ContestServiceImpl implements ContestService {
                                                              User owner,
                                                              List<ProblemListResponse> problemListResponses,
                                                              List<Boolean> problemLock,
-                                                             Set<User> coAuthor) throws PortableException {
+                                                             Set<User> coAuthor) {
         Set<User> inviteUserSet = null;
         switch (contestPackage.getContest().getAccessType()) {
             case PUBLIC:
@@ -582,7 +584,7 @@ public class ContestServiceImpl implements ContestService {
                 inviteUserSet);
     }
 
-    private void checkContestData(@NotNull ContestContentRequest contestContentRequest) throws PortableException {
+    private void checkContestData(@NotNull ContestContentRequest contestContentRequest) {
         // 校验题目是否有重复
         Set<Long> problemIdSet = new HashSet<>(contestContentRequest.getProblemList());
         // 去除重复
@@ -608,7 +610,7 @@ public class ContestServiceImpl implements ContestService {
         }
     }
 
-    private void setContestContentToContestData(@NotNull ContestContentRequest contestContentRequest, BaseContestData contestData) throws PortableException {
+    private void setContestContentToContestData(@NotNull ContestContentRequest contestContentRequest, BaseContestData contestData) {
         // 过滤掉不存在的邀请用户和邀请的合作出题人
         Set<Long> coAuthorIdSet = userManager.changeHandleToUserId(contestContentRequest.getCoAuthor());
 
@@ -640,7 +642,7 @@ public class ContestServiceImpl implements ContestService {
      * @param problemIdList  题目 ID 列表
      * @throws PortableException 题目不存在则抛出
      */
-    private void updateContestLock(@NotNull ContestPackage contestPackage, List<Long> problemIdList) throws PortableException {
+    private void updateContestLock(@NotNull ContestPackage contestPackage, List<Long> problemIdList) {
         // 锁定题目状态
         setProblemContestId(problemIdList, null, contestPackage.contest.getId());
         // 若为提供账号的比赛，则修改批量账号的绑定权限
@@ -652,7 +654,7 @@ public class ContestServiceImpl implements ContestService {
         }
     }
 
-    private void setProblemContestId(@NotNull List<Long> problemIdList, Long fromContestId, Long toContestId) throws PortableException {
+    private void setProblemContestId(@NotNull List<Long> problemIdList, Long fromContestId, Long toContestId) {
         long notExistProblemCount = problemIdList.stream()
                 .filter(problemId -> {
                     try {
@@ -680,7 +682,7 @@ public class ContestServiceImpl implements ContestService {
     @NotNull
     private PageResponse<SolutionListResponse, Void> getSolutionList(ContestPackage contestPackage,
                                                                      @NotNull PageRequest<SolutionListQueryRequest> pageRequest,
-                                                                     SolutionType solutionType) throws PortableException {
+                                                                     SolutionType solutionType) {
         SolutionListQueryRequest queryData = pageRequest.getQueryData();
 
         // 如果请求了指定问题的话，就不需要再重复查询指定的问题了

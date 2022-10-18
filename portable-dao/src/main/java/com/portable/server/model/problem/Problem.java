@@ -3,6 +3,7 @@ package com.portable.server.model.problem;
 import com.portable.server.exception.PortableException;
 import com.portable.server.type.ProblemAccessType;
 import com.portable.server.type.ProblemStatusType;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -61,7 +62,7 @@ public class Problem {
      * 进入未检查态
      * @throws PortableException 出错则返回
      */
-    public void toUncheck() throws PortableException {
+    public void toUncheck() {
         this.statusType = this.statusType.toUncheck();
     }
 
@@ -69,7 +70,7 @@ public class Problem {
      * 进入未处理态
      * @throws PortableException 出错则返回
      */
-    public void toUntreated() throws PortableException {
+    public void toUntreated() {
         this.statusType = this.statusType.toUntreated();
     }
 }

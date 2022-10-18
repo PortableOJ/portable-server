@@ -1,12 +1,13 @@
 package com.portable.server.manager;
 
+import java.io.InputStream;
+
 import com.portable.server.exception.PortableException;
 import com.portable.server.model.fs.FileData;
 import com.portable.server.type.FileStoreType;
+
 import org.jetbrains.annotations.NotNull;
 import org.springframework.stereotype.Component;
-
-import java.io.InputStream;
 
 /**
  * @author shiroha
@@ -24,7 +25,7 @@ public interface GridFsManager {
      * @throws PortableException 文件类型不匹配则抛出
      */
     @NotNull
-    String uploadImage(InputStream inputStream, String name, String contentType) throws PortableException;
+    String uploadImage(InputStream inputStream, String name, String contentType);
 
     /**
      * 上传并移除图片
@@ -37,7 +38,7 @@ public interface GridFsManager {
      * @throws PortableException 文件类型不匹配则抛出
      */
     @NotNull
-    String uploadAvatar(String removeId, InputStream inputStream, String name, String contentType) throws PortableException;
+    String uploadAvatar(String removeId, InputStream inputStream, String name, String contentType);
 
     /**
      * 获取文件
@@ -48,5 +49,5 @@ public interface GridFsManager {
      * @throws PortableException 文件类型不匹配则抛出
      */
     @NotNull
-    FileData get(String id, FileStoreType type) throws PortableException;
+    FileData get(String id, FileStoreType type);
 }

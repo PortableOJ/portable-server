@@ -1,5 +1,13 @@
 package com.portable.server.impl;
 
+import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Date;
+import java.util.HashSet;
+import java.util.Optional;
+import java.util.stream.Collectors;
+
 import com.portable.server.encryption.BCryptEncoder;
 import com.portable.server.exception.PortableException;
 import com.portable.server.manager.impl.BatchManagerImpl;
@@ -25,6 +33,7 @@ import com.portable.server.type.OrganizationType;
 import com.portable.server.type.PermissionType;
 import com.portable.server.util.ImageUtils;
 import com.portable.server.util.UserContext;
+
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -37,14 +46,6 @@ import org.mockito.MockedStatic;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.test.util.ReflectionTestUtils;
-
-import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.Optional;
-import java.util.stream.Collectors;
 
 @ExtendWith(MockitoExtension.class)
 class UserServiceImplTest {
@@ -122,7 +123,7 @@ class UserServiceImplTest {
     }
 
     @Test
-    void testInitWithNoRoot() throws PortableException {
+    void testInitWithNoRoot() {
         ReflectionTestUtils.setField(userService, "rootName", MOCKED_ROOT_NAME);
         ReflectionTestUtils.setField(userService, "rootPassword", MOCKED_ROOT_PASSWORD);
 
@@ -170,7 +171,7 @@ class UserServiceImplTest {
     }
 
     @Test
-    void testInitWithRoot() throws PortableException {
+    void testInitWithRoot() {
         user.setDataId(MOCKED_MONGO_ID);
 
         ReflectionTestUtils.setField(userService, "rootName", MOCKED_ROOT_NAME);
@@ -252,7 +253,7 @@ class UserServiceImplTest {
     }
 
     @Test
-    void testLoginWithNormalUserAndNoData() throws PortableException {
+    void testLoginWithNormalUserAndNoData() {
         LoginRequest loginRequest = new LoginRequest();
         loginRequest.setHandle(MOCKED_HANDLE);
         loginRequest.setPassword(MOCKED_INPUT_PASSWORD);
@@ -282,7 +283,7 @@ class UserServiceImplTest {
     }
 
     @Test
-    void testLoginWithNormalUserAndSuccess() throws PortableException {
+    void testLoginWithNormalUserAndSuccess() {
         LoginRequest loginRequest = new LoginRequest();
         loginRequest.setHandle(MOCKED_HANDLE);
         loginRequest.setPassword(MOCKED_INPUT_PASSWORD);
@@ -332,7 +333,7 @@ class UserServiceImplTest {
     }
 
     @Test
-    void testLoginWithBatchUserAndNoData() throws PortableException {
+    void testLoginWithBatchUserAndNoData() {
         LoginRequest loginRequest = new LoginRequest();
         loginRequest.setHandle(MOCKED_HANDLE);
         loginRequest.setPassword(MOCKED_INPUT_PASSWORD);
@@ -362,7 +363,7 @@ class UserServiceImplTest {
     }
 
     @Test
-    void testLoginWithBatchUserIPLockOtherIp() throws PortableException {
+    void testLoginWithBatchUserIPLockOtherIp() {
         LoginRequest loginRequest = new LoginRequest();
         loginRequest.setHandle(MOCKED_HANDLE);
         loginRequest.setPassword(MOCKED_INPUT_PASSWORD);
@@ -403,7 +404,7 @@ class UserServiceImplTest {
     }
 
     @Test
-    void testLoginWithBatchUserNoIPLockAndSuccess() throws PortableException {
+    void testLoginWithBatchUserNoIPLockAndSuccess() {
         LoginRequest loginRequest = new LoginRequest();
         loginRequest.setHandle(MOCKED_HANDLE);
         loginRequest.setPassword(MOCKED_INPUT_PASSWORD);
@@ -466,7 +467,7 @@ class UserServiceImplTest {
     }
 
     @Test
-    void testLoginWithBatchUserIpLockNoIPAndSuccess() throws PortableException {
+    void testLoginWithBatchUserIpLockNoIPAndSuccess() {
         LoginRequest loginRequest = new LoginRequest();
         loginRequest.setHandle(MOCKED_HANDLE);
         loginRequest.setPassword(MOCKED_INPUT_PASSWORD);
@@ -524,7 +525,7 @@ class UserServiceImplTest {
     }
 
     @Test
-    void testLoginWithBatchUserIpLockOneIPAndSuccess() throws PortableException {
+    void testLoginWithBatchUserIpLockOneIPAndSuccess() {
         LoginRequest loginRequest = new LoginRequest();
         loginRequest.setHandle(MOCKED_HANDLE);
         loginRequest.setPassword(MOCKED_INPUT_PASSWORD);
@@ -602,7 +603,7 @@ class UserServiceImplTest {
     }
 
     @Test
-    void testRegisterWithSuccess() throws PortableException {
+    void testRegisterWithSuccess() {
         RegisterRequest registerRequest = new RegisterRequest();
         registerRequest.setHandle(MOCKED_HANDLE);
         registerRequest.setPassword(MOCKED_INPUT_PASSWORD);
@@ -654,7 +655,7 @@ class UserServiceImplTest {
     }
 
     @Test
-    void testCheckWithNotLogin() throws PortableException {
+    void testCheckWithNotLogin() {
         userContext.setId(null);
         userContextMockedStatic.when(UserContext::ctx).thenReturn(userContext);
 
@@ -664,7 +665,7 @@ class UserServiceImplTest {
     }
 
     @Test
-    void testCheckWithLogin() throws PortableException {
+    void testCheckWithLogin() {
         user.setType(AccountType.NORMAL);
         userContext.setId(MOCKED_ID);
         userContextMockedStatic.when(UserContext::ctx).thenReturn(userContext);
@@ -689,7 +690,7 @@ class UserServiceImplTest {
     }
 
     @Test
-    void testGetUserInfoWithLockNormalNoUserData() throws PortableException {
+    void testGetUserInfoWithLockNormalNoUserData() {
         user.setDataId(MOCKED_MONGO_ID);
         user.setType(AccountType.LOCKED_NORMAL);
 
@@ -705,7 +706,7 @@ class UserServiceImplTest {
     }
 
     @Test
-    void testGetUserInfoWithLockNormalSuccess() throws PortableException {
+    void testGetUserInfoWithLockNormalSuccess() {
         user.setDataId(MOCKED_MONGO_ID);
         user.setType(AccountType.LOCKED_NORMAL);
 
@@ -727,7 +728,7 @@ class UserServiceImplTest {
     }
 
     @Test
-    void testGetUserInfoWithNormalNoUserData() throws PortableException {
+    void testGetUserInfoWithNormalNoUserData() {
         user.setDataId(MOCKED_MONGO_ID);
         user.setType(AccountType.NORMAL);
 
@@ -743,7 +744,7 @@ class UserServiceImplTest {
     }
 
     @Test
-    void testGetUserInfoWithNormalSuccess() throws PortableException {
+    void testGetUserInfoWithNormalSuccess() {
         user.setDataId(MOCKED_MONGO_ID);
         user.setType(AccountType.NORMAL);
 
@@ -765,7 +766,7 @@ class UserServiceImplTest {
     }
 
     @Test
-    void testGetUserInfoWithBatchNoUserData() throws PortableException {
+    void testGetUserInfoWithBatchNoUserData() {
         user.setDataId(MOCKED_MONGO_ID);
         user.setType(AccountType.BATCH);
 
@@ -781,7 +782,7 @@ class UserServiceImplTest {
     }
 
     @Test
-    void testGetUserInfoWithBatchNoBatch() throws PortableException {
+    void testGetUserInfoWithBatchNoBatch() {
         user.setDataId(MOCKED_MONGO_ID);
         user.setType(AccountType.BATCH);
 
@@ -798,7 +799,7 @@ class UserServiceImplTest {
     }
 
     @Test
-    void testGetUserInfoWithBatch() throws PortableException {
+    void testGetUserInfoWithBatch() {
         Batch batch = Batch.builder()
                 .contestId(MOCKED_CONTEST_ID)
                 .build();
@@ -847,7 +848,7 @@ class UserServiceImplTest {
     }
 
     @Test
-    void testGetBatchUserInfoWithNoUserData() throws PortableException {
+    void testGetBatchUserInfoWithNoUserData() {
         user.setDataId(MOCKED_MONGO_ID);
         user.setType(AccountType.BATCH);
 
@@ -863,7 +864,7 @@ class UserServiceImplTest {
     }
 
     @Test
-    void testGetBatchUserInfoWithNoBatch() throws PortableException {
+    void testGetBatchUserInfoWithNoBatch() {
         user.setDataId(MOCKED_MONGO_ID);
         user.setType(AccountType.BATCH);
         batchUserData.setBatchId(MOCKED_BATCH_ID);
@@ -881,7 +882,7 @@ class UserServiceImplTest {
     }
 
     @Test
-    void testGetBatchUserInfoWithNotMine() throws PortableException {
+    void testGetBatchUserInfoWithNotMine() {
         user.setDataId(MOCKED_MONGO_ID);
         user.setType(AccountType.BATCH);
         batchUserData.setBatchId(MOCKED_BATCH_ID);
@@ -902,7 +903,7 @@ class UserServiceImplTest {
     }
 
     @Test
-    void testGetBatchUserInfoWithSuccess() throws PortableException {
+    void testGetBatchUserInfoWithSuccess() {
         user.setDataId(MOCKED_MONGO_ID);
         user.setType(AccountType.BATCH);
         batchUserData.setBatchId(MOCKED_BATCH_ID);
@@ -953,7 +954,7 @@ class UserServiceImplTest {
     }
 
     @Test
-    void testChangeOrganizationWithNoUserData() throws PortableException {
+    void testChangeOrganizationWithNoUserData() {
         user.setType(AccountType.LOCKED_NORMAL);
         Mockito.when(userManager.getAccountByHandle(MOCKED_HANDLE)).thenReturn(Optional.of(user));
         Mockito.when(userDataManager.getNormalUserDataById(MOCKED_MONGO_ID)).thenThrow(PortableException.of("S-02-001"));
@@ -967,7 +968,7 @@ class UserServiceImplTest {
     }
 
     @Test
-    void testChangeOrganizationWithNotDominate() throws PortableException {
+    void testChangeOrganizationWithNotDominate() {
         user.setType(AccountType.LOCKED_NORMAL);
         userContext.setOrganization(OrganizationType.TEACHER);
         normalUserData.setOrganization(OrganizationType.ACMER);
@@ -984,7 +985,7 @@ class UserServiceImplTest {
     }
 
     @Test
-    void testChangeOrganizationWithSuccess() throws PortableException {
+    void testChangeOrganizationWithSuccess() {
         user.setType(AccountType.LOCKED_NORMAL);
         userContext.setOrganization(OrganizationType.ACMER);
         normalUserData.setOrganization(OrganizationType.STUDENT);
@@ -1027,7 +1028,7 @@ class UserServiceImplTest {
     }
 
     @Test
-    void testAddPermissionWithNoUserData() throws PortableException {
+    void testAddPermissionWithNoUserData() {
         user.setType(AccountType.LOCKED_NORMAL);
         Mockito.when(userManager.getAccountByHandle(MOCKED_HANDLE)).thenReturn(Optional.of(user));
         Mockito.when(userDataManager.getNormalUserDataById(MOCKED_MONGO_ID)).thenThrow(PortableException.of("S-02-001"));
@@ -1041,7 +1042,7 @@ class UserServiceImplTest {
     }
 
     @Test
-    void testAddPermissionWithNotDominate() throws PortableException {
+    void testAddPermissionWithNotDominate() {
         user.setType(AccountType.LOCKED_NORMAL);
         userContext.setOrganization(OrganizationType.TEACHER);
         normalUserData.setOrganization(OrganizationType.ACMER);
@@ -1058,7 +1059,7 @@ class UserServiceImplTest {
     }
 
     @Test
-    void testAddPermissionWithNoPermission() throws PortableException {
+    void testAddPermissionWithNoPermission() {
         user.setType(AccountType.LOCKED_NORMAL);
         userContext.setOrganization(OrganizationType.ACMER);
         userContext.getPermissionTypeSet().add(PermissionType.VIEW_SOLUTION_MESSAGE);
@@ -1076,7 +1077,7 @@ class UserServiceImplTest {
     }
 
     @Test
-    void testAddPermissionWithSuccess() throws PortableException {
+    void testAddPermissionWithSuccess() {
         user.setType(AccountType.LOCKED_NORMAL);
         userContext.setOrganization(OrganizationType.ACMER);
         userContext.getPermissionTypeSet().add(PermissionType.GRANT);
@@ -1121,7 +1122,7 @@ class UserServiceImplTest {
     }
 
     @Test
-    void testRemovePermissionWithNoUserData() throws PortableException {
+    void testRemovePermissionWithNoUserData() {
         user.setType(AccountType.LOCKED_NORMAL);
         Mockito.when(userManager.getAccountByHandle(MOCKED_HANDLE)).thenReturn(Optional.of(user));
         Mockito.when(userDataManager.getNormalUserDataById(MOCKED_MONGO_ID)).thenThrow(PortableException.of("S-02-001"));
@@ -1135,7 +1136,7 @@ class UserServiceImplTest {
     }
 
     @Test
-    void testRemovePermissionWithNotDominate() throws PortableException {
+    void testRemovePermissionWithNotDominate() {
         user.setType(AccountType.LOCKED_NORMAL);
         userContext.setOrganization(OrganizationType.TEACHER);
         normalUserData.setOrganization(OrganizationType.ACMER);
@@ -1152,7 +1153,7 @@ class UserServiceImplTest {
     }
 
     @Test
-    void testRemovePermissionWithNoPermission() throws PortableException {
+    void testRemovePermissionWithNoPermission() {
         user.setType(AccountType.LOCKED_NORMAL);
         userContext.setOrganization(OrganizationType.ACMER);
         userContext.getPermissionTypeSet().add(PermissionType.VIEW_SOLUTION_MESSAGE);
@@ -1170,7 +1171,7 @@ class UserServiceImplTest {
     }
 
     @Test
-    void testRemovePermissionWithSuccess() throws PortableException {
+    void testRemovePermissionWithSuccess() {
         user.setType(AccountType.LOCKED_NORMAL);
         userContext.setOrganization(OrganizationType.ACMER);
         userContext.getPermissionTypeSet().add(PermissionType.GRANT);
@@ -1207,7 +1208,7 @@ class UserServiceImplTest {
     }
 
     @Test
-    void testUploadAvatarWithNoUserData() throws PortableException {
+    void testUploadAvatarWithNoUserData() {
         userContext.setType(AccountType.NORMAL);
         userContext.setDataId(MOCKED_MONGO_ID);
         userContextMockedStatic.when(UserContext::ctx).thenReturn(userContext);
@@ -1224,7 +1225,7 @@ class UserServiceImplTest {
     }
 
     @Test
-    void testUploadAvatarWithSuccess() throws PortableException {
+    void testUploadAvatarWithSuccess() {
         userContext.setType(AccountType.NORMAL);
         userContext.setDataId(MOCKED_MONGO_ID);
         normalUserData.setAvatar(MOCKED_IP);
@@ -1315,7 +1316,7 @@ class UserServiceImplTest {
     }
 
     @Test
-    void testUpdatePasswordWithNotSuccess() throws PortableException {
+    void testUpdatePasswordWithNotSuccess() {
         userContext.setType(AccountType.NORMAL);
         userContext.setId(MOCKED_ID);
         user.setPassword(MOCKED_ROOT_PASSWORD_ENCODED);
@@ -1367,7 +1368,7 @@ class UserServiceImplTest {
     }
 
     @Test
-    void testclearBatchUserIpListWithNoUserData() throws PortableException {
+    void testclearBatchUserIpListWithNoUserData() {
         user.setDataId(MOCKED_MONGO_ID);
         user.setType(AccountType.BATCH);
 
@@ -1383,7 +1384,7 @@ class UserServiceImplTest {
     }
 
     @Test
-    void testclearBatchUserIpListWithNoBatch() throws PortableException {
+    void testclearBatchUserIpListWithNoBatch() {
         user.setDataId(MOCKED_MONGO_ID);
         user.setType(AccountType.BATCH);
         batchUserData.setBatchId(MOCKED_BATCH_ID);
@@ -1401,7 +1402,7 @@ class UserServiceImplTest {
     }
 
     @Test
-    void testclearBatchUserIpListWithNotMine() throws PortableException {
+    void testclearBatchUserIpListWithNotMine() {
         user.setDataId(MOCKED_MONGO_ID);
         user.setType(AccountType.BATCH);
         batchUserData.setBatchId(MOCKED_BATCH_ID);
@@ -1422,7 +1423,7 @@ class UserServiceImplTest {
     }
 
     @Test
-    void testclearBatchUserIpListWithSuccess() throws PortableException {
+    void testclearBatchUserIpListWithSuccess() {
         user.setDataId(MOCKED_MONGO_ID);
         user.setType(AccountType.BATCH);
         batchUserData.setBatchId(MOCKED_BATCH_ID);

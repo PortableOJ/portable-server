@@ -1,11 +1,5 @@
 package com.portable.server.util;
 
-import com.Ostermiller.util.CircularByteBuffer;
-import com.portable.server.constant.Constant;
-import com.portable.server.exception.PortableException;
-import net.coobird.thumbnailator.Thumbnails;
-
-import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
@@ -13,6 +7,14 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.Random;
+
+import javax.imageio.ImageIO;
+
+import com.portable.server.constant.Constant;
+import com.portable.server.exception.PortableException;
+
+import com.Ostermiller.util.CircularByteBuffer;
+import net.coobird.thumbnailator.Thumbnails;
 
 /**
  * @author shiroha
@@ -45,7 +47,7 @@ public class ImageUtils {
         RANDOM = new Random();
     }
 
-    public static InputStream cut(InputStream inputStream, Integer left, Integer top, Integer width, Integer height) throws PortableException {
+    public static InputStream cut(InputStream inputStream, Integer left, Integer top, Integer width, Integer height) {
         CircularByteBuffer circularByteBuffer = new CircularByteBuffer(CircularByteBuffer.INFINITE_SIZE);
         try {
             Thumbnails.of(inputStream)
@@ -61,7 +63,7 @@ public class ImageUtils {
         return circularByteBuffer.getInputStream();
     }
 
-    public static String createCaptcha(OutputStream outputStream) throws PortableException {
+    public static String createCaptcha(OutputStream outputStream) {
         BufferedImage image = new BufferedImage(CAPTCHA_WIDTH, CAPTCHA_HEIGHT, BufferedImage.TYPE_INT_BGR);
         Graphics2D g = (Graphics2D) image.getGraphics();
         g.fillRect(0, 0, CAPTCHA_WIDTH, CAPTCHA_HEIGHT);

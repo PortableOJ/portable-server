@@ -1,5 +1,17 @@
 package com.portable.server.model.request.contest;
 
+import java.util.Date;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
+
+import javax.validation.constraints.Future;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
+
 import com.portable.server.exception.PortableException;
 import com.portable.server.model.contest.BaseContestData;
 import com.portable.server.model.contest.BatchContestData;
@@ -9,22 +21,12 @@ import com.portable.server.model.contest.PrivateContestData;
 import com.portable.server.type.ContestAccessType;
 import com.portable.server.validation.Insert;
 import com.portable.server.validation.Update;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.validator.constraints.Range;
-
-import javax.validation.constraints.Future;
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Size;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 /**
  * @author shiroha
@@ -122,7 +124,7 @@ public class ContestContentRequest {
         contest.setAccessType(this.accessType);
     }
 
-    public void toContestData(BaseContestData contestData, Set<Long> coAuthorIdSet, Set<Long> inviteUserIdSet) throws PortableException {
+    public void toContestData(BaseContestData contestData, Set<Long> coAuthorIdSet, Set<Long> inviteUserIdSet) {
         contestData.setCoAuthor(coAuthorIdSet);
         contestData.setFreezeTime(this.freezeTime);
         contestData.setAnnouncement(this.announcement);
@@ -164,7 +166,7 @@ public class ContestContentRequest {
         }
     }
 
-    public void toContestData(BaseContestData contestData) throws PortableException {
+    public void toContestData(BaseContestData contestData) {
         contestData.setFreezeTime(this.freezeTime);
         contestData.setAnnouncement(this.announcement);
         contestData.setPenaltyTime(this.penaltyTime);

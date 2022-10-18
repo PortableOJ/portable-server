@@ -1,6 +1,7 @@
 package com.portable.server.impl;
 
-import com.Ostermiller.util.CircularByteBuffer;
+import java.io.IOException;
+
 import com.portable.server.exception.PortableException;
 import com.portable.server.manager.impl.GridFsManagerImpl;
 import com.portable.server.model.fs.FileData;
@@ -8,6 +9,8 @@ import com.portable.server.service.impl.FileServiceImpl;
 import com.portable.server.test.MockedValueMaker;
 import com.portable.server.type.FileStoreType;
 import com.portable.server.util.StreamUtils;
+
+import com.Ostermiller.util.CircularByteBuffer;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -17,8 +20,6 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
-
-import java.io.IOException;
 
 @ExtendWith(MockitoExtension.class)
 class FileServiceImplTest {
@@ -43,7 +44,7 @@ class FileServiceImplTest {
     }
 
     @Test
-    void uploadImage() throws PortableException {
+    void uploadImage() {
         CircularByteBuffer circularByteBuffer = new CircularByteBuffer();
 
         fileService.uploadImage(circularByteBuffer.getInputStream(), MOCKED_FILE_NAME, MOCKED_FILE_TYPE);

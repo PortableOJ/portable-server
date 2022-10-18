@@ -1,5 +1,11 @@
 package com.portable.server.manager.impl;
 
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Optional;
+
+import javax.annotation.Resource;
+
 import com.portable.server.exception.PortableException;
 import com.portable.server.manager.UserDataManager;
 import com.portable.server.model.user.BaseUserData;
@@ -7,13 +13,9 @@ import com.portable.server.model.user.BatchUserData;
 import com.portable.server.model.user.NormalUserData;
 import com.portable.server.repo.UserDataRepo;
 import com.portable.server.type.OrganizationType;
+
 import org.jetbrains.annotations.NotNull;
 import org.springframework.stereotype.Component;
-
-import javax.annotation.Resource;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.Optional;
 
 /**
  * @author shiroha
@@ -47,13 +49,13 @@ public class UserDataManagerImpl implements UserDataManager {
 
     @NotNull
     @Override
-    public NormalUserData getNormalUserDataById(String dataId) throws PortableException {
+    public NormalUserData getNormalUserDataById(String dataId) {
         return Optional.ofNullable(userDataRepo.getNormalUserDataById(dataId)).orElseThrow(PortableException.from("S-02-001"));
     }
 
     @NotNull
     @Override
-    public BatchUserData getBatchUserDataById(String dataId) throws PortableException {
+    public BatchUserData getBatchUserDataById(String dataId) {
         return Optional.ofNullable(userDataRepo.getBatchUserDataById(dataId)).orElseThrow(PortableException.from("S-02-001"));
     }
 

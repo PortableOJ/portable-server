@@ -2,6 +2,7 @@ package com.portable.server.type;
 
 import com.portable.server.exception.ExceptionTextType;
 import com.portable.server.exception.PortableException;
+
 import lombok.Getter;
 
 /**
@@ -141,15 +142,15 @@ public enum ProblemStatusType implements ExceptionTextType {
         this.checked = checked;
     }
 
-    public ProblemStatusType toUntreated() throws PortableException {
+    public ProblemStatusType toUntreated() {
         throw PortableException.of("S-01-004", this, "toUntreated");
     }
 
-    public ProblemStatusType toUncheck() throws PortableException {
+    public ProblemStatusType toUncheck() {
         throw PortableException.of("S-01-004", this, "toUncheck");
     }
 
-    public ProblemStatusType toBuild() throws PortableException {
+    public ProblemStatusType toBuild() {
         throw PortableException.of("S-01-004", this, "toBuild");
     }
 }

@@ -1,16 +1,17 @@
 package com.portable.server.service.impl;
 
-import com.portable.server.exception.PortableException;
+import java.util.List;
+
+import javax.annotation.Resource;
+
 import com.portable.server.model.ServiceVerifyCode;
 import com.portable.server.model.judge.entity.JudgeContainer;
 import com.portable.server.model.judge.entity.UpdateJudgeContainer;
 import com.portable.server.service.JudgeService;
 import com.portable.server.support.JudgeSupport;
 import com.portable.server.type.SolutionStatusType;
-import org.springframework.stereotype.Component;
 
-import javax.annotation.Resource;
-import java.util.List;
+import org.springframework.stereotype.Component;
 
 /**
  * @author shiroha
@@ -47,12 +48,12 @@ public class JudgeServiceImpl implements JudgeService {
     }
 
     @Override
-    public void updateJudgeContainer(UpdateJudgeContainer updateJudgeContainer) throws PortableException {
+    public void updateJudgeContainer(UpdateJudgeContainer updateJudgeContainer) {
         judgeSupport.updateJudgeContainer(updateJudgeContainer);
     }
 
     @Override
-    public void killJudge(Long solutionId) throws PortableException {
+    public void killJudge(Long solutionId) {
         judgeSupport.killJudgeTask(solutionId, SolutionStatusType.SYSTEM_ERROR, null, null);
     }
 

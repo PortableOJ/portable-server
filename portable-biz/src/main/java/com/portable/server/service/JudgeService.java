@@ -1,11 +1,11 @@
 package com.portable.server.service;
 
+import java.util.List;
+
 import com.portable.server.exception.PortableException;
 import com.portable.server.model.ServiceVerifyCode;
 import com.portable.server.model.judge.entity.JudgeContainer;
 import com.portable.server.model.judge.entity.UpdateJudgeContainer;
-
-import java.util.List;
 
 /**
  * @author shiroha
@@ -37,14 +37,14 @@ public interface JudgeService {
      * @param updateJudgeContainer 更新后的信息
      * @throws PortableException 遇到不存在此 Judge 时抛出错误
      */
-    void updateJudgeContainer(UpdateJudgeContainer updateJudgeContainer) throws PortableException;
+    void updateJudgeContainer(UpdateJudgeContainer updateJudgeContainer);
 
     /**
      * 终止一个 judge 任务
      * @param solutionId 提交 ID
      * @throws PortableException 当提交不存在时候则抛出
      */
-    void killJudge(Long solutionId) throws PortableException;
+    void killJudge(Long solutionId);
 
     /**
      * 终止一个 test 任务

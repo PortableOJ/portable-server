@@ -1,9 +1,9 @@
 package com.portable.server.exception;
 
+import java.util.function.Supplier;
+
 import lombok.Getter;
 import lombok.ToString;
-
-import java.util.function.Supplier;
 
 /**
  * Portable 异常
@@ -11,7 +11,7 @@ import java.util.function.Supplier;
  * @author shiroha
  */
 @ToString
-public class PortableException extends Exception {
+public class PortableException extends RuntimeException {
 
     @Getter
     private final String code;

@@ -1,5 +1,8 @@
 package com.portable.server.support;
 
+import java.io.InputStream;
+import java.util.List;
+
 import com.portable.server.exception.PortableException;
 import com.portable.server.model.ServiceVerifyCode;
 import com.portable.server.model.judge.entity.JudgeContainer;
@@ -8,9 +11,6 @@ import com.portable.server.model.response.judge.HeartbeatResponse;
 import com.portable.server.model.response.judge.SolutionInfoResponse;
 import com.portable.server.model.response.judge.TestInfoResponse;
 import com.portable.server.type.SolutionStatusType;
-
-import java.io.InputStream;
-import java.util.List;
 
 /**
  * @author shiroha
@@ -28,7 +28,7 @@ public interface JudgeSupport {
      * @param updateJudgeContainer 更新信息
      * @throws PortableException 不存在对应容器时抛出
      */
-    void updateJudgeContainer(UpdateJudgeContainer updateJudgeContainer) throws PortableException;
+    void updateJudgeContainer(UpdateJudgeContainer updateJudgeContainer);
 
     /**
      * 提交一个 judge 任务
@@ -36,7 +36,7 @@ public interface JudgeSupport {
      * @param solutionId 目标 solution 的 ID
      * @throws PortableException 提供到 solution ID 是不存在时抛出
      */
-    void addJudgeTask(Long solutionId) throws PortableException;
+    void addJudgeTask(Long solutionId);
 
     /**
      * 提交一个 test 任务
@@ -44,7 +44,7 @@ public interface JudgeSupport {
      * @param problemId 目标 solution 的 ID
      * @throws PortableException 提交不存在的问题时抛出错误
      */
-    void addTestTask(Long problemId) throws PortableException;
+    void addTestTask(Long problemId);
 
     /**
      * 结束一个 judge 任务
@@ -54,7 +54,7 @@ public interface JudgeSupport {
      * @param timeCost 耗时
      * @param memoryCost 内存消耗
      */
-    void killJudgeTask(Long solutionId, SolutionStatusType endType, Integer timeCost, Integer memoryCost) throws PortableException;
+    void killJudgeTask(Long solutionId, SolutionStatusType endType, Integer timeCost, Integer memoryCost);
 
     /**
      * 结束一个 test 任务
@@ -103,7 +103,7 @@ public interface JudgeSupport {
      * @return 返回注册成功后为其分配的编号
      * @throws PortableException serverCode 错误则抛出
      */
-    String registerJudge(String serverCode, Integer maxThreadCore, Integer maxWorkCore, Integer maxSocketCore) throws PortableException;
+    String registerJudge(String serverCode, Integer maxThreadCore, Integer maxWorkCore, Integer maxSocketCore);
 
     /**
      * 新增加一个 TCP 连接
@@ -111,7 +111,7 @@ public interface JudgeSupport {
      * @param judgeCode 被分配的编号
      * @throws PortableException judgeCode 错误则抛出
      */
-    void append(String judgeCode) throws PortableException;
+    void append(String judgeCode);
 
     /**
      * 关闭连接
@@ -127,7 +127,7 @@ public interface JudgeSupport {
      * @return 拉取的任务
      * @throws PortableException 当前未记录此连接则抛出
      */
-    HeartbeatResponse heartbeat(Integer socketAccumulation, Integer workAccumulation, Integer threadAccumulation) throws PortableException;
+    HeartbeatResponse heartbeat(Integer socketAccumulation, Integer workAccumulation, Integer threadAccumulation);
 
     /**
      * 获取提交的信息
@@ -136,7 +136,7 @@ public interface JudgeSupport {
      * @return 提交的信息
      * @throws PortableException 遇到意料之外的情况则抛出错误
      */
-    SolutionInfoResponse getSolutionInfo(Long solutionId) throws PortableException;
+    SolutionInfoResponse getSolutionInfo(Long solutionId);
 
     /**
      * 获取提交的代码
@@ -145,7 +145,7 @@ public interface JudgeSupport {
      * @return 提交的代码内容
      * @throws PortableException 遇到意料之外的情况则抛出错误
      */
-    String getSolutionCode(Long solutionId) throws PortableException;
+    String getSolutionCode(Long solutionId);
 
     /**
      * 获取题目的 DIY Judge 代码
@@ -154,7 +154,7 @@ public interface JudgeSupport {
      * @return 题目的 DIY judge 代码
      * @throws PortableException 遇到意料之外的情况则抛出错误
      */
-    String getProblemJudgeCode(Long problemId) throws PortableException;
+    String getProblemJudgeCode(Long problemId);
 
     /**
      * 提交编译结果
@@ -165,7 +165,7 @@ public interface JudgeSupport {
      * @param compileMsg         编译信息
      * @throws PortableException 遇到意料之外的情况则抛出错误
      */
-    void reportCompileResult(Long solutionId, Boolean compileResult, Boolean judgeCompileResult, String compileMsg) throws PortableException;
+    void reportCompileResult(Long solutionId, Boolean compileResult, Boolean judgeCompileResult, String compileMsg);
 
     /**
      * 获取运行结果
@@ -178,7 +178,7 @@ public interface JudgeSupport {
      * @param msg 运行的信息
      * @throws PortableException 遇到意料之外的情况则抛出错误
      */
-    void reportRunningResult(Long solutionId, SolutionStatusType statusType, String testName, Integer timeCost, Integer memoryCost, String msg) throws PortableException;
+    void reportRunningResult(Long solutionId, SolutionStatusType statusType, String testName, Integer timeCost, Integer memoryCost, String msg);
 
     /**
      * 获取默认的标准 judge 列表
@@ -194,7 +194,7 @@ public interface JudgeSupport {
      * @return 标准代码任务
      * @throws PortableException 找不到时抛出错误
      */
-    InputStream getStandardJudgeCode(String name) throws PortableException;
+    InputStream getStandardJudgeCode(String name);
 
     /**
      * 获取默认的标准 testlib 代码
@@ -211,7 +211,7 @@ public interface JudgeSupport {
      * @return 输入的文件
      * @throws PortableException 非法获取则抛出错误
      */
-    InputStream getProblemInputTest(Long problemId, String name) throws PortableException;
+    InputStream getProblemInputTest(Long problemId, String name);
 
     /**
      * 获取题目的标准输出文件
@@ -221,7 +221,7 @@ public interface JudgeSupport {
      * @return 输出的文件
      * @throws PortableException 非法获取则抛出错误
      */
-    InputStream getProblemOutputTest(Long problemId, String name) throws PortableException;
+    InputStream getProblemOutputTest(Long problemId, String name);
 
     /**
      * 获取下一组测试数据的名称
@@ -230,7 +230,7 @@ public interface JudgeSupport {
      * @return 测试数据的名称
      * @throws PortableException 非法获取则抛出错误
      */
-    String getSolutionNextTestName(Long solutionId) throws PortableException;
+    String getSolutionNextTestName(Long solutionId);
 
     /**
      * 获取生成输出的信息
@@ -238,7 +238,7 @@ public interface JudgeSupport {
      * @return 生成输出的信息
      * @throws PortableException 非法获取则抛出错误
      */
-    TestInfoResponse getTestInfo(Long problemId) throws PortableException;
+    TestInfoResponse getTestInfo(Long problemId);
 
     /**
      * 获取题目的标准代码
@@ -246,7 +246,7 @@ public interface JudgeSupport {
      * @return 标准代码
      * @throws PortableException 非法获取则抛出错误
      */
-    String getTestStdCode(Long problemId) throws PortableException;
+    String getTestStdCode(Long problemId);
 
     /**
      * 获取下一组测试名
@@ -254,7 +254,7 @@ public interface JudgeSupport {
      * @return 下一组测试的名称
      * @throws PortableException 非法获取则抛出错误
      */
-    String getNextTest(Long problemId) throws PortableException;
+    String getNextTest(Long problemId);
 
     /**
      * 回报题目的输出
@@ -265,19 +265,19 @@ public interface JudgeSupport {
      * @param value 当前片段的内容
      * @throws PortableException 无法写入则抛出错误
      */
-    void reportTestOutput(Long problemId, Boolean flag, String name, Integer pos, byte[] value) throws PortableException;
+    void reportTestOutput(Long problemId, Boolean flag, String name, Integer pos, byte[] value);
 
     /**
      * 返回生成输出的编译结果
      * @param problemId 问题 ID
      * @throws PortableException 必定抛出错误
      */
-    void reportTestCompileFail(Long problemId) throws PortableException;
+    void reportTestCompileFail(Long problemId);
 
     /**
      * 汇报成功执行结束
      * @param problemId 问题的 ID
      * @throws PortableException 遇到错误的问题 ID 则抛出
      */
-    void reportTestOver(Long problemId) throws PortableException;
+    void reportTestOver(Long problemId);
 }

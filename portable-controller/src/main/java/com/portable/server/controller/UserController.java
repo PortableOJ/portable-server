@@ -1,5 +1,14 @@
 package com.portable.server.controller;
 
+import java.io.IOException;
+import java.util.Optional;
+
+import javax.annotation.Resource;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
+
 import com.portable.server.annotation.CheckCaptcha;
 import com.portable.server.annotation.NeedLogin;
 import com.portable.server.annotation.PermissionRequirement;
@@ -18,6 +27,7 @@ import com.portable.server.service.UserService;
 import com.portable.server.type.PermissionType;
 import com.portable.server.util.RequestSessionConstant;
 import com.portable.server.util.UserContext;
+
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -25,14 +35,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
-
-import javax.annotation.Resource;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpSession;
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
-import java.io.IOException;
-import java.util.Optional;
 
 /**
  * @author shiroha
@@ -48,7 +50,7 @@ public class UserController {
     private static final Long IMAGE_FILE_MAX_SIZE = 1024 * 1024 * 10L;
 
     @PostMapping("/login")
-    public Response<BaseUserInfoResponse> login(HttpServletRequest request, @Validated @RequestBody LoginRequest loginRequest) throws PortableException {
+    public Response<BaseUserInfoResponse> login(HttpServletRequest request, @Validated @RequestBody LoginRequest loginRequest) {
         UserContext.set(UserContext.getNullUser());
         BaseUserInfoResponse baseUserInfoResponse = userService.login(loginRequest, getIp(request));
         HttpSession httpSession = request.getSession();
@@ -58,7 +60,7 @@ public class UserController {
 
     @CheckCaptcha
     @PostMapping("/register")
-    public Response<NormalUserInfoResponse> register(HttpServletRequest request, @Validated @RequestBody RegisterRequest registerRequest) throws PortableException {
+    public Response<NormalUserInfoResponse> register(HttpServletRequest request, @Validated @RequestBody RegisterRequest registerRequest) {
         UserContext.set(UserContext.getNullUser());
         NormalUserInfoResponse normalUserInfoResponse = userService.register(registerRequest);
         HttpSession httpSession = request.getSession();
@@ -76,26 +78,26 @@ public class UserController {
     }
 
     @GetMapping("/check")
-    public Response<BaseUserInfoResponse> check() throws PortableException {
+    public Response<BaseUserInfoResponse> check() {
         return Response.ofOk(userService.check());
     }
 
     @GetMapping("/getUserInfo")
-    public Response<BaseUserInfoResponse> getUserInfo(@NotBlank(message = "A-01-006") String handle) throws PortableException {
+    public Response<BaseUserInfoResponse> getUserInfo(@NotBlank(message = "A-01-006") String handle) {
         return Response.ofOk(userService.getUserInfo(handle));
     }
 
     @NeedLogin(normal = true)
     @GetMapping("/getBatchUserAdminInfo")
     @PermissionRequirement(PermissionType.CREATE_AND_EDIT_BATCH)
-    public Response<BaseUserInfoResponse> getBatchUserAdminInfo(@NotBlank(message = "A-01-006") String handle) throws PortableException {
+    public Response<BaseUserInfoResponse> getBatchUserAdminInfo(@NotBlank(message = "A-01-006") String handle) {
         return Response.ofOk(userService.getBatchUserInfo(handle));
     }
 
     @NeedLogin(normal = true)
     @PostMapping("/changeOrganization")
     @PermissionRequirement(PermissionType.CHANGE_ORGANIZATION)
-    public Response<Void> changeOrganization(@Validated @RequestBody OrganizationChangeRequest organizationChangeRequest) throws PortableException {
+    public Response<Void> changeOrganization(@Validated @RequestBody OrganizationChangeRequest organizationChangeRequest) {
         userService.changeOrganization(organizationChangeRequest.getTargetHandle(), organizationChangeRequest.getNewOrganization());
         return Response.ofOk();
     }
@@ -103,7 +105,7 @@ public class UserController {
     @NeedLogin(normal = true)
     @PostMapping("/addPermission")
     @PermissionRequirement(PermissionType.GRANT)
-    public Response<Void> grantPermission(@Validated @RequestBody PermissionRequest permissionRequest) throws PortableException {
+    public Response<Void> grantPermission(@Validated @RequestBody PermissionRequest permissionRequest) {
         userService.addPermission(permissionRequest.getTargetHandle(), permissionRequest.getPermissionType());
         return Response.ofOk();
     }
@@ -111,7 +113,7 @@ public class UserController {
     @NeedLogin(normal = true)
     @PostMapping("/removePermission")
     @PermissionRequirement(PermissionType.GRANT)
-    public Response<Void> removePermission(@Validated @RequestBody PermissionRequest permissionRequest) throws PortableException {
+    public Response<Void> removePermission(@Validated @RequestBody PermissionRequest permissionRequest) {
         userService.removePermission(permissionRequest.getTargetHandle(), permissionRequest.getPermissionType());
         return Response.ofOk();
     }
@@ -122,7 +124,7 @@ public class UserController {
                                          @NotNull(message = "A-00-001") Integer left,
                                          @NotNull(message = "A-00-001") Integer top,
                                          @NotNull(message = "A-00-001") Integer width,
-                                         @NotNull(message = "A-00-001") Integer height) throws PortableException {
+                                         @NotNull(message = "A-00-001") Integer height) {
         if (IMAGE_FILE_MAX_SIZE.compareTo(fileData.getSize()) < 0) {
             throw PortableException.of("A-09-002", IMAGE_FILE_MAX_SIZE);
         }
@@ -140,7 +142,7 @@ public class UserController {
 
     @NeedLogin(normal = true)
     @PostMapping("/changePassword")
-    public Response<Void> changePassword(HttpServletRequest request, @Validated @RequestBody UpdatePasswordRequest updatePasswordRequest) throws PortableException {
+    public Response<Void> changePassword(HttpServletRequest request, @Validated @RequestBody UpdatePasswordRequest updatePasswordRequest) {
         userService.updatePassword(updatePasswordRequest);
         UserContext.set(UserContext.getNullUser());
         HttpSession httpSession = request.getSession();
@@ -151,7 +153,7 @@ public class UserController {
     @NeedLogin(normal = true)
     @PostMapping("/resetPassword")
     @PermissionRequirement(PermissionType.RESET_PASSWORD)
-    public Response<Void> resetPassword(@Validated @RequestBody ResetPasswordRequest resetPasswordRequest) throws PortableException {
+    public Response<Void> resetPassword(@Validated @RequestBody ResetPasswordRequest resetPasswordRequest) {
         userService.resetPassword(resetPasswordRequest.getHandle(), resetPasswordRequest.getNewPassword());
         return Response.ofOk();
     }
@@ -159,7 +161,7 @@ public class UserController {
     @NeedLogin(normal = true)
     @PostMapping("/clearIpList")
     @PermissionRequirement(PermissionType.CREATE_AND_EDIT_BATCH)
-    public Response<Void> clearBatchUserIpList(@Validated @RequestBody NameRequest nameRequest) throws PortableException {
+    public Response<Void> clearBatchUserIpList(@Validated @RequestBody NameRequest nameRequest) {
         userService.clearBatchUserIpList(nameRequest.getName());
         return Response.ofOk();
     }

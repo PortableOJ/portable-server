@@ -1,5 +1,14 @@
 package com.portable.server.support.impl;
 
+import java.io.InputStream;
+import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.PriorityBlockingQueue;
+import java.util.stream.Collectors;
+
+import javax.annotation.PostConstruct;
+import javax.annotation.Resource;
+
 import com.portable.server.exception.PortableException;
 import com.portable.server.kit.RedisValueKit;
 import com.portable.server.manager.ProblemDataManager;
@@ -33,17 +42,10 @@ import com.portable.server.type.LanguageType;
 import com.portable.server.type.ProblemStatusType;
 import com.portable.server.type.SolutionStatusType;
 import com.portable.server.type.SolutionType;
+
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
-
-import javax.annotation.PostConstruct;
-import javax.annotation.Resource;
-import java.io.InputStream;
-import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.PriorityBlockingQueue;
-import java.util.stream.Collectors;
 
 /**
  * @author shiroha
@@ -164,7 +166,7 @@ public class JudgeSupportImpl implements JudgeSupport {
     }
 
     @Override
-    public void updateJudgeContainer(UpdateJudgeContainer updateJudgeContainer) throws PortableException {
+    public void updateJudgeContainer(UpdateJudgeContainer updateJudgeContainer) {
         JudgeContainer judgeContainer = judgeCodeJudgeMap.get(updateJudgeContainer.getJudgeCode());
         if (judgeContainer == null) {
             throw PortableException.of("A-07-001");
@@ -173,7 +175,7 @@ public class JudgeSupportImpl implements JudgeSupport {
     }
 
     @Override
-    public void addJudgeTask(Long solutionId) throws PortableException {
+    public void addJudgeTask(Long solutionId) {
         Solution solution = solutionManager.selectSolutionById(solutionId)
                 .orElseThrow(PortableException.from("S-06-001", solutionId));
         ProblemData problemData = getProblemData(solution.getProblemId());
@@ -188,7 +190,7 @@ public class JudgeSupportImpl implements JudgeSupport {
     }
 
     @Override
-    public void addTestTask(Long problemId) throws PortableException {
+    public void addTestTask(Long problemId) {
         ProblemData problemData = getTestProblemData(getTestProblem(problemId));
         TestJudgeWork testJudgeWork = new TestJudgeWork();
         testJudgeWork.setProblemId(problemId);
@@ -200,7 +202,7 @@ public class JudgeSupportImpl implements JudgeSupport {
     }
 
     @Override
-    public void killJudgeTask(Long solutionId, SolutionStatusType endType, Integer timeCost, Integer memoryCost) throws PortableException {
+    public void killJudgeTask(Long solutionId, SolutionStatusType endType, Integer timeCost, Integer memoryCost) {
         SolutionJudgeWork solutionJudgeWork = solutionJudgeWorkMap.get(solutionId);
         solutionJudgeWork.getJudgeContainer().getJudgeWorkMap().remove(solutionId);
         solutionJudgeWorkMap.remove(solutionId);
@@ -285,7 +287,7 @@ public class JudgeSupportImpl implements JudgeSupport {
     }
 
     @Override
-    public String registerJudge(String serverCode, Integer maxThreadCore, Integer maxWorkCore, Integer maxSocketCore) throws PortableException {
+    public String registerJudge(String serverCode, Integer maxThreadCore, Integer maxWorkCore, Integer maxSocketCore) {
         cleanJudgeContainer();
         if (!Objects.equals(serverCode, getServiceCode().getCode())) {
             throw PortableException.of("S-06-002", serverCode);
@@ -320,7 +322,7 @@ public class JudgeSupportImpl implements JudgeSupport {
     }
 
     @Override
-    public void append(String judgeCode) throws PortableException {
+    public void append(String judgeCode) {
         if (!judgeCodeJudgeMap.containsKey(judgeCode)) {
             throw PortableException.of("S-06-003", judgeCode);
         }
@@ -341,7 +343,7 @@ public class JudgeSupportImpl implements JudgeSupport {
     }
 
     @Override
-    public HeartbeatResponse heartbeat(Integer threadAccumulation, Integer workAccumulation, Integer socketAccumulation) throws PortableException {
+    public HeartbeatResponse heartbeat(Integer threadAccumulation, Integer workAccumulation, Integer socketAccumulation) {
         JudgeContainer judgeContainer = getCurContainer();
         judgeContainer.setThreadAccumulation(threadAccumulation);
         judgeContainer.setWorkAccumulation(workAccumulation);
@@ -389,7 +391,7 @@ public class JudgeSupportImpl implements JudgeSupport {
     }
 
     @Override
-    public SolutionInfoResponse getSolutionInfo(Long solutionId) throws PortableException {
+    public SolutionInfoResponse getSolutionInfo(Long solutionId) {
         getCurContainer();
         SolutionInfoResponse solutionInfoResponse = new SolutionInfoResponse();
         Solution solution = solutionManager.selectSolutionById(solutionId)
@@ -410,21 +412,21 @@ public class JudgeSupportImpl implements JudgeSupport {
     }
 
     @Override
-    public String getSolutionCode(Long solutionId) throws PortableException {
+    public String getSolutionCode(Long solutionId) {
         getCurContainer();
         SolutionData solutionData = getSolutionData(solutionId);
         return solutionData.getCode();
     }
 
     @Override
-    public String getProblemJudgeCode(Long problemId) throws PortableException {
+    public String getProblemJudgeCode(Long problemId) {
         getCurContainer();
         ProblemData problemData = getProblemData(problemId);
         return problemData.getJudgeCode();
     }
 
     @Override
-    public void reportCompileResult(Long solutionId, Boolean compileResult, Boolean judgeCompileResult, String compileMsg) throws PortableException {
+    public void reportCompileResult(Long solutionId, Boolean compileResult, Boolean judgeCompileResult, String compileMsg) {
         getCurContainer();
         SolutionData solutionData = getSolutionData(solutionId);
         solutionData.setCompileMsg(compileMsg);
@@ -438,7 +440,7 @@ public class JudgeSupportImpl implements JudgeSupport {
     }
 
     @Override
-    public void reportRunningResult(Long solutionId, SolutionStatusType statusType, String testName, Integer timeCost, Integer memoryCost, String msg) throws PortableException {
+    public void reportRunningResult(Long solutionId, SolutionStatusType statusType, String testName, Integer timeCost, Integer memoryCost, String msg) {
         getCurContainer();
         SolutionJudgeWork solutionJudgeWork = solutionJudgeWorkMap.get(solutionId);
         SolutionData solutionData = getSolutionData(solutionId);
@@ -474,7 +476,7 @@ public class JudgeSupportImpl implements JudgeSupport {
     }
 
     @Override
-    public InputStream getStandardJudgeCode(String name) throws PortableException {
+    public InputStream getStandardJudgeCode(String name) {
         try {
             JudgeCodeType judgeCodeType = JudgeCodeType.valueOf(name);
             return judgeCodeType.getCode();
@@ -489,19 +491,19 @@ public class JudgeSupportImpl implements JudgeSupport {
     }
 
     @Override
-    public InputStream getProblemInputTest(Long problemId, String name) throws PortableException {
+    public InputStream getProblemInputTest(Long problemId, String name) {
         getCurContainer();
         return fileSupport.getTestInput(problemId, name);
     }
 
     @Override
-    public InputStream getProblemOutputTest(Long problemId, String name) throws PortableException {
+    public InputStream getProblemOutputTest(Long problemId, String name) {
         getCurContainer();
         return fileSupport.getTestOutput(problemId, name);
     }
 
     @Override
-    public String getSolutionNextTestName(Long solutionId) throws PortableException {
+    public String getSolutionNextTestName(Long solutionId) {
         getCurContainer();
         SolutionJudgeWork solutionJudgeWork = solutionJudgeWorkMap.get(solutionId);
         if (solutionJudgeWork == null) {
@@ -512,7 +514,7 @@ public class JudgeSupportImpl implements JudgeSupport {
     }
 
     @Override
-    public TestInfoResponse getTestInfo(Long problemId) throws PortableException {
+    public TestInfoResponse getTestInfo(Long problemId) {
         getCurContainer();
         TestInfoResponse testInfoResponse = new TestInfoResponse();
         ProblemData problemData = getTestProblemData(getTestProblem(problemId));
@@ -528,7 +530,7 @@ public class JudgeSupportImpl implements JudgeSupport {
     }
 
     @Override
-    public String getTestStdCode(Long problemId) throws PortableException {
+    public String getTestStdCode(Long problemId) {
         getCurContainer();
 
         ProblemData problemData = getTestProblemData(getTestProblem(problemId));
@@ -537,7 +539,7 @@ public class JudgeSupportImpl implements JudgeSupport {
     }
 
     @Override
-    public String getNextTest(Long problemId) throws PortableException {
+    public String getNextTest(Long problemId) {
         getCurContainer();
         TestJudgeWork testJudgeWork = problemTestJudgeWorkMap.get(problemId);
         if (testJudgeWork == null) {
@@ -548,7 +550,7 @@ public class JudgeSupportImpl implements JudgeSupport {
     }
 
     @Override
-    public void reportTestOutput(Long problemId, Boolean flag, String name, Integer pos, byte[] value) throws PortableException {
+    public void reportTestOutput(Long problemId, Boolean flag, String name, Integer pos, byte[] value) {
         if (flag) {
             if (pos == 0) {
                 fileSupport.createTestOutput(problemId, name, value);
@@ -562,13 +564,13 @@ public class JudgeSupportImpl implements JudgeSupport {
     }
 
     @Override
-    public void reportTestCompileFail(Long problemId) throws PortableException {
+    public void reportTestCompileFail(Long problemId) {
         killTestTask(problemId, false);
         throw PortableException.of("S-06-009", problemId);
     }
 
     @Override
-    public void reportTestOver(Long problemId) throws PortableException {
+    public void reportTestOver(Long problemId) {
         killTestTask(problemId, true);
         Problem problem = getTestProblem(problemId);
         ProblemData problemData = getTestProblemData(problem);
@@ -605,7 +607,7 @@ public class JudgeSupportImpl implements JudgeSupport {
         problemDataManager.updateProblemData(problemData);
     }
 
-    private JudgeContainer getCurContainer() throws PortableException {
+    private JudgeContainer getCurContainer() {
         JudgeContainer judgeContainer = tcpJudgeMap.get(EpollManager.getAddress());
         if (judgeContainer == null) {
             throw PortableException.of("S-06-004", EpollManager.getAddress());
@@ -640,13 +642,13 @@ public class JudgeSupportImpl implements JudgeSupport {
         }
     }
 
-    private SolutionData getSolutionData(Long solutionId) throws PortableException {
+    private SolutionData getSolutionData(Long solutionId) {
         Solution solution = solutionManager.selectSolutionById(solutionId)
                 .orElseThrow(PortableException.from("S-06-001", solutionId));
         return solutionDataManager.getSolutionData(solution.getDataId());
     }
 
-    private ProblemData getProblemData(Long problemId) throws PortableException {
+    private ProblemData getProblemData(Long problemId) {
         Problem problem = problemManager.getProblemById(problemId)
                 .orElseThrow(PortableException.from("S-06-005", problemId));
         if (!problem.getStatusType().getTreated()) {
@@ -655,12 +657,12 @@ public class JudgeSupportImpl implements JudgeSupport {
         return problemDataManager.getProblemData(problem.getDataId());
     }
 
-    private Problem getTestProblem(Long problemId) throws PortableException {
+    private Problem getTestProblem(Long problemId) {
         return problemManager.getProblemById(problemId)
                 .orElseThrow(PortableException.from("S-06-005", problemId));
     }
 
-    private ProblemData getTestProblemData(Problem problem) throws PortableException {
+    private ProblemData getTestProblemData(Problem problem) {
         return problemDataManager.getProblemData(problem.getDataId());
     }
 
@@ -670,7 +672,7 @@ public class JudgeSupportImpl implements JudgeSupport {
      * @param solutionJudgeWork 这次提交的测试信息
      * @throws PortableException 题目不存在则抛出错误
      */
-    private void checkProblemCheckOver(SolutionJudgeWork solutionJudgeWork) throws PortableException {
+    private void checkProblemCheckOver(SolutionJudgeWork solutionJudgeWork) {
         if (JudgeWorkType.CHECK_PROBLEM.equals(solutionJudgeWork.getJudgeWorkType())) {
             synchronized (this) {
                 ProblemData problemData = getProblemData(solutionJudgeWork.getProblemId());

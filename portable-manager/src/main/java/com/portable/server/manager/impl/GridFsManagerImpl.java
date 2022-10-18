@@ -1,15 +1,16 @@
 package com.portable.server.manager.impl;
 
-import com.portable.server.exception.PortableException;
+import java.io.InputStream;
+
+import javax.annotation.Resource;
+
 import com.portable.server.manager.GridFsManager;
 import com.portable.server.model.fs.FileData;
 import com.portable.server.repo.GridFsRepo;
 import com.portable.server.type.FileStoreType;
+
 import org.jetbrains.annotations.NotNull;
 import org.springframework.stereotype.Component;
-
-import javax.annotation.Resource;
-import java.io.InputStream;
 
 /**
  * @author shiroha
@@ -21,12 +22,12 @@ public class GridFsManagerImpl implements GridFsManager {
     private GridFsRepo gridFsRepo;
 
     @Override
-    public @NotNull String uploadImage(InputStream inputStream, String name, String contentType) throws PortableException {
+    public @NotNull String uploadImage(InputStream inputStream, String name, String contentType) {
         return gridFsRepo.saveFile(inputStream, name, contentType, FileStoreType.IMAGE);
     }
 
     @Override
-    public @NotNull String uploadAvatar(String lastId, InputStream inputStream, String name, String contentType) throws PortableException {
+    public @NotNull String uploadAvatar(String lastId, InputStream inputStream, String name, String contentType) {
         if (lastId != null) {
             gridFsRepo.deleteFile(lastId);
         }
@@ -34,7 +35,7 @@ public class GridFsManagerImpl implements GridFsManager {
     }
 
     @Override
-    public @NotNull FileData get(String id, FileStoreType type) throws PortableException {
+    public @NotNull FileData get(String id, FileStoreType type) {
         return gridFsRepo.getFile(id, type);
     }
 }
