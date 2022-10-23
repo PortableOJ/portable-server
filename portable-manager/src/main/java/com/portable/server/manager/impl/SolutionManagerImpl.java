@@ -3,6 +3,7 @@ package com.portable.server.manager.impl;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -10,14 +11,19 @@ import java.util.stream.Collectors;
 
 import javax.annotation.Resource;
 
+import com.portable.server.exception.PortableException;
 import com.portable.server.helper.RedisValueHelper;
 import com.portable.server.manager.SolutionManager;
 import com.portable.server.mapper.SolutionMapper;
+import com.portable.server.model.problem.ProblemData;
 import com.portable.server.model.solution.Solution;
+import com.portable.server.model.solution.SolutionData;
+import com.portable.server.repo.SolutionDataRepo;
 import com.portable.server.type.SolutionStatusType;
 import com.portable.server.type.SolutionType;
 import com.portable.server.util.ObjectUtils;
 
+import org.jetbrains.annotations.NotNull;
 import org.springframework.stereotype.Component;
 
 /**
@@ -31,6 +37,9 @@ public class SolutionManagerImpl implements SolutionManager {
 
     @Resource
     private RedisValueHelper redisValueHelper;
+
+    @Resource
+    private SolutionDataRepo solutionDataRepo;
 
     /**
      * redis 的 key 和过期时间
@@ -52,6 +61,17 @@ public class SolutionManagerImpl implements SolutionManager {
                 .solutionType(null)
                 .timeCost(null)
                 .memoryCost(null)
+                .build();
+    }
+
+    @Override
+    public @NotNull SolutionData newSolutionData(ProblemData problemData) {
+        return SolutionData.builder()
+                .id(null)
+                .code(null)
+                .compileMsg(null)
+                .runningMsg(new HashMap<>(problemData.getTestName().size()))
+                .runOnVersion(problemData.getVersion())
                 .build();
     }
 
@@ -119,5 +139,20 @@ public class SolutionManagerImpl implements SolutionManager {
     @Override
     public void updateAllStatus(List<SolutionStatusType> fromStatus, SolutionStatusType toStatus) {
         solutionMapper.updateAllStatus(fromStatus, toStatus);
+    }
+
+    @Override
+    public @NotNull SolutionData getSolutionData(String dataId) {
+        return Optional.ofNullable(solutionDataRepo.getSolutionData(dataId)).orElseThrow(PortableException.from("S-05-001"));
+    }
+
+    @Override
+    public void insertSolutionData(SolutionData solutionData) {
+        solutionDataRepo.insertSolutionData(solutionData);
+    }
+
+    @Override
+    public void saveSolutionData(SolutionData solutionData) {
+        solutionDataRepo.saveSolutionData(solutionData);
     }
 }

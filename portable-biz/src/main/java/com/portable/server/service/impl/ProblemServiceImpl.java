@@ -15,7 +15,6 @@ import com.portable.server.exception.PortableException;
 import com.portable.server.manager.ContestManager;
 import com.portable.server.manager.ProblemDataManager;
 import com.portable.server.manager.ProblemManager;
-import com.portable.server.manager.SolutionDataManager;
 import com.portable.server.manager.SolutionManager;
 import com.portable.server.manager.UserManager;
 import com.portable.server.model.contest.Contest;
@@ -84,9 +83,6 @@ public class ProblemServiceImpl implements ProblemService {
 
     @Resource
     private SolutionManager solutionManager;
-
-    @Resource
-    private SolutionDataManager solutionDataManager;
 
     @Resource
     private ContestManager contestManager;
@@ -431,9 +427,9 @@ public class ProblemServiceImpl implements ProblemService {
         userManager.updateUserData(normalUserData);
 
         // 创建提交信息
-        SolutionData solutionData = solutionDataManager.newSolutionData(problemPackage.getProblemData());
+        SolutionData solutionData = solutionManager.newSolutionData(problemPackage.getProblemData());
         submitSolutionRequest.toSolutionData(solutionData);
-        solutionDataManager.insertSolutionData(solutionData);
+        solutionManager.insertSolutionData(solutionData);
 
         Solution solution = solutionManager.newSolution();
         submitSolutionRequest.toSolution(solution);

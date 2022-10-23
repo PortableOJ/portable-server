@@ -6,7 +6,6 @@ import java.util.Optional;
 
 import com.portable.server.exception.PortableException;
 import com.portable.server.manager.impl.ProblemManagerImpl;
-import com.portable.server.manager.impl.SolutionDataManagerImpl;
 import com.portable.server.manager.impl.SolutionManagerImpl;
 import com.portable.server.manager.impl.UserManagerImpl;
 import com.portable.server.model.problem.Problem;
@@ -49,9 +48,6 @@ class SolutionServiceImplTest {
 
     @Mock
     private SolutionManagerImpl solutionManager;
-
-    @Mock
-    private SolutionDataManagerImpl solutionDataManager;
 
     private static final Long MOCKED_SOLUTION_ID = MockedValueMaker.mLong();
     private static final Long MOCKED_USER_ID = MockedValueMaker.mLong();
@@ -200,7 +196,7 @@ class SolutionServiceImplTest {
         solution.setDataId(MOCKED_SOLUTION_MONGO_ID);
 
         Mockito.when(solutionManager.selectSolutionById(MOCKED_SOLUTION_ID)).thenReturn(Optional.of(solution));
-        Mockito.when(solutionDataManager.getSolutionData(MOCKED_SOLUTION_MONGO_ID)).thenReturn(solutionData);
+        Mockito.when(solutionManager.getSolutionData(MOCKED_SOLUTION_MONGO_ID)).thenReturn(solutionData);
         Mockito.when(userManager.getAccountById(MOCKED_USER_ID)).thenReturn(Optional.of(user));
         Mockito.when(problemManager.getProblemById(MOCKED_PROBLEM_ID)).thenReturn(Optional.of(problem));
 
@@ -228,7 +224,7 @@ class SolutionServiceImplTest {
         solutionData.setRunningMsg(new HashMap<>());
 
         Mockito.when(solutionManager.selectSolutionById(MOCKED_SOLUTION_ID)).thenReturn(Optional.of(solution));
-        Mockito.when(solutionDataManager.getSolutionData(MOCKED_SOLUTION_MONGO_ID)).thenReturn(solutionData);
+        Mockito.when(solutionManager.getSolutionData(MOCKED_SOLUTION_MONGO_ID)).thenReturn(solutionData);
         Mockito.when(userManager.getAccountById(MOCKED_USER_ID)).thenReturn(Optional.of(user));
         Mockito.when(problemManager.getProblemById(MOCKED_PROBLEM_ID)).thenReturn(Optional.of(problem));
 
@@ -256,7 +252,7 @@ class SolutionServiceImplTest {
         solutionData.setRunningMsg(new HashMap<>());
 
         Mockito.when(solutionManager.selectSolutionById(MOCKED_SOLUTION_ID)).thenReturn(Optional.of(solution));
-        Mockito.when(solutionDataManager.getSolutionData(MOCKED_SOLUTION_MONGO_ID)).thenReturn(solutionData);
+        Mockito.when(solutionManager.getSolutionData(MOCKED_SOLUTION_MONGO_ID)).thenReturn(solutionData);
         Mockito.when(userManager.getAccountById(MOCKED_USER_ID)).thenReturn(Optional.of(user));
         Mockito.when(problemManager.getProblemById(MOCKED_PROBLEM_ID)).thenReturn(Optional.of(problem));
 

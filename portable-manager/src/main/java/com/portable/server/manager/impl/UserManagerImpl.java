@@ -41,7 +41,7 @@ public class UserManagerImpl implements UserManager {
     private UserDataRepo userDataRepo;
 
     /**
-     * redis 缓存的 Key 前缀
+     * redis 缓存相关配置
      */
     private static final String REDIS_USER_ID_TO_DATA_PREFIX = "USER_CACHE";
     private static final Long REDIS_USER_ID_TO_DATA_TIME = 30L;

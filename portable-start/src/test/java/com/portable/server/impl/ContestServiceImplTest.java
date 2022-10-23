@@ -15,7 +15,6 @@ import com.portable.server.manager.impl.ContestDataManagerImpl;
 import com.portable.server.manager.impl.ContestManagerImpl;
 import com.portable.server.manager.impl.ProblemDataManagerImpl;
 import com.portable.server.manager.impl.ProblemManagerImpl;
-import com.portable.server.manager.impl.SolutionDataManagerImpl;
 import com.portable.server.manager.impl.SolutionManagerImpl;
 import com.portable.server.manager.impl.UserManagerImpl;
 import com.portable.server.model.batch.Batch;
@@ -95,9 +94,6 @@ class ContestServiceImplTest {
 
     @Mock
     private SolutionManagerImpl solutionManager;
-
-    @Mock
-    private SolutionDataManagerImpl solutionDataManager;
 
     @Mock
     private BatchManagerImpl batchManager;
@@ -984,7 +980,7 @@ class ContestServiceImplTest {
         Mockito.when(contestManager.getContestById(MOCKED_CONTEST_ID)).thenReturn(Optional.of(contest));
         Mockito.when(contestDataManager.getPublicContestDataById(MOCKED_CONTEST_MONGO_ID)).thenReturn(publicContestData);
         contestVisitTypeMockedStatic.when(() -> ContestVisitType.checkPermission(Mockito.any(), Mockito.any())).thenReturn(ContestVisitType.VISIT);
-        Mockito.when(solutionDataManager.getSolutionData(MOCKED_SOLUTION_MONGO_ID)).thenReturn(solutionData);
+        Mockito.when(solutionManager.getSolutionData(MOCKED_SOLUTION_MONGO_ID)).thenReturn(solutionData);
 
         SolutionDetailResponse retVal = contestService.getContestSolution(MOCKED_SOLUTION_ID);
 
@@ -1031,7 +1027,7 @@ class ContestServiceImplTest {
         Mockito.when(contestManager.getContestById(MOCKED_CONTEST_ID)).thenReturn(Optional.of(contest));
         Mockito.when(contestDataManager.getPublicContestDataById(MOCKED_CONTEST_MONGO_ID)).thenReturn(publicContestData);
         contestVisitTypeMockedStatic.when(() -> ContestVisitType.checkPermission(Mockito.any(), Mockito.any())).thenReturn(ContestVisitType.VISIT);
-        Mockito.when(solutionDataManager.getSolutionData(MOCKED_SOLUTION_MONGO_ID)).thenReturn(solutionData);
+        Mockito.when(solutionManager.getSolutionData(MOCKED_SOLUTION_MONGO_ID)).thenReturn(solutionData);
 
         SolutionDetailResponse retVal = contestService.getContestSolution(MOCKED_SOLUTION_ID);
 
@@ -1078,7 +1074,7 @@ class ContestServiceImplTest {
         Mockito.when(contestManager.getContestById(MOCKED_CONTEST_ID)).thenReturn(Optional.of(contest));
         Mockito.when(contestDataManager.getPublicContestDataById(MOCKED_CONTEST_MONGO_ID)).thenReturn(publicContestData);
         contestVisitTypeMockedStatic.when(() -> ContestVisitType.checkPermission(Mockito.any(), Mockito.any())).thenReturn(ContestVisitType.ADMIN);
-        Mockito.when(solutionDataManager.getSolutionData(MOCKED_SOLUTION_MONGO_ID)).thenReturn(solutionData);
+        Mockito.when(solutionManager.getSolutionData(MOCKED_SOLUTION_MONGO_ID)).thenReturn(solutionData);
 
         SolutionDetailResponse retVal = contestService.getContestSolution(MOCKED_SOLUTION_ID);
 
@@ -1310,7 +1306,7 @@ class ContestServiceImplTest {
         Mockito.when(contestManager.getContestById(MOCKED_CONTEST_ID)).thenReturn(Optional.of(contest));
         Mockito.when(contestDataManager.getPublicContestDataById(MOCKED_CONTEST_MONGO_ID)).thenReturn(publicContestData);
         contestVisitTypeMockedStatic.when(() -> ContestVisitType.checkPermission(Mockito.any(), Mockito.any())).thenReturn(ContestVisitType.CO_AUTHOR);
-        Mockito.when(solutionDataManager.getSolutionData(MOCKED_SOLUTION_MONGO_ID)).thenReturn(solutionData);
+        Mockito.when(solutionManager.getSolutionData(MOCKED_SOLUTION_MONGO_ID)).thenReturn(solutionData);
 
         SolutionDetailResponse retVal = contestService.getContestTestSolution(MOCKED_SOLUTION_ID);
 
@@ -1578,13 +1574,13 @@ class ContestServiceImplTest {
         Mockito.when(problemManager.getProblemById(MOCKED_PROBLEM_ID)).thenReturn(Optional.of(problem));
         Mockito.when(problemDataManager.getProblemData(MOCKED_PROBLEM_MONGO_ID)).thenReturn(problemData);
         Mockito.when(solutionManager.newSolution()).thenCallRealMethod();
-        Mockito.when(solutionDataManager.newSolutionData(Mockito.any())).thenCallRealMethod();
+        Mockito.when(solutionManager.newSolutionData(Mockito.any())).thenCallRealMethod();
 
         Mockito.doAnswer(invocationOnMock -> {
             SolutionData solutionData = invocationOnMock.getArgument(0);
             solutionData.setId(MOCKED_SOLUTION_MONGO_ID);
             return null;
-        }).when(solutionDataManager).insertSolutionData(Mockito.any());
+        }).when(solutionManager).insertSolutionData(Mockito.any());
         Mockito.doAnswer(invocationOnMock -> {
             Solution solution = invocationOnMock.getArgument(0);
             solution.setId(MOCKED_SOLUTION_ID);
@@ -1605,7 +1601,7 @@ class ContestServiceImplTest {
         /// region 校验写入的提交数据
 
         ArgumentCaptor<SolutionData> solutionDataArgumentCaptor = ArgumentCaptor.forClass(SolutionData.class);
-        Mockito.verify(solutionDataManager).insertSolutionData(solutionDataArgumentCaptor.capture());
+        Mockito.verify(solutionManager).insertSolutionData(solutionDataArgumentCaptor.capture());
         SolutionData solutionDataCP = solutionDataArgumentCaptor.getValue();
         Assertions.assertEquals(MOCKED_CODE, solutionDataCP.getCode());
 
@@ -1651,13 +1647,13 @@ class ContestServiceImplTest {
         Mockito.when(problemManager.getProblemById(MOCKED_PROBLEM_ID)).thenReturn(Optional.of(problem));
         Mockito.when(problemDataManager.getProblemData(MOCKED_PROBLEM_MONGO_ID)).thenReturn(problemData);
         Mockito.when(solutionManager.newSolution()).thenCallRealMethod();
-        Mockito.when(solutionDataManager.newSolutionData(Mockito.any())).thenCallRealMethod();
+        Mockito.when(solutionManager.newSolutionData(Mockito.any())).thenCallRealMethod();
 
         Mockito.doAnswer(invocationOnMock -> {
             SolutionData solutionData = invocationOnMock.getArgument(0);
             solutionData.setId(MOCKED_SOLUTION_MONGO_ID);
             return null;
-        }).when(solutionDataManager).insertSolutionData(Mockito.any());
+        }).when(solutionManager).insertSolutionData(Mockito.any());
         Mockito.doAnswer(invocationOnMock -> {
             Solution solution = invocationOnMock.getArgument(0);
             solution.setId(MOCKED_SOLUTION_ID);
@@ -1678,7 +1674,7 @@ class ContestServiceImplTest {
         /// region 校验写入的提交数据
 
         ArgumentCaptor<SolutionData> solutionDataArgumentCaptor = ArgumentCaptor.forClass(SolutionData.class);
-        Mockito.verify(solutionDataManager).insertSolutionData(solutionDataArgumentCaptor.capture());
+        Mockito.verify(solutionManager).insertSolutionData(solutionDataArgumentCaptor.capture());
         SolutionData solutionDataCP = solutionDataArgumentCaptor.getValue();
         Assertions.assertEquals(MOCKED_CODE, solutionDataCP.getCode());
 

@@ -8,7 +8,6 @@ import javax.annotation.Resource;
 
 import com.portable.server.exception.PortableException;
 import com.portable.server.manager.ProblemManager;
-import com.portable.server.manager.SolutionDataManager;
 import com.portable.server.manager.SolutionManager;
 import com.portable.server.manager.UserManager;
 import com.portable.server.model.problem.Problem;
@@ -42,9 +41,6 @@ public class SolutionServiceImpl implements SolutionService {
 
     @Resource
     private SolutionManager solutionManager;
-
-    @Resource
-    private SolutionDataManager solutionDataManager;
 
     @Override
     public PageResponse<SolutionListResponse, Void> getPublicStatus(PageRequest<SolutionListQueryRequest> pageRequest) {
@@ -90,7 +86,7 @@ public class SolutionServiceImpl implements SolutionService {
         if (!isOwner && !hasPermission) {
             throw PortableException.of("A-05-003");
         }
-        SolutionData solutionData = solutionDataManager.getSolutionData(solution.getDataId());
+        SolutionData solutionData = solutionManager.getSolutionData(solution.getDataId());
         User user = userManager.getAccountById(solution.getUserId()).orElse(null);
         Problem problem = problemManager.getProblemById(solution.getProblemId()).orElse(null);
         Boolean ownerProblem = problem != null && Objects.equals(problem.getOwner(), userContext.getId());

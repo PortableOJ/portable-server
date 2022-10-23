@@ -9,7 +9,6 @@ import com.portable.server.exception.PortableException;
 import com.portable.server.manager.impl.ContestManagerImpl;
 import com.portable.server.manager.impl.ProblemDataManagerImpl;
 import com.portable.server.manager.impl.ProblemManagerImpl;
-import com.portable.server.manager.impl.SolutionDataManagerImpl;
 import com.portable.server.manager.impl.SolutionManagerImpl;
 import com.portable.server.manager.impl.UserManagerImpl;
 import com.portable.server.model.contest.Contest;
@@ -70,9 +69,6 @@ public class ProblemServiceImplTest {
 
     @Mock
     private SolutionManagerImpl solutionManager;
-
-    @Mock
-    private SolutionDataManagerImpl solutionDataManager;
 
     @Mock
     private ContestManagerImpl contestManager;
@@ -1955,7 +1951,7 @@ public class ProblemServiceImplTest {
         Mockito.when(problemDataManager.getProblemData(MOCKED_PROBLEM_MONGO_ID)).thenReturn(problemData);
         Mockito.when(userManager.getNormalUserDataById(MOCKED_USER_DATA_ID)).thenReturn(normalUserData);
         Mockito.when(solutionManager.newSolution()).thenCallRealMethod();
-        Mockito.when(solutionDataManager.newSolutionData(Mockito.any())).thenCallRealMethod();
+        Mockito.when(solutionManager.newSolutionData(Mockito.any())).thenCallRealMethod();
 
         SubmitSolutionRequest submitSolutionRequest = SubmitSolutionRequest.builder()
                 .problemId(MOCKED_PROBLEM_ID)
@@ -1980,7 +1976,7 @@ public class ProblemServiceImplTest {
         /// region 校验写入的提交数据
 
         ArgumentCaptor<SolutionData> solutionDataArgumentCaptor = ArgumentCaptor.forClass(SolutionData.class);
-        Mockito.verify(solutionDataManager).insertSolutionData(solutionDataArgumentCaptor.capture());
+        Mockito.verify(solutionManager).insertSolutionData(solutionDataArgumentCaptor.capture());
         SolutionData solutionDataCP = solutionDataArgumentCaptor.getValue();
         Assertions.assertEquals(MOCKED_CODE_TEST, solutionDataCP.getCode());
 

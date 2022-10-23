@@ -19,7 +19,6 @@ import com.portable.server.manager.ContestDataManager;
 import com.portable.server.manager.ContestManager;
 import com.portable.server.manager.ProblemDataManager;
 import com.portable.server.manager.ProblemManager;
-import com.portable.server.manager.SolutionDataManager;
 import com.portable.server.manager.SolutionManager;
 import com.portable.server.manager.UserManager;
 import com.portable.server.model.batch.Batch;
@@ -100,9 +99,6 @@ public class ContestServiceImpl implements ContestService {
 
     @Resource
     private SolutionManager solutionManager;
-
-    @Resource
-    private SolutionDataManager solutionDataManager;
 
     @Resource
     private BatchManager batchManager;
@@ -220,7 +216,7 @@ public class ContestServiceImpl implements ContestService {
         boolean self = Objects.equals(solution.getUserId(), curUserId);
         boolean admin = ContestVisitType.CO_AUTHOR.approve(contestVisitType);
         if (endContest || self || admin) {
-            SolutionData solutionData = solutionDataManager.getSolutionData(solution.getDataId());
+            SolutionData solutionData = solutionManager.getSolutionData(solution.getDataId());
             User user = userManager.getAccountById(solution.getUserId()).orElse(null);
             Problem problem = problemManager.getProblemById(solution.getProblemId()).orElse(null);
             SolutionDetailResponse solutionDetailResponse = SolutionDetailResponse.of(solution, solutionData, user, problem, admin);
@@ -253,7 +249,7 @@ public class ContestServiceImpl implements ContestService {
         }
 
         Map<Long, Integer> problemIdToProblemIndexMap = contestPackage.getContestData().idToIndex();
-        SolutionData solutionData = solutionDataManager.getSolutionData(solution.getDataId());
+        SolutionData solutionData = solutionManager.getSolutionData(solution.getDataId());
         User user = userManager.getAccountById(solution.getUserId()).orElse(null);
         Problem problem = problemManager.getProblemById(solution.getProblemId()).orElse(null);
         SolutionDetailResponse solutionDetailResponse = SolutionDetailResponse.of(solution, solutionData, user, problem, true);
@@ -331,7 +327,7 @@ public class ContestServiceImpl implements ContestService {
         submitSolutionRequest.setProblemId(contestProblemData.getProblemId());
 
         Solution solution = solutionManager.newSolution();
-        SolutionData solutionData = solutionDataManager.newSolutionData(problemData);
+        SolutionData solutionData = solutionManager.newSolutionData(problemData);
         submitSolutionRequest.toSolution(solution);
         submitSolutionRequest.toSolutionData(solutionData);
 
@@ -341,7 +337,7 @@ public class ContestServiceImpl implements ContestService {
         } else {
             solution.setSolutionType(SolutionType.TEST_CONTEST);
         }
-        solutionDataManager.insertSolutionData(solutionData);
+        solutionManager.insertSolutionData(solutionData);
         solution.setDataId(solutionData.getId());
         solution.setUserId(UserContext.ctx().getId());
         solutionManager.insertSolution(solution);

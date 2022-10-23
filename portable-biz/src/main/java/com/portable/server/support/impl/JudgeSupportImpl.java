@@ -13,7 +13,6 @@ import com.portable.server.exception.PortableException;
 import com.portable.server.helper.RedisValueHelper;
 import com.portable.server.manager.ProblemDataManager;
 import com.portable.server.manager.ProblemManager;
-import com.portable.server.manager.SolutionDataManager;
 import com.portable.server.manager.SolutionManager;
 import com.portable.server.manager.UserManager;
 import com.portable.server.model.judge.entity.JudgeContainer;
@@ -106,9 +105,6 @@ public class JudgeSupportImpl implements JudgeSupport {
 
     @Resource
     private SolutionManager solutionManager;
-
-    @Resource
-    private SolutionDataManager solutionDataManager;
 
     @Resource
     private ProblemManager problemManager;
@@ -426,7 +422,7 @@ public class JudgeSupportImpl implements JudgeSupport {
         getCurContainer();
         SolutionData solutionData = getSolutionData(solutionId);
         solutionData.setCompileMsg(compileMsg);
-        solutionDataManager.saveSolutionData(solutionData);
+        solutionManager.saveSolutionData(solutionData);
         solutionJudgeWorkMap.get(solutionId).setCurTestId(0);
         if (!compileResult || !judgeCompileResult) {
             killJudgeTask(solutionId, compileResult ? SolutionStatusType.JUDGE_COMPILE_ERROR : SolutionStatusType.COMPILE_ERROR, 0, 0);
@@ -451,7 +447,7 @@ public class JudgeSupportImpl implements JudgeSupport {
                         .msg(msg)
                         .build()
         );
-        solutionDataManager.saveSolutionData(solutionData);
+        solutionManager.saveSolutionData(solutionData);
         if (!SolutionStatusType.ACCEPT.equals(statusType)) {
             killJudgeTask(solutionId, statusType, timeCost, memoryCost);
             checkProblemCheckOver(solutionJudgeWork);
@@ -586,9 +582,9 @@ public class JudgeSupportImpl implements JudgeSupport {
         problemManager.updateProblemStatus(problemId, ProblemStatusType.CHECKING);
 
         for (ProblemData.StdCode stdCode : problemData.getTestCodeList()) {
-            SolutionData solutionData = solutionDataManager.newSolutionData(problemData);
+            SolutionData solutionData = solutionManager.newSolutionData(problemData);
             solutionData.setCode(stdCode.getCode());
-            solutionDataManager.insertSolutionData(solutionData);
+            solutionManager.insertSolutionData(solutionData);
 
             Solution solution = solutionManager.newSolution();
             solution.setDataId(solutionData.getId());
@@ -641,7 +637,7 @@ public class JudgeSupportImpl implements JudgeSupport {
     private SolutionData getSolutionData(Long solutionId) {
         Solution solution = solutionManager.selectSolutionById(solutionId)
                 .orElseThrow(PortableException.from("S-06-001", solutionId));
-        return solutionDataManager.getSolutionData(solution.getDataId());
+        return solutionManager.getSolutionData(solution.getDataId());
     }
 
     private ProblemData getProblemData(Long problemId) {

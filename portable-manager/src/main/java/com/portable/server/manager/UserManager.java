@@ -27,9 +27,26 @@ public interface UserManager {
 
     /**
      * 创建一个新的批量账号（不插入数据库）
+     *
      * @return 新的用户信息
      */
     User newBatchAccount();
+
+    /**
+     * 新建一个普通用户数据实体
+     *
+     * @return 普通用户数据实体
+     */
+    @NotNull
+    NormalUserData newNormalUserData();
+
+    /**
+     * 新建一个批量用户数据实体
+     *
+     * @return 普通用户数据实体
+     */
+    @NotNull
+    BatchUserData newBatchUserData();
 
     /**
      * 根据用户的 handle 获取账号
@@ -89,22 +106,6 @@ public interface UserManager {
      * @param accountType 账号类型
      */
     void updateUserType(@Param("id") Long id, @Param("newStatus") AccountType accountType);
-
-    /**
-     * 新建一个普通用户数据实体
-     *
-     * @return 普通用户数据实体
-     */
-    @NotNull
-    NormalUserData newNormalUserData();
-
-    /**
-     * 新建一个批量用户数据实体
-     *
-     * @return 普通用户数据实体
-     */
-    @NotNull
-    BatchUserData newBatchUserData();
 
     /**
      * 通过用户的数据 id 获取普通用户
