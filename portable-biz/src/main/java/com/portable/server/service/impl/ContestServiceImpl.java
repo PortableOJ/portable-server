@@ -15,7 +15,6 @@ import javax.annotation.Resource;
 
 import com.portable.server.exception.PortableException;
 import com.portable.server.manager.BatchManager;
-import com.portable.server.manager.ContestDataManager;
 import com.portable.server.manager.ContestManager;
 import com.portable.server.manager.ProblemManager;
 import com.portable.server.manager.SolutionManager;
@@ -83,9 +82,6 @@ public class ContestServiceImpl implements ContestService {
 
     @Resource
     private ContestManager contestManager;
-
-    @Resource
-    private ContestDataManager contestDataManager;
 
     @Resource
     private UserManager userManager;
@@ -344,13 +340,13 @@ public class ContestServiceImpl implements ContestService {
     @Override
     public Long createContest(ContestContentRequest contestContentRequest) {
         Contest contest = contestManager.newContest();
-        BaseContestData contestData = contestDataManager.newContestData(contestContentRequest.getAccessType());
+        BaseContestData contestData = contestManager.newContestData(contestContentRequest.getAccessType());
         contestContentRequest.toContest(contest);
         contest.setOwner(UserContext.ctx().getId());
         checkContestData(contestContentRequest);
         setContestContentToContestData(contestContentRequest, contestData);
 
-        contestDataManager.insertContestData(contestData);
+        contestManager.insertContestData(contestData);
         contest.setDataId(contestData.getId());
         contestManager.insertContest(contest);
 
@@ -389,7 +385,7 @@ public class ContestServiceImpl implements ContestService {
             contestManager.updateDuration(contestContentRequest.getId(), contestContentRequest.getDuration());
             contestManager.updateTitle(contestContentRequest.getId(), contestContentRequest.getTitle());
 
-            contestDataManager.saveContestData(contestData);
+            contestManager.saveContestData(contestData);
             updateContestLock(contestPackage, contestContentRequest.getProblemList());
         } else if (contest.isStarted() && !contest.isEnd()) {
             // 已经开始的比赛不允许修改比赛开始时间
@@ -397,7 +393,7 @@ public class ContestServiceImpl implements ContestService {
             checkContestData(contestContentRequest);
             // 下面的函数已经保证了不会删除题目
             contestContentRequest.toContestData(contestData);
-            contestDataManager.saveContestData(contestData);
+            contestManager.saveContestData(contestData);
             contestManager.updateDuration(contestContentRequest.getId(), contestContentRequest.getDuration());
             contestManager.updateTitle(contestContentRequest.getId(), contestContentRequest.getTitle());
             updateContestLock(contestPackage, contestContentRequest.getProblemList());
@@ -406,7 +402,7 @@ public class ContestServiceImpl implements ContestService {
             contestData.setAnnouncement(contestContentRequest.getAnnouncement());
             contestData.setFreezeTime(contestContentRequest.getFreezeTime());
             contestData.setPenaltyTime(contestContentRequest.getPenaltyTime());
-            contestDataManager.saveContestData(contestData);
+            contestManager.saveContestData(contestData);
             contestManager.updateTitle(contestContentRequest.getId(), contestContentRequest.getTitle());
         }
     }
@@ -433,7 +429,7 @@ public class ContestServiceImpl implements ContestService {
             throw PortableException.of("A-08-016");
         }
         contestPackage.getContestData().getProblemList().add(new BaseContestData.ContestProblemData(contestAddProblem.getProblemId()));
-        contestDataManager.saveContestData(contestPackage.getContestData());
+        contestManager.saveContestData(contestPackage.getContestData());
         updateContestLock(contestPackage, Collections.singletonList(contestAddProblem.getProblemId()));
     }
 
@@ -443,16 +439,16 @@ public class ContestServiceImpl implements ContestService {
         BaseContestData contestData;
         switch (contest.getAccessType()) {
             case PUBLIC:
-                contestData = contestDataManager.getPublicContestDataById(contest.getDataId());
+                contestData = contestManager.getPublicContestDataById(contest.getDataId());
                 break;
             case PASSWORD:
-                contestData = contestDataManager.getPasswordContestDataById(contest.getDataId());
+                contestData = contestManager.getPasswordContestDataById(contest.getDataId());
                 break;
             case PRIVATE:
-                contestData = contestDataManager.getPrivateContestDataById(contest.getDataId());
+                contestData = contestManager.getPrivateContestDataById(contest.getDataId());
                 break;
             case BATCH:
-                contestData = contestDataManager.getBatchContestDataById(contest.getDataId());
+                contestData = contestManager.getBatchContestDataById(contest.getDataId());
                 break;
             default:
                 throw PortableException.of("A-08-001", contest.getAccessType());

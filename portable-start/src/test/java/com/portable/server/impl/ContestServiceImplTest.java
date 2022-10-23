@@ -11,7 +11,6 @@ import java.util.Optional;
 
 import com.portable.server.exception.PortableException;
 import com.portable.server.manager.impl.BatchManagerImpl;
-import com.portable.server.manager.impl.ContestDataManagerImpl;
 import com.portable.server.manager.impl.ContestManagerImpl;
 import com.portable.server.manager.impl.ProblemManagerImpl;
 import com.portable.server.manager.impl.SolutionManagerImpl;
@@ -78,9 +77,6 @@ class ContestServiceImplTest {
 
     @Mock
     private ContestManagerImpl contestManager;
-
-    @Mock
-    private ContestDataManagerImpl contestDataManager;
 
     @Mock
     private UserManagerImpl userManager;
@@ -227,7 +223,7 @@ class ContestServiceImplTest {
         contest.setAccessType(ContestAccessType.PRIVATE);
         contest.setDataId(MOCKED_CONTEST_MONGO_ID);
         Mockito.when(contestManager.getContestById(MOCKED_CONTEST_ID)).thenReturn(Optional.of(contest));
-        Mockito.when(contestDataManager.getPrivateContestDataById(MOCKED_CONTEST_MONGO_ID)).thenThrow(PortableException.of("A-08-001", contest.getAccessType()));
+        Mockito.when(contestManager.getPrivateContestDataById(MOCKED_CONTEST_MONGO_ID)).thenThrow(PortableException.of("A-08-001", contest.getAccessType()));
 
         ContestAuth contestAuth = ContestAuth.builder()
                 .contestId(MOCKED_CONTEST_ID)
@@ -247,7 +243,7 @@ class ContestServiceImplTest {
         contest.setAccessType(ContestAccessType.BATCH);
         contest.setDataId(MOCKED_CONTEST_MONGO_ID);
         Mockito.when(contestManager.getContestById(MOCKED_CONTEST_ID)).thenReturn(Optional.of(contest));
-        Mockito.when(contestDataManager.getBatchContestDataById(MOCKED_CONTEST_MONGO_ID)).thenReturn(batchContestData);
+        Mockito.when(contestManager.getBatchContestDataById(MOCKED_CONTEST_MONGO_ID)).thenReturn(batchContestData);
         contestVisitTypeMockedStatic.when(() -> ContestVisitType.checkPermission(Mockito.any(), Mockito.any())).thenReturn(ContestVisitType.VISIT);
 
         ContestAuth contestAuth = ContestAuth.builder()
@@ -265,7 +261,7 @@ class ContestServiceImplTest {
         contest.setAccessType(ContestAccessType.PUBLIC);
         contest.setDataId(MOCKED_CONTEST_MONGO_ID);
         Mockito.when(contestManager.getContestById(MOCKED_CONTEST_ID)).thenReturn(Optional.of(contest));
-        Mockito.when(contestDataManager.getPublicContestDataById(MOCKED_CONTEST_MONGO_ID)).thenReturn(publicContestData);
+        Mockito.when(contestManager.getPublicContestDataById(MOCKED_CONTEST_MONGO_ID)).thenReturn(publicContestData);
         contestVisitTypeMockedStatic.when(() -> ContestVisitType.checkPermission(Mockito.any(), Mockito.any())).thenReturn(ContestVisitType.VISIT);
 
         ContestAuth contestAuth = ContestAuth.builder()
@@ -283,7 +279,7 @@ class ContestServiceImplTest {
         contest.setAccessType(ContestAccessType.PUBLIC);
         contest.setDataId(MOCKED_CONTEST_MONGO_ID);
         Mockito.when(contestManager.getContestById(MOCKED_CONTEST_ID)).thenReturn(Optional.of(contest));
-        Mockito.when(contestDataManager.getPublicContestDataById(MOCKED_CONTEST_MONGO_ID)).thenReturn(publicContestData);
+        Mockito.when(contestManager.getPublicContestDataById(MOCKED_CONTEST_MONGO_ID)).thenReturn(publicContestData);
         contestVisitTypeMockedStatic.when(() -> ContestVisitType.checkPermission(Mockito.any(), Mockito.any())).thenReturn(ContestVisitType.ADMIN);
 
         ContestAuth contestAuth = ContestAuth.builder()
@@ -302,7 +298,7 @@ class ContestServiceImplTest {
         contest.setDataId(MOCKED_CONTEST_MONGO_ID);
         passwordContestData.setPassword(MockedValueMaker.mString());
         Mockito.when(contestManager.getContestById(MOCKED_CONTEST_ID)).thenReturn(Optional.of(contest));
-        Mockito.when(contestDataManager.getPasswordContestDataById(MOCKED_CONTEST_MONGO_ID)).thenReturn(passwordContestData);
+        Mockito.when(contestManager.getPasswordContestDataById(MOCKED_CONTEST_MONGO_ID)).thenReturn(passwordContestData);
         contestVisitTypeMockedStatic.when(() -> ContestVisitType.checkPermission(Mockito.any(), Mockito.any())).thenReturn(ContestVisitType.ADMIN);
 
         ContestAuth contestAuth = ContestAuth.builder()
@@ -321,7 +317,7 @@ class ContestServiceImplTest {
         contest.setDataId(MOCKED_CONTEST_MONGO_ID);
         passwordContestData.setPassword(MockedValueMaker.mString());
         Mockito.when(contestManager.getContestById(MOCKED_CONTEST_ID)).thenReturn(Optional.of(contest));
-        Mockito.when(contestDataManager.getPasswordContestDataById(MOCKED_CONTEST_MONGO_ID)).thenReturn(passwordContestData);
+        Mockito.when(contestManager.getPasswordContestDataById(MOCKED_CONTEST_MONGO_ID)).thenReturn(passwordContestData);
         contestVisitTypeMockedStatic.when(() -> ContestVisitType.checkPermission(Mockito.any(), Mockito.any())).thenReturn(ContestVisitType.VISIT);
 
         ContestAuth contestAuth = ContestAuth.builder()
@@ -343,7 +339,7 @@ class ContestServiceImplTest {
         contest.setDataId(MOCKED_CONTEST_MONGO_ID);
         passwordContestData.setPassword(MockedValueMaker.mString());
         Mockito.when(contestManager.getContestById(MOCKED_CONTEST_ID)).thenReturn(Optional.of(contest));
-        Mockito.when(contestDataManager.getPasswordContestDataById(MOCKED_CONTEST_MONGO_ID)).thenReturn(passwordContestData);
+        Mockito.when(contestManager.getPasswordContestDataById(MOCKED_CONTEST_MONGO_ID)).thenReturn(passwordContestData);
         contestVisitTypeMockedStatic.when(() -> ContestVisitType.checkPermission(Mockito.any(), Mockito.any())).thenReturn(ContestVisitType.VISIT);
 
         ContestAuth contestAuth = ContestAuth.builder()
@@ -362,7 +358,7 @@ class ContestServiceImplTest {
         contest.setDataId(MOCKED_CONTEST_MONGO_ID);
         passwordContestData.setPassword(MockedValueMaker.mString());
         Mockito.when(contestManager.getContestById(MOCKED_CONTEST_ID)).thenReturn(Optional.of(contest));
-        Mockito.when(contestDataManager.getPrivateContestDataById(MOCKED_CONTEST_MONGO_ID)).thenReturn(privateContestData);
+        Mockito.when(contestManager.getPrivateContestDataById(MOCKED_CONTEST_MONGO_ID)).thenReturn(privateContestData);
         contestVisitTypeMockedStatic.when(() -> ContestVisitType.checkPermission(Mockito.any(), Mockito.any())).thenReturn(ContestVisitType.NO_ACCESS);
 
         try {
@@ -382,7 +378,7 @@ class ContestServiceImplTest {
         privateContestData.setCoAuthor(new HashSet<>());
         user.setHandle(MOCKED_USER_HANDLE);
         Mockito.when(contestManager.getContestById(MOCKED_CONTEST_ID)).thenReturn(Optional.of(contest));
-        Mockito.when(contestDataManager.getPrivateContestDataById(MOCKED_CONTEST_MONGO_ID)).thenReturn(privateContestData);
+        Mockito.when(contestManager.getPrivateContestDataById(MOCKED_CONTEST_MONGO_ID)).thenReturn(privateContestData);
         contestVisitTypeMockedStatic.when(() -> ContestVisitType.checkPermission(Mockito.any(), Mockito.any())).thenReturn(ContestVisitType.VISIT);
         Mockito.when(userManager.getAccountById(MOCKED_USER_ID)).thenReturn(Optional.of(user));
 
@@ -407,7 +403,7 @@ class ContestServiceImplTest {
         contest.setStartTime(new Date(new Date().getTime() + 10000));
         privateContestData.setCoAuthor(new HashSet<>());
         Mockito.when(contestManager.getContestById(MOCKED_CONTEST_ID)).thenReturn(Optional.of(contest));
-        Mockito.when(contestDataManager.getPrivateContestDataById(MOCKED_CONTEST_MONGO_ID)).thenReturn(privateContestData);
+        Mockito.when(contestManager.getPrivateContestDataById(MOCKED_CONTEST_MONGO_ID)).thenReturn(privateContestData);
         contestVisitTypeMockedStatic.when(() -> ContestVisitType.checkPermission(Mockito.any(), Mockito.any())).thenReturn(ContestVisitType.VISIT);
 
         try {
@@ -435,7 +431,7 @@ class ContestServiceImplTest {
         }});
         user.setHandle(MOCKED_USER_HANDLE);
         Mockito.when(contestManager.getContestById(MOCKED_CONTEST_ID)).thenReturn(Optional.of(contest));
-        Mockito.when(contestDataManager.getPrivateContestDataById(MOCKED_CONTEST_MONGO_ID)).thenReturn(privateContestData);
+        Mockito.when(contestManager.getPrivateContestDataById(MOCKED_CONTEST_MONGO_ID)).thenReturn(privateContestData);
         contestVisitTypeMockedStatic.when(() -> ContestVisitType.checkPermission(Mockito.any(), Mockito.any())).thenReturn(ContestVisitType.VISIT);
         Mockito.when(userManager.getAccountById(MOCKED_USER_ID)).thenReturn(Optional.of(user));
         Mockito.when(problemManager.getProblemById(MOCKED_PROBLEM_ID)).thenReturn(Optional.empty());
@@ -469,7 +465,7 @@ class ContestServiceImplTest {
         problem.setTitle(MOCKED_PROBLEM_TITLE);
         solution.setStatus(SolutionStatusType.WRONG_ANSWER);
         Mockito.when(contestManager.getContestById(MOCKED_CONTEST_ID)).thenReturn(Optional.of(contest));
-        Mockito.when(contestDataManager.getPrivateContestDataById(MOCKED_CONTEST_MONGO_ID)).thenReturn(privateContestData);
+        Mockito.when(contestManager.getPrivateContestDataById(MOCKED_CONTEST_MONGO_ID)).thenReturn(privateContestData);
         contestVisitTypeMockedStatic.when(() -> ContestVisitType.checkPermission(Mockito.any(), Mockito.any())).thenReturn(ContestVisitType.VISIT);
         Mockito.when(userManager.getAccountById(MOCKED_USER_ID)).thenReturn(Optional.of(user));
         Mockito.when(problemManager.getProblemById(MOCKED_PROBLEM_ID)).thenReturn(Optional.of(problem));
@@ -513,7 +509,7 @@ class ContestServiceImplTest {
         problem.setTitle(MOCKED_PROBLEM_TITLE);
         solution.setStatus(SolutionStatusType.WRONG_ANSWER);
         Mockito.when(contestManager.getContestById(MOCKED_CONTEST_ID)).thenReturn(Optional.of(contest));
-        Mockito.when(contestDataManager.getPrivateContestDataById(MOCKED_CONTEST_MONGO_ID)).thenReturn(privateContestData);
+        Mockito.when(contestManager.getPrivateContestDataById(MOCKED_CONTEST_MONGO_ID)).thenReturn(privateContestData);
         contestVisitTypeMockedStatic.when(() -> ContestVisitType.checkPermission(Mockito.any(), Mockito.any())).thenReturn(ContestVisitType.VISIT);
 
         try {
@@ -580,7 +576,7 @@ class ContestServiceImplTest {
         problem.setDataId(MOCKED_PROBLEM_MONGO_ID);
         solution.setStatus(SolutionStatusType.WRONG_ANSWER);
         Mockito.when(contestManager.getContestById(MOCKED_CONTEST_ID)).thenReturn(Optional.of(contest));
-        Mockito.when(contestDataManager.getPrivateContestDataById(MOCKED_CONTEST_MONGO_ID)).thenReturn(privateContestData);
+        Mockito.when(contestManager.getPrivateContestDataById(MOCKED_CONTEST_MONGO_ID)).thenReturn(privateContestData);
         contestVisitTypeMockedStatic.when(() -> ContestVisitType.checkPermission(Mockito.any(), Mockito.any())).thenReturn(ContestVisitType.CO_AUTHOR);
         Mockito.when(userManager.getAccountById(MOCKED_USER_ID)).thenReturn(Optional.of(user));
         Mockito.when(problemManager.getProblemById(MOCKED_PROBLEM_ID)).thenReturn(Optional.of(problem));
@@ -622,7 +618,7 @@ class ContestServiceImplTest {
         contest.setAccessType(ContestAccessType.PUBLIC);
         contest.setDataId(MOCKED_CONTEST_MONGO_ID);
         Mockito.when(contestManager.getContestById(MOCKED_CONTEST_ID)).thenReturn(Optional.of(contest));
-        Mockito.when(contestDataManager.getPublicContestDataById(MOCKED_CONTEST_MONGO_ID)).thenReturn(publicContestData);
+        Mockito.when(contestManager.getPublicContestDataById(MOCKED_CONTEST_MONGO_ID)).thenReturn(publicContestData);
         contestVisitTypeMockedStatic.when(() -> ContestVisitType.checkPermission(Mockito.any(), Mockito.any())).thenReturn(ContestVisitType.NO_ACCESS);
 
         try {
@@ -639,7 +635,7 @@ class ContestServiceImplTest {
         contest.setDataId(MOCKED_CONTEST_MONGO_ID);
         contest.setStartTime(new Date(new Date().getTime() + 10000));
         Mockito.when(contestManager.getContestById(MOCKED_CONTEST_ID)).thenReturn(Optional.of(contest));
-        Mockito.when(contestDataManager.getPublicContestDataById(MOCKED_CONTEST_MONGO_ID)).thenReturn(publicContestData);
+        Mockito.when(contestManager.getPublicContestDataById(MOCKED_CONTEST_MONGO_ID)).thenReturn(publicContestData);
         contestVisitTypeMockedStatic.when(() -> ContestVisitType.checkPermission(Mockito.any(), Mockito.any())).thenReturn(ContestVisitType.VISIT);
 
         try {
@@ -657,7 +653,7 @@ class ContestServiceImplTest {
         contest.setStartTime(new Date(0));
         publicContestData.setProblemList(new ArrayList<>());
         Mockito.when(contestManager.getContestById(MOCKED_CONTEST_ID)).thenReturn(Optional.of(contest));
-        Mockito.when(contestDataManager.getPublicContestDataById(MOCKED_CONTEST_MONGO_ID)).thenReturn(publicContestData);
+        Mockito.when(contestManager.getPublicContestDataById(MOCKED_CONTEST_MONGO_ID)).thenReturn(publicContestData);
         contestVisitTypeMockedStatic.when(() -> ContestVisitType.checkPermission(Mockito.any(), Mockito.any())).thenReturn(ContestVisitType.VISIT);
 
         try {
@@ -679,7 +675,7 @@ class ContestServiceImplTest {
                     .build());
         }});
         Mockito.when(contestManager.getContestById(MOCKED_CONTEST_ID)).thenReturn(Optional.of(contest));
-        Mockito.when(contestDataManager.getPublicContestDataById(MOCKED_CONTEST_MONGO_ID)).thenReturn(publicContestData);
+        Mockito.when(contestManager.getPublicContestDataById(MOCKED_CONTEST_MONGO_ID)).thenReturn(publicContestData);
         contestVisitTypeMockedStatic.when(() -> ContestVisitType.checkPermission(Mockito.any(), Mockito.any())).thenReturn(ContestVisitType.VISIT);
         Mockito.when(problemManager.getProblemById(MOCKED_PROBLEM_ID)).thenReturn(Optional.empty());
 
@@ -709,7 +705,7 @@ class ContestServiceImplTest {
                     .build());
         }});
         Mockito.when(contestManager.getContestById(MOCKED_CONTEST_ID)).thenReturn(Optional.of(contest));
-        Mockito.when(contestDataManager.getPublicContestDataById(MOCKED_CONTEST_MONGO_ID)).thenReturn(publicContestData);
+        Mockito.when(contestManager.getPublicContestDataById(MOCKED_CONTEST_MONGO_ID)).thenReturn(publicContestData);
         contestVisitTypeMockedStatic.when(() -> ContestVisitType.checkPermission(Mockito.any(), Mockito.any())).thenReturn(ContestVisitType.VISIT);
         Mockito.when(problemManager.getProblemById(MOCKED_PROBLEM_ID)).thenReturn(Optional.of(problem));
         Mockito.when(problemManager.getProblemData(MOCKED_PROBLEM_MONGO_ID)).thenReturn(problemData);
@@ -732,7 +728,7 @@ class ContestServiceImplTest {
         contest.setAccessType(ContestAccessType.PUBLIC);
         contest.setDataId(MOCKED_CONTEST_MONGO_ID);
         Mockito.when(contestManager.getContestById(MOCKED_CONTEST_ID)).thenReturn(Optional.of(contest));
-        Mockito.when(contestDataManager.getPublicContestDataById(MOCKED_CONTEST_MONGO_ID)).thenReturn(publicContestData);
+        Mockito.when(contestManager.getPublicContestDataById(MOCKED_CONTEST_MONGO_ID)).thenReturn(publicContestData);
         contestVisitTypeMockedStatic.when(() -> ContestVisitType.checkPermission(Mockito.any(), Mockito.any())).thenReturn(ContestVisitType.NO_ACCESS);
 
         PageRequest<SolutionListQueryRequest> pageRequest = PageRequest.<SolutionListQueryRequest>builder()
@@ -766,7 +762,7 @@ class ContestServiceImplTest {
         publicContestData.setProblemList(new ArrayList<>());
 
         Mockito.when(contestManager.getContestById(MOCKED_CONTEST_ID)).thenReturn(Optional.of(contest));
-        Mockito.when(contestDataManager.getPublicContestDataById(MOCKED_CONTEST_MONGO_ID)).thenReturn(publicContestData);
+        Mockito.when(contestManager.getPublicContestDataById(MOCKED_CONTEST_MONGO_ID)).thenReturn(publicContestData);
         contestVisitTypeMockedStatic.when(() -> ContestVisitType.checkPermission(Mockito.any(), Mockito.any())).thenReturn(ContestVisitType.VISIT);
 
         PageRequest<SolutionListQueryRequest> pageRequest = PageRequest.<SolutionListQueryRequest>builder()
@@ -806,7 +802,7 @@ class ContestServiceImplTest {
         }});
 
         Mockito.when(contestManager.getContestById(MOCKED_CONTEST_ID)).thenReturn(Optional.of(contest));
-        Mockito.when(contestDataManager.getPublicContestDataById(MOCKED_CONTEST_MONGO_ID)).thenReturn(publicContestData);
+        Mockito.when(contestManager.getPublicContestDataById(MOCKED_CONTEST_MONGO_ID)).thenReturn(publicContestData);
         contestVisitTypeMockedStatic.when(() -> ContestVisitType.checkPermission(Mockito.any(), Mockito.any())).thenReturn(ContestVisitType.VISIT);
         Mockito.when(problemManager.getProblemById(MOCKED_PROBLEM_ID)).thenReturn(Optional.of(problem));
         Mockito.when(userManager.getAccountByHandle(MOCKED_USER_HANDLE)).thenReturn(Optional.empty());
@@ -849,7 +845,7 @@ class ContestServiceImplTest {
         }});
 
         Mockito.when(contestManager.getContestById(MOCKED_CONTEST_ID)).thenReturn(Optional.of(contest));
-        Mockito.when(contestDataManager.getPublicContestDataById(MOCKED_CONTEST_MONGO_ID)).thenReturn(publicContestData);
+        Mockito.when(contestManager.getPublicContestDataById(MOCKED_CONTEST_MONGO_ID)).thenReturn(publicContestData);
         contestVisitTypeMockedStatic.when(() -> ContestVisitType.checkPermission(Mockito.any(), Mockito.any())).thenReturn(ContestVisitType.VISIT);
         Mockito.when(problemManager.getProblemById(MOCKED_PROBLEM_ID)).thenReturn(Optional.of(problem));
         Mockito.when(userManager.getAccountByHandle(MOCKED_USER_HANDLE)).thenReturn(Optional.of(user));
@@ -902,7 +898,7 @@ class ContestServiceImplTest {
         contest.setAccessType(ContestAccessType.PUBLIC);
         Mockito.when(solutionManager.selectSolutionById(MOCKED_SOLUTION_ID)).thenReturn(Optional.of(solution));
         Mockito.when(contestManager.getContestById(MOCKED_CONTEST_ID)).thenReturn(Optional.of(contest));
-        Mockito.when(contestDataManager.getPublicContestDataById(MOCKED_CONTEST_MONGO_ID)).thenReturn(publicContestData);
+        Mockito.when(contestManager.getPublicContestDataById(MOCKED_CONTEST_MONGO_ID)).thenReturn(publicContestData);
         contestVisitTypeMockedStatic.when(() -> ContestVisitType.checkPermission(Mockito.any(), Mockito.any())).thenReturn(ContestVisitType.NO_ACCESS);
 
         try {
@@ -933,7 +929,7 @@ class ContestServiceImplTest {
         Mockito.when(solutionManager.selectSolutionById(MOCKED_SOLUTION_ID)).thenReturn(Optional.of(solution));
 
         Mockito.when(contestManager.getContestById(MOCKED_CONTEST_ID)).thenReturn(Optional.of(contest));
-        Mockito.when(contestDataManager.getPublicContestDataById(MOCKED_CONTEST_MONGO_ID)).thenReturn(publicContestData);
+        Mockito.when(contestManager.getPublicContestDataById(MOCKED_CONTEST_MONGO_ID)).thenReturn(publicContestData);
         contestVisitTypeMockedStatic.when(() -> ContestVisitType.checkPermission(Mockito.any(), Mockito.any())).thenReturn(ContestVisitType.VISIT);
 
         try {
@@ -974,7 +970,7 @@ class ContestServiceImplTest {
         Mockito.when(solutionManager.selectSolutionById(MOCKED_SOLUTION_ID)).thenReturn(Optional.of(solution));
 
         Mockito.when(contestManager.getContestById(MOCKED_CONTEST_ID)).thenReturn(Optional.of(contest));
-        Mockito.when(contestDataManager.getPublicContestDataById(MOCKED_CONTEST_MONGO_ID)).thenReturn(publicContestData);
+        Mockito.when(contestManager.getPublicContestDataById(MOCKED_CONTEST_MONGO_ID)).thenReturn(publicContestData);
         contestVisitTypeMockedStatic.when(() -> ContestVisitType.checkPermission(Mockito.any(), Mockito.any())).thenReturn(ContestVisitType.VISIT);
         Mockito.when(solutionManager.getSolutionData(MOCKED_SOLUTION_MONGO_ID)).thenReturn(solutionData);
 
@@ -1021,7 +1017,7 @@ class ContestServiceImplTest {
         Mockito.when(solutionManager.selectSolutionById(MOCKED_SOLUTION_ID)).thenReturn(Optional.of(solution));
 
         Mockito.when(contestManager.getContestById(MOCKED_CONTEST_ID)).thenReturn(Optional.of(contest));
-        Mockito.when(contestDataManager.getPublicContestDataById(MOCKED_CONTEST_MONGO_ID)).thenReturn(publicContestData);
+        Mockito.when(contestManager.getPublicContestDataById(MOCKED_CONTEST_MONGO_ID)).thenReturn(publicContestData);
         contestVisitTypeMockedStatic.when(() -> ContestVisitType.checkPermission(Mockito.any(), Mockito.any())).thenReturn(ContestVisitType.VISIT);
         Mockito.when(solutionManager.getSolutionData(MOCKED_SOLUTION_MONGO_ID)).thenReturn(solutionData);
 
@@ -1068,7 +1064,7 @@ class ContestServiceImplTest {
         Mockito.when(solutionManager.selectSolutionById(MOCKED_SOLUTION_ID)).thenReturn(Optional.of(solution));
 
         Mockito.when(contestManager.getContestById(MOCKED_CONTEST_ID)).thenReturn(Optional.of(contest));
-        Mockito.when(contestDataManager.getPublicContestDataById(MOCKED_CONTEST_MONGO_ID)).thenReturn(publicContestData);
+        Mockito.when(contestManager.getPublicContestDataById(MOCKED_CONTEST_MONGO_ID)).thenReturn(publicContestData);
         contestVisitTypeMockedStatic.when(() -> ContestVisitType.checkPermission(Mockito.any(), Mockito.any())).thenReturn(ContestVisitType.ADMIN);
         Mockito.when(solutionManager.getSolutionData(MOCKED_SOLUTION_MONGO_ID)).thenReturn(solutionData);
 
@@ -1090,7 +1086,7 @@ class ContestServiceImplTest {
         contest.setAccessType(ContestAccessType.PUBLIC);
         contest.setDataId(MOCKED_CONTEST_MONGO_ID);
         Mockito.when(contestManager.getContestById(MOCKED_CONTEST_ID)).thenReturn(Optional.of(contest));
-        Mockito.when(contestDataManager.getPublicContestDataById(MOCKED_CONTEST_MONGO_ID)).thenReturn(publicContestData);
+        Mockito.when(contestManager.getPublicContestDataById(MOCKED_CONTEST_MONGO_ID)).thenReturn(publicContestData);
         contestVisitTypeMockedStatic.when(() -> ContestVisitType.checkPermission(Mockito.any(), Mockito.any())).thenReturn(ContestVisitType.PARTICIPANT);
 
         PageRequest<SolutionListQueryRequest> pageRequest = PageRequest.<SolutionListQueryRequest>builder()
@@ -1124,7 +1120,7 @@ class ContestServiceImplTest {
         publicContestData.setProblemList(new ArrayList<>());
 
         Mockito.when(contestManager.getContestById(MOCKED_CONTEST_ID)).thenReturn(Optional.of(contest));
-        Mockito.when(contestDataManager.getPublicContestDataById(MOCKED_CONTEST_MONGO_ID)).thenReturn(publicContestData);
+        Mockito.when(contestManager.getPublicContestDataById(MOCKED_CONTEST_MONGO_ID)).thenReturn(publicContestData);
         contestVisitTypeMockedStatic.when(() -> ContestVisitType.checkPermission(Mockito.any(), Mockito.any())).thenReturn(ContestVisitType.CO_AUTHOR);
 
         PageRequest<SolutionListQueryRequest> pageRequest = PageRequest.<SolutionListQueryRequest>builder()
@@ -1164,7 +1160,7 @@ class ContestServiceImplTest {
         }});
 
         Mockito.when(contestManager.getContestById(MOCKED_CONTEST_ID)).thenReturn(Optional.of(contest));
-        Mockito.when(contestDataManager.getPublicContestDataById(MOCKED_CONTEST_MONGO_ID)).thenReturn(publicContestData);
+        Mockito.when(contestManager.getPublicContestDataById(MOCKED_CONTEST_MONGO_ID)).thenReturn(publicContestData);
         contestVisitTypeMockedStatic.when(() -> ContestVisitType.checkPermission(Mockito.any(), Mockito.any())).thenReturn(ContestVisitType.CO_AUTHOR);
         Mockito.when(problemManager.getProblemById(MOCKED_PROBLEM_ID)).thenReturn(Optional.of(problem));
         Mockito.when(userManager.getAccountByHandle(MOCKED_USER_HANDLE)).thenReturn(Optional.empty());
@@ -1207,7 +1203,7 @@ class ContestServiceImplTest {
         }});
 
         Mockito.when(contestManager.getContestById(MOCKED_CONTEST_ID)).thenReturn(Optional.of(contest));
-        Mockito.when(contestDataManager.getPublicContestDataById(MOCKED_CONTEST_MONGO_ID)).thenReturn(publicContestData);
+        Mockito.when(contestManager.getPublicContestDataById(MOCKED_CONTEST_MONGO_ID)).thenReturn(publicContestData);
         contestVisitTypeMockedStatic.when(() -> ContestVisitType.checkPermission(Mockito.any(), Mockito.any())).thenReturn(ContestVisitType.CO_AUTHOR);
         Mockito.when(problemManager.getProblemById(MOCKED_PROBLEM_ID)).thenReturn(Optional.of(problem));
         Mockito.when(userManager.getAccountByHandle(MOCKED_USER_HANDLE)).thenReturn(Optional.of(user));
@@ -1260,7 +1256,7 @@ class ContestServiceImplTest {
         contest.setAccessType(ContestAccessType.PUBLIC);
         Mockito.when(solutionManager.selectSolutionById(MOCKED_SOLUTION_ID)).thenReturn(Optional.of(solution));
         Mockito.when(contestManager.getContestById(MOCKED_CONTEST_ID)).thenReturn(Optional.of(contest));
-        Mockito.when(contestDataManager.getPublicContestDataById(MOCKED_CONTEST_MONGO_ID)).thenReturn(publicContestData);
+        Mockito.when(contestManager.getPublicContestDataById(MOCKED_CONTEST_MONGO_ID)).thenReturn(publicContestData);
         contestVisitTypeMockedStatic.when(() -> ContestVisitType.checkPermission(Mockito.any(), Mockito.any())).thenReturn(ContestVisitType.PARTICIPANT);
 
         try {
@@ -1300,7 +1296,7 @@ class ContestServiceImplTest {
 
         Mockito.when(solutionManager.selectSolutionById(MOCKED_SOLUTION_ID)).thenReturn(Optional.of(solution));
         Mockito.when(contestManager.getContestById(MOCKED_CONTEST_ID)).thenReturn(Optional.of(contest));
-        Mockito.when(contestDataManager.getPublicContestDataById(MOCKED_CONTEST_MONGO_ID)).thenReturn(publicContestData);
+        Mockito.when(contestManager.getPublicContestDataById(MOCKED_CONTEST_MONGO_ID)).thenReturn(publicContestData);
         contestVisitTypeMockedStatic.when(() -> ContestVisitType.checkPermission(Mockito.any(), Mockito.any())).thenReturn(ContestVisitType.CO_AUTHOR);
         Mockito.when(solutionManager.getSolutionData(MOCKED_SOLUTION_MONGO_ID)).thenReturn(solutionData);
 
@@ -1336,7 +1332,7 @@ class ContestServiceImplTest {
         }});
 
         Mockito.when(contestManager.getContestById(MOCKED_CONTEST_ID)).thenReturn(Optional.of(contest));
-        Mockito.when(contestDataManager.getPublicContestDataById(MOCKED_CONTEST_MONGO_ID)).thenReturn(publicContestData);
+        Mockito.when(contestManager.getPublicContestDataById(MOCKED_CONTEST_MONGO_ID)).thenReturn(publicContestData);
         contestVisitTypeMockedStatic.when(() -> ContestVisitType.checkPermission(Mockito.any(), Mockito.any())).thenReturn(ContestVisitType.NO_ACCESS);
 
         PageRequest<ContestRankPageRequest> pageRequest = PageRequest.<ContestRankPageRequest>builder()
@@ -1375,7 +1371,7 @@ class ContestServiceImplTest {
         }});
 
         Mockito.when(contestManager.getContestById(MOCKED_CONTEST_ID)).thenReturn(Optional.of(contest));
-        Mockito.when(contestDataManager.getPublicContestDataById(MOCKED_CONTEST_MONGO_ID)).thenReturn(publicContestData);
+        Mockito.when(contestManager.getPublicContestDataById(MOCKED_CONTEST_MONGO_ID)).thenReturn(publicContestData);
         contestVisitTypeMockedStatic.when(() -> ContestVisitType.checkPermission(Mockito.any(), Mockito.any())).thenReturn(ContestVisitType.PARTICIPANT);
 
         PageRequest<ContestRankPageRequest> pageRequest = PageRequest.<ContestRankPageRequest>builder()
@@ -1434,7 +1430,7 @@ class ContestServiceImplTest {
         publicContestData.setFreezeTime(0);
 
         Mockito.when(contestManager.getContestById(MOCKED_CONTEST_ID)).thenReturn(Optional.of(contest));
-        Mockito.when(contestDataManager.getPublicContestDataById(MOCKED_CONTEST_MONGO_ID)).thenReturn(publicContestData);
+        Mockito.when(contestManager.getPublicContestDataById(MOCKED_CONTEST_MONGO_ID)).thenReturn(publicContestData);
         contestVisitTypeMockedStatic.when(() -> ContestVisitType.checkPermission(Mockito.any(), Mockito.any())).thenReturn(ContestVisitType.PARTICIPANT);
         Mockito.when(contestSupport.getContestRankLen(MOCKED_CONTEST_ID, true)).thenReturn(100);
         Mockito.when(contestSupport.getContestRank(MOCKED_CONTEST_ID, 10, 0, true)).thenReturn(contestRankItemList);
@@ -1472,7 +1468,7 @@ class ContestServiceImplTest {
         publicContestData.setId(MOCKED_CONTEST_MONGO_ID);
 
         Mockito.when(contestManager.getContestById(MOCKED_CONTEST_ID)).thenReturn(Optional.of(contest));
-        Mockito.when(contestDataManager.getPublicContestDataById(MOCKED_CONTEST_MONGO_ID)).thenReturn(publicContestData);
+        Mockito.when(contestManager.getPublicContestDataById(MOCKED_CONTEST_MONGO_ID)).thenReturn(publicContestData);
         contestVisitTypeMockedStatic.when(() -> ContestVisitType.checkPermission(Mockito.any(), Mockito.any())).thenReturn(ContestVisitType.VISIT);
 
         SubmitSolutionRequest submitSolutionRequest = SubmitSolutionRequest.builder()
@@ -1498,7 +1494,7 @@ class ContestServiceImplTest {
         publicContestData.setId(MOCKED_CONTEST_MONGO_ID);
 
         Mockito.when(contestManager.getContestById(MOCKED_CONTEST_ID)).thenReturn(Optional.of(contest));
-        Mockito.when(contestDataManager.getPublicContestDataById(MOCKED_CONTEST_MONGO_ID)).thenReturn(publicContestData);
+        Mockito.when(contestManager.getPublicContestDataById(MOCKED_CONTEST_MONGO_ID)).thenReturn(publicContestData);
         contestVisitTypeMockedStatic.when(() -> ContestVisitType.checkPermission(Mockito.any(), Mockito.any())).thenReturn(ContestVisitType.PARTICIPANT);
 
         SubmitSolutionRequest submitSolutionRequest = SubmitSolutionRequest.builder()
@@ -1525,7 +1521,7 @@ class ContestServiceImplTest {
         publicContestData.setId(MOCKED_CONTEST_MONGO_ID);
 
         Mockito.when(contestManager.getContestById(MOCKED_CONTEST_ID)).thenReturn(Optional.of(contest));
-        Mockito.when(contestDataManager.getPublicContestDataById(MOCKED_CONTEST_MONGO_ID)).thenReturn(publicContestData);
+        Mockito.when(contestManager.getPublicContestDataById(MOCKED_CONTEST_MONGO_ID)).thenReturn(publicContestData);
         contestVisitTypeMockedStatic.when(() -> ContestVisitType.checkPermission(Mockito.any(), Mockito.any())).thenReturn(ContestVisitType.PARTICIPANT);
 
         SubmitSolutionRequest submitSolutionRequest = SubmitSolutionRequest.builder()
@@ -1565,7 +1561,7 @@ class ContestServiceImplTest {
         publicContestData.setFreezeTime(0);
 
         Mockito.when(contestManager.getContestById(MOCKED_CONTEST_ID)).thenReturn(Optional.of(contest));
-        Mockito.when(contestDataManager.getPublicContestDataById(MOCKED_CONTEST_MONGO_ID)).thenReturn(publicContestData);
+        Mockito.when(contestManager.getPublicContestDataById(MOCKED_CONTEST_MONGO_ID)).thenReturn(publicContestData);
         contestVisitTypeMockedStatic.when(() -> ContestVisitType.checkPermission(Mockito.any(), Mockito.any())).thenReturn(ContestVisitType.PARTICIPANT);
         Mockito.when(problemManager.getProblemById(MOCKED_PROBLEM_ID)).thenReturn(Optional.of(problem));
         Mockito.when(problemManager.getProblemData(MOCKED_PROBLEM_MONGO_ID)).thenReturn(problemData);
@@ -1638,7 +1634,7 @@ class ContestServiceImplTest {
         publicContestData.setFreezeTime(0);
 
         Mockito.when(contestManager.getContestById(MOCKED_CONTEST_ID)).thenReturn(Optional.of(contest));
-        Mockito.when(contestDataManager.getPublicContestDataById(MOCKED_CONTEST_MONGO_ID)).thenReturn(publicContestData);
+        Mockito.when(contestManager.getPublicContestDataById(MOCKED_CONTEST_MONGO_ID)).thenReturn(publicContestData);
         contestVisitTypeMockedStatic.when(() -> ContestVisitType.checkPermission(Mockito.any(), Mockito.any())).thenReturn(ContestVisitType.ADMIN);
         Mockito.when(problemManager.getProblemById(MOCKED_PROBLEM_ID)).thenReturn(Optional.of(problem));
         Mockito.when(problemManager.getProblemData(MOCKED_PROBLEM_MONGO_ID)).thenReturn(problemData);
@@ -1692,7 +1688,7 @@ class ContestServiceImplTest {
     @Test
     void testCreateContestWithSameProblem() {
         Mockito.when(contestManager.newContest()).thenCallRealMethod();
-        Mockito.when(contestDataManager.newContestData(Mockito.any())).thenCallRealMethod();
+        Mockito.when(contestManager.newContestData(Mockito.any())).thenCallRealMethod();
 
         ContestContentRequest contestContentRequest = ContestContentRequest.builder()
                 .id(null)
@@ -1721,7 +1717,7 @@ class ContestServiceImplTest {
     @Test
     void testCreateContestWithNotExistProblem() {
         Mockito.when(contestManager.newContest()).thenCallRealMethod();
-        Mockito.when(contestDataManager.newContestData(Mockito.any())).thenCallRealMethod();
+        Mockito.when(contestManager.newContestData(Mockito.any())).thenCallRealMethod();
         Mockito.when(problemManager.checkProblemListExist(Mockito.any())).thenAnswer(invocationOnMock -> {
             List<Long> problemList = invocationOnMock.getArgument(0);
             if (problemList.contains(MOCKED_PROBLEM_ID)) {
@@ -1757,7 +1753,7 @@ class ContestServiceImplTest {
     @Test
     void testCreateContestWithNotExistBatch() {
         Mockito.when(contestManager.newContest()).thenCallRealMethod();
-        Mockito.when(contestDataManager.newContestData(Mockito.any())).thenCallRealMethod();
+        Mockito.when(contestManager.newContestData(Mockito.any())).thenCallRealMethod();
         Mockito.when(problemManager.checkProblemListExist(Mockito.any())).thenReturn(new ArrayList<>());
         Mockito.when(batchManager.selectBatchById(MOCKED_BATCH_ID)).thenReturn(Optional.empty());
 
@@ -1791,7 +1787,7 @@ class ContestServiceImplTest {
 
         batch.setOwner(MOCKED_USER_ID);
         Mockito.when(contestManager.newContest()).thenCallRealMethod();
-        Mockito.when(contestDataManager.newContestData(Mockito.any())).thenCallRealMethod();
+        Mockito.when(contestManager.newContestData(Mockito.any())).thenCallRealMethod();
         Mockito.when(problemManager.checkProblemListExist(Mockito.any())).thenReturn(new ArrayList<>());
         Mockito.when(batchManager.selectBatchById(MOCKED_BATCH_ID)).thenReturn(Optional.of(batch));
 
@@ -1831,7 +1827,7 @@ class ContestServiceImplTest {
         Integer duration = MockedValueMaker.mInt();
 
         Mockito.when(contestManager.newContest()).thenCallRealMethod();
-        Mockito.when(contestDataManager.newContestData(Mockito.any())).thenCallRealMethod();
+        Mockito.when(contestManager.newContestData(Mockito.any())).thenCallRealMethod();
         Mockito.when(problemManager.checkProblemListExist(Mockito.any())).thenReturn(new ArrayList<>());
         Mockito.when(userManager.changeHandleToUserId(Mockito.anyCollection())).thenReturn(new HashSet<Long>() {{
             add(otherUserId);
@@ -1840,7 +1836,7 @@ class ContestServiceImplTest {
             PublicContestData publicContestData = invocationOnMock.getArgument(0);
             publicContestData.setId(MOCKED_CONTEST_MONGO_ID);
             return null;
-        }).when(contestDataManager).insertContestData(Mockito.any());
+        }).when(contestManager).insertContestData(Mockito.any());
 
         Mockito.doAnswer(invocationOnMock -> {
             Contest contest = invocationOnMock.getArgument(0);
@@ -1875,7 +1871,7 @@ class ContestServiceImplTest {
         /// region 校验写入的比赛数据
 
         ArgumentCaptor<PublicContestData> publicContestDataArgumentCaptor = ArgumentCaptor.forClass(PublicContestData.class);
-        Mockito.verify(contestDataManager).insertContestData(publicContestDataArgumentCaptor.capture());
+        Mockito.verify(contestManager).insertContestData(publicContestDataArgumentCaptor.capture());
         PublicContestData publicContestDataCP = publicContestDataArgumentCaptor.getValue();
         Assertions.assertEquals(1, publicContestDataCP.getProblemList().size());
         Assertions.assertEquals(MOCKED_PROBLEM_ID, publicContestDataCP.getProblemList().get(0).getProblemId());
@@ -1923,7 +1919,7 @@ class ContestServiceImplTest {
         Integer duration = MockedValueMaker.mInt();
 
         Mockito.when(contestManager.newContest()).thenCallRealMethod();
-        Mockito.when(contestDataManager.newContestData(Mockito.any())).thenCallRealMethod();
+        Mockito.when(contestManager.newContestData(Mockito.any())).thenCallRealMethod();
         Mockito.when(problemManager.checkProblemListExist(Mockito.any())).thenReturn(new ArrayList<>());
         Mockito.when(userManager.changeHandleToUserId(Mockito.anyCollection())).thenReturn(new HashSet<Long>() {{
             add(otherUserId);
@@ -1932,7 +1928,7 @@ class ContestServiceImplTest {
             PasswordContestData passwordContestData = invocationOnMock.getArgument(0);
             passwordContestData.setId(MOCKED_CONTEST_MONGO_ID);
             return null;
-        }).when(contestDataManager).insertContestData(Mockito.any());
+        }).when(contestManager).insertContestData(Mockito.any());
 
         Mockito.doAnswer(invocationOnMock -> {
             Contest contest = invocationOnMock.getArgument(0);
@@ -1967,7 +1963,7 @@ class ContestServiceImplTest {
         /// region 校验写入的比赛数据
 
         ArgumentCaptor<PasswordContestData> passwordContestDataArgumentCaptor = ArgumentCaptor.forClass(PasswordContestData.class);
-        Mockito.verify(contestDataManager).insertContestData(passwordContestDataArgumentCaptor.capture());
+        Mockito.verify(contestManager).insertContestData(passwordContestDataArgumentCaptor.capture());
         PasswordContestData passwordContestDataCP = passwordContestDataArgumentCaptor.getValue();
         Assertions.assertEquals(1, passwordContestDataCP.getProblemList().size());
         Assertions.assertEquals(MOCKED_PROBLEM_ID, passwordContestDataCP.getProblemList().get(0).getProblemId());
@@ -2017,7 +2013,7 @@ class ContestServiceImplTest {
         Integer duration = MockedValueMaker.mInt();
 
         Mockito.when(contestManager.newContest()).thenCallRealMethod();
-        Mockito.when(contestDataManager.newContestData(Mockito.any())).thenCallRealMethod();
+        Mockito.when(contestManager.newContestData(Mockito.any())).thenCallRealMethod();
         Mockito.when(problemManager.checkProblemListExist(Mockito.any())).thenReturn(new ArrayList<>());
         Mockito.when(userManager.changeHandleToUserId(new HashSet<String>() {{
             add(MOCKED_USER_HANDLE);
@@ -2033,7 +2029,7 @@ class ContestServiceImplTest {
             PrivateContestData privateContestData = invocationOnMock.getArgument(0);
             privateContestData.setId(MOCKED_CONTEST_MONGO_ID);
             return null;
-        }).when(contestDataManager).insertContestData(Mockito.any());
+        }).when(contestManager).insertContestData(Mockito.any());
         Mockito.doAnswer(invocationOnMock -> {
             Contest contest = invocationOnMock.getArgument(0);
             contest.setId(MOCKED_CONTEST_ID);
@@ -2069,7 +2065,7 @@ class ContestServiceImplTest {
         /// region 校验写入的比赛数据
 
         ArgumentCaptor<PrivateContestData> privateContestDataArgumentCaptor = ArgumentCaptor.forClass(PrivateContestData.class);
-        Mockito.verify(contestDataManager).insertContestData(privateContestDataArgumentCaptor.capture());
+        Mockito.verify(contestManager).insertContestData(privateContestDataArgumentCaptor.capture());
         PrivateContestData privateContestDataCP = privateContestDataArgumentCaptor.getValue();
         Assertions.assertEquals(1, privateContestDataCP.getProblemList().size());
         Assertions.assertEquals(MOCKED_PROBLEM_ID, privateContestDataCP.getProblemList().get(0).getProblemId());
@@ -2118,7 +2114,7 @@ class ContestServiceImplTest {
         Integer duration = MockedValueMaker.mInt();
 
         Mockito.when(contestManager.newContest()).thenCallRealMethod();
-        Mockito.when(contestDataManager.newContestData(Mockito.any())).thenCallRealMethod();
+        Mockito.when(contestManager.newContestData(Mockito.any())).thenCallRealMethod();
         Mockito.when(problemManager.checkProblemListExist(Mockito.any())).thenReturn(new ArrayList<>());
         Mockito.when(batchManager.selectBatchById(MOCKED_BATCH_ID)).thenReturn(Optional.of(batch));
         Mockito.when(userManager.changeHandleToUserId(new HashSet<String>() {{
@@ -2130,7 +2126,7 @@ class ContestServiceImplTest {
             BatchContestData batchContestData = invocationOnMock.getArgument(0);
             batchContestData.setId(MOCKED_CONTEST_MONGO_ID);
             return null;
-        }).when(contestDataManager).insertContestData(Mockito.any());
+        }).when(contestManager).insertContestData(Mockito.any());
         Mockito.doAnswer(invocationOnMock -> {
             Contest contest = invocationOnMock.getArgument(0);
             contest.setId(MOCKED_CONTEST_ID);
@@ -2164,7 +2160,7 @@ class ContestServiceImplTest {
         /// region 校验写入的比赛数据
 
         ArgumentCaptor<BatchContestData> batchContestDataArgumentCaptor = ArgumentCaptor.forClass(BatchContestData.class);
-        Mockito.verify(contestDataManager).insertContestData(batchContestDataArgumentCaptor.capture());
+        Mockito.verify(contestManager).insertContestData(batchContestDataArgumentCaptor.capture());
         BatchContestData batchContestDataCP = batchContestDataArgumentCaptor.getValue();
         Assertions.assertEquals(1, batchContestDataCP.getProblemList().size());
         Assertions.assertEquals(MOCKED_PROBLEM_ID, batchContestDataCP.getProblemList().get(0).getProblemId());
@@ -2217,7 +2213,7 @@ class ContestServiceImplTest {
         Integer duration = MockedValueMaker.mInt();
 
         Mockito.when(contestManager.getContestById(MOCKED_CONTEST_ID)).thenReturn(Optional.of(contest));
-        Mockito.when(contestDataManager.getPublicContestDataById(MOCKED_CONTEST_MONGO_ID)).thenReturn(publicContestData);
+        Mockito.when(contestManager.getPublicContestDataById(MOCKED_CONTEST_MONGO_ID)).thenReturn(publicContestData);
         contestVisitTypeMockedStatic.when(() -> ContestVisitType.checkPermission(Mockito.any(), Mockito.any())).thenReturn(ContestVisitType.CO_AUTHOR);
 
         ContestContentRequest contestContentRequest = ContestContentRequest.builder()
@@ -2258,7 +2254,7 @@ class ContestServiceImplTest {
         Integer duration = MockedValueMaker.mInt();
 
         Mockito.when(contestManager.getContestById(MOCKED_CONTEST_ID)).thenReturn(Optional.of(contest));
-        Mockito.when(contestDataManager.getPublicContestDataById(MOCKED_CONTEST_MONGO_ID)).thenReturn(publicContestData);
+        Mockito.when(contestManager.getPublicContestDataById(MOCKED_CONTEST_MONGO_ID)).thenReturn(publicContestData);
         contestVisitTypeMockedStatic.when(() -> ContestVisitType.checkPermission(Mockito.any(), Mockito.any())).thenReturn(ContestVisitType.ADMIN);
 
         ContestContentRequest contestContentRequest = ContestContentRequest.builder()
@@ -2299,7 +2295,7 @@ class ContestServiceImplTest {
         Integer duration = MockedValueMaker.mInt();
 
         Mockito.when(contestManager.getContestById(MOCKED_CONTEST_ID)).thenReturn(Optional.of(contest));
-        Mockito.when(contestDataManager.getPublicContestDataById(MOCKED_CONTEST_MONGO_ID)).thenReturn(publicContestData);
+        Mockito.when(contestManager.getPublicContestDataById(MOCKED_CONTEST_MONGO_ID)).thenReturn(publicContestData);
         contestVisitTypeMockedStatic.when(() -> ContestVisitType.checkPermission(Mockito.any(), Mockito.any())).thenReturn(ContestVisitType.ADMIN);
 
         ContestContentRequest contestContentRequest = ContestContentRequest.builder()
@@ -2343,7 +2339,7 @@ class ContestServiceImplTest {
         Integer duration = MockedValueMaker.mInt();
 
         Mockito.when(contestManager.getContestById(MOCKED_CONTEST_ID)).thenReturn(Optional.of(contest));
-        Mockito.when(contestDataManager.getPublicContestDataById(MOCKED_CONTEST_MONGO_ID)).thenReturn(publicContestData);
+        Mockito.when(contestManager.getPublicContestDataById(MOCKED_CONTEST_MONGO_ID)).thenReturn(publicContestData);
         contestVisitTypeMockedStatic.when(() -> ContestVisitType.checkPermission(Mockito.any(), Mockito.any())).thenReturn(ContestVisitType.ADMIN);
         Mockito.when(problemManager.checkProblemListExist(Mockito.any())).thenReturn(new ArrayList<>());
         Mockito.when(userManager.changeHandleToUserId(Mockito.anyCollection())).thenReturn(new HashSet<Long>() {{
@@ -2384,7 +2380,7 @@ class ContestServiceImplTest {
         /// region 校验写入的比赛数据
 
         ArgumentCaptor<PublicContestData> publicContestDataArgumentCaptor = ArgumentCaptor.forClass(PublicContestData.class);
-        Mockito.verify(contestDataManager).saveContestData(publicContestDataArgumentCaptor.capture());
+        Mockito.verify(contestManager).saveContestData(publicContestDataArgumentCaptor.capture());
         PublicContestData publicContestDataCP = publicContestDataArgumentCaptor.getValue();
         Assertions.assertEquals(1, publicContestDataCP.getProblemList().size());
         Assertions.assertEquals(MOCKED_PROBLEM_ID, publicContestDataCP.getProblemList().get(0).getProblemId());
@@ -2428,7 +2424,7 @@ class ContestServiceImplTest {
         Integer duration = MockedValueMaker.mInt();
 
         Mockito.when(contestManager.getContestById(MOCKED_CONTEST_ID)).thenReturn(Optional.of(contest));
-        Mockito.when(contestDataManager.getPublicContestDataById(MOCKED_CONTEST_MONGO_ID)).thenReturn(publicContestData);
+        Mockito.when(contestManager.getPublicContestDataById(MOCKED_CONTEST_MONGO_ID)).thenReturn(publicContestData);
         contestVisitTypeMockedStatic.when(() -> ContestVisitType.checkPermission(Mockito.any(), Mockito.any())).thenReturn(ContestVisitType.ADMIN);
         Mockito.when(problemManager.checkProblemListExist(Mockito.any())).thenReturn(new ArrayList<>());
 
@@ -2465,7 +2461,7 @@ class ContestServiceImplTest {
 
         /// region 校验写入的比赛数据
 
-        Mockito.verify(contestDataManager, Mockito.never()).saveContestData(Mockito.any());
+        Mockito.verify(contestManager, Mockito.never()).saveContestData(Mockito.any());
 
         /// endregion
 
@@ -2495,7 +2491,7 @@ class ContestServiceImplTest {
         Integer duration = MockedValueMaker.mInt();
 
         Mockito.when(contestManager.getContestById(MOCKED_CONTEST_ID)).thenReturn(Optional.of(contest));
-        Mockito.when(contestDataManager.getPublicContestDataById(MOCKED_CONTEST_MONGO_ID)).thenReturn(publicContestData);
+        Mockito.when(contestManager.getPublicContestDataById(MOCKED_CONTEST_MONGO_ID)).thenReturn(publicContestData);
         contestVisitTypeMockedStatic.when(() -> ContestVisitType.checkPermission(Mockito.any(), Mockito.any())).thenReturn(ContestVisitType.ADMIN);
         Mockito.when(problemManager.checkProblemListExist(Mockito.any())).thenReturn(new ArrayList<>());
         Mockito.when(problemManager.getProblemById(MOCKED_PROBLEM_ID)).thenReturn(Optional.of(problem));
@@ -2533,7 +2529,7 @@ class ContestServiceImplTest {
         /// region 校验写入的比赛数据
 
         ArgumentCaptor<PublicContestData> publicContestDataArgumentCaptor = ArgumentCaptor.forClass(PublicContestData.class);
-        Mockito.verify(contestDataManager).saveContestData(publicContestDataArgumentCaptor.capture());
+        Mockito.verify(contestManager).saveContestData(publicContestDataArgumentCaptor.capture());
         PublicContestData publicContestDataCP = publicContestDataArgumentCaptor.getValue();
         Assertions.assertEquals(1, publicContestDataCP.getProblemList().size());
         Assertions.assertEquals(MOCKED_PROBLEM_ID, publicContestDataCP.getProblemList().get(0).getProblemId());
@@ -2570,7 +2566,7 @@ class ContestServiceImplTest {
         Integer duration = MockedValueMaker.mInt();
 
         Mockito.when(contestManager.getContestById(MOCKED_CONTEST_ID)).thenReturn(Optional.of(contest));
-        Mockito.when(contestDataManager.getPublicContestDataById(MOCKED_CONTEST_MONGO_ID)).thenReturn(publicContestData);
+        Mockito.when(contestManager.getPublicContestDataById(MOCKED_CONTEST_MONGO_ID)).thenReturn(publicContestData);
         contestVisitTypeMockedStatic.when(() -> ContestVisitType.checkPermission(Mockito.any(), Mockito.any())).thenReturn(ContestVisitType.ADMIN);
 
         ContestContentRequest contestContentRequest = ContestContentRequest.builder()
@@ -2602,7 +2598,7 @@ class ContestServiceImplTest {
         /// region 校验写入的比赛数据
 
         ArgumentCaptor<PublicContestData> publicContestDataArgumentCaptor = ArgumentCaptor.forClass(PublicContestData.class);
-        Mockito.verify(contestDataManager).saveContestData(publicContestDataArgumentCaptor.capture());
+        Mockito.verify(contestManager).saveContestData(publicContestDataArgumentCaptor.capture());
         PublicContestData publicContestDataCP = publicContestDataArgumentCaptor.getValue();
         Assertions.assertEquals(0, publicContestDataCP.getProblemList().size());
         Assertions.assertEquals(contestContentRequest.getAnnouncement(), publicContestDataCP.getAnnouncement());
@@ -2625,7 +2621,7 @@ class ContestServiceImplTest {
         contest.setDataId(MOCKED_CONTEST_MONGO_ID);
 
         Mockito.when(contestManager.getContestById(MOCKED_CONTEST_ID)).thenReturn(Optional.of(contest));
-        Mockito.when(contestDataManager.getPublicContestDataById(MOCKED_CONTEST_MONGO_ID)).thenReturn(publicContestData);
+        Mockito.when(contestManager.getPublicContestDataById(MOCKED_CONTEST_MONGO_ID)).thenReturn(publicContestData);
         contestVisitTypeMockedStatic.when(() -> ContestVisitType.checkPermission(Mockito.any(), Mockito.any())).thenReturn(ContestVisitType.PARTICIPANT);
 
         ContestAddProblem contestAddProblem = ContestAddProblem.builder()
@@ -2649,7 +2645,7 @@ class ContestServiceImplTest {
         problem.setOwner(MOCKED_USER_ID);
 
         Mockito.when(contestManager.getContestById(MOCKED_CONTEST_ID)).thenReturn(Optional.of(contest));
-        Mockito.when(contestDataManager.getPublicContestDataById(MOCKED_CONTEST_MONGO_ID)).thenReturn(publicContestData);
+        Mockito.when(contestManager.getPublicContestDataById(MOCKED_CONTEST_MONGO_ID)).thenReturn(publicContestData);
         contestVisitTypeMockedStatic.when(() -> ContestVisitType.checkPermission(Mockito.any(), Mockito.any())).thenReturn(ContestVisitType.CO_AUTHOR);
         Mockito.when(problemManager.getProblemById(MOCKED_PROBLEM_ID)).thenReturn(Optional.empty());
 
@@ -2675,7 +2671,7 @@ class ContestServiceImplTest {
         problem.setAccessType(ProblemAccessType.PRIVATE);
 
         Mockito.when(contestManager.getContestById(MOCKED_CONTEST_ID)).thenReturn(Optional.of(contest));
-        Mockito.when(contestDataManager.getPublicContestDataById(MOCKED_CONTEST_MONGO_ID)).thenReturn(publicContestData);
+        Mockito.when(contestManager.getPublicContestDataById(MOCKED_CONTEST_MONGO_ID)).thenReturn(publicContestData);
         contestVisitTypeMockedStatic.when(() -> ContestVisitType.checkPermission(Mockito.any(), Mockito.any())).thenReturn(ContestVisitType.CO_AUTHOR);
         Mockito.when(problemManager.getProblemById(MOCKED_PROBLEM_ID)).thenReturn(Optional.of(problem));
 
@@ -2702,7 +2698,7 @@ class ContestServiceImplTest {
         problem.setAccessType(ProblemAccessType.HIDDEN);
 
         Mockito.when(contestManager.getContestById(MOCKED_CONTEST_ID)).thenReturn(Optional.of(contest));
-        Mockito.when(contestDataManager.getPublicContestDataById(MOCKED_CONTEST_MONGO_ID)).thenReturn(publicContestData);
+        Mockito.when(contestManager.getPublicContestDataById(MOCKED_CONTEST_MONGO_ID)).thenReturn(publicContestData);
         contestVisitTypeMockedStatic.when(() -> ContestVisitType.checkPermission(Mockito.any(), Mockito.any())).thenReturn(ContestVisitType.CO_AUTHOR);
         Mockito.when(problemManager.getProblemById(MOCKED_PROBLEM_ID)).thenReturn(Optional.of(problem));
 
@@ -2736,7 +2732,7 @@ class ContestServiceImplTest {
         }});
 
         Mockito.when(contestManager.getContestById(MOCKED_CONTEST_ID)).thenReturn(Optional.of(contest));
-        Mockito.when(contestDataManager.getPublicContestDataById(MOCKED_CONTEST_MONGO_ID)).thenReturn(publicContestData);
+        Mockito.when(contestManager.getPublicContestDataById(MOCKED_CONTEST_MONGO_ID)).thenReturn(publicContestData);
         contestVisitTypeMockedStatic.when(() -> ContestVisitType.checkPermission(Mockito.any(), Mockito.any())).thenReturn(ContestVisitType.CO_AUTHOR);
         Mockito.when(problemManager.getProblemById(MOCKED_PROBLEM_ID)).thenReturn(Optional.of(problem));
 
@@ -2772,7 +2768,7 @@ class ContestServiceImplTest {
         }});
 
         Mockito.when(contestManager.getContestById(MOCKED_CONTEST_ID)).thenReturn(Optional.of(contest));
-        Mockito.when(contestDataManager.getPublicContestDataById(MOCKED_CONTEST_MONGO_ID)).thenReturn(publicContestData);
+        Mockito.when(contestManager.getPublicContestDataById(MOCKED_CONTEST_MONGO_ID)).thenReturn(publicContestData);
         contestVisitTypeMockedStatic.when(() -> ContestVisitType.checkPermission(Mockito.any(), Mockito.any())).thenReturn(ContestVisitType.CO_AUTHOR);
         Mockito.when(problemManager.getProblemById(MOCKED_PROBLEM_ID)).thenReturn(Optional.of(problem));
         Mockito.when(problemManager.getProblemData(MOCKED_PROBLEM_MONGO_ID)).thenReturn(problemData);
@@ -2796,7 +2792,7 @@ class ContestServiceImplTest {
         /// region 校验写入的比赛数据
 
         ArgumentCaptor<PublicContestData> publicContestDataArgumentCaptor = ArgumentCaptor.forClass(PublicContestData.class);
-        Mockito.verify(contestDataManager).saveContestData(publicContestDataArgumentCaptor.capture());
+        Mockito.verify(contestManager).saveContestData(publicContestDataArgumentCaptor.capture());
         PublicContestData publicContestDataCP = publicContestDataArgumentCaptor.getValue();
         Assertions.assertEquals(2, publicContestDataCP.getProblemList().size());
         Assertions.assertEquals(MOCKED_PROBLEM_ID, publicContestDataCP.getProblemList().get(1).getProblemId());

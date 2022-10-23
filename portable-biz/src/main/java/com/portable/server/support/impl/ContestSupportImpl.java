@@ -18,7 +18,6 @@ import javax.annotation.Resource;
 import com.portable.server.exception.PortableException;
 import com.portable.server.helper.RedisHashHelper;
 import com.portable.server.helper.RedisListHelper;
-import com.portable.server.manager.ContestDataManager;
 import com.portable.server.manager.ContestManager;
 import com.portable.server.manager.SolutionManager;
 import com.portable.server.model.contest.BaseContestData;
@@ -49,9 +48,6 @@ public class ContestSupportImpl implements ContestSupport {
 
     @Resource
     private ContestManager contestManager;
-
-    @Resource
-    private ContestDataManager contestDataManager;
 
     /**
      * 分页获取提交时，每页的数量
@@ -194,7 +190,7 @@ public class ContestSupportImpl implements ContestSupport {
     private void makeRank(Long contestId) {
         Contest contest = contestManager.getContestById(contestId)
                 .orElseThrow(PortableException.from("A-08-002", contestId));
-        BaseContestData contestData = contestDataManager.getBaseContestDataById(contest.getDataId(), contest.getAccessType());
+        BaseContestData contestData = contestManager.getBaseContestDataById(contest.getDataId(), contest.getAccessType());
         if (contestData == null) {
             throw PortableException.of("S-07-002");
         }
@@ -244,7 +240,7 @@ public class ContestSupportImpl implements ContestSupport {
                 break;
             }
         }
-        contestDataManager.saveContestData(contestData);
+        contestManager.saveContestData(contestData);
         // 保存首 A 信息
         firstAcceptMap.forEach((integer, aLong) -> userIdContestRankMap.get(aLong).setFirstBlood(integer));
         List<ContestRankItem> contestRankItemList = userIdContestRankMap.values().stream()
