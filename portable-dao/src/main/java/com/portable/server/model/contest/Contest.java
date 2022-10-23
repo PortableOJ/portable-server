@@ -1,27 +1,26 @@
 package com.portable.server.model.contest;
 
-import com.portable.server.type.ContestAccessType;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-
 import java.util.Calendar;
 import java.util.Date;
+
+import com.portable.server.model.BaseEntity;
+import com.portable.server.type.ContestAccessType;
+
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
+import lombok.experimental.SuperBuilder;
 
 /**
  * @author shiroha
  */
 @Data
-@Builder
+@SuperBuilder
 @NoArgsConstructor
 @AllArgsConstructor
-public class Contest {
-
-    /**
-     * 数据库主键
-     */
-    private Long id;
+@EqualsAndHashCode(callSuper = true)
+public class Contest extends BaseEntity<Long> {
 
     /**
      * 数据主键

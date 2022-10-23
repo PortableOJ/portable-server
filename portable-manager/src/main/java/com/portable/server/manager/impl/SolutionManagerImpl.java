@@ -1,15 +1,5 @@
 package com.portable.server.manager.impl;
 
-import com.portable.server.kit.RedisValueKit;
-import com.portable.server.manager.SolutionManager;
-import com.portable.server.mapper.SolutionMapper;
-import com.portable.server.model.solution.Solution;
-import com.portable.server.type.SolutionStatusType;
-import com.portable.server.type.SolutionType;
-import com.portable.server.util.ObjectUtils;
-import org.springframework.stereotype.Component;
-
-import javax.annotation.Resource;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
@@ -17,6 +7,18 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
+
+import javax.annotation.Resource;
+
+import com.portable.server.helper.RedisValueHelper;
+import com.portable.server.manager.SolutionManager;
+import com.portable.server.mapper.SolutionMapper;
+import com.portable.server.model.solution.Solution;
+import com.portable.server.type.SolutionStatusType;
+import com.portable.server.type.SolutionType;
+import com.portable.server.util.ObjectUtils;
+
+import org.springframework.stereotype.Component;
 
 /**
  * @author shiroha
@@ -28,7 +30,7 @@ public class SolutionManagerImpl implements SolutionManager {
     private SolutionMapper solutionMapper;
 
     @Resource
-    private RedisValueKit redisValueKit;
+    private RedisValueHelper redisValueHelper;
 
     /**
      * redis 的 key 和过期时间
@@ -76,9 +78,9 @@ public class SolutionManagerImpl implements SolutionManager {
         if (Objects.isNull(id)) {
             return Optional.empty();
         }
-        Solution solution = redisValueKit.get(REDIS_PREFIX, id, Solution.class).orElseGet(() -> solutionMapper.selectSolutionById(id));
+        Solution solution = redisValueHelper.get(REDIS_PREFIX, id, Solution.class).orElseGet(() -> solutionMapper.selectSolutionById(id));
         if (Objects.nonNull(solution)) {
-            redisValueKit.set(REDIS_PREFIX, id, solution, REDIS_TIME);
+            redisValueHelper.set(REDIS_PREFIX, id, solution, REDIS_TIME);
         }
         return Optional.ofNullable(solution);
     }
@@ -101,13 +103,13 @@ public class SolutionManagerImpl implements SolutionManager {
     @Override
     public void updateStatus(Long id, SolutionStatusType statusType) {
         solutionMapper.updateStatus(id, statusType);
-        redisValueKit.getPeek(REDIS_PREFIX, id, Solution.class, REDIS_TIME, solution -> solution.setStatus(statusType));
+        redisValueHelper.getPeek(REDIS_PREFIX, id, Solution.class, REDIS_TIME, solution -> solution.setStatus(statusType));
     }
 
     @Override
     public void updateCostAndStatus(Long id, SolutionStatusType statusType, Integer timeCost, Integer memoryCost) {
         solutionMapper.updateCostAndStatus(id, statusType, timeCost, memoryCost);
-        redisValueKit.getPeek(REDIS_PREFIX, id, Solution.class, REDIS_TIME, solution -> {
+        redisValueHelper.getPeek(REDIS_PREFIX, id, Solution.class, REDIS_TIME, solution -> {
             solution.setStatus(statusType);
             solution.setTimeCost(ObjectUtils.max(solution.getTimeCost(), timeCost, Integer::compareTo));
             solution.setMemoryCost(ObjectUtils.max(solution.getMemoryCost(), memoryCost, Integer::compareTo));

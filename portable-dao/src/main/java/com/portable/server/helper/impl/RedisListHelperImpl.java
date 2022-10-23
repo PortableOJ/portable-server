@@ -1,24 +1,26 @@
-package com.portable.server.kit.impl;
+package com.portable.server.helper.impl;
 
-import com.portable.server.kit.RedisListKit;
-import com.portable.server.util.JsonUtils;
-import org.springframework.data.redis.core.ListOperations;
-import org.springframework.data.redis.core.StringRedisTemplate;
-import org.springframework.lang.NonNull;
-import org.springframework.stereotype.Component;
-
-import javax.annotation.PostConstruct;
-import javax.annotation.Resource;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import javax.annotation.PostConstruct;
+import javax.annotation.Resource;
+
+import com.portable.server.helper.RedisListHelper;
+import com.portable.server.util.JsonUtils;
+
+import org.springframework.data.redis.core.ListOperations;
+import org.springframework.data.redis.core.StringRedisTemplate;
+import org.springframework.lang.NonNull;
+import org.springframework.stereotype.Component;
+
 /**
  * @author shiroha
  */
 @Component
-public class RedisListKitImpl extends BaseRedisKit implements RedisListKit {
+public class RedisListHelperImpl extends BaseRedisKit implements RedisListHelper {
 
     @Resource
     private StringRedisTemplate stringRedisTemplate;

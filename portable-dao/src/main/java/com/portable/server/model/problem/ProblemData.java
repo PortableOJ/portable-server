@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Map;
 
 import com.portable.server.exception.PortableException;
+import com.portable.server.model.BaseEntity;
 import com.portable.server.type.JudgeCodeType;
 import com.portable.server.type.LanguageType;
 import com.portable.server.type.ProblemType;
@@ -13,8 +14,9 @@ import com.portable.server.type.SolutionStatusType;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
-import org.springframework.data.annotation.Id;
+import lombok.experimental.SuperBuilder;
 
 /**
  * 题目详细信息
@@ -22,14 +24,11 @@ import org.springframework.data.annotation.Id;
  * @author shiroha
  */
 @Data
-@Builder
+@SuperBuilder
 @NoArgsConstructor
 @AllArgsConstructor
-public class ProblemData {
-
-    @Id
-    @SuppressWarnings("AlibabaAvoidStartWithDollarAndUnderLineNaming")
-    private String _id;
+@EqualsAndHashCode(callSuper = true)
+public class ProblemData extends BaseEntity<String> {
 
     /**
      * 首次关联至的比赛 ID

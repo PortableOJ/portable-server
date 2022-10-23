@@ -117,7 +117,7 @@ public class ProblemServiceImplTest {
     void setUp() {
         problem = Problem.builder().id(MOCKED_PROBLEM_ID).dataId(MOCKED_PROBLEM_MONGO_ID).build();
         problemData = ProblemData.builder()
-                ._id(MOCKED_PROBLEM_MONGO_ID)
+                .id(MOCKED_PROBLEM_MONGO_ID)
                 .testName(new ArrayList<String>() {{
                     add("TestName1");
                     add("TestName2");
@@ -720,7 +720,7 @@ public class ProblemServiceImplTest {
 
         Mockito.doAnswer(invocationOnMock -> {
             ProblemData problemData = invocationOnMock.getArgument(0);
-            problemData.set_id(MOCKED_PROBLEM_MONGO_ID);
+            problemData.setId(MOCKED_PROBLEM_MONGO_ID);
             return null;
         }).when(problemDataManager).insertProblemData(Mockito.any());
         Mockito.doAnswer(invocationOnMock -> {

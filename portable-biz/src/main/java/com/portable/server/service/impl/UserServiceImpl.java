@@ -107,7 +107,7 @@ public class UserServiceImpl implements UserService {
             User user = userManager.newNormalAccount();
             user.setHandle(rootName);
             user.setPassword(BCryptEncoder.encoder(rootPassword));
-            user.setDataId(normalUserData.get_id());
+            user.setDataId(normalUserData.getId());
             userManager.insertAccount(user);
         }
     }
@@ -166,7 +166,7 @@ public class UserServiceImpl implements UserService {
         User user = userManager.newNormalAccount();
         user.setHandle(registerRequest.getHandle());
         user.setPassword(BCryptEncoder.encoder(registerRequest.getPassword()));
-        user.setDataId(normalUserData.get_id());
+        user.setDataId(normalUserData.getId());
         userManager.insertAccount(user);
 
         UserContext.set(user);

@@ -106,7 +106,7 @@ public class BatchServiceImpl implements BatchService {
                             userDataManager.insertUserData(batchUserData);
 
                             User user = userManager.newBatchAccount();
-                            user.setDataId(batchUserData.get_id());
+                            user.setDataId(batchUserData.getId());
                             user.setHandle(String.format(BATCH_FORMAT, request.getPrefix(), i));
                             String password = IntStream.range(0, PASSWORD_LEN)
                                     .mapToObj(t -> String.valueOf(RANDOM.nextInt(10)))

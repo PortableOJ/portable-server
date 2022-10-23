@@ -3,9 +3,9 @@ package com.portable.server.service;
 import java.util.List;
 
 import com.portable.server.exception.PortableException;
-import com.portable.server.model.ServiceVerifyCode;
 import com.portable.server.model.judge.entity.JudgeContainer;
 import com.portable.server.model.judge.entity.UpdateJudgeContainer;
+import com.portable.server.model.redis.ServiceVerifyCode;
 
 /**
  * @author shiroha

@@ -10,15 +10,13 @@ import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
 
 import com.portable.server.exception.PortableException;
-import com.portable.server.kit.RedisValueKit;
+import com.portable.server.helper.RedisValueHelper;
 import com.portable.server.manager.ProblemDataManager;
 import com.portable.server.manager.ProblemManager;
 import com.portable.server.manager.SolutionDataManager;
 import com.portable.server.manager.SolutionManager;
 import com.portable.server.manager.UserDataManager;
 import com.portable.server.manager.UserManager;
-import com.portable.server.model.RedisKeyAndExpire;
-import com.portable.server.model.ServiceVerifyCode;
 import com.portable.server.model.judge.entity.JudgeContainer;
 import com.portable.server.model.judge.entity.UpdateJudgeContainer;
 import com.portable.server.model.judge.work.AbstractJudgeWork;
@@ -26,6 +24,8 @@ import com.portable.server.model.judge.work.SolutionJudgeWork;
 import com.portable.server.model.judge.work.TestJudgeWork;
 import com.portable.server.model.problem.Problem;
 import com.portable.server.model.problem.ProblemData;
+import com.portable.server.model.redis.RedisKeyAndExpire;
+import com.portable.server.model.redis.ServiceVerifyCode;
 import com.portable.server.model.response.judge.HeartbeatResponse;
 import com.portable.server.model.response.judge.SolutionInfoResponse;
 import com.portable.server.model.response.judge.TestInfoResponse;
@@ -124,7 +124,7 @@ public class JudgeSupportImpl implements JudgeSupport {
     private FileSupport fileSupport;
 
     @Resource
-    private RedisValueKit redisValueKit;
+    private RedisValueHelper redisValueHelper;
 
     @PostConstruct
     public void init() {
@@ -265,7 +265,7 @@ public class JudgeSupportImpl implements JudgeSupport {
         if (serviceVerifyCode != null) {
             return serviceVerifyCode;
         }
-        RedisKeyAndExpire<String> serviceCode = redisValueKit.getValueAndTime(SERVICE_CODE_KEY, "");
+        RedisKeyAndExpire<String> serviceCode = redisValueHelper.getValueAndTime(SERVICE_CODE_KEY, "");
         if (serviceCode.getHasKey()) {
             Calendar calendar = Calendar.getInstance();
             calendar.add(Calendar.SECOND, serviceCode.getExpireTime().intValue());
@@ -276,7 +276,7 @@ public class JudgeSupportImpl implements JudgeSupport {
                     .build();
         }
         String code = UUID.randomUUID().toString();
-        redisValueKit.set(SERVICE_CODE_KEY, "", code, Long.valueOf(serverCodeExpireTime));
+        redisValueHelper.set(SERVICE_CODE_KEY, "", code, Long.valueOf(serverCodeExpireTime));
         Calendar calendar = Calendar.getInstance();
         calendar.add(Calendar.SECOND, serverCodeExpireTime);
         return ServiceVerifyCode.builder()
@@ -595,7 +595,7 @@ public class JudgeSupportImpl implements JudgeSupport {
             solutionDataManager.insertSolutionData(solutionData);
 
             Solution solution = solutionManager.newSolution();
-            solution.setDataId(solutionData.get_id());
+            solution.setDataId(solutionData.getId());
             solution.setUserId(problem.getOwner());
             solution.setProblemId(problemId);
             solution.setLanguageType(stdCode.getLanguageType());

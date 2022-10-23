@@ -342,7 +342,7 @@ public class ContestServiceImpl implements ContestService {
             solution.setSolutionType(SolutionType.TEST_CONTEST);
         }
         solutionDataManager.insertSolutionData(solutionData);
-        solution.setDataId(solutionData.get_id());
+        solution.setDataId(solutionData.getId());
         solution.setUserId(UserContext.ctx().getId());
         solutionManager.insertSolution(solution);
         judgeSupport.addJudgeTask(solution.getId());
@@ -359,7 +359,7 @@ public class ContestServiceImpl implements ContestService {
         setContestContentToContestData(contestContentRequest, contestData);
 
         contestDataManager.insertContestData(contestData);
-        contest.setDataId(contestData.get_id());
+        contest.setDataId(contestData.getId());
         contestManager.insertContest(contest);
 
         ContestPackage contestPackage = ContestPackage.builder()

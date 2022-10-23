@@ -1,11 +1,11 @@
-package com.portable.server.model;
+package com.portable.server.model.redis;
+
+import java.util.Date;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-
-import java.util.Date;
 
 /**
  * service 的编码

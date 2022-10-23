@@ -1,4 +1,4 @@
-package com.portable.server.kit;
+package com.portable.server.helper;
 
 import java.io.File;
 import java.io.InputStream;
@@ -10,7 +10,7 @@ import com.portable.server.exception.PortableException;
 /**
  * @author shiroha
  */
-public interface FileKit {
+public interface FileHelper {
 
     /**
      * 创建一个目录，如果不存在的话

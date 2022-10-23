@@ -4,9 +4,9 @@ import java.io.InputStream;
 import java.util.List;
 
 import com.portable.server.exception.PortableException;
-import com.portable.server.model.ServiceVerifyCode;
 import com.portable.server.model.judge.entity.JudgeContainer;
 import com.portable.server.model.judge.entity.UpdateJudgeContainer;
+import com.portable.server.model.redis.ServiceVerifyCode;
 import com.portable.server.model.response.judge.HeartbeatResponse;
 import com.portable.server.model.response.judge.SolutionInfoResponse;
 import com.portable.server.model.response.judge.TestInfoResponse;

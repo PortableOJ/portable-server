@@ -7,13 +7,14 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 import com.portable.server.exception.PortableException;
+import com.portable.server.model.BaseEntity;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
-import org.springframework.data.annotation.Id;
 
 /**
  * @author shiroha
@@ -22,14 +23,9 @@ import org.springframework.data.annotation.Id;
 @SuperBuilder
 @NoArgsConstructor
 @AllArgsConstructor
-public abstract class BaseContestData {
+@EqualsAndHashCode(callSuper = true)
+public abstract class BaseContestData extends BaseEntity<String> {
 
-    /**
-     * Mongo 数据库主键
-     */
-    @Id
-    @SuppressWarnings("AlibabaAvoidStartWithDollarAndUnderLineNaming")
-    private String _id;
     /**
      * 题目列表与题目信息
      */

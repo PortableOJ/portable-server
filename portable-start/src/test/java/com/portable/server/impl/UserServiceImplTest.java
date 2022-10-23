@@ -97,10 +97,10 @@ class UserServiceImplTest {
                 .type(AccountType.NORMAL)
                 .build();
         normalUserData = NormalUserData.builder()
-                ._id(MOCKED_MONGO_ID)
+                .id(MOCKED_MONGO_ID)
                 .build();
         batchUserData = BatchUserData.builder()
-                ._id(MOCKED_MONGO_ID)
+                .id(MOCKED_MONGO_ID)
                 .batchId(MOCKED_BATCH_ID)
                 .build();
         userContext = UserContext.getNullUser();
@@ -134,7 +134,7 @@ class UserServiceImplTest {
 
         Mockito.doAnswer(invocationOnMock -> {
             NormalUserData argument = invocationOnMock.getArgument(0);
-            argument.set_id(MOCKED_MONGO_ID);
+            argument.setId(MOCKED_MONGO_ID);
             return null;
         }).when(userDataManager).insertUserData(Mockito.any());
         Mockito.doAnswer(invocationOnMock -> {
@@ -166,7 +166,7 @@ class UserServiceImplTest {
 
         Assertions.assertEquals(MOCKED_ROOT_NAME, userCP.getHandle());
         Assertions.assertEquals(MOCKED_ROOT_PASSWORD_ENCODED, userCP.getPassword());
-        Assertions.assertEquals(normalUserData.get_id(), userCP.getDataId());
+        Assertions.assertEquals(normalUserData.getId(), userCP.getDataId());
         /// endregion
     }
 
@@ -615,7 +615,7 @@ class UserServiceImplTest {
 
         Mockito.doAnswer(invocationOnMock -> {
             NormalUserData userData = invocationOnMock.getArgument(0);
-            userData.set_id(MOCKED_MONGO_ID);
+            userData.setId(MOCKED_MONGO_ID);
             return null;
         }).when(userDataManager).insertUserData(Mockito.any());
         Mockito.doAnswer(invocationOnMock -> {
@@ -649,7 +649,7 @@ class UserServiceImplTest {
         ArgumentCaptor<NormalUserData> normalUserDataArgumentCaptor = ArgumentCaptor.forClass(NormalUserData.class);
         Mockito.verify(userDataManager).insertUserData(normalUserDataArgumentCaptor.capture());
         NormalUserData normalUserDataCP = normalUserDataArgumentCaptor.getValue();
-        Assertions.assertEquals(userCP.getDataId(), normalUserDataCP.get_id());
+        Assertions.assertEquals(userCP.getDataId(), normalUserDataCP.getId());
 
         /// endregion
     }
@@ -998,7 +998,7 @@ class UserServiceImplTest {
         ArgumentCaptor<NormalUserData> normalUserDataArgumentCaptor = ArgumentCaptor.forClass(NormalUserData.class);
         Mockito.verify(userDataManager).updateUserData(normalUserDataArgumentCaptor.capture());
         NormalUserData normalUserDataCP = normalUserDataArgumentCaptor.getValue();
-        Assertions.assertEquals(MOCKED_MONGO_ID, normalUserData.get_id());
+        Assertions.assertEquals(MOCKED_MONGO_ID, normalUserData.getId());
         Assertions.assertEquals(OrganizationType.SPECIAL_STUDENT, normalUserDataCP.getOrganization());
     }
 
@@ -1092,7 +1092,7 @@ class UserServiceImplTest {
         ArgumentCaptor<NormalUserData> normalUserDataArgumentCaptor = ArgumentCaptor.forClass(NormalUserData.class);
         Mockito.verify(userDataManager).updateUserData(normalUserDataArgumentCaptor.capture());
         NormalUserData normalUserDataCP = normalUserDataArgumentCaptor.getValue();
-        Assertions.assertEquals(MOCKED_MONGO_ID, normalUserData.get_id());
+        Assertions.assertEquals(MOCKED_MONGO_ID, normalUserData.getId());
         Assertions.assertTrue(normalUserDataCP.getPermissionTypeSet().contains(PermissionType.GRANT));
     }
 
@@ -1188,7 +1188,7 @@ class UserServiceImplTest {
         ArgumentCaptor<NormalUserData> normalUserDataArgumentCaptor = ArgumentCaptor.forClass(NormalUserData.class);
         Mockito.verify(userDataManager).updateUserData(normalUserDataArgumentCaptor.capture());
         NormalUserData normalUserDataCP = normalUserDataArgumentCaptor.getValue();
-        Assertions.assertEquals(MOCKED_MONGO_ID, normalUserData.get_id());
+        Assertions.assertEquals(MOCKED_MONGO_ID, normalUserData.getId());
         Assertions.assertFalse(normalUserDataCP.getPermissionTypeSet().contains(PermissionType.GRANT));
     }
 

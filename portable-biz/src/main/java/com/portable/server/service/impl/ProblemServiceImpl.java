@@ -202,7 +202,7 @@ public class ProblemServiceImpl implements ProblemService {
         problem.setOwner(UserContext.ctx().getId());
 
         problemDataManager.insertProblemData(problemData);
-        problem.setDataId(problemData.get_id());
+        problem.setDataId(problemData.getId());
         problemManager.insertProblem(problem);
         fileSupport.createProblem(problem.getId());
 
@@ -441,7 +441,7 @@ public class ProblemServiceImpl implements ProblemService {
 
         Solution solution = solutionManager.newSolution();
         submitSolutionRequest.toSolution(solution);
-        solution.setDataId(solutionData.get_id());
+        solution.setDataId(solutionData.getId());
         solution.setUserId(userContext.getId());
         solution.setSolutionType(SolutionType.PUBLIC);
         solutionManager.insertSolution(solution);

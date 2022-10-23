@@ -1,4 +1,4 @@
-package com.portable.server.kit;
+package com.portable.server.helper;
 
 import java.util.List;
 import java.util.Optional;
@@ -6,7 +6,7 @@ import java.util.Optional;
 /**
  * @author shiroha
  */
-public interface RedisListKit {
+public interface RedisListHelper {
 
     /**
      * 创建 list

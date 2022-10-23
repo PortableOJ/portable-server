@@ -31,7 +31,7 @@ public class ProblemDataManagerImpl implements ProblemDataManager {
     @Override
     public @NotNull ProblemData newProblemData() {
         return ProblemData.builder()
-                ._id(null)
+                .id(null)
                 .contestId(null)
                 .defaultTimeLimit(1)
                 .defaultMemoryLimit(128)

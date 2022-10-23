@@ -6,7 +6,7 @@ import java.io.InputStream;
 import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
 
-import com.portable.server.kit.FileKit;
+import com.portable.server.helper.FileHelper;
 import com.portable.server.support.FileSupport;
 
 import org.springframework.stereotype.Component;
@@ -20,53 +20,53 @@ public class FileSupportImpl implements FileSupport {
     private static final String PROBLEM_DIR_NAME = "problem";
 
     @Resource
-    private FileKit fileKit;
+    private FileHelper fileHelper;
 
     @PostConstruct
     public void init() {
-        fileKit.createDirIfNotExist(PROBLEM_DIR_NAME);
+        fileHelper.createDirIfNotExist(PROBLEM_DIR_NAME);
     }
 
     @Override
     public void createProblem(Long problemId) {
         String newProblemDir = PROBLEM_DIR_NAME + File.separator + problemId;
-        fileKit.createDirIfNotExist(newProblemDir);
+        fileHelper.createDirIfNotExist(newProblemDir);
     }
 
     @Override
     public InputStream getTestInput(Long problemId, String testName) {
-        return fileKit.getFileInput(getProblemInput(problemId, testName));
+        return fileHelper.getFileInput(getProblemInput(problemId, testName));
     }
 
     @Override
     public InputStream getTestOutput(Long problemId, String testName) {
-        return fileKit.getFileInput(getProblemOutput(problemId, testName));
+        return fileHelper.getFileInput(getProblemOutput(problemId, testName));
     }
 
     @Override
     public void saveTestInput(Long problemId, String testName, InputStream inputStream) {
-        fileKit.saveFileOrOverwrite(getProblemInput(problemId, testName), inputStream);
+        fileHelper.saveFileOrOverwrite(getProblemInput(problemId, testName), inputStream);
     }
 
     @Override
     public void saveTestOutput(Long problemId, String testName, InputStream inputStream) {
-        fileKit.saveFileOrOverwrite(getProblemOutput(problemId, testName), inputStream);
+        fileHelper.saveFileOrOverwrite(getProblemOutput(problemId, testName), inputStream);
     }
 
     @Override
     public void createTestOutput(Long problemId, String testName, byte[] value) {
-        fileKit.saveFileOrOverwrite(getProblemOutput(problemId, testName), value);
+        fileHelper.saveFileOrOverwrite(getProblemOutput(problemId, testName), value);
     }
 
     @Override
     public void appendTestOutput(Long problemId, String testName, byte[] value) {
-        fileKit.appendFile(getProblemOutput(problemId, testName), value);
+        fileHelper.appendFile(getProblemOutput(problemId, testName), value);
     }
 
     @Override
     public void removeTest(Long problemId, String testName) {
-        fileKit.deleteFileIfExist(getProblemInput(problemId, testName));
-        fileKit.deleteFileIfExist(getProblemOutput(problemId, testName));
+        fileHelper.deleteFileIfExist(getProblemInput(problemId, testName));
+        fileHelper.deleteFileIfExist(getProblemOutput(problemId, testName));
     }
 
     private String getProblemInput(Long problemId, String testName) {

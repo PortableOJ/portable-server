@@ -1,24 +1,26 @@
-package com.portable.server.kit.impl;
+package com.portable.server.helper.impl;
 
-import com.portable.server.kit.RedisValueKit;
-import com.portable.server.model.RedisKeyAndExpire;
+import java.util.Optional;
+import java.util.concurrent.TimeUnit;
+import java.util.function.Consumer;
+
+import javax.annotation.PostConstruct;
+import javax.annotation.Resource;
+
+import com.portable.server.helper.RedisValueHelper;
+import com.portable.server.model.redis.RedisKeyAndExpire;
 import com.portable.server.util.JsonUtils;
+
 import org.springframework.data.redis.core.BoundValueOperations;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.stereotype.Component;
 
-import javax.annotation.PostConstruct;
-import javax.annotation.Resource;
-import java.util.Optional;
-import java.util.concurrent.TimeUnit;
-import java.util.function.Consumer;
-
 /**
  * @author shiroha
  */
 @Component
-public class RedisValueKitImpl extends BaseRedisKit implements RedisValueKit {
+public class RedisValueHelperImpl extends BaseRedisKit implements RedisValueHelper {
 
     @Resource
     private StringRedisTemplate stringRedisTemplate;

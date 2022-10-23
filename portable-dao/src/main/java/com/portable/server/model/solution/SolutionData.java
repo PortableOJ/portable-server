@@ -1,29 +1,26 @@
 package com.portable.server.model.solution;
 
+import java.util.Map;
+
+import com.portable.server.model.BaseEntity;
 import com.portable.server.type.SolutionStatusType;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
-import org.springframework.data.annotation.Id;
-
-import java.util.Map;
+import lombok.experimental.SuperBuilder;
 
 /**
  * @author shiroha
  */
 @Data
-@Builder
+@SuperBuilder
 @NoArgsConstructor
 @AllArgsConstructor
-public class SolutionData {
-
-    /**
-     * Mongo ID
-     */
-    @Id
-    @SuppressWarnings("AlibabaAvoidStartWithDollarAndUnderLineNaming")
-    private String _id;
+@EqualsAndHashCode(callSuper = true)
+public class SolutionData extends BaseEntity<String> {
 
     /**
      * 代码内容

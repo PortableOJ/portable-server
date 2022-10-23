@@ -26,7 +26,7 @@ public class SolutionDataManagerImpl implements SolutionDataManager {
     @Override
     public @NotNull SolutionData newSolutionData(ProblemData problemData) {
         return SolutionData.builder()
-                ._id(null)
+                .id(null)
                 .code(null)
                 .compileMsg(null)
                 .runningMsg(new HashMap<>(problemData.getTestName().size()))

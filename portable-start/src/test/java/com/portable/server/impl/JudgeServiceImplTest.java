@@ -3,9 +3,9 @@ package com.portable.server.impl;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.portable.server.model.ServiceVerifyCode;
 import com.portable.server.model.judge.entity.JudgeContainer;
 import com.portable.server.model.judge.entity.UpdateJudgeContainer;
+import com.portable.server.model.redis.ServiceVerifyCode;
 import com.portable.server.service.impl.JudgeServiceImpl;
 import com.portable.server.support.impl.JudgeSupportImpl;
 import com.portable.server.test.MockedValueMaker;

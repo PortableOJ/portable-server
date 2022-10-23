@@ -1,4 +1,4 @@
-package com.portable.server.kit.impl;
+package com.portable.server.helper.impl;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -14,7 +14,7 @@ import java.util.stream.Collectors;
 import javax.annotation.PostConstruct;
 
 import com.portable.server.exception.PortableException;
-import com.portable.server.kit.FileKit;
+import com.portable.server.helper.FileHelper;
 import com.portable.server.util.StreamUtils;
 
 import org.springframework.beans.factory.annotation.Value;
@@ -24,7 +24,7 @@ import org.springframework.stereotype.Component;
  * @author shiroha
  */
 @Component
-public class FileKitImpl implements FileKit {
+public class FileHelperImpl implements FileHelper {
 
     @Value("${portable.home}")
     private String homeDir;

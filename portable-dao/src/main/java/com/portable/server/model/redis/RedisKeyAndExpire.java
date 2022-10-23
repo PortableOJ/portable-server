@@ -1,4 +1,4 @@
-package com.portable.server.model;
+package com.portable.server.model.redis;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

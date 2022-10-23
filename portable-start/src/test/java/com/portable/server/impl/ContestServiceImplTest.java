@@ -160,7 +160,7 @@ class ContestServiceImplTest {
                 .id(MOCKED_SOLUTION_ID)
                 .build();
         solutionData = SolutionData.builder()
-                ._id(MOCKED_SOLUTION_MONGO_ID)
+                .id(MOCKED_SOLUTION_MONGO_ID)
                 .build();
         publicContestData = PublicContestData.builder().build();
         passwordContestData = PasswordContestData.builder().build();
@@ -764,7 +764,7 @@ class ContestServiceImplTest {
     @Test
     void testGetContestStatusListWithIndexOutOfBound() {
         contest.setAccessType(ContestAccessType.PUBLIC);
-        publicContestData.set_id(MOCKED_CONTEST_MONGO_ID);
+        publicContestData.setId(MOCKED_CONTEST_MONGO_ID);
         contest.setDataId(MOCKED_CONTEST_MONGO_ID);
         solution.setProblemId(MOCKED_PROBLEM_ID);
         solution.setUserId(MOCKED_USER_ID);
@@ -798,7 +798,7 @@ class ContestServiceImplTest {
     @Test
     void testGetContestStatusListWithNoUser() {
         contest.setAccessType(ContestAccessType.PUBLIC);
-        publicContestData.set_id(MOCKED_CONTEST_MONGO_ID);
+        publicContestData.setId(MOCKED_CONTEST_MONGO_ID);
         contest.setDataId(MOCKED_CONTEST_MONGO_ID);
         solution.setProblemId(MOCKED_PROBLEM_ID);
         solution.setUserId(MOCKED_USER_ID);
@@ -841,7 +841,7 @@ class ContestServiceImplTest {
     void testGetContestStatusListWithSuccess() {
         contest.setAccessType(ContestAccessType.PUBLIC);
         contest.setDataId(MOCKED_CONTEST_MONGO_ID);
-        publicContestData.set_id(MOCKED_CONTEST_MONGO_ID);
+        publicContestData.setId(MOCKED_CONTEST_MONGO_ID);
         solution.setProblemId(MOCKED_PROBLEM_ID);
         solution.setUserId(MOCKED_USER_ID);
         solution.setContestId(MOCKED_CONTEST_ID);
@@ -931,7 +931,7 @@ class ContestServiceImplTest {
         contest.setDuration(10000);
         contest.setOwner(MockedValueMaker.mLong());
         contest.setAccessType(ContestAccessType.PUBLIC);
-        publicContestData.set_id(MOCKED_CONTEST_MONGO_ID);
+        publicContestData.setId(MOCKED_CONTEST_MONGO_ID);
         publicContestData.setProblemList(new ArrayList<>());
         publicContestData.setCoAuthor(new HashSet<>());
         solution.setProblemId(MOCKED_PROBLEM_ID);
@@ -962,7 +962,7 @@ class ContestServiceImplTest {
         contest.setDuration(0);
         contest.setOwner(MockedValueMaker.mLong());
         contest.setAccessType(ContestAccessType.PUBLIC);
-        publicContestData.set_id(MOCKED_CONTEST_MONGO_ID);
+        publicContestData.setId(MOCKED_CONTEST_MONGO_ID);
         publicContestData.setCoAuthor(new HashSet<>());
         publicContestData.setProblemList(new ArrayList<BaseContestData.ContestProblemData>() {{
             add(BaseContestData.ContestProblemData.builder()
@@ -1009,7 +1009,7 @@ class ContestServiceImplTest {
         contest.setDuration(100000);
         contest.setOwner(MockedValueMaker.mLong());
         contest.setAccessType(ContestAccessType.PUBLIC);
-        publicContestData.set_id(MOCKED_CONTEST_MONGO_ID);
+        publicContestData.setId(MOCKED_CONTEST_MONGO_ID);
         publicContestData.setCoAuthor(new HashSet<>());
         publicContestData.setProblemList(new ArrayList<BaseContestData.ContestProblemData>() {{
             add(BaseContestData.ContestProblemData.builder()
@@ -1056,7 +1056,7 @@ class ContestServiceImplTest {
         contest.setDuration(100000);
         contest.setOwner(MOCKED_USER_ID);
         contest.setAccessType(ContestAccessType.PUBLIC);
-        publicContestData.set_id(MOCKED_CONTEST_MONGO_ID);
+        publicContestData.setId(MOCKED_CONTEST_MONGO_ID);
         publicContestData.setCoAuthor(new HashSet<>());
         publicContestData.setProblemList(new ArrayList<BaseContestData.ContestProblemData>() {{
             add(BaseContestData.ContestProblemData.builder()
@@ -1122,7 +1122,7 @@ class ContestServiceImplTest {
     @Test
     void testGetContestTestStatusListWithIndexOutOfBound() {
         contest.setAccessType(ContestAccessType.PUBLIC);
-        publicContestData.set_id(MOCKED_CONTEST_MONGO_ID);
+        publicContestData.setId(MOCKED_CONTEST_MONGO_ID);
         contest.setDataId(MOCKED_CONTEST_MONGO_ID);
         solution.setProblemId(MOCKED_PROBLEM_ID);
         solution.setUserId(MOCKED_USER_ID);
@@ -1156,7 +1156,7 @@ class ContestServiceImplTest {
     @Test
     void testGetContestTestStatusListWithNoUser() {
         contest.setAccessType(ContestAccessType.PUBLIC);
-        publicContestData.set_id(MOCKED_CONTEST_MONGO_ID);
+        publicContestData.setId(MOCKED_CONTEST_MONGO_ID);
         contest.setDataId(MOCKED_CONTEST_MONGO_ID);
         solution.setProblemId(MOCKED_PROBLEM_ID);
         solution.setUserId(MOCKED_USER_ID);
@@ -1199,7 +1199,7 @@ class ContestServiceImplTest {
     void testGetContestTestStatusListWithSuccess() {
         contest.setAccessType(ContestAccessType.PUBLIC);
         contest.setDataId(MOCKED_CONTEST_MONGO_ID);
-        publicContestData.set_id(MOCKED_CONTEST_MONGO_ID);
+        publicContestData.setId(MOCKED_CONTEST_MONGO_ID);
         solution.setProblemId(MOCKED_PROBLEM_ID);
         solution.setUserId(MOCKED_USER_ID);
         solution.setContestId(MOCKED_CONTEST_ID);
@@ -1289,7 +1289,7 @@ class ContestServiceImplTest {
         contest.setDuration(100000);
         contest.setOwner(MOCKED_USER_ID);
         contest.setAccessType(ContestAccessType.PUBLIC);
-        publicContestData.set_id(MOCKED_CONTEST_MONGO_ID);
+        publicContestData.setId(MOCKED_CONTEST_MONGO_ID);
         publicContestData.setCoAuthor(new HashSet<>());
         publicContestData.setProblemList(new ArrayList<BaseContestData.ContestProblemData>() {{
             add(BaseContestData.ContestProblemData.builder()
@@ -1333,7 +1333,7 @@ class ContestServiceImplTest {
         contest.setDuration(100000);
         contest.setOwner(MOCKED_USER_ID);
         contest.setAccessType(ContestAccessType.PUBLIC);
-        publicContestData.set_id(MOCKED_CONTEST_MONGO_ID);
+        publicContestData.setId(MOCKED_CONTEST_MONGO_ID);
         publicContestData.setCoAuthor(new HashSet<>());
         publicContestData.setProblemList(new ArrayList<BaseContestData.ContestProblemData>() {{
             add(BaseContestData.ContestProblemData.builder()
@@ -1372,7 +1372,7 @@ class ContestServiceImplTest {
         contest.setDuration(100000);
         contest.setOwner(MOCKED_USER_ID);
         contest.setAccessType(ContestAccessType.PUBLIC);
-        publicContestData.set_id(MOCKED_CONTEST_MONGO_ID);
+        publicContestData.setId(MOCKED_CONTEST_MONGO_ID);
         publicContestData.setCoAuthor(new HashSet<>());
         publicContestData.setProblemList(new ArrayList<BaseContestData.ContestProblemData>() {{
             add(BaseContestData.ContestProblemData.builder()
@@ -1430,7 +1430,7 @@ class ContestServiceImplTest {
         contest.setOwner(MOCKED_USER_ID);
         contest.setAccessType(ContestAccessType.PUBLIC);
         user.setHandle(MOCKED_USER_HANDLE);
-        publicContestData.set_id(MOCKED_CONTEST_MONGO_ID);
+        publicContestData.setId(MOCKED_CONTEST_MONGO_ID);
         publicContestData.setCoAuthor(new HashSet<>());
         publicContestData.setProblemList(new ArrayList<BaseContestData.ContestProblemData>() {{
             add(BaseContestData.ContestProblemData.builder()
@@ -1477,7 +1477,7 @@ class ContestServiceImplTest {
     void testSubmitWithVisit() {
         contest.setAccessType(ContestAccessType.PUBLIC);
         contest.setDataId(MOCKED_CONTEST_MONGO_ID);
-        publicContestData.set_id(MOCKED_CONTEST_MONGO_ID);
+        publicContestData.setId(MOCKED_CONTEST_MONGO_ID);
 
         Mockito.when(contestManager.getContestById(MOCKED_CONTEST_ID)).thenReturn(Optional.of(contest));
         Mockito.when(contestDataManager.getPublicContestDataById(MOCKED_CONTEST_MONGO_ID)).thenReturn(publicContestData);
@@ -1503,7 +1503,7 @@ class ContestServiceImplTest {
         contest.setAccessType(ContestAccessType.PUBLIC);
         contest.setDataId(MOCKED_CONTEST_MONGO_ID);
         contest.setStartTime(new Date(new Date().getTime() + 10000));
-        publicContestData.set_id(MOCKED_CONTEST_MONGO_ID);
+        publicContestData.setId(MOCKED_CONTEST_MONGO_ID);
 
         Mockito.when(contestManager.getContestById(MOCKED_CONTEST_ID)).thenReturn(Optional.of(contest));
         Mockito.when(contestDataManager.getPublicContestDataById(MOCKED_CONTEST_MONGO_ID)).thenReturn(publicContestData);
@@ -1530,7 +1530,7 @@ class ContestServiceImplTest {
         contest.setDataId(MOCKED_CONTEST_MONGO_ID);
         contest.setStartTime(new Date(0));
         contest.setDuration(10);
-        publicContestData.set_id(MOCKED_CONTEST_MONGO_ID);
+        publicContestData.setId(MOCKED_CONTEST_MONGO_ID);
 
         Mockito.when(contestManager.getContestById(MOCKED_CONTEST_ID)).thenReturn(Optional.of(contest));
         Mockito.when(contestDataManager.getPublicContestDataById(MOCKED_CONTEST_MONGO_ID)).thenReturn(publicContestData);
@@ -1561,7 +1561,7 @@ class ContestServiceImplTest {
         contest.setDuration(1000);
         problem.setDataId(MOCKED_PROBLEM_MONGO_ID);
         problemData.setTestName(new ArrayList<>());
-        publicContestData.set_id(MOCKED_CONTEST_MONGO_ID);
+        publicContestData.setId(MOCKED_CONTEST_MONGO_ID);
         publicContestData.setCoAuthor(new HashSet<>());
         publicContestData.setProblemList(new ArrayList<BaseContestData.ContestProblemData>() {{
             add(BaseContestData.ContestProblemData.builder()
@@ -1582,7 +1582,7 @@ class ContestServiceImplTest {
 
         Mockito.doAnswer(invocationOnMock -> {
             SolutionData solutionData = invocationOnMock.getArgument(0);
-            solutionData.set_id(MOCKED_SOLUTION_MONGO_ID);
+            solutionData.setId(MOCKED_SOLUTION_MONGO_ID);
             return null;
         }).when(solutionDataManager).insertSolutionData(Mockito.any());
         Mockito.doAnswer(invocationOnMock -> {
@@ -1634,7 +1634,7 @@ class ContestServiceImplTest {
         contest.setDuration(1);
         problem.setDataId(MOCKED_PROBLEM_MONGO_ID);
         problemData.setTestName(new ArrayList<>());
-        publicContestData.set_id(MOCKED_CONTEST_MONGO_ID);
+        publicContestData.setId(MOCKED_CONTEST_MONGO_ID);
         publicContestData.setCoAuthor(new HashSet<>());
         publicContestData.setProblemList(new ArrayList<BaseContestData.ContestProblemData>() {{
             add(BaseContestData.ContestProblemData.builder()
@@ -1655,7 +1655,7 @@ class ContestServiceImplTest {
 
         Mockito.doAnswer(invocationOnMock -> {
             SolutionData solutionData = invocationOnMock.getArgument(0);
-            solutionData.set_id(MOCKED_SOLUTION_MONGO_ID);
+            solutionData.setId(MOCKED_SOLUTION_MONGO_ID);
             return null;
         }).when(solutionDataManager).insertSolutionData(Mockito.any());
         Mockito.doAnswer(invocationOnMock -> {
@@ -1846,7 +1846,7 @@ class ContestServiceImplTest {
         }});
         Mockito.doAnswer(invocationOnMock -> {
             PublicContestData publicContestData = invocationOnMock.getArgument(0);
-            publicContestData.set_id(MOCKED_CONTEST_MONGO_ID);
+            publicContestData.setId(MOCKED_CONTEST_MONGO_ID);
             return null;
         }).when(contestDataManager).insertContestData(Mockito.any());
 
@@ -1938,7 +1938,7 @@ class ContestServiceImplTest {
         }});
         Mockito.doAnswer(invocationOnMock -> {
             PasswordContestData passwordContestData = invocationOnMock.getArgument(0);
-            passwordContestData.set_id(MOCKED_CONTEST_MONGO_ID);
+            passwordContestData.setId(MOCKED_CONTEST_MONGO_ID);
             return null;
         }).when(contestDataManager).insertContestData(Mockito.any());
 
@@ -2039,7 +2039,7 @@ class ContestServiceImplTest {
         }});
         Mockito.doAnswer(invocationOnMock -> {
             PrivateContestData privateContestData = invocationOnMock.getArgument(0);
-            privateContestData.set_id(MOCKED_CONTEST_MONGO_ID);
+            privateContestData.setId(MOCKED_CONTEST_MONGO_ID);
             return null;
         }).when(contestDataManager).insertContestData(Mockito.any());
         Mockito.doAnswer(invocationOnMock -> {
@@ -2136,7 +2136,7 @@ class ContestServiceImplTest {
         }});
         Mockito.doAnswer(invocationOnMock -> {
             BatchContestData batchContestData = invocationOnMock.getArgument(0);
-            batchContestData.set_id(MOCKED_CONTEST_MONGO_ID);
+            batchContestData.setId(MOCKED_CONTEST_MONGO_ID);
             return null;
         }).when(contestDataManager).insertContestData(Mockito.any());
         Mockito.doAnswer(invocationOnMock -> {
@@ -2219,7 +2219,7 @@ class ContestServiceImplTest {
     void testUpdateContestWithNoAccess() {
         contest.setAccessType(ContestAccessType.PUBLIC);
         contest.setDataId(MOCKED_CONTEST_MONGO_ID);
-        publicContestData.set_id(MOCKED_CONTEST_MONGO_ID);
+        publicContestData.setId(MOCKED_CONTEST_MONGO_ID);
 
         Date startTime = MockedValueMaker.mDate();
         Integer duration = MockedValueMaker.mInt();
@@ -2260,7 +2260,7 @@ class ContestServiceImplTest {
         contest.setDataId(MOCKED_CONTEST_MONGO_ID);
         contest.setStartTime(new Date(new Date().getTime() + 10000));
         contest.setDuration(10000);
-        publicContestData.set_id(MOCKED_CONTEST_MONGO_ID);
+        publicContestData.setId(MOCKED_CONTEST_MONGO_ID);
 
         Date startTime = new Date(0);
         Integer duration = MockedValueMaker.mInt();
@@ -2301,7 +2301,7 @@ class ContestServiceImplTest {
         contest.setDataId(MOCKED_CONTEST_MONGO_ID);
         contest.setStartTime(new Date(new Date().getTime() + 10000));
         contest.setDuration(10000);
-        publicContestData.set_id(MOCKED_CONTEST_MONGO_ID);
+        publicContestData.setId(MOCKED_CONTEST_MONGO_ID);
 
         Date startTime = new Date(new Date().getTime() + 20000);
         Integer duration = MockedValueMaker.mInt();
@@ -2344,7 +2344,7 @@ class ContestServiceImplTest {
         contest.setDuration(10000);
         problem.setDataId(MOCKED_PROBLEM_MONGO_ID);
         problemData.setContestId(null);
-        publicContestData.set_id(MOCKED_CONTEST_MONGO_ID);
+        publicContestData.setId(MOCKED_CONTEST_MONGO_ID);
         publicContestData.setProblemList(new ArrayList<>());
 
         Date startTime = new Date(new Date().getTime() + 20000);
@@ -2421,7 +2421,7 @@ class ContestServiceImplTest {
         contest.setDuration(1000);
         problem.setDataId(MOCKED_PROBLEM_MONGO_ID);
         problemData.setContestId(null);
-        publicContestData.set_id(MOCKED_CONTEST_MONGO_ID);
+        publicContestData.setId(MOCKED_CONTEST_MONGO_ID);
         publicContestData.setProblemList(new ArrayList<BaseContestData.ContestProblemData>() {{
             add(BaseContestData.ContestProblemData.builder()
                     .problemId(MockedValueMaker.mLong())
@@ -2495,7 +2495,7 @@ class ContestServiceImplTest {
         contest.setDuration(1000);
         problem.setDataId(MOCKED_PROBLEM_MONGO_ID);
         problemData.setContestId(null);
-        publicContestData.set_id(MOCKED_CONTEST_MONGO_ID);
+        publicContestData.setId(MOCKED_CONTEST_MONGO_ID);
         publicContestData.setProblemList(new ArrayList<>());
         publicContestData.setCoAuthor(new HashSet<>());
 
@@ -2570,7 +2570,7 @@ class ContestServiceImplTest {
         contest.setDuration(1000);
         problem.setDataId(MOCKED_PROBLEM_MONGO_ID);
         problemData.setContestId(null);
-        publicContestData.set_id(MOCKED_CONTEST_MONGO_ID);
+        publicContestData.setId(MOCKED_CONTEST_MONGO_ID);
         publicContestData.setProblemList(new ArrayList<>());
         publicContestData.setCoAuthor(new HashSet<>());
 

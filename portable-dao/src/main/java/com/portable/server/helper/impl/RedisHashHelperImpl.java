@@ -1,22 +1,24 @@
-package com.portable.server.kit.impl;
+package com.portable.server.helper.impl;
 
-import com.portable.server.kit.RedisHashKit;
-import org.springframework.data.redis.core.HashOperations;
-import org.springframework.data.redis.core.StringRedisTemplate;
-import org.springframework.stereotype.Component;
-
-import javax.annotation.PostConstruct;
-import javax.annotation.Resource;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import javax.annotation.PostConstruct;
+import javax.annotation.Resource;
+
+import com.portable.server.helper.RedisHashHelper;
+
+import org.springframework.data.redis.core.HashOperations;
+import org.springframework.data.redis.core.StringRedisTemplate;
+import org.springframework.stereotype.Component;
+
 /**
  * @author shiroha
  */
 @Component
-public class RedisHashKitImpl extends BaseRedisKit implements RedisHashKit {
+public class RedisHashHelperImpl extends BaseRedisKit implements RedisHashHelper {
 
     @Resource
     private StringRedisTemplate stringRedisTemplate;

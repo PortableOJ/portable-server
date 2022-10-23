@@ -1,28 +1,27 @@
 package com.portable.server.model.solution;
 
+import java.util.Date;
+
+import com.portable.server.model.BaseEntity;
 import com.portable.server.type.LanguageType;
 import com.portable.server.type.SolutionStatusType;
 import com.portable.server.type.SolutionType;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
 
-import java.util.Date;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
+import lombok.experimental.SuperBuilder;
 
 /**
  * @author shiroha
  */
 @Data
-@Builder
+@SuperBuilder
 @NoArgsConstructor
 @AllArgsConstructor
-public class Solution {
-
-    /**
-     * 提交的 id
-     */
-    private Long id;
+@EqualsAndHashCode(callSuper = true)
+public class Solution extends BaseEntity<Long> {
 
     /**
      * 数据 ID

@@ -1,27 +1,25 @@
 package com.portable.server.model.problem;
 
 import com.portable.server.exception.PortableException;
+import com.portable.server.model.BaseEntity;
 import com.portable.server.type.ProblemAccessType;
 import com.portable.server.type.ProblemStatusType;
 
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
+import lombok.experimental.SuperBuilder;
 
 /**
  * @author shiroha
  */
 @Data
-@Builder
+@SuperBuilder
 @NoArgsConstructor
 @AllArgsConstructor
-public class Problem {
-
-    /**
-     * 题目的 ID
-     */
-    private Long id;
+@EqualsAndHashCode(callSuper = true)
+public class Problem extends BaseEntity<Long> {
 
     /**
      * 题目的 dataId

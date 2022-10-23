@@ -13,7 +13,7 @@ import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
 
 import com.portable.server.exception.PortableException;
-import com.portable.server.kit.RedisValueKit;
+import com.portable.server.helper.RedisValueHelper;
 import com.portable.server.model.batch.Batch;
 import com.portable.server.model.user.NormalUserData;
 import com.portable.server.model.user.User;
@@ -35,7 +35,7 @@ import lombok.NonNull;
 public class UserContext {
 
     @Resource
-    private RedisValueKit redisValueKit;
+    private RedisValueHelper redisValueHelper;
 
     /// region 用户信息
 
@@ -101,7 +101,7 @@ public class UserContext {
     /**
      * 用户信息使用的 redis 缓存
      */
-    private static RedisValueKit staticRedisValueKit;
+    private static RedisValueHelper staticRedisValueHelper;
 
     /**
      * 用户信息一级缓存容量
@@ -133,7 +133,7 @@ public class UserContext {
                 .build(new CacheLoader<Long, UserContext>() {
                     @Override
                     public UserContext load(@NonNull Long aLong) {
-                        Optional<UserContext> optionalUserContext = staticRedisValueKit.get(USER_CONTEST_CACHE_PREFIX, aLong.toString(), UserContext.class);
+                        Optional<UserContext> optionalUserContext = staticRedisValueHelper.get(USER_CONTEST_CACHE_PREFIX, aLong.toString(), UserContext.class);
                         return optionalUserContext.orElseGet(UserContext::getNullUser);
                     }
                 });
@@ -141,7 +141,7 @@ public class UserContext {
 
     @PostConstruct
     public void init() {
-        UserContext.staticRedisValueKit = this.redisValueKit;
+        UserContext.staticRedisValueHelper = this.redisValueHelper;
     }
 
     public static UserContext ctx() {
@@ -162,7 +162,7 @@ public class UserContext {
         LOCAL.set(userContext);
         if (userContext.getId() != null) {
             USER_CACHE.put(userContext.getId(), userContext);
-            staticRedisValueKit.set(USER_CONTEST_CACHE_PREFIX, userContext.getId(), userContext, Long.valueOf(USER_CONTEXT_EXPIRE_LEVEL_2));
+            staticRedisValueHelper.set(USER_CONTEST_CACHE_PREFIX, userContext.getId(), userContext, Long.valueOf(USER_CONTEXT_EXPIRE_LEVEL_2));
         }
     }
 

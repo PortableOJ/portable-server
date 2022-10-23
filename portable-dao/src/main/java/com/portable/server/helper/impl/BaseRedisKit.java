@@ -1,4 +1,4 @@
-package com.portable.server.kit.impl;
+package com.portable.server.helper.impl;
 
 /**
  * @author shiroha

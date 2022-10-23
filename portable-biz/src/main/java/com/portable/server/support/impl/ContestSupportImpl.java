@@ -16,8 +16,8 @@ import java.util.stream.IntStream;
 import javax.annotation.Resource;
 
 import com.portable.server.exception.PortableException;
-import com.portable.server.kit.RedisHashKit;
-import com.portable.server.kit.RedisListKit;
+import com.portable.server.helper.RedisHashHelper;
+import com.portable.server.helper.RedisListHelper;
 import com.portable.server.manager.ContestDataManager;
 import com.portable.server.manager.ContestManager;
 import com.portable.server.manager.SolutionManager;
@@ -39,10 +39,10 @@ import org.springframework.stereotype.Component;
 public class ContestSupportImpl implements ContestSupport {
 
     @Resource
-    private RedisHashKit redisHashKit;
+    private RedisHashHelper redisHashHelper;
 
     @Resource
-    private RedisListKit redisListKit;
+    private RedisListHelper redisListHelper;
 
     @Resource
     private SolutionManager solutionManager;
@@ -107,10 +107,10 @@ public class ContestSupportImpl implements ContestSupport {
                 .forEach(longDateEntry -> {
                     // 超过了更新时间，则清理缓存
                     if (longDateEntry.getValue().before(now)) {
-                        redisListKit.clear(RANK_LIST_PREFIX, longDateEntry.getKey());
-                        redisListKit.clear(NOFREEZE_RANK_LIST_PREFIX, longDateEntry.getKey());
-                        redisHashKit.clear(RANK_HASH_PREFIX, longDateEntry.getKey());
-                        redisHashKit.clear(NOFREEZE_RANK_HASH_PREFIX, longDateEntry.getKey());
+                        redisListHelper.clear(RANK_LIST_PREFIX, longDateEntry.getKey());
+                        redisListHelper.clear(NOFREEZE_RANK_LIST_PREFIX, longDateEntry.getKey());
+                        redisHashHelper.clear(RANK_HASH_PREFIX, longDateEntry.getKey());
+                        redisHashHelper.clear(NOFREEZE_RANK_HASH_PREFIX, longDateEntry.getKey());
                         return;
                     }
                     try {
@@ -174,19 +174,19 @@ public class ContestSupportImpl implements ContestSupport {
 
     @Override
     public Integer getContestRankLen(Long contestId, Boolean freeze) {
-        return redisListKit.getLen(freeze ? RANK_LIST_PREFIX : NOFREEZE_RANK_LIST_PREFIX, contestId);
+        return redisListHelper.getLen(freeze ? RANK_LIST_PREFIX : NOFREEZE_RANK_LIST_PREFIX, contestId);
     }
 
     @Override
     public List<ContestRankItem> getContestRank(Long contestId, Integer pageSize, Integer offset, Boolean freeze) {
-        return redisListKit.getPage(freeze ? RANK_LIST_PREFIX : NOFREEZE_RANK_LIST_PREFIX, contestId, pageSize, offset, ContestRankItem.class);
+        return redisListHelper.getPage(freeze ? RANK_LIST_PREFIX : NOFREEZE_RANK_LIST_PREFIX, contestId, pageSize, offset, ContestRankItem.class);
     }
 
     @Override
     public ContestRankItem getContestByUserId(Long contestId, Long userId, Boolean freeze) {
-        Optional<Integer> rank = redisHashKit.get(freeze ? RANK_HASH_PREFIX : NOFREEZE_RANK_HASH_PREFIX, contestId, userId);
+        Optional<Integer> rank = redisHashHelper.get(freeze ? RANK_HASH_PREFIX : NOFREEZE_RANK_HASH_PREFIX, contestId, userId);
         Optional<ContestRankItem> optionalContestRankItem = rank.flatMap(
-                integer -> redisListKit.get(freeze ? RANK_LIST_PREFIX : NOFREEZE_RANK_LIST_PREFIX, contestId, integer, ContestRankItem.class)
+                integer -> redisListHelper.get(freeze ? RANK_LIST_PREFIX : NOFREEZE_RANK_LIST_PREFIX, contestId, integer, ContestRankItem.class)
         );
         return optionalContestRankItem.orElse(null);
     }
@@ -275,9 +275,9 @@ public class ContestSupportImpl implements ContestSupport {
                     return contestRankItem;
                 })
                 .collect(Collectors.toMap(ContestRankItem::getUserId, ContestRankItem::getRank));
-        redisHashKit.clear(hashPre, contestId);
-        redisHashKit.create(hashPre, contestId, userRankMap);
-        redisListKit.clear(listPre, contestId);
-        redisListKit.create(listPre, contestId, contestRankItemList);
+        redisHashHelper.clear(hashPre, contestId);
+        redisHashHelper.create(hashPre, contestId, userRankMap);
+        redisListHelper.clear(listPre, contestId);
+        redisListHelper.create(listPre, contestId, contestRankItemList);
     }
 }

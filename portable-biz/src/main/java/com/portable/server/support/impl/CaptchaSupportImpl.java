@@ -12,7 +12,7 @@ import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
 
 import com.portable.server.exception.PortableException;
-import com.portable.server.kit.FileKit;
+import com.portable.server.helper.FileHelper;
 import com.portable.server.support.CaptchaSupport;
 import com.portable.server.util.ImageUtils;
 import com.portable.server.util.StreamUtils;
@@ -32,7 +32,7 @@ public class CaptchaSupportImpl implements CaptchaSupport {
     private static final String CAPTCHA_TMP_NAME = "__TMP";
 
     @Resource
-    private FileKit fileKit;
+    private FileHelper fileHelper;
 
     @Value("${portable.captcha.size}")
     private Integer maxCaptchaSize;
@@ -62,8 +62,8 @@ public class CaptchaSupportImpl implements CaptchaSupport {
 
     @PostConstruct
     public void init() {
-        fileKit.createDirIfNotExist(CAPTCHA_PATH);
-        List<File> captchaHistoryList = fileKit.getDirectoryFile(CAPTCHA_PATH);
+        fileHelper.createDirIfNotExist(CAPTCHA_PATH);
+        List<File> captchaHistoryList = fileHelper.getDirectoryFile(CAPTCHA_PATH);
         cacheCaptcha = captchaHistoryList.stream()
                 .map(File::getName)
                 .collect(Collectors.toList());
@@ -94,7 +94,7 @@ public class CaptchaSupportImpl implements CaptchaSupport {
         }
         String name = cacheCaptcha.get(pos);
         try {
-            InputStream inputStream = fileKit.getFileInput(getCaptchaPath(name));
+            InputStream inputStream = fileHelper.getFileInput(getCaptchaPath(name));
             StreamUtils.copy(inputStream, outputStream);
         } catch (PortableException ignore) {
             throw PortableException.of("S-08-001");
@@ -104,11 +104,11 @@ public class CaptchaSupportImpl implements CaptchaSupport {
 
     @Scheduled(fixedDelayString = "${portable.captcha.update}")
     public void reduceImage() {
-        OutputStream outputStream = fileKit.saveFileOrOverwrite(getCaptchaPath(CAPTCHA_TMP_NAME));
+        OutputStream outputStream = fileHelper.saveFileOrOverwrite(getCaptchaPath(CAPTCHA_TMP_NAME));
         String name = ImageUtils.createCaptcha(outputStream);
-        if (!fileKit.moveFile(getCaptchaPath(CAPTCHA_TMP_NAME), getCaptchaPath(name))) {
+        if (!fileHelper.moveFile(getCaptchaPath(CAPTCHA_TMP_NAME), getCaptchaPath(name))) {
             // 失败说明有两张相同验证码值的图片存在，那么就让他们相同吧
-            fileKit.deleteFileIfExist(getCaptchaPath(CAPTCHA_TMP_NAME));
+            fileHelper.deleteFileIfExist(getCaptchaPath(CAPTCHA_TMP_NAME));
         }
         try {
             outputStream.close();
@@ -121,7 +121,7 @@ public class CaptchaSupportImpl implements CaptchaSupport {
         } else {
             String lastName = cacheCaptcha.get(updateCaptcha);
             cacheCaptcha.set(updateCaptcha, name);
-            fileKit.deleteFileIfExist(getCaptchaPath(lastName));
+            fileHelper.deleteFileIfExist(getCaptchaPath(lastName));
             updateCaptcha++;
             if (Objects.equals(updateCaptcha, maxCaptchaSize)) {
                 updateCaptcha = 0;

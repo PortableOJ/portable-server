@@ -1,14 +1,14 @@
-package com.portable.server.kit;
-
-import com.portable.server.model.RedisKeyAndExpire;
+package com.portable.server.helper;
 
 import java.util.Optional;
 import java.util.function.Consumer;
 
+import com.portable.server.model.redis.RedisKeyAndExpire;
+
 /**
  * @author shiroha
  */
-public interface RedisValueKit {
+public interface RedisValueHelper {
 
     /**
      * 保存数据

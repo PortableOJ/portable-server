@@ -10,9 +10,9 @@ import javax.servlet.http.HttpServletResponse;
 
 import com.portable.server.annotation.NeedLogin;
 import com.portable.server.annotation.PermissionRequirement;
-import com.portable.server.model.ServiceVerifyCode;
 import com.portable.server.model.judge.entity.JudgeContainer;
 import com.portable.server.model.judge.entity.UpdateJudgeContainer;
+import com.portable.server.model.redis.ServiceVerifyCode;
 import com.portable.server.model.request.IdRequest;
 import com.portable.server.model.response.Response;
 import com.portable.server.service.JudgeService;

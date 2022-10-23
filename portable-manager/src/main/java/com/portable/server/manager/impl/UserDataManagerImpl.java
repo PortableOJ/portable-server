@@ -29,7 +29,7 @@ public class UserDataManagerImpl implements UserDataManager {
     @Override
     public @NotNull NormalUserData newNormalUserData() {
         return NormalUserData.builder()
-                ._id(null)
+                .id(null)
                 .organization(OrganizationType.STUDENT)
                 .submission(0)
                 .accept(0)
@@ -42,7 +42,7 @@ public class UserDataManagerImpl implements UserDataManager {
     @Override
     public @NotNull BatchUserData newBatchUserData() {
         return BatchUserData.builder()
-                ._id(null)
+                .id(null)
                 .ipList(new ArrayList<>())
                 .build();
     }

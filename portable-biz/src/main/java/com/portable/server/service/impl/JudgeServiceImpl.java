@@ -4,9 +4,9 @@ import java.util.List;
 
 import javax.annotation.Resource;
 
-import com.portable.server.model.ServiceVerifyCode;
 import com.portable.server.model.judge.entity.JudgeContainer;
 import com.portable.server.model.judge.entity.UpdateJudgeContainer;
+import com.portable.server.model.redis.ServiceVerifyCode;
 import com.portable.server.service.JudgeService;
 import com.portable.server.support.JudgeSupport;
 import com.portable.server.type.SolutionStatusType;
