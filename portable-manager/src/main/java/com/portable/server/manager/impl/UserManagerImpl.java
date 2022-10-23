@@ -1,5 +1,6 @@
 package com.portable.server.manager.impl;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Objects;
@@ -9,12 +10,19 @@ import java.util.stream.Collectors;
 
 import javax.annotation.Resource;
 
+import com.portable.server.exception.PortableException;
 import com.portable.server.helper.RedisValueHelper;
 import com.portable.server.manager.UserManager;
 import com.portable.server.mapper.UserMapper;
+import com.portable.server.model.user.BaseUserData;
+import com.portable.server.model.user.BatchUserData;
+import com.portable.server.model.user.NormalUserData;
 import com.portable.server.model.user.User;
+import com.portable.server.repo.UserDataRepo;
 import com.portable.server.type.AccountType;
+import com.portable.server.type.OrganizationType;
 
+import org.jetbrains.annotations.NotNull;
 import org.springframework.stereotype.Component;
 
 /**
@@ -28,6 +36,9 @@ public class UserManagerImpl implements UserManager {
 
     @Resource
     private RedisValueHelper redisValueHelper;
+
+    @Resource
+    private UserDataRepo userDataRepo;
 
     /**
      * redis 缓存的 Key 前缀
@@ -56,6 +67,29 @@ public class UserManagerImpl implements UserManager {
                 .handle(null)
                 .password(null)
                 .type(AccountType.BATCH)
+                .build();
+    }
+
+    @NotNull
+    @Override
+    public NormalUserData newNormalUserData() {
+        return NormalUserData.builder()
+                .id(null)
+                .organization(OrganizationType.STUDENT)
+                .submission(0)
+                .accept(0)
+                .permissionTypeSet(new HashSet<>())
+                .email(null)
+                .avatar(null)
+                .build();
+    }
+
+    @NotNull
+    @Override
+    public BatchUserData newBatchUserData() {
+        return BatchUserData.builder()
+                .id(null)
+                .ipList(new ArrayList<>())
                 .build();
     }
 
@@ -142,5 +176,27 @@ public class UserManagerImpl implements UserManager {
     public void updateUserType(Long id, AccountType accountType) {
         userMapper.updateUserType(id, accountType);
         redisValueHelper.getPeek(REDIS_USER_ID_TO_DATA_PREFIX, id, User.class, REDIS_USER_ID_TO_DATA_TIME, user -> user.setType(accountType));
+    }
+
+    @NotNull
+    @Override
+    public NormalUserData getNormalUserDataById(String dataId) {
+        return Optional.ofNullable(userDataRepo.getNormalUserDataById(dataId)).orElseThrow(PortableException.from("S-02-001"));
+    }
+
+    @NotNull
+    @Override
+    public BatchUserData getBatchUserDataById(String dataId) {
+        return Optional.ofNullable(userDataRepo.getBatchUserDataById(dataId)).orElseThrow(PortableException.from("S-02-001"));
+    }
+
+    @Override
+    public void insertUserData(BaseUserData baseUserData) {
+        userDataRepo.insertUserData(baseUserData);
+    }
+
+    @Override
+    public void updateUserData(BaseUserData baseUserData) {
+        userDataRepo.saveUserData(baseUserData);
     }
 }

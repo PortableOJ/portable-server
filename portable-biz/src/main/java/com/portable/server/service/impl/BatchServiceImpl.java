@@ -13,7 +13,6 @@ import com.portable.server.encryption.BCryptEncoder;
 import com.portable.server.exception.PortableException;
 import com.portable.server.manager.BatchManager;
 import com.portable.server.manager.ContestManager;
-import com.portable.server.manager.UserDataManager;
 import com.portable.server.manager.UserManager;
 import com.portable.server.model.batch.Batch;
 import com.portable.server.model.contest.Contest;
@@ -38,9 +37,6 @@ public class BatchServiceImpl implements BatchService {
 
     @Resource
     private UserManager userManager;
-
-    @Resource
-    private UserDataManager userDataManager;
 
     @Resource
     private ContestManager contestManager;
@@ -101,19 +97,19 @@ public class BatchServiceImpl implements BatchService {
         IntStream.rangeClosed(1, request.getCount())
                 .boxed()
                 .forEachOrdered(i -> {
-                            BatchUserData batchUserData = userDataManager.newBatchUserData();
-                            batchUserData.setBatchId(batchId);
-                            userDataManager.insertUserData(batchUserData);
+                    BatchUserData batchUserData = userManager.newBatchUserData();
+                    batchUserData.setBatchId(batchId);
+                    userManager.insertUserData(batchUserData);
 
-                            User user = userManager.newBatchAccount();
-                            user.setDataId(batchUserData.getId());
-                            user.setHandle(String.format(BATCH_FORMAT, request.getPrefix(), i));
-                            String password = IntStream.range(0, PASSWORD_LEN)
-                                    .mapToObj(t -> String.valueOf(RANDOM.nextInt(10)))
-                                    .collect(Collectors.joining());
+                    User user = userManager.newBatchAccount();
+                    user.setDataId(batchUserData.getId());
+                    user.setHandle(String.format(BATCH_FORMAT, request.getPrefix(), i));
+                    String password = IntStream.range(0, PASSWORD_LEN)
+                            .mapToObj(t -> String.valueOf(RANDOM.nextInt(10)))
+                            .collect(Collectors.joining());
 
-                            // 在密码还是原来的非加密态时保存至返回值
-                            user.setPassword(password);
+                    // 在密码还是原来的非加密态时保存至返回值
+                    user.setPassword(password);
                             createBatchResponse.add(user);
                             user.setPassword(BCryptEncoder.encoder(user.getPassword()));
 

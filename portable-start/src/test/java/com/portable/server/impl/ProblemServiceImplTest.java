@@ -11,7 +11,6 @@ import com.portable.server.manager.impl.ProblemDataManagerImpl;
 import com.portable.server.manager.impl.ProblemManagerImpl;
 import com.portable.server.manager.impl.SolutionDataManagerImpl;
 import com.portable.server.manager.impl.SolutionManagerImpl;
-import com.portable.server.manager.impl.UserDataManagerImpl;
 import com.portable.server.manager.impl.UserManagerImpl;
 import com.portable.server.model.contest.Contest;
 import com.portable.server.model.problem.Problem;
@@ -68,9 +67,6 @@ public class ProblemServiceImplTest {
 
     @Mock
     private UserManagerImpl userManager;
-
-    @Mock
-    private UserDataManagerImpl userDataManager;
 
     @Mock
     private SolutionManagerImpl solutionManager;
@@ -1957,7 +1953,7 @@ public class ProblemServiceImplTest {
 
         Mockito.when(problemManager.getProblemById(MOCKED_PROBLEM_ID)).thenReturn(Optional.of(problem));
         Mockito.when(problemDataManager.getProblemData(MOCKED_PROBLEM_MONGO_ID)).thenReturn(problemData);
-        Mockito.when(userDataManager.getNormalUserDataById(MOCKED_USER_DATA_ID)).thenReturn(normalUserData);
+        Mockito.when(userManager.getNormalUserDataById(MOCKED_USER_DATA_ID)).thenReturn(normalUserData);
         Mockito.when(solutionManager.newSolution()).thenCallRealMethod();
         Mockito.when(solutionDataManager.newSolutionData(Mockito.any())).thenCallRealMethod();
 
@@ -1975,7 +1971,7 @@ public class ProblemServiceImplTest {
         /// region 校验写入的用户信息
 
         ArgumentCaptor<NormalUserData> normalUserDataArgumentCaptor = ArgumentCaptor.forClass(NormalUserData.class);
-        Mockito.verify(userDataManager).updateUserData(normalUserDataArgumentCaptor.capture());
+        Mockito.verify(userManager).updateUserData(normalUserDataArgumentCaptor.capture());
         NormalUserData normalUserDataCP = normalUserDataArgumentCaptor.getValue();
         Assertions.assertEquals(1, normalUserDataCP.getSubmission());
 

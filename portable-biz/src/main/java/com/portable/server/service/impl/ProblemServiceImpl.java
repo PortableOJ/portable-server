@@ -17,7 +17,6 @@ import com.portable.server.manager.ProblemDataManager;
 import com.portable.server.manager.ProblemManager;
 import com.portable.server.manager.SolutionDataManager;
 import com.portable.server.manager.SolutionManager;
-import com.portable.server.manager.UserDataManager;
 import com.portable.server.manager.UserManager;
 import com.portable.server.model.contest.Contest;
 import com.portable.server.model.problem.Problem;
@@ -82,9 +81,6 @@ public class ProblemServiceImpl implements ProblemService {
 
     @Resource
     private UserManager userManager;
-
-    @Resource
-    private UserDataManager userDataManager;
 
     @Resource
     private SolutionManager solutionManager;
@@ -430,9 +426,9 @@ public class ProblemServiceImpl implements ProblemService {
 
         // 更新用户和题目的提交统计数量
         problemManager.updateProblemCount(submitSolutionRequest.getProblemId(), 1, 0);
-        NormalUserData normalUserData = userDataManager.getNormalUserDataById(userContext.getDataId());
+        NormalUserData normalUserData = userManager.getNormalUserDataById(userContext.getDataId());
         normalUserData.setSubmission(normalUserData.getSubmission() + 1);
-        userDataManager.updateUserData(normalUserData);
+        userManager.updateUserData(normalUserData);
 
         // 创建提交信息
         SolutionData solutionData = solutionDataManager.newSolutionData(problemPackage.getProblemData());

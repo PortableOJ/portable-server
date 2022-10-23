@@ -9,7 +9,6 @@ import com.portable.server.encryption.BCryptEncoder;
 import com.portable.server.exception.PortableException;
 import com.portable.server.manager.impl.BatchManagerImpl;
 import com.portable.server.manager.impl.ContestManagerImpl;
-import com.portable.server.manager.impl.UserDataManagerImpl;
 import com.portable.server.manager.impl.UserManagerImpl;
 import com.portable.server.model.batch.Batch;
 import com.portable.server.model.contest.Contest;
@@ -43,9 +42,6 @@ class BatchServiceImplTest {
 
     @Mock
     private UserManagerImpl userManager;
-
-    @Mock
-    private UserDataManagerImpl userDataManager;
 
     @Mock
     private ContestManagerImpl contestManager;
@@ -139,7 +135,7 @@ class BatchServiceImplTest {
 
         Mockito.when(batchManager.selectBatchByPrefix(MOCKED_BATCh_PREFIX)).thenReturn(Optional.empty());
         Mockito.when(batchManager.newBatch()).thenCallRealMethod();
-        Mockito.when(userDataManager.newBatchUserData()).thenCallRealMethod();
+        Mockito.when(userManager.newBatchUserData()).thenCallRealMethod();
         Mockito.when(userManager.newBatchAccount()).thenCallRealMethod();
 
         Mockito.doAnswer(invocationOnMock -> {

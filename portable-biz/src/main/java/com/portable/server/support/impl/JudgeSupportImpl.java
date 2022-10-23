@@ -15,7 +15,6 @@ import com.portable.server.manager.ProblemDataManager;
 import com.portable.server.manager.ProblemManager;
 import com.portable.server.manager.SolutionDataManager;
 import com.portable.server.manager.SolutionManager;
-import com.portable.server.manager.UserDataManager;
 import com.portable.server.manager.UserManager;
 import com.portable.server.model.judge.entity.JudgeContainer;
 import com.portable.server.model.judge.entity.UpdateJudgeContainer;
@@ -104,9 +103,6 @@ public class JudgeSupportImpl implements JudgeSupport {
 
     @Resource
     private UserManager userManager;
-
-    @Resource
-    private UserDataManager userDataManager;
 
     @Resource
     private SolutionManager solutionManager;
@@ -220,9 +216,9 @@ public class JudgeSupportImpl implements JudgeSupport {
 
                 Optional<User> userOptional = userManager.getAccountById(solution.getUserId());
                 if (userOptional.isPresent() && userOptional.get().getType().getIsNormal()) {
-                    NormalUserData normalUserData = userDataManager.getNormalUserDataById(userOptional.get().getDataId());
+                    NormalUserData normalUserData = userManager.getNormalUserDataById(userOptional.get().getDataId());
                     normalUserData.setAccept(normalUserData.getAccept() + 1);
-                    userDataManager.updateUserData(normalUserData);
+                    userManager.updateUserData(normalUserData);
                 }
                 break;
             case PROBLEM_PROCESS:
@@ -578,7 +574,7 @@ public class JudgeSupportImpl implements JudgeSupport {
         Set<LanguageType> testCodeUsed = problemData.getTestCodeList().stream()
                 .map(ProblemData.StdCode::getLanguageType)
                 .collect(Collectors.toSet());
-        if (!problemData.getSupportLanguage().containsAll(testCodeUsed)) {
+        if (!new HashSet<>(problemData.getSupportLanguage()).containsAll(testCodeUsed)) {
             problemManager.updateProblemStatus(problemId, ProblemStatusType.CHECK_FAILED);
             return;
         }
