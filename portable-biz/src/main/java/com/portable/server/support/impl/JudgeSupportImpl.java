@@ -11,7 +11,6 @@ import javax.annotation.Resource;
 
 import com.portable.server.exception.PortableException;
 import com.portable.server.helper.RedisValueHelper;
-import com.portable.server.manager.ProblemDataManager;
 import com.portable.server.manager.ProblemManager;
 import com.portable.server.manager.SolutionManager;
 import com.portable.server.manager.UserManager;
@@ -108,9 +107,6 @@ public class JudgeSupportImpl implements JudgeSupport {
 
     @Resource
     private ProblemManager problemManager;
-
-    @Resource
-    private ProblemDataManager problemDataManager;
 
     @Resource
     private FileSupport fileSupport;
@@ -596,7 +592,7 @@ public class JudgeSupportImpl implements JudgeSupport {
             addJudgeTask(solution.getId());
             stdCode.setSolutionId(solution.getId());
         }
-        problemDataManager.updateProblemData(problemData);
+        problemManager.updateProblemData(problemData);
     }
 
     private JudgeContainer getCurContainer() {
@@ -646,7 +642,7 @@ public class JudgeSupportImpl implements JudgeSupport {
         if (!problem.getStatusType().getTreated()) {
             throw PortableException.of("S-06-006", problemId);
         }
-        return problemDataManager.getProblemData(problem.getDataId());
+        return problemManager.getProblemData(problem.getDataId());
     }
 
     private Problem getTestProblem(Long problemId) {
@@ -655,7 +651,7 @@ public class JudgeSupportImpl implements JudgeSupport {
     }
 
     private ProblemData getTestProblemData(Problem problem) {
-        return problemDataManager.getProblemData(problem.getDataId());
+        return problemManager.getProblemData(problem.getDataId());
     }
 
     /**

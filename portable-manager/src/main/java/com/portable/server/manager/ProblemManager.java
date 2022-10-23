@@ -1,12 +1,15 @@
 package com.portable.server.manager;
 
-import com.portable.server.model.problem.Problem;
-import com.portable.server.type.ProblemAccessType;
-import com.portable.server.type.ProblemStatusType;
-import org.jetbrains.annotations.NotNull;
-
 import java.util.List;
 import java.util.Optional;
+
+import com.portable.server.exception.PortableException;
+import com.portable.server.model.problem.Problem;
+import com.portable.server.model.problem.ProblemData;
+import com.portable.server.type.ProblemAccessType;
+import com.portable.server.type.ProblemStatusType;
+
+import org.jetbrains.annotations.NotNull;
 
 /**
  * @author shiroha
@@ -20,6 +23,14 @@ public interface ProblemManager {
      */
     @NotNull
     Problem newProblem();
+
+    /**
+     * 新建一个问题数据
+     *
+     * @return 新问题数据
+     */
+    @NotNull
+    ProblemData newProblemData();
 
     /**
      * 根据题目的访问类型和当前用户的 ID 获取题目总数
@@ -130,4 +141,28 @@ public interface ProblemManager {
      * @param toStatus   更新至的状态
      */
     void updateAllStatus(ProblemStatusType fromStatus, ProblemStatusType toStatus);
+
+    /**
+     * 根据 dataID 获取题目数据
+     *
+     * @param dataId 题目数据 ID
+     * @return 题目数据
+     * @throws PortableException ID 不存在则抛出
+     */
+    @NotNull
+    ProblemData getProblemData(String dataId);
+
+    /**
+     * 新增题目数据
+     *
+     * @param problemData 题目数据信息
+     */
+    void insertProblemData(ProblemData problemData);
+
+    /**
+     * 更新题目数据
+     *
+     * @param problemData 题目数据
+     */
+    void updateProblemData(ProblemData problemData);
 }

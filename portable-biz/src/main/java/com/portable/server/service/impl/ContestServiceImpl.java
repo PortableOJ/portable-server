@@ -17,7 +17,6 @@ import com.portable.server.exception.PortableException;
 import com.portable.server.manager.BatchManager;
 import com.portable.server.manager.ContestDataManager;
 import com.portable.server.manager.ContestManager;
-import com.portable.server.manager.ProblemDataManager;
 import com.portable.server.manager.ProblemManager;
 import com.portable.server.manager.SolutionManager;
 import com.portable.server.manager.UserManager;
@@ -93,9 +92,6 @@ public class ContestServiceImpl implements ContestService {
 
     @Resource
     private ProblemManager problemManager;
-
-    @Resource
-    private ProblemDataManager problemDataManager;
 
     @Resource
     private SolutionManager solutionManager;
@@ -177,7 +173,7 @@ public class ContestServiceImpl implements ContestService {
         BaseContestData.ContestProblemData contestProblemData = contestPackage.getContestData().atProblem(problemIndex, contestId);
         Problem problem = problemManager.getProblemById(contestProblemData.getProblemId())
                 .orElseThrow(PortableException.from("S-07-001", contestId));
-        ProblemData problemData = problemDataManager.getProblemData(problem.getDataId());
+        ProblemData problemData = problemManager.getProblemData(problem.getDataId());
         User user = userManager.getAccountById(problem.getOwner()).orElse(null);
         ProblemDetailResponse problemDetailResponse = ProblemDetailResponse.of(problem, problemData, user);
         problemDetailResponse.setAcceptCount(contestProblemData.getAcceptCount());
@@ -323,7 +319,7 @@ public class ContestServiceImpl implements ContestService {
 
         Problem problem = problemManager.getProblemById(contestProblemData.getProblemId())
                 .orElseThrow(PortableException.from("S-07-001", submitSolutionRequest.getContestId()));
-        ProblemData problemData = problemDataManager.getProblemData(problem.getDataId());
+        ProblemData problemData = problemManager.getProblemData(problem.getDataId());
         submitSolutionRequest.setProblemId(contestProblemData.getProblemId());
 
         Solution solution = solutionManager.newSolution();
@@ -527,7 +523,7 @@ public class ContestServiceImpl implements ContestService {
                     problemListResponse.setId((long) i);
                     if (admin) {
                         try {
-                            ProblemData problemData = problemDataManager.getProblemData(problem.getDataId());
+                            ProblemData problemData = problemManager.getProblemData(problem.getDataId());
                             problemLock.add(Objects.equals(problemData.getContestId(), contestId));
                         } catch (PortableException e) {
                             problemLock.add(false);
@@ -655,10 +651,10 @@ public class ContestServiceImpl implements ContestService {
                 .filter(problemId -> {
                     try {
                         Problem problem = problemManager.getProblemById(problemId).orElseThrow(PortableException.from("A-04-001", problemId));
-                        ProblemData problemData = problemDataManager.getProblemData(problem.getDataId());
+                        ProblemData problemData = problemManager.getProblemData(problem.getDataId());
                         if (Objects.equals(problemData.getContestId(), fromContestId)) {
                             problemData.setContestId(toContestId);
-                            problemDataManager.updateProblemData(problemData);
+                            problemManager.updateProblemData(problemData);
                         }
                         return false;
                     } catch (PortableException e) {

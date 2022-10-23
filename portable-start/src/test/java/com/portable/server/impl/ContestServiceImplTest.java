@@ -13,7 +13,6 @@ import com.portable.server.exception.PortableException;
 import com.portable.server.manager.impl.BatchManagerImpl;
 import com.portable.server.manager.impl.ContestDataManagerImpl;
 import com.portable.server.manager.impl.ContestManagerImpl;
-import com.portable.server.manager.impl.ProblemDataManagerImpl;
 import com.portable.server.manager.impl.ProblemManagerImpl;
 import com.portable.server.manager.impl.SolutionManagerImpl;
 import com.portable.server.manager.impl.UserManagerImpl;
@@ -88,9 +87,6 @@ class ContestServiceImplTest {
 
     @Mock
     private ProblemManagerImpl problemManager;
-
-    @Mock
-    private ProblemDataManagerImpl problemDataManager;
 
     @Mock
     private SolutionManagerImpl solutionManager;
@@ -591,9 +587,9 @@ class ContestServiceImplTest {
         Mockito.when(problemManager.getProblemById(problem2.getId())).thenReturn(Optional.of(problem2));
         Mockito.when(problemManager.getProblemById(problem3.getId())).thenReturn(Optional.of(problem3));
         Mockito.when(solutionManager.selectContestLastSolution(loginUserId, MOCKED_PROBLEM_ID, MOCKED_CONTEST_ID)).thenReturn(Optional.of(solution));
-        Mockito.when(problemDataManager.getProblemData(MOCKED_PROBLEM_MONGO_ID)).thenReturn(problemData);
-        Mockito.when(problemDataManager.getProblemData(problem2.getDataId())).thenReturn(problemData2);
-        Mockito.when(problemDataManager.getProblemData(problem3.getDataId())).thenThrow(PortableException.of("S-03-001"));
+        Mockito.when(problemManager.getProblemData(MOCKED_PROBLEM_MONGO_ID)).thenReturn(problemData);
+        Mockito.when(problemManager.getProblemData(problem2.getDataId())).thenReturn(problemData2);
+        Mockito.when(problemManager.getProblemData(problem3.getDataId())).thenThrow(PortableException.of("S-03-001"));
         Mockito.when(userManager.getAccountById(otherUserId)).thenReturn(Optional.of(inUser));
 
         ContestAdminDetailResponse retVal = contestService.getContestAdminData(MOCKED_CONTEST_ID);
@@ -716,7 +712,7 @@ class ContestServiceImplTest {
         Mockito.when(contestDataManager.getPublicContestDataById(MOCKED_CONTEST_MONGO_ID)).thenReturn(publicContestData);
         contestVisitTypeMockedStatic.when(() -> ContestVisitType.checkPermission(Mockito.any(), Mockito.any())).thenReturn(ContestVisitType.VISIT);
         Mockito.when(problemManager.getProblemById(MOCKED_PROBLEM_ID)).thenReturn(Optional.of(problem));
-        Mockito.when(problemDataManager.getProblemData(MOCKED_PROBLEM_MONGO_ID)).thenReturn(problemData);
+        Mockito.when(problemManager.getProblemData(MOCKED_PROBLEM_MONGO_ID)).thenReturn(problemData);
         Mockito.when(userManager.getAccountById(MOCKED_USER_ID)).thenReturn(Optional.of(user));
 
         ProblemDetailResponse retVal = contestService.getContestProblem(MOCKED_CONTEST_ID, MOCKED_PROBLEM_INDEX);
@@ -1572,7 +1568,7 @@ class ContestServiceImplTest {
         Mockito.when(contestDataManager.getPublicContestDataById(MOCKED_CONTEST_MONGO_ID)).thenReturn(publicContestData);
         contestVisitTypeMockedStatic.when(() -> ContestVisitType.checkPermission(Mockito.any(), Mockito.any())).thenReturn(ContestVisitType.PARTICIPANT);
         Mockito.when(problemManager.getProblemById(MOCKED_PROBLEM_ID)).thenReturn(Optional.of(problem));
-        Mockito.when(problemDataManager.getProblemData(MOCKED_PROBLEM_MONGO_ID)).thenReturn(problemData);
+        Mockito.when(problemManager.getProblemData(MOCKED_PROBLEM_MONGO_ID)).thenReturn(problemData);
         Mockito.when(solutionManager.newSolution()).thenCallRealMethod();
         Mockito.when(solutionManager.newSolutionData(Mockito.any())).thenCallRealMethod();
 
@@ -1645,7 +1641,7 @@ class ContestServiceImplTest {
         Mockito.when(contestDataManager.getPublicContestDataById(MOCKED_CONTEST_MONGO_ID)).thenReturn(publicContestData);
         contestVisitTypeMockedStatic.when(() -> ContestVisitType.checkPermission(Mockito.any(), Mockito.any())).thenReturn(ContestVisitType.ADMIN);
         Mockito.when(problemManager.getProblemById(MOCKED_PROBLEM_ID)).thenReturn(Optional.of(problem));
-        Mockito.when(problemDataManager.getProblemData(MOCKED_PROBLEM_MONGO_ID)).thenReturn(problemData);
+        Mockito.when(problemManager.getProblemData(MOCKED_PROBLEM_MONGO_ID)).thenReturn(problemData);
         Mockito.when(solutionManager.newSolution()).thenCallRealMethod();
         Mockito.when(solutionManager.newSolutionData(Mockito.any())).thenCallRealMethod();
 
@@ -1852,7 +1848,7 @@ class ContestServiceImplTest {
             return null;
         }).when(contestManager).insertContest(Mockito.any());
         Mockito.when(problemManager.getProblemById(MOCKED_PROBLEM_ID)).thenReturn(Optional.of(problem));
-        Mockito.when(problemDataManager.getProblemData(MOCKED_PROBLEM_MONGO_ID)).thenReturn(problemData);
+        Mockito.when(problemManager.getProblemData(MOCKED_PROBLEM_MONGO_ID)).thenReturn(problemData);
 
         ContestContentRequest contestContentRequest = ContestContentRequest.builder()
                 .id(null)
@@ -1907,7 +1903,7 @@ class ContestServiceImplTest {
         /// region 校验写入的题目数据
 
         ArgumentCaptor<ProblemData> problemDataArgumentCaptor = ArgumentCaptor.forClass(ProblemData.class);
-        Mockito.verify(problemDataManager).updateProblemData(problemDataArgumentCaptor.capture());
+        Mockito.verify(problemManager).updateProblemData(problemDataArgumentCaptor.capture());
         ProblemData problemDataCP = problemDataArgumentCaptor.getValue();
         Assertions.assertEquals(MOCKED_CONTEST_ID, problemDataCP.getContestId());
 
@@ -1944,7 +1940,7 @@ class ContestServiceImplTest {
             return null;
         }).when(contestManager).insertContest(Mockito.any());
         Mockito.when(problemManager.getProblemById(MOCKED_PROBLEM_ID)).thenReturn(Optional.of(problem));
-        Mockito.when(problemDataManager.getProblemData(MOCKED_PROBLEM_MONGO_ID)).thenReturn(problemData);
+        Mockito.when(problemManager.getProblemData(MOCKED_PROBLEM_MONGO_ID)).thenReturn(problemData);
 
         ContestContentRequest contestContentRequest = ContestContentRequest.builder()
                 .id(null)
@@ -2000,7 +1996,7 @@ class ContestServiceImplTest {
         /// region 校验写入的题目数据
 
         ArgumentCaptor<ProblemData> problemDataArgumentCaptor = ArgumentCaptor.forClass(ProblemData.class);
-        Mockito.verify(problemDataManager).updateProblemData(problemDataArgumentCaptor.capture());
+        Mockito.verify(problemManager).updateProblemData(problemDataArgumentCaptor.capture());
         ProblemData problemDataCP = problemDataArgumentCaptor.getValue();
         Assertions.assertEquals(MOCKED_CONTEST_ID, problemDataCP.getContestId());
 
@@ -2044,7 +2040,7 @@ class ContestServiceImplTest {
             return null;
         }).when(contestManager).insertContest(Mockito.any());
         Mockito.when(problemManager.getProblemById(MOCKED_PROBLEM_ID)).thenReturn(Optional.of(problem));
-        Mockito.when(problemDataManager.getProblemData(MOCKED_PROBLEM_MONGO_ID)).thenReturn(problemData);
+        Mockito.when(problemManager.getProblemData(MOCKED_PROBLEM_MONGO_ID)).thenReturn(problemData);
 
         ContestContentRequest contestContentRequest = ContestContentRequest.builder()
                 .id(null)
@@ -2102,7 +2098,7 @@ class ContestServiceImplTest {
         /// region 校验写入的题目数据
 
         ArgumentCaptor<ProblemData> problemDataArgumentCaptor = ArgumentCaptor.forClass(ProblemData.class);
-        Mockito.verify(problemDataManager).updateProblemData(problemDataArgumentCaptor.capture());
+        Mockito.verify(problemManager).updateProblemData(problemDataArgumentCaptor.capture());
         ProblemData problemDataCP = problemDataArgumentCaptor.getValue();
         Assertions.assertEquals(MOCKED_CONTEST_ID, problemDataCP.getContestId());
 
@@ -2141,7 +2137,7 @@ class ContestServiceImplTest {
             return null;
         }).when(contestManager).insertContest(Mockito.any());
         Mockito.when(problemManager.getProblemById(MOCKED_PROBLEM_ID)).thenReturn(Optional.of(problem));
-        Mockito.when(problemDataManager.getProblemData(MOCKED_PROBLEM_MONGO_ID)).thenReturn(problemData);
+        Mockito.when(problemManager.getProblemData(MOCKED_PROBLEM_MONGO_ID)).thenReturn(problemData);
 
         ContestContentRequest contestContentRequest = ContestContentRequest.builder()
                 .id(null)
@@ -2197,7 +2193,7 @@ class ContestServiceImplTest {
         /// region 校验写入的题目数据
 
         ArgumentCaptor<ProblemData> problemDataArgumentCaptor = ArgumentCaptor.forClass(ProblemData.class);
-        Mockito.verify(problemDataManager).updateProblemData(problemDataArgumentCaptor.capture());
+        Mockito.verify(problemManager).updateProblemData(problemDataArgumentCaptor.capture());
         ProblemData problemDataCP = problemDataArgumentCaptor.getValue();
         Assertions.assertEquals(MOCKED_CONTEST_ID, problemDataCP.getContestId());
 
@@ -2354,7 +2350,7 @@ class ContestServiceImplTest {
             add(MOCKED_USER_ID);
         }});
         Mockito.when(problemManager.getProblemById(MOCKED_PROBLEM_ID)).thenReturn(Optional.of(problem));
-        Mockito.when(problemDataManager.getProblemData(MOCKED_PROBLEM_MONGO_ID)).thenReturn(problemData);
+        Mockito.when(problemManager.getProblemData(MOCKED_PROBLEM_MONGO_ID)).thenReturn(problemData);
 
         ContestContentRequest contestContentRequest = ContestContentRequest.builder()
                 .id(MOCKED_CONTEST_ID)
@@ -2379,7 +2375,7 @@ class ContestServiceImplTest {
         /// region 校验题目的绑定情况
 
         ArgumentCaptor<ProblemData> problemDataArgumentCaptor = ArgumentCaptor.forClass(ProblemData.class);
-        Mockito.verify(problemDataManager).updateProblemData(problemDataArgumentCaptor.capture());
+        Mockito.verify(problemManager).updateProblemData(problemDataArgumentCaptor.capture());
         ProblemData problemDataCP = problemDataArgumentCaptor.getValue();
         Assertions.assertEquals(MOCKED_CONTEST_ID, problemDataCP.getContestId());
 
@@ -2463,7 +2459,7 @@ class ContestServiceImplTest {
 
         /// region 校验题目的绑定情况
 
-        Mockito.verify(problemDataManager, Mockito.never()).updateProblemData(Mockito.any());
+        Mockito.verify(problemManager, Mockito.never()).updateProblemData(Mockito.any());
 
         /// endregion
 
@@ -2503,7 +2499,7 @@ class ContestServiceImplTest {
         contestVisitTypeMockedStatic.when(() -> ContestVisitType.checkPermission(Mockito.any(), Mockito.any())).thenReturn(ContestVisitType.ADMIN);
         Mockito.when(problemManager.checkProblemListExist(Mockito.any())).thenReturn(new ArrayList<>());
         Mockito.when(problemManager.getProblemById(MOCKED_PROBLEM_ID)).thenReturn(Optional.of(problem));
-        Mockito.when(problemDataManager.getProblemData(MOCKED_PROBLEM_MONGO_ID)).thenReturn(problemData);
+        Mockito.when(problemManager.getProblemData(MOCKED_PROBLEM_MONGO_ID)).thenReturn(problemData);
 
         ContestContentRequest contestContentRequest = ContestContentRequest.builder()
                 .id(MOCKED_CONTEST_ID)
@@ -2528,7 +2524,7 @@ class ContestServiceImplTest {
         /// region 校验题目的绑定情况
 
         ArgumentCaptor<ProblemData> problemDataArgumentCaptor = ArgumentCaptor.forClass(ProblemData.class);
-        Mockito.verify(problemDataManager).updateProblemData(problemDataArgumentCaptor.capture());
+        Mockito.verify(problemManager).updateProblemData(problemDataArgumentCaptor.capture());
         ProblemData problemDataCP = problemDataArgumentCaptor.getValue();
         Assertions.assertEquals(MOCKED_CONTEST_ID, problemDataCP.getContestId());
 
@@ -2599,7 +2595,7 @@ class ContestServiceImplTest {
 
         /// region 校验题目的绑定情况
 
-        Mockito.verify(problemDataManager, Mockito.never()).updateProblemData(Mockito.any());
+        Mockito.verify(problemManager, Mockito.never()).updateProblemData(Mockito.any());
 
         /// endregion
 
@@ -2779,7 +2775,7 @@ class ContestServiceImplTest {
         Mockito.when(contestDataManager.getPublicContestDataById(MOCKED_CONTEST_MONGO_ID)).thenReturn(publicContestData);
         contestVisitTypeMockedStatic.when(() -> ContestVisitType.checkPermission(Mockito.any(), Mockito.any())).thenReturn(ContestVisitType.CO_AUTHOR);
         Mockito.when(problemManager.getProblemById(MOCKED_PROBLEM_ID)).thenReturn(Optional.of(problem));
-        Mockito.when(problemDataManager.getProblemData(MOCKED_PROBLEM_MONGO_ID)).thenReturn(problemData);
+        Mockito.when(problemManager.getProblemData(MOCKED_PROBLEM_MONGO_ID)).thenReturn(problemData);
 
         ContestAddProblem contestAddProblem = ContestAddProblem.builder()
                 .contestId(MOCKED_CONTEST_ID)
@@ -2791,7 +2787,7 @@ class ContestServiceImplTest {
         /// region 校验题目的绑定情况
 
         ArgumentCaptor<ProblemData> problemDataArgumentCaptor = ArgumentCaptor.forClass(ProblemData.class);
-        Mockito.verify(problemDataManager).updateProblemData(problemDataArgumentCaptor.capture());
+        Mockito.verify(problemManager).updateProblemData(problemDataArgumentCaptor.capture());
         ProblemData problemDataCP = problemDataArgumentCaptor.getValue();
         Assertions.assertEquals(MOCKED_CONTEST_ID, problemDataCP.getContestId());
 

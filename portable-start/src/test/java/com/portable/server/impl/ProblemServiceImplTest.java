@@ -7,7 +7,6 @@ import java.util.stream.IntStream;
 
 import com.portable.server.exception.PortableException;
 import com.portable.server.manager.impl.ContestManagerImpl;
-import com.portable.server.manager.impl.ProblemDataManagerImpl;
 import com.portable.server.manager.impl.ProblemManagerImpl;
 import com.portable.server.manager.impl.SolutionManagerImpl;
 import com.portable.server.manager.impl.UserManagerImpl;
@@ -60,9 +59,6 @@ public class ProblemServiceImplTest {
 
     @Mock
     private ProblemManagerImpl problemManager;
-
-    @Mock
-    private ProblemDataManagerImpl problemDataManager;
 
     @Mock
     private UserManagerImpl userManager;
@@ -318,7 +314,7 @@ public class ProblemServiceImplTest {
     @Test
     void testGetProblemWithNoProblemData() {
         Mockito.when(problemManager.getProblemById(MOCKED_PROBLEM_ID)).thenReturn(Optional.of(problem));
-        Mockito.when(problemDataManager.getProblemData(MOCKED_PROBLEM_MONGO_ID)).thenThrow(PortableException.of("S-03-001"));
+        Mockito.when(problemManager.getProblemData(MOCKED_PROBLEM_MONGO_ID)).thenThrow(PortableException.of("S-03-001"));
 
         try {
             problemService.getProblem(MOCKED_PROBLEM_ID);
@@ -337,7 +333,7 @@ public class ProblemServiceImplTest {
         problemData.setContestId(null);
 
         Mockito.when(problemManager.getProblemById(MOCKED_PROBLEM_ID)).thenReturn(Optional.of(problem));
-        Mockito.when(problemDataManager.getProblemData(MOCKED_PROBLEM_MONGO_ID)).thenReturn(problemData);
+        Mockito.when(problemManager.getProblemData(MOCKED_PROBLEM_MONGO_ID)).thenReturn(problemData);
 
         try {
             problemService.getProblem(MOCKED_PROBLEM_ID);
@@ -359,7 +355,7 @@ public class ProblemServiceImplTest {
         user.setHandle(MOCKED_HANDLE);
 
         Mockito.when(problemManager.getProblemById(MOCKED_PROBLEM_ID)).thenReturn(Optional.of(problem));
-        Mockito.when(problemDataManager.getProblemData(MOCKED_PROBLEM_MONGO_ID)).thenReturn(problemData);
+        Mockito.when(problemManager.getProblemData(MOCKED_PROBLEM_MONGO_ID)).thenReturn(problemData);
         Mockito.when(userManager.getAccountById(MOCKED_USER_ID)).thenReturn(Optional.of(user));
 
         ProblemDetailResponse retVal = problemService.getProblem(MOCKED_PROBLEM_ID);
@@ -384,7 +380,7 @@ public class ProblemServiceImplTest {
         user.setHandle(MOCKED_HANDLE);
 
         Mockito.when(problemManager.getProblemById(MOCKED_PROBLEM_ID)).thenReturn(Optional.of(problem));
-        Mockito.when(problemDataManager.getProblemData(MOCKED_PROBLEM_MONGO_ID)).thenReturn(problemData);
+        Mockito.when(problemManager.getProblemData(MOCKED_PROBLEM_MONGO_ID)).thenReturn(problemData);
         Mockito.when(userManager.getAccountById(MOCKED_USER_ID)).thenReturn(Optional.of(user));
 
         ProblemDetailResponse retVal = problemService.getProblem(MOCKED_PROBLEM_ID);
@@ -406,7 +402,7 @@ public class ProblemServiceImplTest {
         problemData.setContestId(null);
 
         Mockito.when(problemManager.getProblemById(MOCKED_PROBLEM_ID)).thenReturn(Optional.of(problem));
-        Mockito.when(problemDataManager.getProblemData(MOCKED_PROBLEM_MONGO_ID)).thenReturn(problemData);
+        Mockito.when(problemManager.getProblemData(MOCKED_PROBLEM_MONGO_ID)).thenReturn(problemData);
 
         try {
             problemService.getProblemTestList(MOCKED_PROBLEM_ID);
@@ -426,7 +422,7 @@ public class ProblemServiceImplTest {
         problemData.setShareTest(false);
 
         Mockito.when(problemManager.getProblemById(MOCKED_PROBLEM_ID)).thenReturn(Optional.of(problem));
-        Mockito.when(problemDataManager.getProblemData(MOCKED_PROBLEM_MONGO_ID)).thenReturn(problemData);
+        Mockito.when(problemManager.getProblemData(MOCKED_PROBLEM_MONGO_ID)).thenReturn(problemData);
 
         try {
             problemService.getProblemTestList(MOCKED_PROBLEM_ID);
@@ -446,7 +442,7 @@ public class ProblemServiceImplTest {
         problemData.setShareTest(true);
 
         Mockito.when(problemManager.getProblemById(MOCKED_PROBLEM_ID)).thenReturn(Optional.of(problem));
-        Mockito.when(problemDataManager.getProblemData(MOCKED_PROBLEM_MONGO_ID)).thenReturn(problemData);
+        Mockito.when(problemManager.getProblemData(MOCKED_PROBLEM_MONGO_ID)).thenReturn(problemData);
 
         List<String> testList = problemService.getProblemTestList(MOCKED_PROBLEM_ID);
 
@@ -463,7 +459,7 @@ public class ProblemServiceImplTest {
         problemData.setShareTest(false);
 
         Mockito.when(problemManager.getProblemById(MOCKED_PROBLEM_ID)).thenReturn(Optional.of(problem));
-        Mockito.when(problemDataManager.getProblemData(MOCKED_PROBLEM_MONGO_ID)).thenReturn(problemData);
+        Mockito.when(problemManager.getProblemData(MOCKED_PROBLEM_MONGO_ID)).thenReturn(problemData);
 
         List<String> testList = problemService.getProblemTestList(MOCKED_PROBLEM_ID);
 
@@ -480,7 +476,7 @@ public class ProblemServiceImplTest {
         problemData.setShareTest(false);
 
         Mockito.when(problemManager.getProblemById(MOCKED_PROBLEM_ID)).thenReturn(Optional.of(problem));
-        Mockito.when(problemDataManager.getProblemData(MOCKED_PROBLEM_MONGO_ID)).thenReturn(problemData);
+        Mockito.when(problemManager.getProblemData(MOCKED_PROBLEM_MONGO_ID)).thenReturn(problemData);
 
         ProblemNameRequest problemNameRequest = ProblemNameRequest.builder()
                 .id(MOCKED_PROBLEM_ID)
@@ -508,7 +504,7 @@ public class ProblemServiceImplTest {
         circularByteBuffer.getOutputStream().close();
 
         Mockito.when(problemManager.getProblemById(MOCKED_PROBLEM_ID)).thenReturn(Optional.of(problem));
-        Mockito.when(problemDataManager.getProblemData(MOCKED_PROBLEM_MONGO_ID)).thenReturn(problemData);
+        Mockito.when(problemManager.getProblemData(MOCKED_PROBLEM_MONGO_ID)).thenReturn(problemData);
         Mockito.when(fileSupport.getTestInput(MOCKED_PROBLEM_ID, problemData.getTestName().get(0))).thenReturn(circularByteBuffer.getInputStream());
 
         ReflectionTestUtils.setField(problemService, "maxTestShowLen", 100);
@@ -537,7 +533,7 @@ public class ProblemServiceImplTest {
         problemData.setShareTest(false);
 
         Mockito.when(problemManager.getProblemById(MOCKED_PROBLEM_ID)).thenReturn(Optional.of(problem));
-        Mockito.when(problemDataManager.getProblemData(MOCKED_PROBLEM_MONGO_ID)).thenReturn(problemData);
+        Mockito.when(problemManager.getProblemData(MOCKED_PROBLEM_MONGO_ID)).thenReturn(problemData);
 
         ProblemNameRequest problemNameRequest = ProblemNameRequest.builder()
                 .id(MOCKED_PROBLEM_ID)
@@ -566,7 +562,7 @@ public class ProblemServiceImplTest {
         circularByteBuffer.getOutputStream().close();
 
         Mockito.when(problemManager.getProblemById(MOCKED_PROBLEM_ID)).thenReturn(Optional.of(problem));
-        Mockito.when(problemDataManager.getProblemData(MOCKED_PROBLEM_MONGO_ID)).thenReturn(problemData);
+        Mockito.when(problemManager.getProblemData(MOCKED_PROBLEM_MONGO_ID)).thenReturn(problemData);
         Mockito.when(fileSupport.getTestOutput(MOCKED_PROBLEM_ID, problemData.getTestName().get(0))).thenReturn(circularByteBuffer.getInputStream());
 
         ReflectionTestUtils.setField(problemService, "maxTestShowLen", 100);
@@ -595,7 +591,7 @@ public class ProblemServiceImplTest {
         problemData.setShareTest(false);
 
         Mockito.when(problemManager.getProblemById(MOCKED_PROBLEM_ID)).thenReturn(Optional.of(problem));
-        Mockito.when(problemDataManager.getProblemData(MOCKED_PROBLEM_MONGO_ID)).thenReturn(problemData);
+        Mockito.when(problemManager.getProblemData(MOCKED_PROBLEM_MONGO_ID)).thenReturn(problemData);
 
         ProblemNameRequest problemNameRequest = ProblemNameRequest.builder()
                 .id(MOCKED_PROBLEM_ID)
@@ -625,7 +621,7 @@ public class ProblemServiceImplTest {
         circularByteBuffer.getOutputStream().close();
 
         Mockito.when(problemManager.getProblemById(MOCKED_PROBLEM_ID)).thenReturn(Optional.of(problem));
-        Mockito.when(problemDataManager.getProblemData(MOCKED_PROBLEM_MONGO_ID)).thenReturn(problemData);
+        Mockito.when(problemManager.getProblemData(MOCKED_PROBLEM_MONGO_ID)).thenReturn(problemData);
         Mockito.when(fileSupport.getTestInput(MOCKED_PROBLEM_ID, problemData.getTestName().get(0))).thenReturn(circularByteBuffer.getInputStream());
 
         ProblemNameRequest problemNameRequest = ProblemNameRequest.builder()
@@ -654,7 +650,7 @@ public class ProblemServiceImplTest {
         problemData.setShareTest(false);
 
         Mockito.when(problemManager.getProblemById(MOCKED_PROBLEM_ID)).thenReturn(Optional.of(problem));
-        Mockito.when(problemDataManager.getProblemData(MOCKED_PROBLEM_MONGO_ID)).thenReturn(problemData);
+        Mockito.when(problemManager.getProblemData(MOCKED_PROBLEM_MONGO_ID)).thenReturn(problemData);
 
         ProblemNameRequest problemNameRequest = ProblemNameRequest.builder()
                 .id(MOCKED_PROBLEM_ID)
@@ -684,7 +680,7 @@ public class ProblemServiceImplTest {
         circularByteBuffer.getOutputStream().close();
 
         Mockito.when(problemManager.getProblemById(MOCKED_PROBLEM_ID)).thenReturn(Optional.of(problem));
-        Mockito.when(problemDataManager.getProblemData(MOCKED_PROBLEM_MONGO_ID)).thenReturn(problemData);
+        Mockito.when(problemManager.getProblemData(MOCKED_PROBLEM_MONGO_ID)).thenReturn(problemData);
         Mockito.when(fileSupport.getTestOutput(MOCKED_PROBLEM_ID, problemData.getTestName().get(0))).thenReturn(circularByteBuffer.getInputStream());
 
         ProblemNameRequest problemNameRequest = ProblemNameRequest.builder()
@@ -708,13 +704,13 @@ public class ProblemServiceImplTest {
         userContextBuilder.withNormalLoginIn(MOCKED_USER_ID).withPermission(PermissionType.CREATE_AND_EDIT_PROBLEM);
 
         Mockito.when(problemManager.newProblem()).thenCallRealMethod();
-        Mockito.when(problemDataManager.newProblemData()).thenCallRealMethod();
+        Mockito.when(problemManager.newProblemData()).thenCallRealMethod();
 
         Mockito.doAnswer(invocationOnMock -> {
             ProblemData problemData = invocationOnMock.getArgument(0);
             problemData.setId(MOCKED_PROBLEM_MONGO_ID);
             return null;
-        }).when(problemDataManager).insertProblemData(Mockito.any());
+        }).when(problemManager).insertProblemData(Mockito.any());
         Mockito.doAnswer(invocationOnMock -> {
             Problem problem = invocationOnMock.getArgument(0);
             problem.setId(MOCKED_PROBLEM_ID);
@@ -742,7 +738,7 @@ public class ProblemServiceImplTest {
         /// region 校验写入的问题数据信息
 
         ArgumentCaptor<ProblemData> problemDataArgumentCaptor = ArgumentCaptor.forClass(ProblemData.class);
-        Mockito.verify(problemDataManager).insertProblemData(problemDataArgumentCaptor.capture());
+        Mockito.verify(problemManager).insertProblemData(problemDataArgumentCaptor.capture());
         ProblemData problemDataCP = problemDataArgumentCaptor.getValue();
         Assertions.assertEquals(MOCKED_PROBLEM_DESC, problemDataCP.getDescription());
         Assertions.assertEquals(MOCKED_PROBLEM_INPUT, problemDataCP.getInput());
@@ -767,7 +763,7 @@ public class ProblemServiceImplTest {
         problemData.setShareTest(false);
 
         Mockito.when(problemManager.getProblemById(MOCKED_PROBLEM_ID)).thenReturn(Optional.of(problem));
-        Mockito.when(problemDataManager.getProblemData(MOCKED_PROBLEM_MONGO_ID)).thenReturn(problemData);
+        Mockito.when(problemManager.getProblemData(MOCKED_PROBLEM_MONGO_ID)).thenReturn(problemData);
 
         userToProblemAccessTypeMockedStatic
                 .when(() -> ProblemVisitType.of(Mockito.any(), Mockito.any()))
@@ -796,7 +792,7 @@ public class ProblemServiceImplTest {
         problemData.setShareTest(false);
 
         Mockito.when(problemManager.getProblemById(MOCKED_PROBLEM_ID)).thenReturn(Optional.of(problem));
-        Mockito.when(problemDataManager.getProblemData(MOCKED_PROBLEM_MONGO_ID)).thenReturn(problemData);
+        Mockito.when(problemManager.getProblemData(MOCKED_PROBLEM_MONGO_ID)).thenReturn(problemData);
 
         userToProblemAccessTypeMockedStatic
                 .when(() -> ProblemVisitType.of(Mockito.any(), Mockito.any()))
@@ -825,7 +821,7 @@ public class ProblemServiceImplTest {
         problemData.setShareTest(false);
 
         Mockito.when(problemManager.getProblemById(MOCKED_PROBLEM_ID)).thenReturn(Optional.of(problem));
-        Mockito.when(problemDataManager.getProblemData(MOCKED_PROBLEM_MONGO_ID)).thenReturn(problemData);
+        Mockito.when(problemManager.getProblemData(MOCKED_PROBLEM_MONGO_ID)).thenReturn(problemData);
 
         userToProblemAccessTypeMockedStatic
                 .when(() -> ProblemVisitType.of(Mockito.any(), Mockito.any()))
@@ -851,7 +847,7 @@ public class ProblemServiceImplTest {
         /// region 校验写入 Mongo 的数据
 
         ArgumentCaptor<ProblemData> problemDataArgumentCaptor = ArgumentCaptor.forClass(ProblemData.class);
-        Mockito.verify(problemDataManager).updateProblemData(problemDataArgumentCaptor.capture());
+        Mockito.verify(problemManager).updateProblemData(problemDataArgumentCaptor.capture());
         ProblemData problemDataCP = problemDataArgumentCaptor.getValue();
         Assertions.assertEquals(MOCKED_PROBLEM_DESC, problemDataCP.getDescription());
         Assertions.assertEquals(MOCKED_PROBLEM_INPUT, problemDataCP.getInput());
@@ -869,7 +865,7 @@ public class ProblemServiceImplTest {
         problemData.setShareTest(false);
 
         Mockito.when(problemManager.getProblemById(MOCKED_PROBLEM_ID)).thenReturn(Optional.of(problem));
-        Mockito.when(problemDataManager.getProblemData(MOCKED_PROBLEM_MONGO_ID)).thenReturn(problemData);
+        Mockito.when(problemManager.getProblemData(MOCKED_PROBLEM_MONGO_ID)).thenReturn(problemData);
 
         userToProblemAccessTypeMockedStatic
                 .when(() -> ProblemVisitType.of(Mockito.any(), Mockito.any()))
@@ -896,7 +892,7 @@ public class ProblemServiceImplTest {
         problemData.setShareTest(false);
 
         Mockito.when(problemManager.getProblemById(MOCKED_PROBLEM_ID)).thenReturn(Optional.of(problem));
-        Mockito.when(problemDataManager.getProblemData(MOCKED_PROBLEM_MONGO_ID)).thenReturn(problemData);
+        Mockito.when(problemManager.getProblemData(MOCKED_PROBLEM_MONGO_ID)).thenReturn(problemData);
 
         userToProblemAccessTypeMockedStatic
                 .when(() -> ProblemVisitType.of(Mockito.any(), Mockito.any()))
@@ -925,7 +921,7 @@ public class ProblemServiceImplTest {
         contest.setDuration(100);
 
         Mockito.when(problemManager.getProblemById(MOCKED_PROBLEM_ID)).thenReturn(Optional.of(problem));
-        Mockito.when(problemDataManager.getProblemData(MOCKED_PROBLEM_MONGO_ID)).thenReturn(problemData);
+        Mockito.when(problemManager.getProblemData(MOCKED_PROBLEM_MONGO_ID)).thenReturn(problemData);
         Mockito.when(contestManager.getContestById(MOCKED_CONTEST_ID)).thenReturn(Optional.of(contest));
 
         userToProblemAccessTypeMockedStatic
@@ -955,7 +951,7 @@ public class ProblemServiceImplTest {
         problemData.setTestName(new ArrayList<>());
 
         Mockito.when(problemManager.getProblemById(MOCKED_PROBLEM_ID)).thenReturn(Optional.of(problem));
-        Mockito.when(problemDataManager.getProblemData(MOCKED_PROBLEM_MONGO_ID)).thenReturn(problemData);
+        Mockito.when(problemManager.getProblemData(MOCKED_PROBLEM_MONGO_ID)).thenReturn(problemData);
 
         userToProblemAccessTypeMockedStatic
                 .when(() -> ProblemVisitType.of(Mockito.any(), Mockito.any()))
@@ -988,7 +984,7 @@ public class ProblemServiceImplTest {
         /// region 校验写入的数据
 
         ArgumentCaptor<ProblemData> problemDataArgumentCaptor = ArgumentCaptor.forClass(ProblemData.class);
-        Mockito.verify(problemDataManager).updateProblemData(problemDataArgumentCaptor.capture());
+        Mockito.verify(problemManager).updateProblemData(problemDataArgumentCaptor.capture());
         ProblemData problemDataCP = problemDataArgumentCaptor.getValue();
         Assertions.assertEquals(supportLanguage, problemDataCP.getSupportLanguage());
         Assertions.assertEquals(10, problemDataCP.getDefaultTimeLimit());
@@ -1015,7 +1011,7 @@ public class ProblemServiceImplTest {
         solution.setStatus(SolutionStatusType.ACCEPT);
 
         Mockito.when(problemManager.getProblemById(MOCKED_PROBLEM_ID)).thenReturn(Optional.of(problem));
-        Mockito.when(problemDataManager.getProblemData(MOCKED_PROBLEM_MONGO_ID)).thenReturn(problemData);
+        Mockito.when(problemManager.getProblemData(MOCKED_PROBLEM_MONGO_ID)).thenReturn(problemData);
         Mockito.when(solutionManager.selectSolutionById(MOCKED_SOLUTION_ID)).thenReturn(Optional.of(solution));
 
         userToProblemAccessTypeMockedStatic
@@ -1049,7 +1045,7 @@ public class ProblemServiceImplTest {
         /// region 校验写入的数据
 
         ArgumentCaptor<ProblemData> problemDataArgumentCaptor = ArgumentCaptor.forClass(ProblemData.class);
-        Mockito.verify(problemDataManager).updateProblemData(problemDataArgumentCaptor.capture());
+        Mockito.verify(problemManager).updateProblemData(problemDataArgumentCaptor.capture());
         ProblemData problemDataCP = problemDataArgumentCaptor.getValue();
         Assertions.assertEquals(supportLanguage, problemDataCP.getSupportLanguage());
         Assertions.assertEquals(10, problemDataCP.getDefaultTimeLimit());
@@ -1077,7 +1073,7 @@ public class ProblemServiceImplTest {
         solution.setStatus(SolutionStatusType.TIME_LIMIT_EXCEEDED);
 
         Mockito.when(problemManager.getProblemById(MOCKED_PROBLEM_ID)).thenReturn(Optional.of(problem));
-        Mockito.when(problemDataManager.getProblemData(MOCKED_PROBLEM_MONGO_ID)).thenReturn(problemData);
+        Mockito.when(problemManager.getProblemData(MOCKED_PROBLEM_MONGO_ID)).thenReturn(problemData);
         Mockito.when(solutionManager.selectSolutionById(MOCKED_SOLUTION_ID)).thenReturn(Optional.of(solution));
 
         userToProblemAccessTypeMockedStatic
@@ -1111,7 +1107,7 @@ public class ProblemServiceImplTest {
         /// region 校验写入的数据
 
         ArgumentCaptor<ProblemData> problemDataArgumentCaptor = ArgumentCaptor.forClass(ProblemData.class);
-        Mockito.verify(problemDataManager).updateProblemData(problemDataArgumentCaptor.capture());
+        Mockito.verify(problemManager).updateProblemData(problemDataArgumentCaptor.capture());
         ProblemData problemDataCP = problemDataArgumentCaptor.getValue();
         Assertions.assertEquals(supportLanguage, problemDataCP.getSupportLanguage());
         Assertions.assertEquals(10, problemDataCP.getDefaultTimeLimit());
@@ -1144,7 +1140,7 @@ public class ProblemServiceImplTest {
         solution.setStatus(SolutionStatusType.TIME_LIMIT_EXCEEDED);
 
         Mockito.when(problemManager.getProblemById(MOCKED_PROBLEM_ID)).thenReturn(Optional.of(problem));
-        Mockito.when(problemDataManager.getProblemData(MOCKED_PROBLEM_MONGO_ID)).thenReturn(problemData);
+        Mockito.when(problemManager.getProblemData(MOCKED_PROBLEM_MONGO_ID)).thenReturn(problemData);
         Mockito.when(solutionManager.selectSolutionById(MOCKED_SOLUTION_ID)).thenReturn(Optional.of(solution));
 
         userToProblemAccessTypeMockedStatic
@@ -1178,7 +1174,7 @@ public class ProblemServiceImplTest {
         /// region 校验写入的数据
 
         ArgumentCaptor<ProblemData> problemDataArgumentCaptor = ArgumentCaptor.forClass(ProblemData.class);
-        Mockito.verify(problemDataManager).updateProblemData(problemDataArgumentCaptor.capture());
+        Mockito.verify(problemManager).updateProblemData(problemDataArgumentCaptor.capture());
         ProblemData problemDataCP = problemDataArgumentCaptor.getValue();
         Assertions.assertEquals(supportLanguage, problemDataCP.getSupportLanguage());
         Assertions.assertEquals(10, problemDataCP.getDefaultTimeLimit());
@@ -1211,7 +1207,7 @@ public class ProblemServiceImplTest {
         solution.setStatus(SolutionStatusType.TIME_LIMIT_EXCEEDED);
 
         Mockito.when(problemManager.getProblemById(MOCKED_PROBLEM_ID)).thenReturn(Optional.of(problem));
-        Mockito.when(problemDataManager.getProblemData(MOCKED_PROBLEM_MONGO_ID)).thenReturn(problemData);
+        Mockito.when(problemManager.getProblemData(MOCKED_PROBLEM_MONGO_ID)).thenReturn(problemData);
         Mockito.when(solutionManager.selectSolutionById(MOCKED_SOLUTION_ID)).thenReturn(Optional.of(solution));
 
         userToProblemAccessTypeMockedStatic
@@ -1245,7 +1241,7 @@ public class ProblemServiceImplTest {
         /// region 校验写入的数据
 
         ArgumentCaptor<ProblemData> problemDataArgumentCaptor = ArgumentCaptor.forClass(ProblemData.class);
-        Mockito.verify(problemDataManager).updateProblemData(problemDataArgumentCaptor.capture());
+        Mockito.verify(problemManager).updateProblemData(problemDataArgumentCaptor.capture());
         ProblemData problemDataCP = problemDataArgumentCaptor.getValue();
         Assertions.assertEquals(supportLanguage, problemDataCP.getSupportLanguage());
         Assertions.assertEquals(10, problemDataCP.getDefaultTimeLimit());
@@ -1262,7 +1258,7 @@ public class ProblemServiceImplTest {
         problemData.setContestId(null);
         problemData.setShareTest(false);
         Mockito.when(problemManager.getProblemById(MOCKED_PROBLEM_ID)).thenReturn(Optional.of(problem));
-        Mockito.when(problemDataManager.getProblemData(MOCKED_PROBLEM_MONGO_ID)).thenReturn(problemData);
+        Mockito.when(problemManager.getProblemData(MOCKED_PROBLEM_MONGO_ID)).thenReturn(problemData);
 
         userToProblemAccessTypeMockedStatic
                 .when(() -> ProblemVisitType.of(Mockito.any(), Mockito.any()))
@@ -1290,7 +1286,7 @@ public class ProblemServiceImplTest {
         problemData.setShareTest(false);
         problemData.setVersion(0);
         Mockito.when(problemManager.getProblemById(MOCKED_PROBLEM_ID)).thenReturn(Optional.of(problem));
-        Mockito.when(problemDataManager.getProblemData(MOCKED_PROBLEM_MONGO_ID)).thenReturn(problemData);
+        Mockito.when(problemManager.getProblemData(MOCKED_PROBLEM_MONGO_ID)).thenReturn(problemData);
 
         userToProblemAccessTypeMockedStatic
                 .when(() -> ProblemVisitType.of(Mockito.any(), Mockito.any()))
@@ -1309,7 +1305,7 @@ public class ProblemServiceImplTest {
         /// region 校验写入的数据
 
         ArgumentCaptor<ProblemData> problemDataArgumentCaptor = ArgumentCaptor.forClass(ProblemData.class);
-        Mockito.verify(problemDataManager).updateProblemData(problemDataArgumentCaptor.capture());
+        Mockito.verify(problemManager).updateProblemData(problemDataArgumentCaptor.capture());
         ProblemData problemDataCP = problemDataArgumentCaptor.getValue();
         Assertions.assertEquals(JudgeCodeType.ALL_SAME, problemDataCP.getJudgeCodeType());
         Assertions.assertEquals("", problemDataCP.getJudgeCode());
@@ -1327,7 +1323,7 @@ public class ProblemServiceImplTest {
         problemData.setVersion(0);
         problemData.setTestName(new ArrayList<>());
         Mockito.when(problemManager.getProblemById(MOCKED_PROBLEM_ID)).thenReturn(Optional.of(problem));
-        Mockito.when(problemDataManager.getProblemData(MOCKED_PROBLEM_MONGO_ID)).thenReturn(problemData);
+        Mockito.when(problemManager.getProblemData(MOCKED_PROBLEM_MONGO_ID)).thenReturn(problemData);
 
         userToProblemAccessTypeMockedStatic
                 .when(() -> ProblemVisitType.of(Mockito.any(), Mockito.any()))
@@ -1350,7 +1346,7 @@ public class ProblemServiceImplTest {
         /// region 校验写入的数据
 
         ArgumentCaptor<ProblemData> problemDataArgumentCaptor = ArgumentCaptor.forClass(ProblemData.class);
-        Mockito.verify(problemDataManager).updateProblemData(problemDataArgumentCaptor.capture());
+        Mockito.verify(problemManager).updateProblemData(problemDataArgumentCaptor.capture());
         ProblemData problemDataCP = problemDataArgumentCaptor.getValue();
         Assertions.assertEquals(Collections.singletonList(MOCKED_NAME), problemDataCP.getTestName());
 
@@ -1377,7 +1373,7 @@ public class ProblemServiceImplTest {
             add(MOCKED_NAME);
         }});
         Mockito.when(problemManager.getProblemById(MOCKED_PROBLEM_ID)).thenReturn(Optional.of(problem));
-        Mockito.when(problemDataManager.getProblemData(MOCKED_PROBLEM_MONGO_ID)).thenReturn(problemData);
+        Mockito.when(problemManager.getProblemData(MOCKED_PROBLEM_MONGO_ID)).thenReturn(problemData);
 
         userToProblemAccessTypeMockedStatic
                 .when(() -> ProblemVisitType.of(Mockito.any(), Mockito.any()))
@@ -1395,7 +1391,7 @@ public class ProblemServiceImplTest {
         /// region 校验写入的数据
 
         ArgumentCaptor<ProblemData> problemDataArgumentCaptor = ArgumentCaptor.forClass(ProblemData.class);
-        Mockito.verify(problemDataManager).updateProblemData(problemDataArgumentCaptor.capture());
+        Mockito.verify(problemManager).updateProblemData(problemDataArgumentCaptor.capture());
         ProblemData problemDataCP = problemDataArgumentCaptor.getValue();
         Assertions.assertEquals(new ArrayList<>(), problemDataCP.getTestName());
 
@@ -1433,7 +1429,7 @@ public class ProblemServiceImplTest {
         solution.setStatus(SolutionStatusType.WRONG_ANSWER);
 
         Mockito.when(problemManager.getProblemById(MOCKED_PROBLEM_ID)).thenReturn(Optional.of(problem));
-        Mockito.when(problemDataManager.getProblemData(MOCKED_PROBLEM_MONGO_ID)).thenReturn(problemData);
+        Mockito.when(problemManager.getProblemData(MOCKED_PROBLEM_MONGO_ID)).thenReturn(problemData);
         Mockito.when(solutionManager.selectSolutionById(MOCKED_SOLUTION_ID)).thenReturn(Optional.of(solution));
 
         userToProblemAccessTypeMockedStatic
@@ -1467,7 +1463,7 @@ public class ProblemServiceImplTest {
         solution.setStatus(SolutionStatusType.WRONG_ANSWER);
 
         Mockito.when(problemManager.getProblemById(MOCKED_PROBLEM_ID)).thenReturn(Optional.of(problem));
-        Mockito.when(problemDataManager.getProblemData(MOCKED_PROBLEM_MONGO_ID)).thenReturn(problemData);
+        Mockito.when(problemManager.getProblemData(MOCKED_PROBLEM_MONGO_ID)).thenReturn(problemData);
 
         userToProblemAccessTypeMockedStatic
                 .when(() -> ProblemVisitType.of(Mockito.any(), Mockito.any()))
@@ -1488,7 +1484,7 @@ public class ProblemServiceImplTest {
         /// region 校验写入的数据
 
         ArgumentCaptor<ProblemData> problemDataArgumentCaptor = ArgumentCaptor.forClass(ProblemData.class);
-        Mockito.verify(problemDataManager).updateProblemData(problemDataArgumentCaptor.capture());
+        Mockito.verify(problemManager).updateProblemData(problemDataArgumentCaptor.capture());
         ProblemData problemDataCP = problemDataArgumentCaptor.getValue();
         Assertions.assertEquals(MOCKED_CODE_TEST, problemDataCP.getStdCode().getCode());
         Assertions.assertNull(problemDataCP.getStdCode().getSolutionId());
@@ -1523,7 +1519,7 @@ public class ProblemServiceImplTest {
         solution.setStatus(SolutionStatusType.WRONG_ANSWER);
 
         Mockito.when(problemManager.getProblemById(MOCKED_PROBLEM_ID)).thenReturn(Optional.of(problem));
-        Mockito.when(problemDataManager.getProblemData(MOCKED_PROBLEM_MONGO_ID)).thenReturn(problemData);
+        Mockito.when(problemManager.getProblemData(MOCKED_PROBLEM_MONGO_ID)).thenReturn(problemData);
 
         userToProblemAccessTypeMockedStatic
                 .when(() -> ProblemVisitType.of(Mockito.any(), Mockito.any()))
@@ -1548,7 +1544,7 @@ public class ProblemServiceImplTest {
         /// region 校验写入的题目数据
 
         ArgumentCaptor<ProblemData> problemDataArgumentCaptor = ArgumentCaptor.forClass(ProblemData.class);
-        Mockito.verify(problemDataManager).updateProblemData(problemDataArgumentCaptor.capture());
+        Mockito.verify(problemManager).updateProblemData(problemDataArgumentCaptor.capture());
         ProblemData problemDataCP = problemDataArgumentCaptor.getValue();
         Assertions.assertEquals(1, problemDataCP.getTestCodeList().size());
         Assertions.assertEquals(MOCKED_NAME, problemDataCP.getTestCodeList().get(0).getName());
@@ -1575,7 +1571,7 @@ public class ProblemServiceImplTest {
         solution.setStatus(SolutionStatusType.WRONG_ANSWER);
 
         Mockito.when(problemManager.getProblemById(MOCKED_PROBLEM_ID)).thenReturn(Optional.of(problem));
-        Mockito.when(problemDataManager.getProblemData(MOCKED_PROBLEM_MONGO_ID)).thenReturn(problemData);
+        Mockito.when(problemManager.getProblemData(MOCKED_PROBLEM_MONGO_ID)).thenReturn(problemData);
 
         userToProblemAccessTypeMockedStatic
                 .when(() -> ProblemVisitType.of(Mockito.any(), Mockito.any()))
@@ -1600,7 +1596,7 @@ public class ProblemServiceImplTest {
         /// region 校验写入的题目数据
 
         ArgumentCaptor<ProblemData> problemDataArgumentCaptor = ArgumentCaptor.forClass(ProblemData.class);
-        Mockito.verify(problemDataManager).updateProblemData(problemDataArgumentCaptor.capture());
+        Mockito.verify(problemManager).updateProblemData(problemDataArgumentCaptor.capture());
         ProblemData problemDataCP = problemDataArgumentCaptor.getValue();
         Assertions.assertEquals(1, problemDataCP.getTestCodeList().size());
         Assertions.assertEquals(MOCKED_NAME, problemDataCP.getTestCodeList().get(0).getName());
@@ -1635,7 +1631,7 @@ public class ProblemServiceImplTest {
         solution.setStatus(SolutionStatusType.WRONG_ANSWER);
 
         Mockito.when(problemManager.getProblemById(MOCKED_PROBLEM_ID)).thenReturn(Optional.of(problem));
-        Mockito.when(problemDataManager.getProblemData(MOCKED_PROBLEM_MONGO_ID)).thenReturn(problemData);
+        Mockito.when(problemManager.getProblemData(MOCKED_PROBLEM_MONGO_ID)).thenReturn(problemData);
 
         userToProblemAccessTypeMockedStatic
                 .when(() -> ProblemVisitType.of(Mockito.any(), Mockito.any()))
@@ -1651,7 +1647,7 @@ public class ProblemServiceImplTest {
         /// region 郊野写入的值
 
         ArgumentCaptor<ProblemData> problemDataArgumentCaptor = ArgumentCaptor.forClass(ProblemData.class);
-        Mockito.verify(problemDataManager).updateProblemData(problemDataArgumentCaptor.capture());
+        Mockito.verify(problemManager).updateProblemData(problemDataArgumentCaptor.capture());
         ProblemData problemDataCP = problemDataArgumentCaptor.getValue();
         Assertions.assertEquals(0, problemDataCP.getTestCodeList().size());
 
@@ -1672,7 +1668,7 @@ public class ProblemServiceImplTest {
                 .build());
 
         Mockito.when(problemManager.getProblemById(MOCKED_PROBLEM_ID)).thenReturn(Optional.of(problem));
-        Mockito.when(problemDataManager.getProblemData(MOCKED_PROBLEM_MONGO_ID)).thenReturn(problemData);
+        Mockito.when(problemManager.getProblemData(MOCKED_PROBLEM_MONGO_ID)).thenReturn(problemData);
 
         userToProblemAccessTypeMockedStatic
                 .when(() -> ProblemVisitType.of(Mockito.any(), Mockito.any()))
@@ -1706,7 +1702,7 @@ public class ProblemServiceImplTest {
         }});
 
         Mockito.when(problemManager.getProblemById(MOCKED_PROBLEM_ID)).thenReturn(Optional.of(problem));
-        Mockito.when(problemDataManager.getProblemData(MOCKED_PROBLEM_MONGO_ID)).thenReturn(problemData);
+        Mockito.when(problemManager.getProblemData(MOCKED_PROBLEM_MONGO_ID)).thenReturn(problemData);
 
         userToProblemAccessTypeMockedStatic
                 .when(() -> ProblemVisitType.of(Mockito.any(), Mockito.any()))
@@ -1736,7 +1732,7 @@ public class ProblemServiceImplTest {
                 .build());
 
         Mockito.when(problemManager.getProblemById(MOCKED_PROBLEM_ID)).thenReturn(Optional.of(problem));
-        Mockito.when(problemDataManager.getProblemData(MOCKED_PROBLEM_MONGO_ID)).thenReturn(problemData);
+        Mockito.when(problemManager.getProblemData(MOCKED_PROBLEM_MONGO_ID)).thenReturn(problemData);
 
         userToProblemAccessTypeMockedStatic
                 .when(() -> ProblemVisitType.of(Mockito.any(), Mockito.any()))
@@ -1774,7 +1770,7 @@ public class ProblemServiceImplTest {
         }});
 
         Mockito.when(problemManager.getProblemById(MOCKED_PROBLEM_ID)).thenReturn(Optional.of(problem));
-        Mockito.when(problemDataManager.getProblemData(MOCKED_PROBLEM_MONGO_ID)).thenReturn(problemData);
+        Mockito.when(problemManager.getProblemData(MOCKED_PROBLEM_MONGO_ID)).thenReturn(problemData);
 
         userToProblemAccessTypeMockedStatic
                 .when(() -> ProblemVisitType.of(Mockito.any(), Mockito.any()))
@@ -1798,7 +1794,7 @@ public class ProblemServiceImplTest {
         problem.setStatusType(ProblemStatusType.NORMAL);
         problem.setAccessType(ProblemAccessType.PUBLIC);
         Mockito.when(problemManager.getProblemById(MOCKED_PROBLEM_ID)).thenReturn(Optional.of(problem));
-        Mockito.when(problemDataManager.getProblemData(MOCKED_PROBLEM_MONGO_ID)).thenReturn(problemData);
+        Mockito.when(problemManager.getProblemData(MOCKED_PROBLEM_MONGO_ID)).thenReturn(problemData);
 
         userToProblemAccessTypeMockedStatic
                 .when(() -> ProblemVisitType.of(Mockito.any(), Mockito.any()))
@@ -1814,7 +1810,7 @@ public class ProblemServiceImplTest {
         problem.setStatusType(ProblemStatusType.UNCHECK);
         problem.setAccessType(ProblemAccessType.PUBLIC);
         Mockito.when(problemManager.getProblemById(MOCKED_PROBLEM_ID)).thenReturn(Optional.of(problem));
-        Mockito.when(problemDataManager.getProblemData(MOCKED_PROBLEM_MONGO_ID)).thenReturn(problemData);
+        Mockito.when(problemManager.getProblemData(MOCKED_PROBLEM_MONGO_ID)).thenReturn(problemData);
 
         userToProblemAccessTypeMockedStatic
                 .when(() -> ProblemVisitType.of(Mockito.any(), Mockito.any()))
@@ -1839,7 +1835,7 @@ public class ProblemServiceImplTest {
                 .build());
 
         Mockito.when(problemManager.getProblemById(MOCKED_PROBLEM_ID)).thenReturn(Optional.of(problem));
-        Mockito.when(problemDataManager.getProblemData(MOCKED_PROBLEM_MONGO_ID)).thenReturn(problemData);
+        Mockito.when(problemManager.getProblemData(MOCKED_PROBLEM_MONGO_ID)).thenReturn(problemData);
 
         userToProblemAccessTypeMockedStatic
                 .when(() -> ProblemVisitType.of(Mockito.any(), Mockito.any()))
@@ -1866,7 +1862,7 @@ public class ProblemServiceImplTest {
                 .build());
         problemData.setTestName(new ArrayList<>());
         Mockito.when(problemManager.getProblemById(MOCKED_PROBLEM_ID)).thenReturn(Optional.of(problem));
-        Mockito.when(problemDataManager.getProblemData(MOCKED_PROBLEM_MONGO_ID)).thenReturn(problemData);
+        Mockito.when(problemManager.getProblemData(MOCKED_PROBLEM_MONGO_ID)).thenReturn(problemData);
 
         userToProblemAccessTypeMockedStatic
                 .when(() -> ProblemVisitType.of(Mockito.any(), Mockito.any()))
@@ -1893,7 +1889,7 @@ public class ProblemServiceImplTest {
                 .build());
         problemData.setTestName(Collections.singletonList(MOCKED_NAME));
         Mockito.when(problemManager.getProblemById(MOCKED_PROBLEM_ID)).thenReturn(Optional.of(problem));
-        Mockito.when(problemDataManager.getProblemData(MOCKED_PROBLEM_MONGO_ID)).thenReturn(problemData);
+        Mockito.when(problemManager.getProblemData(MOCKED_PROBLEM_MONGO_ID)).thenReturn(problemData);
 
         userToProblemAccessTypeMockedStatic
                 .when(() -> ProblemVisitType.of(Mockito.any(), Mockito.any()))
@@ -1918,7 +1914,7 @@ public class ProblemServiceImplTest {
         problemData.setContestId(null);
 
         Mockito.when(problemManager.getProblemById(MOCKED_PROBLEM_ID)).thenReturn(Optional.of(problem));
-        Mockito.when(problemDataManager.getProblemData(MOCKED_PROBLEM_MONGO_ID)).thenReturn(problemData);
+        Mockito.when(problemManager.getProblemData(MOCKED_PROBLEM_MONGO_ID)).thenReturn(problemData);
 
         SubmitSolutionRequest submitSolutionRequest = SubmitSolutionRequest.builder()
                 .problemId(MOCKED_PROBLEM_ID)
@@ -1948,7 +1944,7 @@ public class ProblemServiceImplTest {
         normalUserData.setSubmission(0);
 
         Mockito.when(problemManager.getProblemById(MOCKED_PROBLEM_ID)).thenReturn(Optional.of(problem));
-        Mockito.when(problemDataManager.getProblemData(MOCKED_PROBLEM_MONGO_ID)).thenReturn(problemData);
+        Mockito.when(problemManager.getProblemData(MOCKED_PROBLEM_MONGO_ID)).thenReturn(problemData);
         Mockito.when(userManager.getNormalUserDataById(MOCKED_USER_DATA_ID)).thenReturn(normalUserData);
         Mockito.when(solutionManager.newSolution()).thenCallRealMethod();
         Mockito.when(solutionManager.newSolutionData(Mockito.any())).thenCallRealMethod();

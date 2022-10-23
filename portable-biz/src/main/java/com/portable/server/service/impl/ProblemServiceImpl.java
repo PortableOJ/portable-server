@@ -13,7 +13,6 @@ import javax.annotation.Resource;
 
 import com.portable.server.exception.PortableException;
 import com.portable.server.manager.ContestManager;
-import com.portable.server.manager.ProblemDataManager;
 import com.portable.server.manager.ProblemManager;
 import com.portable.server.manager.SolutionManager;
 import com.portable.server.manager.UserManager;
@@ -74,9 +73,6 @@ public class ProblemServiceImpl implements ProblemService {
 
     @Resource
     private ProblemManager problemManager;
-
-    @Resource
-    private ProblemDataManager problemDataManager;
 
     @Resource
     private UserManager userManager;
@@ -188,12 +184,12 @@ public class ProblemServiceImpl implements ProblemService {
     @Override
     public Problem newProblem(ProblemContentRequest problemContentRequest) {
         Problem problem = problemManager.newProblem();
-        ProblemData problemData = problemDataManager.newProblemData();
+        ProblemData problemData = problemManager.newProblemData();
         problemContentRequest.toProblem(problem);
         problemContentRequest.toProblemData(problemData);
         problem.setOwner(UserContext.ctx().getId());
 
-        problemDataManager.insertProblemData(problemData);
+        problemManager.insertProblemData(problemData);
         problem.setDataId(problemData.getId());
         problemManager.insertProblem(problem);
         fileSupport.createProblem(problem.getId());
@@ -207,7 +203,7 @@ public class ProblemServiceImpl implements ProblemService {
         problemContentRequest.toProblemData(problemPackage.getProblemData());
 
         problemManager.updateProblemTitle(problemContentRequest.getId(), problemContentRequest.getTitle());
-        problemDataManager.updateProblemData(problemPackage.getProblemData());
+        problemManager.updateProblemData(problemPackage.getProblemData());
     }
 
     @Override
@@ -241,7 +237,7 @@ public class ProblemServiceImpl implements ProblemService {
 
         problemManager.updateProblemStatus(problemPackage.getProblem().getId(), problemPackage.getProblem().getStatusType());
         problemManager.updateProblemAccessStatus(problemPackage.getProblem().getId(), problemSettingRequest.getAccessType());
-        problemDataManager.updateProblemData(problemPackage.getProblemData());
+        problemManager.updateProblemData(problemPackage.getProblemData());
     }
 
     @Override
@@ -258,7 +254,7 @@ public class ProblemServiceImpl implements ProblemService {
         problemPackage.getProblemData().setGmtModifyTime(new Date());
 
         problemManager.updateProblemStatus(problemPackage.getProblem().getId(), problemPackage.getProblem().getStatusType());
-        problemDataManager.updateProblemData(problemPackage.getProblemData());
+        problemManager.updateProblemData(problemPackage.getProblemData());
     }
 
     @Override
@@ -277,7 +273,7 @@ public class ProblemServiceImpl implements ProblemService {
         problemPackage.getProblemData().setGmtModifyTime(new Date());
 
         problemManager.updateProblemStatus(problemPackage.getProblem().getId(), problemPackage.getProblem().getStatusType());
-        problemDataManager.updateProblemData(problemPackage.getProblemData());
+        problemManager.updateProblemData(problemPackage.getProblemData());
     }
 
     @Override
@@ -297,7 +293,7 @@ public class ProblemServiceImpl implements ProblemService {
         problemPackage.getProblem().toUncheck();
 
         problemManager.updateProblemStatus(problemPackage.getProblem().getId(), problemPackage.getProblem().getStatusType());
-        problemDataManager.updateProblemData(problemPackage.getProblemData());
+        problemManager.updateProblemData(problemPackage.getProblemData());
     }
 
     @Override
@@ -327,7 +323,7 @@ public class ProblemServiceImpl implements ProblemService {
         problemPackage.getProblem().toUntreated();
 
         problemManager.updateProblemStatus(problemPackage.getProblem().getId(), problemPackage.getProblem().getStatusType());
-        problemDataManager.updateProblemData(problemPackage.getProblemData());
+        problemManager.updateProblemData(problemPackage.getProblemData());
     }
 
     @Override
@@ -351,14 +347,14 @@ public class ProblemServiceImpl implements ProblemService {
         problemPackage.getProblem().toUncheck();
 
         problemManager.updateProblemStatus(problemPackage.getProblem().getId(), problemPackage.getProblem().getStatusType());
-        problemDataManager.updateProblemData(problemPackage.getProblemData());
+        problemManager.updateProblemData(problemPackage.getProblemData());
     }
 
     @Override
     public void removeProblemTestCode(ProblemNameRequest problemNameRequest) {
         ProblemPackage problemPackage = getForEditProblem(problemNameRequest.getId());
         problemPackage.getProblemData().getTestCodeList().removeIf(stdCode -> Objects.equals(stdCode.getName(), problemNameRequest.getName()));
-        problemDataManager.updateProblemData(problemPackage.getProblemData());
+        problemManager.updateProblemData(problemPackage.getProblemData());
     }
 
     @Override
@@ -482,7 +478,7 @@ public class ProblemServiceImpl implements ProblemService {
     private ProblemPackage getProblemPackage(Long id) {
         Problem problem = problemManager.getProblemById(id)
                 .orElseThrow(PortableException.from("A-04-001", id));
-        ProblemData problemData = problemDataManager.getProblemData(problem.getDataId());
+        ProblemData problemData = problemManager.getProblemData(problem.getDataId());
         Contest contest = contestManager.getContestById(problemData.getContestId()).orElse(null);
         return ProblemPackage.builder()
                 .problem(problem)

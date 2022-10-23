@@ -1,5 +1,8 @@
 package com.portable.server.manager.impl;
 
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -7,12 +10,19 @@ import java.util.stream.Collectors;
 
 import javax.annotation.Resource;
 
+import com.portable.server.exception.PortableException;
 import com.portable.server.helper.RedisValueHelper;
 import com.portable.server.manager.ProblemManager;
 import com.portable.server.mapper.ProblemMapper;
 import com.portable.server.model.problem.Problem;
+import com.portable.server.model.problem.ProblemData;
+import com.portable.server.repo.ProblemDataRepo;
+import com.portable.server.type.JudgeCodeType;
+import com.portable.server.type.LanguageType;
 import com.portable.server.type.ProblemAccessType;
 import com.portable.server.type.ProblemStatusType;
+import com.portable.server.type.ProblemType;
+import com.portable.server.type.SolutionStatusType;
 
 import org.jetbrains.annotations.NotNull;
 import org.springframework.stereotype.Component;
@@ -28,6 +38,9 @@ public class ProblemManagerImpl implements ProblemManager {
 
     @Resource
     private RedisValueHelper redisValueHelper;
+
+    @Resource
+    private ProblemDataRepo problemDataRepo;
 
     /**
      * redis 的 key 和过期时间
@@ -46,6 +59,38 @@ public class ProblemManagerImpl implements ProblemManager {
                 .submissionCount(0)
                 .acceptCount(0)
                 .owner(null)
+                .build();
+    }
+
+    @Override
+    public @NotNull ProblemData newProblemData() {
+        return ProblemData.builder()
+                .id(null)
+                .contestId(null)
+                .defaultTimeLimit(1)
+                .defaultMemoryLimit(128)
+                .specialTimeLimit(new HashMap<>(0))
+                .specialMemoryLimit(new HashMap<>(0))
+                .supportLanguage(new ArrayList<>())
+                .description(null)
+                .input(null)
+                .output(null)
+                .example(new ArrayList<>())
+                .type(ProblemType.STANDARD)
+                .judgeCodeType(JudgeCodeType.ALL_SAME)
+                .judgeCode(null)
+                .testName(new ArrayList<>())
+                .shareTest(false)
+                .stdCode(ProblemData.StdCode.builder()
+                        .name("STD")
+                        .code(null)
+                        .expectResultType(SolutionStatusType.ACCEPT)
+                        .languageType(LanguageType.CPP17)
+                        .solutionId(null)
+                        .build())
+                .testCodeList(new ArrayList<>())
+                .version(0)
+                .gmtModifyTime(new Date())
                 .build();
     }
 
@@ -135,5 +180,21 @@ public class ProblemManagerImpl implements ProblemManager {
     @Override
     public void updateAllStatus(ProblemStatusType fromStatus, ProblemStatusType toStatus) {
         problemMapper.updateAllStatus(fromStatus, toStatus);
+    }
+
+    @Override
+    public @NotNull ProblemData getProblemData(String dataId) {
+        return Optional.ofNullable(problemDataRepo.getProblemData(dataId))
+                .orElseThrow(PortableException.from("S-03-001"));
+    }
+
+    @Override
+    public void insertProblemData(ProblemData problemData) {
+        problemDataRepo.insertProblemData(problemData);
+    }
+
+    @Override
+    public void updateProblemData(ProblemData problemData) {
+        problemDataRepo.saveProblemData(problemData);
     }
 }
