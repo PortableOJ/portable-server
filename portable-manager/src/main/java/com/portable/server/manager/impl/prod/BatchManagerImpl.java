@@ -1,14 +1,16 @@
-package com.portable.server.manager.impl;
+package com.portable.server.manager.impl.prod;
+
+import java.util.List;
+import java.util.Optional;
+
+import javax.annotation.Resource;
 
 import com.portable.server.manager.BatchManager;
 import com.portable.server.mapper.BatchMapper;
 import com.portable.server.model.batch.Batch;
 import com.portable.server.type.BatchStatusType;
-import org.springframework.stereotype.Component;
 
-import javax.annotation.Resource;
-import java.util.List;
-import java.util.Optional;
+import org.springframework.stereotype.Component;
 
 /**
  * @author shiroha

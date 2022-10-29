@@ -10,11 +10,11 @@ import java.util.List;
 import java.util.Optional;
 
 import com.portable.server.exception.PortableException;
-import com.portable.server.manager.impl.BatchManagerImpl;
-import com.portable.server.manager.impl.ContestManagerImpl;
-import com.portable.server.manager.impl.ProblemManagerImpl;
-import com.portable.server.manager.impl.SolutionManagerImpl;
-import com.portable.server.manager.impl.UserManagerImpl;
+import com.portable.server.manager.impl.prod.BatchManagerImpl;
+import com.portable.server.manager.impl.prod.ContestManagerImpl;
+import com.portable.server.manager.impl.prod.ProblemManagerImpl;
+import com.portable.server.manager.impl.prod.SolutionManagerImpl;
+import com.portable.server.manager.impl.prod.UserManagerImpl;
 import com.portable.server.model.batch.Batch;
 import com.portable.server.model.contest.BaseContestData;
 import com.portable.server.model.contest.BatchContestData;

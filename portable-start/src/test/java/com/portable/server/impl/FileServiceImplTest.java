@@ -3,7 +3,7 @@ package com.portable.server.impl;
 import java.io.IOException;
 
 import com.portable.server.exception.PortableException;
-import com.portable.server.manager.impl.GridFsManagerImpl;
+import com.portable.server.manager.impl.prod.GridFsManagerImpl;
 import com.portable.server.model.fs.FileData;
 import com.portable.server.service.impl.FileServiceImpl;
 import com.portable.server.test.MockedValueMaker;

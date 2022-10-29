@@ -1,6 +1,5 @@
-package com.portable.server.manager.impl;
+package com.portable.server.manager.impl.prod;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Objects;
@@ -20,15 +19,12 @@ import com.portable.server.model.user.NormalUserData;
 import com.portable.server.model.user.User;
 import com.portable.server.repo.UserDataRepo;
 import com.portable.server.type.AccountType;
-import com.portable.server.type.OrganizationType;
 
 import org.jetbrains.annotations.NotNull;
-import org.springframework.stereotype.Component;
 
 /**
  * @author shiroha
  */
-@Component
 public class UserManagerImpl implements UserManager {
 
     @Resource
@@ -47,51 +43,6 @@ public class UserManagerImpl implements UserManager {
     private static final Long REDIS_USER_ID_TO_DATA_TIME = 30L;
     private static final String REDIS_USER_HANDLE_TO_ID_PREFIX = "USER_HANDLE";
     private static final Long REDIS_USER_HANDLE_TO_ID_TIME = 30L;
-
-    @Override
-    public User newNormalAccount() {
-        return User.builder()
-                .id(null)
-                .dataId(null)
-                .handle(null)
-                .password(null)
-                .type(AccountType.NORMAL)
-                .build();
-    }
-
-    @Override
-    public User newBatchAccount() {
-        return User.builder()
-                .id(null)
-                .dataId(null)
-                .handle(null)
-                .password(null)
-                .type(AccountType.BATCH)
-                .build();
-    }
-
-    @NotNull
-    @Override
-    public NormalUserData newNormalUserData() {
-        return NormalUserData.builder()
-                .id(null)
-                .organization(OrganizationType.STUDENT)
-                .submission(0)
-                .accept(0)
-                .permissionTypeSet(new HashSet<>())
-                .email(null)
-                .avatar(null)
-                .build();
-    }
-
-    @NotNull
-    @Override
-    public BatchUserData newBatchUserData() {
-        return BatchUserData.builder()
-                .id(null)
-                .ipList(new ArrayList<>())
-                .build();
-    }
 
     @Override
     public Optional<User> getAccountByHandle(String handle) {

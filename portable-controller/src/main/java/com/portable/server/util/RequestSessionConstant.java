@@ -14,9 +14,4 @@ public class RequestSessionConstant {
      * 验证码
      */
     public static final String CAPTCHA = "captcha";
-
-    /**
-     * 时间间隔限制的公共前缀
-     */
-    public static final String CAPTCHA_REQUEAR_PREFIX = "CAP_";
 }

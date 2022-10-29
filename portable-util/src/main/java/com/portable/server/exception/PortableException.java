@@ -33,6 +33,12 @@ public class PortableException extends RuntimeException {
         return toString();
     }
 
+    @Override
+    public synchronized Throwable fillInStackTrace() {
+        // 阻止填充栈信息，因为不需要
+        return this;
+    }
+
     public static PortableException systemDefaultException() {
         return new PortableException(SYSTEM_CODE);
     }

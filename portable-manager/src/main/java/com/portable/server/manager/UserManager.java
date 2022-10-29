@@ -1,6 +1,8 @@
 package com.portable.server.manager;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
 
@@ -10,6 +12,7 @@ import com.portable.server.model.user.BatchUserData;
 import com.portable.server.model.user.NormalUserData;
 import com.portable.server.model.user.User;
 import com.portable.server.type.AccountType;
+import com.portable.server.type.OrganizationType;
 
 import org.apache.ibatis.annotations.Param;
 import org.jetbrains.annotations.NotNull;
@@ -21,16 +24,35 @@ public interface UserManager {
 
     /**
      * 创建一个新的标准账号（不插入数据库）
+     *
      * @return 新的用户信息
      */
-    User newNormalAccount();
+    @NotNull
+    default User newNormalAccount() {
+        return User.builder()
+                .id(null)
+                .dataId(null)
+                .handle(null)
+                .password(null)
+                .type(AccountType.NORMAL)
+                .build();
+    }
 
     /**
      * 创建一个新的批量账号（不插入数据库）
      *
      * @return 新的用户信息
      */
-    User newBatchAccount();
+    @NotNull
+    default User newBatchAccount() {
+        return User.builder()
+                .id(null)
+                .dataId(null)
+                .handle(null)
+                .password(null)
+                .type(AccountType.BATCH)
+                .build();
+    }
 
     /**
      * 新建一个普通用户数据实体
@@ -38,7 +60,17 @@ public interface UserManager {
      * @return 普通用户数据实体
      */
     @NotNull
-    NormalUserData newNormalUserData();
+    default NormalUserData newNormalUserData() {
+        return NormalUserData.builder()
+                .id(null)
+                .organization(OrganizationType.STUDENT)
+                .submission(0)
+                .accept(0)
+                .permissionTypeSet(new HashSet<>())
+                .email(null)
+                .avatar(null)
+                .build();
+    }
 
     /**
      * 新建一个批量用户数据实体
@@ -46,7 +78,12 @@ public interface UserManager {
      * @return 普通用户数据实体
      */
     @NotNull
-    BatchUserData newBatchUserData();
+    default BatchUserData newBatchUserData() {
+        return BatchUserData.builder()
+                .id(null)
+                .ipList(new ArrayList<>())
+                .build();
+    }
 
     /**
      * 根据用户的 handle 获取账号
@@ -74,6 +111,7 @@ public interface UserManager {
 
     /**
      * 根据用户的 id 获取账号
+     *
      * @param id 用户 id
      * @return 用户信息
      */
@@ -81,20 +119,23 @@ public interface UserManager {
 
     /**
      * 新增一个账号
+     *
      * @param user 用户信息
      */
     void insertAccount(User user);
 
     /**
      * 更新用户的 handle
-     * @param id 用户 ID
+     *
+     * @param id     用户 ID
      * @param handle 用户的 handle
      */
     void updateHandle(Long id, String handle);
 
     /**
      * 更新用户的密码
-     * @param id 用户的 ID
+     *
+     * @param id       用户的 ID
      * @param password 用户的密码
      */
     void updatePassword(Long id, String password);
