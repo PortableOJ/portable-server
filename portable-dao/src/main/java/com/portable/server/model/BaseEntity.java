@@ -1,7 +1,5 @@
 package com.portable.server.model;
 
-import java.io.Serializable;
-
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -16,7 +14,7 @@ import org.springframework.data.mongodb.core.mapping.Field;
 @SuperBuilder
 @NoArgsConstructor
 @AllArgsConstructor
-public class BaseEntity<T extends Serializable> {
+public class BaseEntity<T extends Comparable<T>> {
 
     @Id
     @Field("_id")

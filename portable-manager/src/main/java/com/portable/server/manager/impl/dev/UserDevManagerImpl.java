@@ -25,17 +25,17 @@ import org.jetbrains.annotations.NotNull;
 /**
  * @author shiroha
  */
-public class UserMapManagerImpl implements UserManager {
+public class UserDevManagerImpl implements UserManager {
 
     @Resource
-    private MemProtractedHelper<User, Long> userMemProtractedHelper;
+    private MemProtractedHelper<User, Long> uerDevMapper;
 
     @Resource
-    private MemProtractedHelper<BaseUserData, String> userDataMemProtractedHelper;
+    private MemProtractedHelper<BaseUserData, String> uerDataDevMapper;
 
     @Override
     public Optional<User> getAccountByHandle(String handle) {
-        return userMemProtractedHelper.searchFirst(user -> Objects.equals(user.getHandle(), handle));
+        return uerDevMapper.searchFirst(user -> Objects.equals(user.getHandle(), handle));
     }
 
     @Override
@@ -46,7 +46,7 @@ public class UserMapManagerImpl implements UserManager {
 
     @Override
     public Set<Long> changeHandleToUserId(Collection<String> handleList) {
-        List<User> userList = userMemProtractedHelper.searchList(user -> handleList.contains(user.getHandle()));
+        List<User> userList = uerDevMapper.searchList(user -> handleList.contains(user.getHandle()));
         return userList.stream()
                 .map(BaseEntity::getId)
                 .collect(Collectors.toSet());
@@ -54,47 +54,47 @@ public class UserMapManagerImpl implements UserManager {
 
     @Override
     public Optional<User> getAccountById(Long id) {
-        return userMemProtractedHelper.getDataById(id);
+        return uerDevMapper.getDataById(id);
     }
 
     @Override
     public void insertAccount(User user) {
-        userMemProtractedHelper.insert(user, BasicTranslateUtils::reLong);
+        uerDevMapper.insert(user, BasicTranslateUtils::reLong);
     }
 
     @Override
     public void updateHandle(Long id, String handle) {
-        userMemProtractedHelper.updateByFunction(id, user -> user.setHandle(handle));
+        uerDevMapper.updateByFunction(id, user -> user.setHandle(handle));
     }
 
     @Override
     public void updatePassword(Long id, String password) {
-        userMemProtractedHelper.updateByFunction(id, user -> user.setPassword(password));
+        uerDevMapper.updateByFunction(id, user -> user.setPassword(password));
     }
 
     @Override
     public void updateUserType(Long id, AccountType accountType) {
-        userMemProtractedHelper.updateByFunction(id, user -> user.setType(accountType));
+        uerDevMapper.updateByFunction(id, user -> user.setType(accountType));
     }
 
     @NotNull
     @Override
     public NormalUserData getNormalUserDataById(String dataId) {
-        return (NormalUserData) userDataMemProtractedHelper.getDataById(dataId).orElseThrow(PortableException.from("S-02-001"));
+        return (NormalUserData) uerDataDevMapper.getDataById(dataId).orElseThrow(PortableException.from("S-02-001"));
     }
 
     @Override
     public @NotNull BatchUserData getBatchUserDataById(String dataId) {
-        return (BatchUserData) userDataMemProtractedHelper.getDataById(dataId).orElseThrow(PortableException.from("S-02-001"));
+        return (BatchUserData) uerDataDevMapper.getDataById(dataId).orElseThrow(PortableException.from("S-02-001"));
     }
 
     @Override
     public void insertUserData(BaseUserData baseUserData) {
-        userDataMemProtractedHelper.insert(baseUserData, BasicTranslateUtils::reString);
+        uerDataDevMapper.insert(baseUserData, BasicTranslateUtils::reString);
     }
 
     @Override
     public void updateUserData(BaseUserData baseUserData) {
-        userDataMemProtractedHelper.updateById(baseUserData);
+        uerDataDevMapper.updateById(baseUserData);
     }
 }

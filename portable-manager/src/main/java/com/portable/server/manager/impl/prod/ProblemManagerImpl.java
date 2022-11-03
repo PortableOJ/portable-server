@@ -1,8 +1,5 @@
 package com.portable.server.manager.impl.prod;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -17,12 +14,8 @@ import com.portable.server.mapper.ProblemMapper;
 import com.portable.server.model.problem.Problem;
 import com.portable.server.model.problem.ProblemData;
 import com.portable.server.repo.ProblemDataRepo;
-import com.portable.server.type.JudgeCodeType;
-import com.portable.server.type.LanguageType;
 import com.portable.server.type.ProblemAccessType;
 import com.portable.server.type.ProblemStatusType;
-import com.portable.server.type.ProblemType;
-import com.portable.server.type.SolutionStatusType;
 
 import org.jetbrains.annotations.NotNull;
 import org.springframework.stereotype.Component;
@@ -49,59 +42,13 @@ public class ProblemManagerImpl implements ProblemManager {
     private static final Long REDIS_TIME = 30L;
 
     @Override
-    public @NotNull Problem newProblem() {
-        return Problem.builder()
-                .id(null)
-                .dataId(null)
-                .title(null)
-                .statusType(ProblemStatusType.UNTREATED)
-                .accessType(ProblemAccessType.PRIVATE)
-                .submissionCount(0)
-                .acceptCount(0)
-                .owner(null)
-                .build();
+    public @NotNull Integer countProblemByTypeAndOwnerId(List<ProblemAccessType> accessTypeList, Long ownerId) {
+        return problemMapper.countProblemListByTypeAndOwnerId(accessTypeList, ownerId);
     }
 
     @Override
-    public @NotNull ProblemData newProblemData() {
-        return ProblemData.builder()
-                .id(null)
-                .contestId(null)
-                .defaultTimeLimit(1)
-                .defaultMemoryLimit(128)
-                .specialTimeLimit(new HashMap<>(0))
-                .specialMemoryLimit(new HashMap<>(0))
-                .supportLanguage(new ArrayList<>())
-                .description(null)
-                .input(null)
-                .output(null)
-                .example(new ArrayList<>())
-                .type(ProblemType.STANDARD)
-                .judgeCodeType(JudgeCodeType.ALL_SAME)
-                .judgeCode(null)
-                .testName(new ArrayList<>())
-                .shareTest(false)
-                .stdCode(ProblemData.StdCode.builder()
-                        .name("STD")
-                        .code(null)
-                        .expectResultType(SolutionStatusType.ACCEPT)
-                        .languageType(LanguageType.CPP17)
-                        .solutionId(null)
-                        .build())
-                .testCodeList(new ArrayList<>())
-                .version(0)
-                .gmtModifyTime(new Date())
-                .build();
-    }
-
-    @Override
-    public @NotNull Integer countProblemByTypeAndOwnerId(List<ProblemAccessType> accessType, Long ownerId) {
-        return problemMapper.countProblemListByTypeAndOwnerId(accessType, ownerId);
-    }
-
-    @Override
-    public @NotNull List<Problem> getProblemListByTypeAndOwnerIdAndPaged(List<ProblemAccessType> accessType, Long ownerId, Integer pageSize, Integer offset) {
-        return problemMapper.selectProblemListByPageAndTypeAndOwnerId(accessType, ownerId, pageSize, offset);
+    public @NotNull List<Problem> getProblemListByTypeAndOwnerIdAndPaged(List<ProblemAccessType> accessTypeList, Long ownerId, Integer pageSize, Integer offset) {
+        return problemMapper.selectProblemListByPageAndTypeAndOwnerId(accessTypeList, ownerId, pageSize, offset);
     }
 
     @Override

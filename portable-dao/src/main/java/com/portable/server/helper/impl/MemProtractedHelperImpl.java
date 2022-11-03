@@ -1,6 +1,6 @@
 package com.portable.server.helper.impl;
 
-import java.io.Serializable;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -16,14 +16,12 @@ import com.portable.server.helper.MemProtractedHelper;
 import com.portable.server.model.BaseEntity;
 
 import org.springframework.context.annotation.Lazy;
-import org.springframework.stereotype.Component;
 
 /**
  * @author shiroha
  */
 @Lazy
-@Component
-public class MemProtractedHelperImpl<T extends BaseEntity<V>, V extends Serializable> implements MemProtractedHelper<T, V> {
+public class MemProtractedHelperImpl<T extends BaseEntity<V>, V extends Comparable<V>> implements MemProtractedHelper<T, V> {
 
     private Map<V, T> mapDb;
 
@@ -48,9 +46,27 @@ public class MemProtractedHelperImpl<T extends BaseEntity<V>, V extends Serializ
     }
 
     @Override
-    public List<T> searchList(Function<T, Boolean> function) {
+    public Integer countList(Function<T, Boolean> function) {
+        return Math.toIntExact(mapDb.values().stream()
+                .filter(function::apply)
+                .count());
+    }
+
+    @Override
+    public List<T> searchList(Function<T, Boolean> function, Comparator<T> comparator) {
         return mapDb.values().stream()
                 .filter(function::apply)
+                .sorted(comparator)
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<T> searchListByPage(Function<T, Boolean> function, Integer pageSize, Integer offset, Comparator<T> comparator) {
+        return mapDb.values().stream()
+                .filter(function::apply)
+                .sorted(comparator)
+                .skip(offset)
+                .limit(pageSize)
                 .collect(Collectors.toList());
     }
 

@@ -1,13 +1,20 @@
 package com.portable.server.manager;
 
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
 
 import com.portable.server.exception.PortableException;
 import com.portable.server.model.problem.Problem;
 import com.portable.server.model.problem.ProblemData;
+import com.portable.server.type.JudgeCodeType;
+import com.portable.server.type.LanguageType;
 import com.portable.server.type.ProblemAccessType;
 import com.portable.server.type.ProblemStatusType;
+import com.portable.server.type.ProblemType;
+import com.portable.server.type.SolutionStatusType;
 
 import org.jetbrains.annotations.NotNull;
 
@@ -22,7 +29,18 @@ public interface ProblemManager {
      * @return 新题目
      */
     @NotNull
-    Problem newProblem();
+    default Problem newProblem() {
+        return Problem.builder()
+                .id(null)
+                .dataId(null)
+                .title(null)
+                .statusType(ProblemStatusType.UNTREATED)
+                .accessType(ProblemAccessType.PRIVATE)
+                .submissionCount(0)
+                .acceptCount(0)
+                .owner(null)
+                .build();
+    }
 
     /**
      * 新建一个问题数据
@@ -30,35 +48,65 @@ public interface ProblemManager {
      * @return 新问题数据
      */
     @NotNull
-    ProblemData newProblemData();
+    default ProblemData newProblemData() {
+        return ProblemData.builder()
+                .id(null)
+                .contestId(null)
+                .defaultTimeLimit(1)
+                .defaultMemoryLimit(128)
+                .specialTimeLimit(new HashMap<>(0))
+                .specialMemoryLimit(new HashMap<>(0))
+                .supportLanguage(new ArrayList<>())
+                .description(null)
+                .input(null)
+                .output(null)
+                .example(new ArrayList<>())
+                .type(ProblemType.STANDARD)
+                .judgeCodeType(JudgeCodeType.ALL_SAME)
+                .judgeCode(null)
+                .testName(new ArrayList<>())
+                .shareTest(false)
+                .stdCode(ProblemData.StdCode.builder()
+                        .name("STD")
+                        .code(null)
+                        .expectResultType(SolutionStatusType.ACCEPT)
+                        .languageType(LanguageType.CPP17)
+                        .solutionId(null)
+                        .build())
+                .testCodeList(new ArrayList<>())
+                .version(0)
+                .gmtModifyTime(new Date())
+                .build();
+    }
 
     /**
      * 根据题目的访问类型和当前用户的 ID 获取题目总数
      *
-     * @param accessType 访问权限
-     * @param ownerId    所拥有的用户 ID
+     * @param accessTypeList 访问权限
+     * @param ownerId        所拥有的用户 ID
      * @return 总匹配的题目数量
      */
     @NotNull
-    Integer countProblemByTypeAndOwnerId(List<ProblemAccessType> accessType, Long ownerId);
+    Integer countProblemByTypeAndOwnerId(List<ProblemAccessType> accessTypeList, Long ownerId);
 
     /**
      * 分页获取匹配的题目访问类型和当前用户的 ID 的题目
      *
-     * @param accessType 访问类型
-     * @param ownerId    所拥有的用户 ID
-     * @param pageSize   单页数量
-     * @param offset     偏移量
+     * @param accessTypeList 访问类型
+     * @param ownerId        所拥有的用户 ID
+     * @param pageSize       单页数量
+     * @param offset         偏移量
      * @return 题目的列表
      */
     @NotNull
-    List<Problem> getProblemListByTypeAndOwnerIdAndPaged(List<ProblemAccessType> accessType, Long ownerId, Integer pageSize, Integer offset);
+    List<Problem> getProblemListByTypeAndOwnerIdAndPaged(List<ProblemAccessType> accessTypeList, Long ownerId, Integer pageSize, Integer offset);
 
     /**
      * 获取匹配标题的一定数量的最新题目
+     *
      * @param accessTypeList 匹配的访问权限列表
-     * @param keyword 关键字
-     * @param num 总需要数量
+     * @param keyword        关键字
+     * @param num            总需要数量
      * @return 问题列表
      */
     @NotNull
@@ -66,9 +114,10 @@ public interface ProblemManager {
 
     /**
      * 获取匹配标题的一定数量的最新私人题目
+     *
      * @param ownerId 用户 id
      * @param keyword 关键字
-     * @param num 总需要数量
+     * @param num     总需要数量
      * @return 问题列表
      */
     @NotNull
@@ -85,6 +134,7 @@ public interface ProblemManager {
 
     /**
      * 校验题目列表是否存在
+     *
      * @param problemList 题目列表
      * @return 不存在的题目列表
      */
@@ -100,28 +150,32 @@ public interface ProblemManager {
 
     /**
      * 更新题目的标题
-     * @param id 题目的 ID
+     *
+     * @param id       题目的 ID
      * @param newTitle 题目的新标题
      */
     void updateProblemTitle(Long id, String newTitle);
 
     /**
      * 更新题目的访问状态
-     * @param id 题目的 ID
+     *
+     * @param id        题目的 ID
      * @param newStatus 新的访问状态
      */
     void updateProblemAccessStatus(Long id, ProblemAccessType newStatus);
 
     /**
      * 更新题目的状态
-     * @param id 题目的 ID
+     *
+     * @param id         题目的 ID
      * @param statusType 新的状态
      */
     void updateProblemStatus(Long id, ProblemStatusType statusType);
 
     /**
      * 更新题目的提交情况
-     * @param id 题目 ID
+     *
+     * @param id          题目 ID
      * @param submitCount 新的提交量
      * @param acceptCount 新的通过量
      */
@@ -129,7 +183,8 @@ public interface ProblemManager {
 
     /**
      * 更新题目所有者
-     * @param id 题目 ID
+     *
+     * @param id       题目 ID
      * @param newOwner 新的所有者
      */
     void updateProblemOwner(Long id, Long newOwner);
