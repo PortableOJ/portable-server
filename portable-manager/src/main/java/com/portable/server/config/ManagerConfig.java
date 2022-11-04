@@ -3,10 +3,13 @@ package com.portable.server.config;
 import com.portable.server.helper.MemProtractedHelper;
 import com.portable.server.helper.impl.MemProtractedHelperImpl;
 import com.portable.server.manager.ProblemManager;
+import com.portable.server.manager.SolutionManager;
 import com.portable.server.manager.UserManager;
 import com.portable.server.manager.impl.dev.ProblemDevManagerImpl;
+import com.portable.server.manager.impl.dev.SolutionDevManagerImpl;
 import com.portable.server.manager.impl.dev.UserDevManagerImpl;
 import com.portable.server.manager.impl.prod.ProblemManagerImpl;
+import com.portable.server.manager.impl.prod.SolutionManagerImpl;
 import com.portable.server.manager.impl.prod.UserManagerImpl;
 import com.portable.server.model.problem.Problem;
 import com.portable.server.model.problem.ProblemData;
@@ -75,6 +78,13 @@ public class ManagerConfig {
     /// region manager 层构建
 
     @Lazy
+    @Profile("dev")
+    @Bean(name = "userManager")
+    public UserManager devUserManager() {
+        return new UserDevManagerImpl();
+    }
+
+    @Lazy
     @Profile("prod")
     @Bean(name = "userManager")
     public UserManager prodUserManager() {
@@ -83,9 +93,9 @@ public class ManagerConfig {
 
     @Lazy
     @Profile("dev")
-    @Bean(name = "userManager")
-    public UserManager devUserManager() {
-        return new UserDevManagerImpl();
+    @Bean(name = "problemManager")
+    public ProblemManager devProblemManager() {
+        return new ProblemDevManagerImpl();
     }
 
     @Lazy
@@ -97,9 +107,16 @@ public class ManagerConfig {
 
     @Lazy
     @Profile("dev")
-    @Bean(name = "problemManager")
-    public ProblemManager devProblemManager() {
-        return new ProblemDevManagerImpl();
+    @Bean(name = "solutionManager")
+    public SolutionManager devSolutionManager() {
+        return new SolutionDevManagerImpl();
+    }
+
+    @Lazy
+    @Profile("prod")
+    @Bean(name = "solutionManager")
+    public SolutionManager prodSolutionManager() {
+        return new SolutionManagerImpl();
     }
 
     /// endregion

@@ -39,10 +39,10 @@ public class MemProtractedHelperImpl<T extends BaseEntity<V>, V extends Comparab
     }
 
     @Override
-    public Optional<T> searchFirst(Function<T, Boolean> function) {
+    public Optional<T> searchFirst(Function<T, Boolean> function, Comparator<T> comparator) {
         return mapDb.values().stream()
                 .filter(function::apply)
-                .findFirst();
+                .min(comparator);
     }
 
     @Override

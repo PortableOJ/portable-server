@@ -1,5 +1,7 @@
 package com.portable.server.manager;
 
+import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
 
@@ -22,7 +24,21 @@ public interface SolutionManager {
      *
      * @return 一个新的提交
      */
-    Solution newSolution();
+    default Solution newSolution() {
+        return Solution.builder()
+                .id(null)
+                .dataId(null)
+                .submitTime(new Date())
+                .userId(null)
+                .problemId(null)
+                .contestId(null)
+                .languageType(null)
+                .status(SolutionStatusType.PENDING)
+                .solutionType(null)
+                .timeCost(null)
+                .memoryCost(null)
+                .build();
+    }
 
     /**
      * 创建一个新的提交内容
@@ -31,7 +47,15 @@ public interface SolutionManager {
      * @return 一个新的空白的提交内容
      */
     @NotNull
-    SolutionData newSolutionData(ProblemData problemData);
+    default SolutionData newSolutionData(ProblemData problemData) {
+        return SolutionData.builder()
+                .id(null)
+                .code(null)
+                .compileMsg(null)
+                .runningMsg(new HashMap<>(problemData.getTestName().size()))
+                .runOnVersion(problemData.getVersion())
+                .build();
+    }
 
     /**
      * 统计提交数量

@@ -2,8 +2,6 @@ package com.portable.server.manager.impl.prod;
 
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -15,7 +13,6 @@ import com.portable.server.exception.PortableException;
 import com.portable.server.helper.RedisValueHelper;
 import com.portable.server.manager.SolutionManager;
 import com.portable.server.mapper.SolutionMapper;
-import com.portable.server.model.problem.ProblemData;
 import com.portable.server.model.solution.Solution;
 import com.portable.server.model.solution.SolutionData;
 import com.portable.server.repo.SolutionDataRepo;
@@ -46,34 +43,6 @@ public class SolutionManagerImpl implements SolutionManager {
      */
     private static final String REDIS_PREFIX = "SOLUTION_ID";
     private static final Long REDIS_TIME = 5L;
-
-    @Override
-    public Solution newSolution() {
-        return Solution.builder()
-                .id(null)
-                .dataId(null)
-                .submitTime(new Date())
-                .userId(null)
-                .problemId(null)
-                .contestId(null)
-                .languageType(null)
-                .status(SolutionStatusType.PENDING)
-                .solutionType(null)
-                .timeCost(null)
-                .memoryCost(null)
-                .build();
-    }
-
-    @Override
-    public @NotNull SolutionData newSolutionData(ProblemData problemData) {
-        return SolutionData.builder()
-                .id(null)
-                .code(null)
-                .compileMsg(null)
-                .runningMsg(new HashMap<>(problemData.getTestName().size()))
-                .runOnVersion(problemData.getVersion())
-                .build();
-    }
 
     @Override
     public Integer countSolution(SolutionType solutionType, Long userId, Long contestId, Long problemId, SolutionStatusType statusType) {

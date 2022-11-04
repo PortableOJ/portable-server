@@ -27,7 +27,18 @@ public interface MemProtractedHelper<T extends BaseEntity<V>, V extends Comparab
      * @param function 查找条件
      * @return 返回命中的第一个
      */
-    Optional<T> searchFirst(Function<T, Boolean> function);
+    default Optional<T> searchFirst(Function<T, Boolean> function) {
+        return searchFirst(function, Comparator.comparing(BaseEntity::getId));
+    }
+
+    /**
+     * 根据条件查找第一个
+     *
+     * @param function   查找条件
+     * @param comparator 排序规则
+     * @return 返回命中的第一个
+     */
+    Optional<T> searchFirst(Function<T, Boolean> function, Comparator<T> comparator);
 
     /**
      * 根据条件统计数量
