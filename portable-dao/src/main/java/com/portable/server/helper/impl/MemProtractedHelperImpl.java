@@ -90,5 +90,6 @@ public class MemProtractedHelperImpl<T extends BaseEntity<V>, V extends Comparab
     @Override
     public void insert(T data, Function<Long, V> translate) {
         data.setId(translate.apply(nextId.incrementAndGet()));
+        mapDb.put(data.getId(), data);
     }
 }
