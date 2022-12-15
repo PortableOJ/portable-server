@@ -10,13 +10,13 @@ import java.util.stream.Collectors;
 import javax.annotation.Resource;
 
 import com.portable.server.exception.PortableException;
-import com.portable.server.helper.MemProtractedHelper;
 import com.portable.server.manager.UserManager;
 import com.portable.server.model.BaseEntity;
 import com.portable.server.model.user.BaseUserData;
 import com.portable.server.model.user.BatchUserData;
 import com.portable.server.model.user.NormalUserData;
 import com.portable.server.model.user.User;
+import com.portable.server.persistent.StructuredHelper;
 import com.portable.server.type.AccountType;
 import com.portable.server.util.BasicTranslateUtils;
 
@@ -28,10 +28,10 @@ import org.jetbrains.annotations.NotNull;
 public class UserDevManagerImpl implements UserManager {
 
     @Resource
-    private MemProtractedHelper<User, Long> uerDevMapper;
+    private StructuredHelper<User, Long> uerDevMapper;
 
     @Resource
-    private MemProtractedHelper<BaseUserData, String> uerDataDevMapper;
+    private StructuredHelper<BaseUserData, String> uerDataDevMapper;
 
     @Override
     public Optional<User> getAccountByHandle(String handle) {

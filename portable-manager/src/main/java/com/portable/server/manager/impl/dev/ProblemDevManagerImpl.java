@@ -9,11 +9,11 @@ import java.util.stream.Collectors;
 import javax.annotation.Resource;
 
 import com.portable.server.exception.PortableException;
-import com.portable.server.helper.MemProtractedHelper;
 import com.portable.server.manager.ProblemManager;
 import com.portable.server.model.BaseEntity;
 import com.portable.server.model.problem.Problem;
 import com.portable.server.model.problem.ProblemData;
+import com.portable.server.persistent.StructuredHelper;
 import com.portable.server.type.ProblemAccessType;
 import com.portable.server.type.ProblemStatusType;
 import com.portable.server.util.BasicTranslateUtils;
@@ -26,10 +26,10 @@ import org.jetbrains.annotations.NotNull;
 public class ProblemDevManagerImpl implements ProblemManager {
 
     @Resource
-    private MemProtractedHelper<Problem, Long> problemDevMapper;
+    private StructuredHelper<Problem, Long> problemDevMapper;
 
     @Resource
-    private MemProtractedHelper<ProblemData, String> problemDataDevMapper;
+    private StructuredHelper<ProblemData, String> problemDataDevMapper;
 
     @Override
     public @NotNull Integer countProblemByTypeAndOwnerId(List<ProblemAccessType> accessTypeList, Long ownerId) {

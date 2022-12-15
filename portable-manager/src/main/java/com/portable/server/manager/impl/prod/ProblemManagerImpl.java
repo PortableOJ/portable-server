@@ -7,10 +7,10 @@ import java.util.stream.Collectors;
 
 import javax.annotation.Resource;
 
+import com.portable.server.cache.CacheKvHelper;
 import com.portable.server.exception.PortableException;
-import com.portable.server.helper.RedisValueHelper;
 import com.portable.server.manager.ProblemManager;
-import com.portable.server.mapper.ProblemMapper;
+import com.portable.server.mapper.ProblemRepo;
 import com.portable.server.model.problem.Problem;
 import com.portable.server.model.problem.ProblemData;
 import com.portable.server.repo.ProblemDataRepo;
@@ -27,38 +27,32 @@ import org.springframework.stereotype.Component;
 public class ProblemManagerImpl implements ProblemManager {
 
     @Resource
-    private ProblemMapper problemMapper;
+    private ProblemRepo problemRepo;
 
     @Resource
-    private RedisValueHelper redisValueHelper;
+    private CacheKvHelper<Long> cacheKvHelper;
 
     @Resource
     private ProblemDataRepo problemDataRepo;
 
-    /**
-     * redis 的 key 和过期时间
-     */
-    private static final String REDIS_PREFIX = "PROBLEM_ID";
-    private static final Long REDIS_TIME = 30L;
-
     @Override
     public @NotNull Integer countProblemByTypeAndOwnerId(List<ProblemAccessType> accessTypeList, Long ownerId) {
-        return problemMapper.countProblemListByTypeAndOwnerId(accessTypeList, ownerId);
+        return problemRepo.countProblemListByTypeAndOwnerId(accessTypeList, ownerId);
     }
 
     @Override
     public @NotNull List<Problem> getProblemListByTypeAndOwnerIdAndPaged(List<ProblemAccessType> accessTypeList, Long ownerId, Integer pageSize, Integer offset) {
-        return problemMapper.selectProblemListByPageAndTypeAndOwnerId(accessTypeList, ownerId, pageSize, offset);
+        return problemRepo.selectProblemListByPageAndTypeAndOwnerId(accessTypeList, ownerId, pageSize, offset);
     }
 
     @Override
     public @NotNull List<Problem> searchRecentProblemByTypedAndKeyword(List<ProblemAccessType> accessTypeList, String keyword, Integer num) {
-        return problemMapper.selectRecentProblemByTypeAndKeyword(accessTypeList, keyword, num);
+        return problemRepo.selectRecentProblemByTypeAndKeyword(accessTypeList, keyword, num);
     }
 
     @Override
     public @NotNull List<Problem> searchRecentProblemByOwnerIdAndKeyword(Long ownerId, String keyword, Integer num) {
-        return problemMapper.selectPrivateProblemByKeyword(ownerId, keyword, num);
+        return problemRepo.selectPrivateProblemByKeyword(ownerId, keyword, num);
     }
 
     @Override
@@ -66,10 +60,10 @@ public class ProblemManagerImpl implements ProblemManager {
         if (Objects.isNull(id)) {
             return Optional.empty();
         }
-        Problem problem = redisValueHelper.get(REDIS_PREFIX, id, Problem.class)
-                .orElseGet(() -> problemMapper.selectProblemById(id));
+        Problem problem = cacheKvHelper.get(id, Problem.class)
+                .orElseGet(() -> problemRepo.selectProblemById(id));
         if (Objects.nonNull(problem)) {
-            redisValueHelper.set(REDIS_PREFIX, id, problem, REDIS_TIME);
+            cacheKvHelper.set(id, problem);
         }
         return Optional.ofNullable(problem);
     }
@@ -87,46 +81,42 @@ public class ProblemManagerImpl implements ProblemManager {
 
     @Override
     public void insertProblem(Problem problem) {
-        problemMapper.insertProblem(problem);
+        problemRepo.insertProblem(problem);
     }
 
     @Override
     public void updateProblemTitle(Long id, String newTitle) {
-        problemMapper.updateProblemTitle(id, newTitle);
-        redisValueHelper.getPeek(REDIS_PREFIX, id, Problem.class, REDIS_TIME, problem -> problem.setTitle(newTitle));
+        problemRepo.updateProblemTitle(id, newTitle);
+        cacheKvHelper.delete(id);
     }
 
     @Override
     public void updateProblemAccessStatus(Long id, ProblemAccessType newStatus) {
-        problemMapper.updateProblemAccess(id, newStatus);
-        redisValueHelper.getPeek(REDIS_PREFIX, id, Problem.class, REDIS_TIME, problem -> problem.setAccessType(newStatus));
-
+        problemRepo.updateProblemAccess(id, newStatus);
+        cacheKvHelper.delete(id);
     }
 
     @Override
     public void updateProblemStatus(Long id, ProblemStatusType statusType) {
-        problemMapper.updateProblemStatus(id, statusType);
-        redisValueHelper.getPeek(REDIS_PREFIX, id, Problem.class, REDIS_TIME, problem -> problem.setStatusType(statusType));
+        problemRepo.updateProblemStatus(id, statusType);
+        cacheKvHelper.delete(id);
     }
 
     @Override
     public void updateProblemCount(Long id, Integer submitCount, Integer acceptCount) {
-        problemMapper.updateProblemCount(id, submitCount, acceptCount);
-        redisValueHelper.getPeek(REDIS_PREFIX, id, Problem.class, REDIS_TIME, problem -> {
-            problem.setAcceptCount(problem.getSubmissionCount() + submitCount);
-            problem.setAcceptCount(problem.getAcceptCount() + acceptCount);
-        });
+        problemRepo.updateProblemCount(id, submitCount, acceptCount);
+        cacheKvHelper.delete(id);
     }
 
     @Override
     public void updateProblemOwner(Long id, Long newOwner) {
-        problemMapper.updateProblemOwner(id, newOwner);
-        redisValueHelper.getPeek(REDIS_PREFIX, id, Problem.class, REDIS_TIME, problem -> problem.setOwner(newOwner));
+        problemRepo.updateProblemOwner(id, newOwner);
+        cacheKvHelper.delete(id);
     }
 
     @Override
     public void updateAllStatus(ProblemStatusType fromStatus, ProblemStatusType toStatus) {
-        problemMapper.updateAllStatus(fromStatus, toStatus);
+        problemRepo.updateAllStatus(fromStatus, toStatus);
     }
 
     @Override

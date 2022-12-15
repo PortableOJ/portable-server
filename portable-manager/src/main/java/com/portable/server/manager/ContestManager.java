@@ -1,6 +1,8 @@
 package com.portable.server.manager;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 
@@ -26,7 +28,17 @@ public interface ContestManager {
      * @return 比赛实体
      */
     @NotNull
-    Contest newContest();
+    default Contest newContest() {
+        return Contest.builder()
+                .id(null)
+                .dataId(null)
+                .owner(null)
+                .title(null)
+                .startTime(null)
+                .duration(null)
+                .accessType(ContestAccessType.PRIVATE)
+                .build();
+    }
 
     /**
      * 创建一个新的比赛实体
@@ -36,7 +48,47 @@ public interface ContestManager {
      * @throws PortableException 不存在此类型的比赛时候抛出
      */
     @NotNull
-    BaseContestData newContestData(ContestAccessType accessType);
+    default BaseContestData newContestData(ContestAccessType accessType) {
+        switch (accessType) {
+            case PUBLIC:
+                return PublicContestData.builder()
+                        .problemList(new ArrayList<>())
+                        .coAuthor(new HashSet<>())
+                        .freezeTime(0)
+                        .announcement("")
+                        .penaltyTime(0)
+                        .build();
+            case PASSWORD:
+                return PasswordContestData.builder()
+                        .problemList(new ArrayList<>())
+                        .coAuthor(new HashSet<>())
+                        .freezeTime(0)
+                        .announcement("")
+                        .penaltyTime(0)
+                        .password("")
+                        .build();
+            case PRIVATE:
+                return PrivateContestData.builder()
+                        .problemList(new ArrayList<>())
+                        .coAuthor(new HashSet<>())
+                        .freezeTime(0)
+                        .announcement("")
+                        .penaltyTime(0)
+                        .inviteUserSet(new HashSet<>())
+                        .build();
+            case BATCH:
+                return BatchContestData.builder()
+                        .problemList(new ArrayList<>())
+                        .coAuthor(new HashSet<>())
+                        .freezeTime(0)
+                        .announcement("")
+                        .penaltyTime(0)
+                        .batchId(null)
+                        .build();
+            default:
+                throw PortableException.of("A-08-001", accessType);
+        }
+    }
 
     /**
      * 获取所有的比赛数目

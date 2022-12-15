@@ -6,7 +6,7 @@ import java.util.Optional;
 import javax.annotation.Resource;
 
 import com.portable.server.manager.BatchManager;
-import com.portable.server.mapper.BatchMapper;
+import com.portable.server.mapper.BatchRepo;
 import com.portable.server.model.batch.Batch;
 import com.portable.server.type.BatchStatusType;
 
@@ -19,7 +19,7 @@ import org.springframework.stereotype.Component;
 public class BatchManagerImpl implements BatchManager {
 
     @Resource
-    private BatchMapper batchMapper;
+    private BatchRepo batchRepo;
 
     @Override
     public Batch newBatch() {
@@ -36,41 +36,41 @@ public class BatchManagerImpl implements BatchManager {
 
     @Override
     public Integer countBatchListByOwnerId(Long ownerId) {
-        return batchMapper.countBatchListByOwnerId(ownerId);
+        return batchRepo.countBatchListByOwnerId(ownerId);
     }
 
     @Override
     public List<Batch> selectBatchByPage(Long ownerId, Integer pageSize, Integer offset) {
-        return batchMapper.selectBatchByPage(ownerId, pageSize, offset);
+        return batchRepo.selectBatchByPage(ownerId, pageSize, offset);
     }
 
     @Override
     public Optional<Batch> selectBatchById(Long id) {
-        return Optional.ofNullable(batchMapper.selectBatchById(id));
+        return Optional.ofNullable(batchRepo.selectBatchById(id));
     }
 
     @Override
     public Optional<Batch> selectBatchByPrefix(String prefix) {
-        return Optional.ofNullable(batchMapper.selectBatchByPrefix(prefix));
+        return Optional.ofNullable(batchRepo.selectBatchByPrefix(prefix));
     }
 
     @Override
     public void insertBatch(Batch batch) {
-        batchMapper.insertBatch(batch);
+        batchRepo.insertBatch(batch);
     }
 
     @Override
     public void updateBatchStatus(Long id, BatchStatusType newStatus) {
-        batchMapper.updateBatchStatus(id, newStatus);
+        batchRepo.updateBatchStatus(id, newStatus);
     }
 
     @Override
     public void updateBatchContest(Long id, Long newContest) {
-        batchMapper.updateBatchContest(id, newContest);
+        batchRepo.updateBatchContest(id, newContest);
     }
 
     @Override
     public void updateBatchIpLock(Long id, Boolean ipLock) {
-        batchMapper.updateBatchIpLock(id, ipLock);
+        batchRepo.updateBatchIpLock(id, ipLock);
     }
 }

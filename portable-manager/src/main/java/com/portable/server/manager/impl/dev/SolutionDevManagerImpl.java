@@ -10,10 +10,10 @@ import java.util.stream.Collectors;
 import javax.annotation.Resource;
 
 import com.portable.server.exception.PortableException;
-import com.portable.server.helper.MemProtractedHelper;
 import com.portable.server.manager.SolutionManager;
 import com.portable.server.model.solution.Solution;
 import com.portable.server.model.solution.SolutionData;
+import com.portable.server.persistent.StructuredHelper;
 import com.portable.server.type.SolutionStatusType;
 import com.portable.server.type.SolutionType;
 import com.portable.server.util.BasicTranslateUtils;
@@ -26,10 +26,10 @@ import org.jetbrains.annotations.NotNull;
 public class SolutionDevManagerImpl implements SolutionManager {
 
     @Resource
-    private MemProtractedHelper<Solution, Long> solutionDevMapper;
+    private StructuredHelper<Solution, Long> solutionDevMapper;
 
     @Resource
-    private MemProtractedHelper<SolutionData, String> solutionDataDevMapper;
+    private StructuredHelper<SolutionData, String> solutionDataDevMapper;
 
     @Override
     public Integer countSolution(SolutionType solutionType, Long userId, Long contestId, Long problemId, SolutionStatusType statusType) {
