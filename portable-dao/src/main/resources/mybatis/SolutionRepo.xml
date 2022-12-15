@@ -1,0 +1,154 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.portable.server.mapper.SolutionRepo">
+    <resultMap id="Solution" type="com.portable.server.model.solution.Solution">
+        <id column="id" jdbcType="BIGINT" property="id"/>
+        <result column="data_id" jdbcType="VARCHAR" property="dataId"/>
+        <result column="submit_time" jdbcType="TIMESTAMP" property="submitTime"/>
+        <result column="user_id" jdbcType="BIGINT" property="userId"/>
+        <result column="problem_id" jdbcType="BIGINT" property="problemId"/>
+        <result column="contest_id" jdbcType="BIGINT" property="contestId"/>
+        <result column="language_type" jdbcType="VARCHAR" property="languageType"/>
+        <result column="status" jdbcType="VARCHAR" property="status"/>
+        <result column="solution_type" jdbcType="VARCHAR" property="solutionType"/>
+        <result column="time_cost" jdbcType="INTEGER" property="timeCost"/>
+        <result column="memory_cost" jdbcType="INTEGER" property="memoryCost"/>
+    </resultMap>
+
+    <parameterMap id="Solution" type="com.portable.server.model.solution.Solution">
+        <parameter property="id" javaType="java.lang.Long" jdbcType="BIGINT"/>
+        <parameter property="dataId" javaType="java.lang.String" jdbcType="VARCHAR"/>
+        <parameter property="submitTime" javaType="java.util.Date" jdbcType="TIMESTAMP"/>
+        <parameter property="userId" javaType="java.lang.Long" jdbcType="BIGINT"/>
+        <parameter property="problemId" javaType="java.lang.Long" jdbcType="BIGINT"/>
+        <parameter property="contestId" javaType="java.lang.Long" jdbcType="BIGINT"/>
+        <parameter property="languageType" javaType="java.lang.Enum" jdbcType="VARCHAR"/>
+        <parameter property="status" javaType="java.lang.Enum" jdbcType="VARCHAR"/>
+        <parameter property="solutionType" javaType="java.lang.Enum" jdbcType="VARCHAR"/>
+        <parameter property="timeCost" javaType="java.lang.Integer" jdbcType="INTEGER"/>
+        <parameter property="memoryCost" javaType="java.lang.Integer" jdbcType="INTEGER"/>
+    </parameterMap>
+
+    <select id="countSolution" resultType="java.lang.Integer">
+        SELECT count(*)
+        FROM solution
+        <where>
+            <if test="solutionType != null">
+                AND solution_type = #{solutionType}
+            </if>
+            <if test="userId != null">
+                AND user_id = #{userId}
+            </if>
+            <if test="contestId != null">
+                AND contest_id = #{contestId}
+            </if>
+            <if test="problemId != null">
+                AND problem_id = #{problemId}
+            </if>
+            <if test="statusType != null">
+                AND status = #{statusType}
+            </if>
+        </where>
+    </select>
+
+    <!--suppress SqlIdentifier, SqlResolve -->
+    <select id="selectSolutionByPage" resultMap="Solution">
+        SELECT *
+        FROM solution
+        <where>
+            <if test="beforeId != null">
+                AND id &lt; #{beforeId}
+            </if>
+            <if test="afterId != null">
+                AND id &gt; #{afterId}
+            </if>
+            <if test="solutionType != null">
+                AND solution_type = #{solutionType}
+            </if>
+            <if test="userId != null">
+                AND user_id = #{userId}
+            </if>
+            <if test="contestId != null">
+                AND contest_id = #{contestId}
+            </if>
+            <if test="problemId != null">
+                AND problem_id = #{problemId}
+            </if>
+            <if test="statusType != null">
+                AND `status` IN
+                <foreach collection="statusType" item="type" open="(" separator="," close=")">
+                    #{type}
+                </foreach>
+            </if>
+        </where>
+        ORDER BY id DESC
+        LIMIT #{pageSize}
+        OFFSET #{offset}
+    </select>
+
+    <select id="selectNotUserSolution" resultMap="Solution">
+        SELECT *
+        FROM solution
+        WHERE user_id != #{userId}
+        ORDER BY id DESC
+        LIMIT #{num}
+    </select>
+
+    <select id="selectSolutionById" resultMap="Solution">
+        SELECT *
+        FROM solution
+        WHERE id = #{id}
+    </select>
+
+    <select id="selectLastSolutionByUserIdAndProblemId" resultMap="Solution">
+        SELECT *
+        FROM solution
+        WHERE user_id = #{userId}
+          AND solution_type = 'PUBLIC'
+          AND problem_id = #{problemId}
+        ORDER BY id DESC
+        LIMIT 1
+    </select>
+
+    <select id="selectLastSolutionByUserIdAndProblemIdAndContestId" resultMap="Solution">
+        SELECT *
+        FROM solution
+        WHERE user_id = #{userId}
+          AND solution_type = 'CONTEST'
+          AND problem_id = #{problemId}
+          AND contest_id = #{contestId}
+        ORDER BY id DESC
+        LIMIT 1
+    </select>
+
+    <insert id="insertSolution" useGeneratedKeys="true" keyProperty="id" parameterMap="Solution">
+        INSERT INTO solution
+        (data_id, submit_time, user_id, problem_id, contest_id, language_type, status, solution_type, time_cost,
+         memory_cost)
+        VALUES (#{dataId}, #{submitTime}, #{userId}, #{problemId}, #{contestId}, #{languageType}, #{status},
+                #{solutionType}, #{timeCost}, #{memoryCost})
+    </insert>
+
+    <update id="updateStatus">
+        UPDATE solution
+        SET status = #{statusType}
+        WHERE id = #{id}
+    </update>
+
+    <update id="updateCostAndStatus">
+        UPDATE solution
+        SET status      = #{statusType},
+            time_cost   = IF(ISNULL(time_cost), #{timeCost}, GREATEST(time_cost, #{timeCost})),
+            memory_cost = IF(ISNULL(memory_cost), #{memoryCost}, GREATEST(memory_cost, #{memoryCost}))
+        WHERE id = #{id}
+    </update>
+
+    <update id="updateAllStatus">
+        UPDATE solution
+        SET status = #{toStatus}
+        WHERE status IN
+        <foreach collection="fromStatus" item="type" open="(" separator="," close=")">
+            #{type}
+        </foreach>
+    </update>
+</mapper>
