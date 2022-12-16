@@ -29,7 +29,7 @@ public class JudgeManagerImpl implements JudgeManager {
     private CacheKvHelper<String> judgeCacheKvHelper;
 
     @Resource(name = "judgeRepo")
-    private StructuredHelper<JudgeContainer, String> judgeRepo;
+    private StructuredHelper<String, JudgeContainer> judgeRepo;
 
     @Override
     public ServerCode getSeverCode() {

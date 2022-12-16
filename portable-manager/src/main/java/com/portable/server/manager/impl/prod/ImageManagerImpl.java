@@ -4,7 +4,7 @@ import java.io.InputStream;
 
 import javax.annotation.Resource;
 
-import com.portable.server.manager.GridFsManager;
+import com.portable.server.manager.ImageManager;
 import com.portable.server.model.fs.FileData;
 import com.portable.server.repo.GridFsRepo;
 import com.portable.server.type.FileStoreType;
@@ -16,7 +16,7 @@ import org.springframework.stereotype.Component;
  * @author shiroha
  */
 @Component
-public class GridFsManagerImpl implements GridFsManager {
+public class ImageManagerImpl implements ImageManager {
 
     @Resource
     private GridFsRepo gridFsRepo;
@@ -27,7 +27,7 @@ public class GridFsManagerImpl implements GridFsManager {
     }
 
     @Override
-    public @NotNull String uploadAvatar(String lastId, InputStream inputStream, String name, String contentType) {
+    public @NotNull String replaceImage(String lastId, InputStream inputStream, String name, String contentType) {
         if (lastId != null) {
             gridFsRepo.deleteFile(lastId);
         }
@@ -35,7 +35,7 @@ public class GridFsManagerImpl implements GridFsManager {
     }
 
     @Override
-    public @NotNull FileData get(String id, FileStoreType type) {
+    public @NotNull FileData getImage(String id, FileStoreType type) {
         return gridFsRepo.getFile(id, type);
     }
 }

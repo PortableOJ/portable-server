@@ -1,10 +1,10 @@
 package com.portable.server.manager;
 
-import com.portable.server.model.batch.Batch;
-import com.portable.server.type.BatchStatusType;
-
 import java.util.List;
 import java.util.Optional;
+
+import com.portable.server.model.batch.Batch;
+import com.portable.server.type.BatchStatusType;
 
 /**
  * @author shiroha
@@ -16,7 +16,17 @@ public interface BatchManager {
      *
      * @return 新的批量用户
      */
-    Batch newBatch();
+    default Batch newBatch() {
+        return Batch.builder()
+                .id(null)
+                .owner(null)
+                .contestId(null)
+                .prefix("")
+                .count(0)
+                .ipLock(false)
+                .status(BatchStatusType.DISABLE)
+                .build();
+    }
 
     /**
      * 统计某个用户的所有批量用户数据

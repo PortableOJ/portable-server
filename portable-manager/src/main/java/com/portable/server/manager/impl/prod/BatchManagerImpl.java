@@ -22,19 +22,6 @@ public class BatchManagerImpl implements BatchManager {
     private BatchRepo batchRepo;
 
     @Override
-    public Batch newBatch() {
-        return Batch.builder()
-                .id(null)
-                .owner(null)
-                .contestId(null)
-                .prefix("")
-                .count(0)
-                .ipLock(false)
-                .status(BatchStatusType.DISABLE)
-                .build();
-    }
-
-    @Override
     public Integer countBatchListByOwnerId(Long ownerId) {
         return batchRepo.countBatchListByOwnerId(ownerId);
     }

@@ -28,10 +28,10 @@ import org.jetbrains.annotations.NotNull;
 public class UserDevManagerImpl implements UserManager {
 
     @Resource
-    private StructuredHelper<User, Long> uerDevMapper;
+    private StructuredHelper<Long, User> uerDevMapper;
 
     @Resource
-    private StructuredHelper<BaseUserData, String> uerDataDevMapper;
+    private StructuredHelper<String, BaseUserData> uerDataDevMapper;
 
     @Override
     public Optional<User> getAccountByHandle(String handle) {

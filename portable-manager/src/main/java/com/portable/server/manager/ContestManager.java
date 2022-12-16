@@ -96,7 +96,7 @@ public interface ContestManager {
      * @return 总共的比赛数目
      */
     @NotNull
-    Integer getAllContestNumber();
+    Integer countAllContest();
 
     /**
      * 根据分页获取比赛列表
@@ -171,7 +171,20 @@ public interface ContestManager {
      * @return 比赛信息
      * @throws PortableException 比赛类型错误则抛出
      */
-    BaseContestData getBaseContestDataById(String datId, ContestAccessType accessType);
+    default BaseContestData getBaseContestDataById(String datId, ContestAccessType accessType) {
+        switch (accessType) {
+            case PUBLIC:
+                return getPublicContestDataById(datId);
+            case PASSWORD:
+                return getPasswordContestDataById(datId);
+            case PRIVATE:
+                return getPrivateContestDataById(datId);
+            case BATCH:
+                return getBatchContestDataById(datId);
+            default:
+                throw PortableException.of("A-08-001", accessType);
+        }
+    }
 
     /**
      * 获取公开的比赛信息

@@ -6,12 +6,12 @@ import com.portable.server.manager.ImageManager;
 import com.portable.server.manager.ProblemManager;
 import com.portable.server.manager.SolutionManager;
 import com.portable.server.manager.UserManager;
-import com.portable.server.manager.impl.dev.BatchDevManagerImpl;
-import com.portable.server.manager.impl.dev.ContestDevManagerImpl;
-import com.portable.server.manager.impl.dev.ProblemDevManagerImpl;
-import com.portable.server.manager.impl.dev.SolutionDevManagerImpl;
-import com.portable.server.manager.impl.dev.UserDevManagerImpl;
+import com.portable.server.manager.impl.prod.BatchManagerImpl;
+import com.portable.server.manager.impl.prod.ContestManagerImpl;
 import com.portable.server.manager.impl.prod.ImageManagerImpl;
+import com.portable.server.manager.impl.prod.ProblemManagerImpl;
+import com.portable.server.manager.impl.prod.SolutionManagerImpl;
+import com.portable.server.manager.impl.prod.UserManagerImpl;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -22,37 +22,37 @@ import org.springframework.context.annotation.Profile;
  * @author shiroha
  */
 @Configuration
-@Profile("dev")
-public class ManagerDevConfig extends BaseManagerConfig {
+@Profile("prod")
+public class ManagerProdConfig extends BaseManagerConfig {
 
     @Lazy
     @Bean(name = "userManager")
     public UserManager userManager() {
-        return new UserDevManagerImpl();
+        return new UserManagerImpl();
     }
 
     @Lazy
     @Bean(name = "problemManager")
     public ProblemManager problemManager() {
-        return new ProblemDevManagerImpl();
+        return new ProblemManagerImpl();
     }
 
     @Lazy
     @Bean(name = "solutionManager")
     public SolutionManager solutionManager() {
-        return new SolutionDevManagerImpl();
+        return new SolutionManagerImpl();
     }
 
     @Lazy
     @Bean(name = "contestManager")
     public ContestManager contestManager() {
-        return new ContestDevManagerImpl();
+        return new ContestManagerImpl();
     }
 
     @Lazy
     @Bean(name = "batchManager")
     public BatchManager batchManager() {
-        return new BatchDevManagerImpl();
+        return new BatchManagerImpl();
     }
 
     @Lazy

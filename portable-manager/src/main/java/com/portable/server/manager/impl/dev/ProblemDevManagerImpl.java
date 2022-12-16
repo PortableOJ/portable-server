@@ -26,10 +26,10 @@ import org.jetbrains.annotations.NotNull;
 public class ProblemDevManagerImpl implements ProblemManager {
 
     @Resource
-    private StructuredHelper<Problem, Long> problemDevMapper;
+    private StructuredHelper<Long, Problem> problemDevMapper;
 
     @Resource
-    private StructuredHelper<ProblemData, String> problemDataDevMapper;
+    private StructuredHelper<String, ProblemData> problemDataDevMapper;
 
     @Override
     public @NotNull Integer countProblemByTypeAndOwnerId(List<ProblemAccessType> accessTypeList, Long ownerId) {

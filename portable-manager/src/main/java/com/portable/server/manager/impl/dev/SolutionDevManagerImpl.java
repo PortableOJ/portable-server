@@ -26,10 +26,10 @@ import org.jetbrains.annotations.NotNull;
 public class SolutionDevManagerImpl implements SolutionManager {
 
     @Resource
-    private StructuredHelper<Solution, Long> solutionDevMapper;
+    private StructuredHelper<Long, Solution> solutionDevMapper;
 
     @Resource
-    private StructuredHelper<SolutionData, String> solutionDataDevMapper;
+    private StructuredHelper<String, SolutionData> solutionDataDevMapper;
 
     @Override
     public Integer countSolution(SolutionType solutionType, Long userId, Long contestId, Long problemId, SolutionStatusType statusType) {

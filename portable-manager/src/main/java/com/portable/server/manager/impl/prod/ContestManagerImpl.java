@@ -34,7 +34,7 @@ public class ContestManagerImpl implements ContestManager {
     private ContestDataRepo contestDataRepo;
 
     @Override
-    public @NotNull Integer getAllContestNumber() {
+    public @NotNull Integer countAllContest() {
         return contestRepo.getAllContestNumber();
     }
 
@@ -76,22 +76,6 @@ public class ContestManagerImpl implements ContestManager {
     @Override
     public void updateTitle(Long id, String title) {
         contestRepo.updateTitle(id, title);
-    }
-
-    @Override
-    public BaseContestData getBaseContestDataById(String datId, ContestAccessType accessType) {
-        switch (accessType) {
-            case PUBLIC:
-                return getPublicContestDataById(datId);
-            case PASSWORD:
-                return getPasswordContestDataById(datId);
-            case PRIVATE:
-                return getPrivateContestDataById(datId);
-            case BATCH:
-                return getBatchContestDataById(datId);
-            default:
-                throw PortableException.of("A-08-001", accessType);
-        }
     }
 
     @Override
