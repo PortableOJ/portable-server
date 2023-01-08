@@ -7,7 +7,7 @@ import java.io.OutputStream;
 import java.nio.charset.StandardCharsets;
 
 import com.portable.server.constant.Constant;
-import com.portable.server.exception.PortableException;
+import com.portable.server.exception.PortableErrors;
 
 /**
  * @author shiroha
@@ -26,7 +26,7 @@ public class StreamUtils {
             outputStream.flush();
             outputStream.close();
         } catch (IOException e) {
-            throw PortableException.of("S-01-003");
+            throw PortableErrors.of("S-01-003");
         }
     }
 
@@ -34,7 +34,7 @@ public class StreamUtils {
         try {
             outputStream.write(string.getBytes(StandardCharsets.UTF_8));
         } catch (IOException e) {
-            throw PortableException.of("S-01-003");
+            throw PortableErrors.of("S-01-003");
         }
     }
 
@@ -42,7 +42,7 @@ public class StreamUtils {
         try {
             outputStream.write(value);
         } catch (IOException e) {
-            throw PortableException.of("S-01-003");
+            throw PortableErrors.of("S-01-003");
         }
     }
 
@@ -56,7 +56,7 @@ public class StreamUtils {
             inputStream.close();
             return result.toString(Constant.UTF_8);
         } catch (IOException e) {
-            throw PortableException.of("S-01-003");
+            throw PortableErrors.of("S-01-003");
         }
     }
 
@@ -70,7 +70,7 @@ public class StreamUtils {
             result.write(buffer, 0, bytesRead);
             return result.toString(Constant.UTF_8);
         } catch (IOException e) {
-            throw PortableException.of("S-01-003");
+            throw PortableErrors.of("S-01-003");
         }
     }
 }

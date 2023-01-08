@@ -11,7 +11,7 @@ import java.util.Random;
 import javax.imageio.ImageIO;
 
 import com.portable.server.constant.Constant;
-import com.portable.server.exception.PortableException;
+import com.portable.server.exception.PortableErrors;
 
 import com.Ostermiller.util.CircularByteBuffer;
 import net.coobird.thumbnailator.Thumbnails;
@@ -57,7 +57,7 @@ public class ImageUtils {
                     .toOutputStream(circularByteBuffer.getOutputStream());
             circularByteBuffer.getOutputStream().close();
         } catch (IOException e) {
-            throw PortableException.of("B-01-001");
+            throw PortableErrors.of("B-01-001");
         }
 
         return circularByteBuffer.getInputStream();
@@ -81,7 +81,7 @@ public class ImageUtils {
         try {
             ImageIO.write(image, CAPTCHA_CONTENT_TYPE, outputStream);
         } catch (IOException e) {
-            throw PortableException.of("B-01-002");
+            throw PortableErrors.of("B-01-002");
         }
         return ans.toString();
     }

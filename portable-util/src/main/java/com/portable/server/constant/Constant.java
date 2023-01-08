@@ -33,4 +33,15 @@ public class Constant {
 
     // endregion
 
+    /// region 时间单位运算
+
+    public static final Long MILLISECOND = 1L;
+    public static final Long SECOND = 1000L * MILLISECOND;
+    public static final Long MINUTE = 60L * SECOND;
+    public static final Long HOUR = 60L * MINUTE;
+    public static final Long DAY = 24L * HOUR;
+    public static final Long WEEK = 7L * DAY;
+
+    /// endregion
+
 }
