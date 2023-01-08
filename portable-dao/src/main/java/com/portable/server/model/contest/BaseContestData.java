@@ -6,7 +6,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
-import com.portable.server.exception.PortableException;
+import com.portable.server.exception.PortableErrors;
 import com.portable.server.model.BaseEntity;
 
 import lombok.AllArgsConstructor;
@@ -100,7 +100,7 @@ public abstract class BaseContestData extends BaseEntity<String> {
 
     public ContestProblemData atProblem(Integer index, Long contestId) {
         if (index < 0 || index >= problemList.size()) {
-            throw PortableException.of("A-08-018", contestId, index);
+            throw PortableErrors.of("A-08-018", contestId, index);
         }
         return problemList.get(index);
     }

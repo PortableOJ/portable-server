@@ -24,7 +24,7 @@ import org.springframework.context.annotation.Lazy;
  * @author shiroha
  */
 @Lazy
-public class MemStructuredHelperImpl<E extends BaseEntity<K>, K extends Comparable<K>> implements StructuredHelper<E, K> {
+public class MemStructuredHelperImpl<K extends Comparable<K>, E extends BaseEntity<K>> implements StructuredHelper<K, E> {
 
     /**
      * 实际存储的值
@@ -57,6 +57,11 @@ public class MemStructuredHelperImpl<E extends BaseEntity<K>, K extends Comparab
         return mapDb.values().stream()
                 .filter(function)
                 .min(comparator);
+    }
+
+    @Override
+    public @NotNull Integer countAll() {
+        return mapDb.size();
     }
 
     @Override

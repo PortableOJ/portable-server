@@ -5,7 +5,7 @@ import java.io.InputStream;
 
 import javax.annotation.Resource;
 
-import com.portable.server.exception.PortableException;
+import com.portable.server.exception.PortableErrors;
 import com.portable.server.model.fs.FileData;
 import com.portable.server.type.FileStoreType;
 
@@ -28,7 +28,7 @@ public class GridFsRepo {
 
     public String saveFile(InputStream inputStream, String name, String contentType, FileStoreType fileStoreType) {
         if (!fileStoreType.getContentTypePattern().matcher(contentType).matches()) {
-            throw PortableException.of("A-09-001", contentType, fileStoreType);
+            throw PortableErrors.of("A-09-001", contentType, fileStoreType);
         }
         ObjectId objectId = gridFsTemplate.store(inputStream, name, contentType, null);
         return objectId.toString();
@@ -46,7 +46,7 @@ public class GridFsRepo {
         try {
             GridFsResource gridFsResource = gridFsTemplate.getResource(file);
             if (!fileStoreType.getContentTypePattern().matcher(gridFsResource.getContentType()).matches()) {
-                throw PortableException.of("A-09-001", gridFsResource.getContentType(), fileStoreType);
+                throw PortableErrors.of("A-09-001", gridFsResource.getContentType(), fileStoreType);
             }
             return FileData.builder()
                     .inputStream(gridFsResource.getInputStream())

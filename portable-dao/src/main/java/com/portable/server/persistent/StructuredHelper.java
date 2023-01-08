@@ -14,7 +14,7 @@ import org.jetbrains.annotations.NotNull;
 /**
  * @author shiroha
  */
-public interface StructuredHelper<E extends BaseEntity<K>, K extends Comparable<K>> {
+public interface StructuredHelper<K extends Comparable<K>, E extends BaseEntity<K>> {
 
     /**
      * 获取全部值
@@ -49,6 +49,16 @@ public interface StructuredHelper<E extends BaseEntity<K>, K extends Comparable<
      * @return 返回命中的第一个
      */
     Optional<E> searchFirst(Predicate<E> function, Comparator<E> comparator);
+
+    /**
+     * 获取总数据量级
+     *
+     * @return 返回数量
+     */
+    @NotNull
+    default Integer countAll() {
+        return this.countList(e -> true);
+    }
 
     /**
      * 根据条件统计数量

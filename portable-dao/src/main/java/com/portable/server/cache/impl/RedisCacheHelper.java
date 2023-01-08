@@ -9,7 +9,7 @@ import java.util.Optional;
 import com.portable.server.cache.CacheKvHelper;
 import com.portable.server.cache.CacheMapHelper;
 import com.portable.server.cache.CacheRalHelper;
-import com.portable.server.exception.PortableException;
+import com.portable.server.exception.PortableErrors;
 import com.portable.server.redis.RedisAdapter;
 import com.portable.server.util.JsonUtils;
 
@@ -36,12 +36,12 @@ public class RedisCacheHelper<K> implements CacheKvHelper<K>, CacheRalHelper<K>,
     @SafeVarargs
     @Override
     public final @NotNull <T> List<T> multiGet(Class<T> clazz, K... keys) {
-        throw PortableException.of("B-03-001", "暂不支持");
+        throw PortableErrors.of("B-03-001", "暂不支持");
     }
 
     @Override
     public <T> void set(K key, T value) {
-        throw PortableException.of("B-03-001", "暂不支持");
+        throw PortableErrors.of("B-03-001", "暂不支持");
     }
 
     @Override
@@ -51,108 +51,108 @@ public class RedisCacheHelper<K> implements CacheKvHelper<K>, CacheRalHelper<K>,
 
     @Override
     public @NotNull Integer getListLength(K key) {
-        throw PortableException.of("B-03-001", "暂不支持");
+        throw PortableErrors.of("B-03-001", "暂不支持");
     }
 
     @Override
     public @NotNull <T> List<T> getList(K key, Class<T> clazz) {
-        throw PortableException.of("B-03-001", "暂不支持");
+        throw PortableErrors.of("B-03-001", "暂不支持");
     }
 
     @Override
     public @NotNull <T> List<T> getRangeList(K key, Integer start, Integer end, Class<T> clazz) {
-        throw PortableException.of("B-03-001", "暂不支持");
+        throw PortableErrors.of("B-03-001", "暂不支持");
     }
 
     @Override
     public <T> @NotNull T getAt(K key, Integer position, Class<T> clazz) {
-        throw PortableException.of("B-03-001", "暂不支持");
+        throw PortableErrors.of("B-03-001", "暂不支持");
     }
 
     @Override
     public <T> void setList(K key, List<T> valueList) {
-        throw PortableException.of("B-03-001", "暂不支持");
+        throw PortableErrors.of("B-03-001", "暂不支持");
     }
 
     @Override
     public <T> void setAt(K key, Integer position, List<T> valueList) {
-        throw PortableException.of("B-03-001", "暂不支持");
+        throw PortableErrors.of("B-03-001", "暂不支持");
     }
 
     @Override
     public <T> void pushBack(K key, T... values) {
-        throw PortableException.of("B-03-001", "暂不支持");
+        throw PortableErrors.of("B-03-001", "暂不支持");
     }
 
     @Override
     public <T> void pushBack(K key, List<T> valueList) {
-        throw PortableException.of("B-03-001", "暂不支持");
+        throw PortableErrors.of("B-03-001", "暂不支持");
     }
 
     @Override
     public void popBack(K key) {
-        throw PortableException.of("B-03-001", "暂不支持");
+        throw PortableErrors.of("B-03-001", "暂不支持");
     }
 
     @Override
     public void popBack(K key, Integer count) {
-        throw PortableException.of("B-03-001", "暂不支持");
+        throw PortableErrors.of("B-03-001", "暂不支持");
     }
 
     @Override
     public void delete(K key) {
-        throw PortableException.of("B-03-001", "暂不支持");
+        throw PortableErrors.of("B-03-001", "暂不支持");
     }
 
     @Override
     public @NotNull Integer getMapSize(K key) {
-        throw PortableException.of("B-03-001", "暂不支持");
+        throw PortableErrors.of("B-03-001", "暂不支持");
     }
 
     @Override
     public @NotNull <V> Map<String, V> getMap(K key, Class<V> vClass) {
-        throw PortableException.of("B-03-001", "暂不支持");
+        throw PortableErrors.of("B-03-001", "暂不支持");
     }
 
     @Override
     @SafeVarargs
     public final @NotNull <S, V> Map<S, V> getSubMap(K key, Class<V> vClass, S... keys) {
-        throw PortableException.of("B-03-001", "暂不支持");
+        throw PortableErrors.of("B-03-001", "暂不支持");
     }
 
     @Override
     public @NotNull <S, V> Map<S, V> getSubMap(K key, Collection<S> keys, Class<V> vClass) {
-        throw PortableException.of("B-03-001", "暂不支持");
+        throw PortableErrors.of("B-03-001", "暂不支持");
     }
 
     @Override
     public @NotNull <S, V> Map<S, V> getMapItem(K key, S subKey, Class<V> vClass) {
-        throw PortableException.of("B-03-001", "暂不支持");
+        throw PortableErrors.of("B-03-001", "暂不支持");
     }
 
     @Override
     public <S, V> void setMap(K key, Map<S, V> valueMap) {
-        throw PortableException.of("B-03-001", "暂不支持");
+        throw PortableErrors.of("B-03-001", "暂不支持");
     }
 
     @Override
     public <S, V> void setMapItem(K key, Map<S, V> valueMap) {
-        throw PortableException.of("B-03-001", "暂不支持");
+        throw PortableErrors.of("B-03-001", "暂不支持");
     }
 
     @Override
     public <S, V> void setMapItem(K key, S subKey, V value) {
-        throw PortableException.of("B-03-001", "暂不支持");
+        throw PortableErrors.of("B-03-001", "暂不支持");
     }
 
     @Override
     public void deleteAll(K key) {
-        throw PortableException.of("B-03-001", "暂不支持");
+        throw PortableErrors.of("B-03-001", "暂不支持");
     }
 
     @Override
     @SafeVarargs
     public final <S> void deleteItem(K key, S... subKeys) {
-        throw PortableException.of("B-03-001", "暂不支持");
+        throw PortableErrors.of("B-03-001", "暂不支持");
     }
 }

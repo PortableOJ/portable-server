@@ -14,7 +14,7 @@ import java.util.stream.Collectors;
 
 import javax.annotation.PostConstruct;
 
-import com.portable.server.exception.PortableException;
+import com.portable.server.exception.PortableErrors;
 import com.portable.server.persistent.PartitionHelper;
 import com.portable.server.util.StreamUtils;
 
@@ -34,7 +34,7 @@ public class FilePartitionHelperImpl implements PartitionHelper {
     private void init() {
         File file = new File(homeDir);
         if (!file.exists() && !file.mkdirs()) {
-            throw PortableException.of("S-04-001");
+            throw PortableErrors.of("S-04-001");
         }
     }
 
@@ -42,7 +42,7 @@ public class FilePartitionHelperImpl implements PartitionHelper {
     public void createDirIfNotExist(String dir) {
         File file = getFile(dir);
         if (!file.exists() && !file.mkdirs()) {
-            throw PortableException.of("S-04-001");
+            throw PortableErrors.of("S-04-001");
         }
     }
 
@@ -51,12 +51,12 @@ public class FilePartitionHelperImpl implements PartitionHelper {
         try {
             File file = getFile(filePath);
             if (!file.exists() && !file.createNewFile()) {
-                throw PortableException.of("S-04-003", filePath);
+                throw PortableErrors.of("S-04-003", filePath);
             }
             FileOutputStream fileOutputStream = new FileOutputStream(file);
             StreamUtils.copy(inputStream, fileOutputStream);
         } catch (IOException e) {
-            throw PortableException.of("S-04-003", filePath);
+            throw PortableErrors.of("S-04-003", filePath);
         }
     }
 
@@ -65,11 +65,11 @@ public class FilePartitionHelperImpl implements PartitionHelper {
         try {
             File file = getFile(filePath);
             if (!file.exists() && !file.createNewFile()) {
-                throw PortableException.of("S-04-003", filePath);
+                throw PortableErrors.of("S-04-003", filePath);
             }
             return Files.newOutputStream(file.toPath());
         } catch (IOException e) {
-            throw PortableException.of("S-04-003", filePath);
+            throw PortableErrors.of("S-04-003", filePath);
         }
     }
 
@@ -78,12 +78,12 @@ public class FilePartitionHelperImpl implements PartitionHelper {
         try {
             File file = getFile(filePath);
             if (!file.exists() && !file.createNewFile()) {
-                throw PortableException.of("S-04-003", filePath);
+                throw PortableErrors.of("S-04-003", filePath);
             }
             FileOutputStream fileOutputStream = new FileOutputStream(filePath);
             StreamUtils.write(inputStream, fileOutputStream);
         } catch (IOException e) {
-            throw PortableException.of("S-04-003", filePath);
+            throw PortableErrors.of("S-04-003", filePath);
         }
     }
 
@@ -92,12 +92,12 @@ public class FilePartitionHelperImpl implements PartitionHelper {
         try {
             File file = getFile(filePath);
             if (!file.exists()) {
-                throw PortableException.of("S-04-005", filePath);
+                throw PortableErrors.of("S-04-005", filePath);
             }
             FileOutputStream fileOutputStream = new FileOutputStream(filePath, true);
             StreamUtils.write(inputStream, fileOutputStream);
         } catch (IOException e) {
-            throw PortableException.of("S-04-003", filePath);
+            throw PortableErrors.of("S-04-003", filePath);
         }
     }
 
@@ -105,7 +105,7 @@ public class FilePartitionHelperImpl implements PartitionHelper {
     public void deleteFileIfExist(String filePath) {
         File file = getFile(filePath);
         if (file.exists() && !file.delete()) {
-            throw PortableException.of("S-04-007", filePath);
+            throw PortableErrors.of("S-04-007", filePath);
         }
     }
 
@@ -114,7 +114,7 @@ public class FilePartitionHelperImpl implements PartitionHelper {
         try {
             return new FileInputStream(getFile(filePath));
         } catch (FileNotFoundException e) {
-            throw PortableException.of("S-04-005", filePath);
+            throw PortableErrors.of("S-04-005", filePath);
         }
     }
 
@@ -122,7 +122,7 @@ public class FilePartitionHelperImpl implements PartitionHelper {
     public List<File> getDirectoryFile(String filePath) {
         File[] files = getFile(filePath).listFiles();
         if (files == null) {
-            throw PortableException.of("S-04-009", filePath);
+            throw PortableErrors.of("S-04-009", filePath);
         }
         return Arrays.stream(files)
                 // ignore file

@@ -1,7 +1,7 @@
 package com.portable.server.type;
 
 import com.portable.server.exception.ExceptionTextType;
-import com.portable.server.exception.PortableException;
+import com.portable.server.exception.PortableErrors;
 
 import lombok.Getter;
 
@@ -143,14 +143,14 @@ public enum ProblemStatusType implements ExceptionTextType {
     }
 
     public ProblemStatusType toUntreated() {
-        throw PortableException.of("S-01-004", this, "toUntreated");
+        throw PortableErrors.of("S-01-004", this, "toUntreated");
     }
 
     public ProblemStatusType toUncheck() {
-        throw PortableException.of("S-01-004", this, "toUncheck");
+        throw PortableErrors.of("S-01-004", this, "toUncheck");
     }
 
     public ProblemStatusType toBuild() {
-        throw PortableException.of("S-01-004", this, "toBuild");
+        throw PortableErrors.of("S-01-004", this, "toBuild");
     }
 }

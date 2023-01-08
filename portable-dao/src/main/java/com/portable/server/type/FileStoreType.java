@@ -1,10 +1,12 @@
 package com.portable.server.type;
 
-import com.portable.server.exception.ExceptionTextType;
-import com.portable.server.model.fs.FileData;
-import lombok.Getter;
-
 import java.util.regex.Pattern;
+
+import com.portable.server.exception.ExceptionTextType;
+import com.portable.server.exception.PortableErrors;
+import com.portable.server.model.fs.FileData;
+
+import lombok.Getter;
 
 /**
  * @author shiroha
@@ -21,6 +23,11 @@ public enum FileStoreType implements ExceptionTextType {
      * 图片
      */
     IMAGE("图片", "image/.+", "/file/deathImage.jpeg", "image/jpeg"),
+
+    /**
+     * 图片
+     */
+    CAPTCHA("验证码", "image/.+", null, "image/jpeg"),
     ;
 
     private final String text;
@@ -36,6 +43,9 @@ public enum FileStoreType implements ExceptionTextType {
     }
 
     public FileData getFile() {
+        if (this.defaultFile == null) {
+            throw PortableErrors.SYSTEM_CODE.of();
+        }
         return FileData.builder()
                 .inputStream(this.getClass().getResourceAsStream(this.defaultFile))
                 .contentType(defaultFileContentType)

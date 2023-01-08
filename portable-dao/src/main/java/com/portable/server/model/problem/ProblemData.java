@@ -4,7 +4,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
-import com.portable.server.exception.PortableException;
+import com.portable.server.exception.PortableErrors;
 import com.portable.server.model.BaseEntity;
 import com.portable.server.type.JudgeCodeType;
 import com.portable.server.type.LanguageType;
@@ -185,7 +185,7 @@ public class ProblemData extends BaseEntity<String> {
 
     public void findTest(String name) {
         if (!testName.contains(name)) {
-            throw PortableException.of("A-04-006");
+            throw PortableErrors.of("A-04-006");
         }
     }
 
@@ -195,7 +195,7 @@ public class ProblemData extends BaseEntity<String> {
                 .findAny()
                 .orElse(null);
         if (showStdCode == null) {
-            throw PortableException.of("A-04-006");
+            throw PortableErrors.of("A-04-006");
         }
         return showStdCode;
     }

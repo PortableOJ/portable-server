@@ -6,7 +6,7 @@ import javax.annotation.Resource;
 import com.portable.server.cache.CacheKvHelper;
 import com.portable.server.cache.impl.RedisCacheHelper;
 import com.portable.server.cache.impl.proxy.CacheKvPrefixHelper;
-import com.portable.server.exception.PortableException;
+import com.portable.server.exception.PortableErrors;
 import com.portable.server.model.judge.JudgeContainer;
 import com.portable.server.persistent.StructuredHelper;
 import com.portable.server.persistent.impl.MemStructuredHelperImpl;
@@ -38,7 +38,7 @@ public class DaoProdConfig extends BaseDaoConfig {
     private void init() {
         // TODO: 对于可能存在使用其他 db 而不是 redis 作为缓存的情况需要进行支持
         if (redisProperties.getUseCluster()) {
-            throw PortableException.of("B-03-001", "暂不支持 redis 集群连接");
+            throw PortableErrors.of("B-03-001", "暂不支持 redis 集群连接");
         } else {
             redisAdapter = new JedisPoolAdapter();
         }
@@ -99,7 +99,7 @@ public class DaoProdConfig extends BaseDaoConfig {
 
     @Lazy
     @Bean("judgeRepo")
-    public StructuredHelper<JudgeContainer, String> judgeRepo() {
+    public StructuredHelper<String, JudgeContainer> judgeRepo() {
         return new MemStructuredHelperImpl<>();
     }
 
