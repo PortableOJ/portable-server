@@ -10,12 +10,10 @@ import javax.servlet.http.HttpSession;
 import javax.validation.constraints.NotBlank;
 
 import com.portable.server.constant.Constant;
-import com.portable.server.exception.PortableException;
 import com.portable.server.model.response.Response;
 import com.portable.server.service.CommonService;
 import com.portable.server.util.RequestSessionConstant;
 
-import com.alibaba.fastjson.JSONObject;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -38,7 +36,7 @@ public class CommonController {
     }
 
     @GetMapping("/enum")
-    public Response<Map<String, JSONObject>> getEnumDesc(@NotBlank(message = "A-06-001") String name) {
+    public Response<Map<String, Map<String, Object>>> getEnumDesc(@NotBlank(message = "A-06-001") String name) {
         return Response.ofOk(commonService.getEnumDesc(name));
     }
 
@@ -50,7 +48,7 @@ public class CommonController {
             HttpSession httpSession = request.getSession();
             httpSession.setAttribute(RequestSessionConstant.CAPTCHA, code);
         } catch (IOException e) {
-            throw PortableException.of("S-01-002");
+            throw PortableErrors.of("S-01-002");
         }
     }
 }

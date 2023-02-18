@@ -1,6 +1,5 @@
 package com.portable.server.service;
 
-import com.portable.server.exception.PortableException;
 import com.portable.server.model.request.PageRequest;
 import com.portable.server.model.request.batch.BatchRequest;
 import com.portable.server.model.response.PageResponse;
@@ -26,7 +25,6 @@ public interface BatchService {
      *
      * @param request 请求创建的内容
      * @return 创建的用户信息
-     * @throws PortableException 已经存在则抛出错误
      */
     CreateBatchResponse create(BatchRequest request);
 
@@ -35,7 +33,6 @@ public interface BatchService {
      *
      * @param id         批量用户的 ID
      * @param statusType 新的状态
-     * @throws PortableException 无权限则抛出
      */
     void changeStatus(Long id, BatchStatusType statusType);
 
@@ -44,7 +41,6 @@ public interface BatchService {
      *
      * @param id 用户组 ID
      * @return 用户组信息
-     * @throws PortableException 无权限则抛出
      */
     BatchListResponse getBatch(Long id);
 
@@ -53,7 +49,6 @@ public interface BatchService {
      *
      * @param id     用户组的 ID
      * @param ipLock 新的锁状态
-     * @throws PortableException 不存在此组则抛出
      */
     void changeBatchIpLock(Long id, Boolean ipLock);
 }

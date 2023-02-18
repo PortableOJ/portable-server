@@ -4,6 +4,8 @@ import com.portable.server.model.user.User;
 import com.portable.server.type.AccountType;
 
 import org.apache.ibatis.annotations.Param;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.springframework.stereotype.Repository;
 
 /**
@@ -18,7 +20,7 @@ public interface UserRepo {
      * @param id 用户的 ID
      * @return 用户信息
      */
-    User selectAccountById(Long id);
+    @Nullable User selectAccountById(@NotNull Long id);
 
     /**
      * 根据用户的用户名获取用户账号信息
@@ -26,14 +28,14 @@ public interface UserRepo {
      * @param handle 用户名
      * @return 用户的账号信息
      */
-    User selectAccountByHandle(String handle);
+    @Nullable User selectAccountByHandle(@NotNull String handle);
 
     /**
      * 新增一个用户
      *
      * @param user 新增的用户信息
      */
-    void insertAccount(User user);
+    void insertAccount(@NotNull User user);
 
     /**
      * 更新用户的用户名
@@ -41,7 +43,7 @@ public interface UserRepo {
      * @param id     用户的 ID
      * @param handle 用户的新用户名
      */
-    void updateHandle(@Param("id") Long id, @Param("handle") String handle);
+    void updateHandle(@NotNull @Param("id") Long id, @NotNull @Param("handle") String handle);
 
     /**
      * 更新密码
@@ -49,7 +51,7 @@ public interface UserRepo {
      * @param id       用户的 ID
      * @param password 更新后的密码
      */
-    void updatePassword(@Param("id") Long id, @Param("password") String password);
+    void updatePassword(@NotNull @Param("id") Long id, @NotNull @Param("password") String password);
 
     /**
      * 更新用户类型
@@ -57,5 +59,5 @@ public interface UserRepo {
      * @param id          用户的 ID
      * @param accountType 账号类型
      */
-    void updateUserType(@Param("id") Long id, @Param("newStatus") AccountType accountType);
+    void updateUserType(@NotNull @Param("id") Long id, @NotNull @Param("newStatus") AccountType accountType);
 }

@@ -10,11 +10,11 @@ import java.util.List;
 import java.util.Optional;
 
 import com.portable.server.exception.PortableException;
-import com.portable.server.manager.impl.prod.BatchManagerImpl;
-import com.portable.server.manager.impl.prod.ContestManagerImpl;
-import com.portable.server.manager.impl.prod.ProblemManagerImpl;
-import com.portable.server.manager.impl.prod.SolutionManagerImpl;
-import com.portable.server.manager.impl.prod.UserManagerImpl;
+import com.portable.server.manager.impl.BatchManagerImpl;
+import com.portable.server.manager.impl.ContestManagerImpl;
+import com.portable.server.manager.impl.ProblemManagerImpl;
+import com.portable.server.manager.impl.SolutionManagerImpl;
+import com.portable.server.manager.impl.UserManagerImpl;
 import com.portable.server.model.batch.Batch;
 import com.portable.server.model.contest.BaseContestData;
 import com.portable.server.model.contest.BatchContestData;
@@ -180,7 +180,7 @@ class ContestServiceImplTest {
                 .id(MOCKED_CONTEST_ID + 2)
                 .build());
 
-        Mockito.when(contestManager.getAllContestNumber()).thenReturn(100);
+        Mockito.when(contestManager.countAllContest()).thenReturn(100);
         Mockito.when(contestManager.getContestByPage(10, 0)).thenReturn(contestList);
 
         PageRequest<Void> pageRequest = PageRequest.<Void>builder()
@@ -223,7 +223,7 @@ class ContestServiceImplTest {
         contest.setAccessType(ContestAccessType.PRIVATE);
         contest.setDataId(MOCKED_CONTEST_MONGO_ID);
         Mockito.when(contestManager.getContestById(MOCKED_CONTEST_ID)).thenReturn(Optional.of(contest));
-        Mockito.when(contestManager.getPrivateContestDataById(MOCKED_CONTEST_MONGO_ID)).thenThrow(PortableException.of("A-08-001", contest.getAccessType()));
+        Mockito.when(contestManager.getPrivateContestDataById(MOCKED_CONTEST_MONGO_ID)).thenThrow(PortableErrors.of("A-08-001", contest.getAccessType()));
 
         ContestAuth contestAuth = ContestAuth.builder()
                 .contestId(MOCKED_CONTEST_ID)
@@ -585,7 +585,7 @@ class ContestServiceImplTest {
         Mockito.when(solutionManager.selectContestLastSolution(loginUserId, MOCKED_PROBLEM_ID, MOCKED_CONTEST_ID)).thenReturn(Optional.of(solution));
         Mockito.when(problemManager.getProblemData(MOCKED_PROBLEM_MONGO_ID)).thenReturn(problemData);
         Mockito.when(problemManager.getProblemData(problem2.getDataId())).thenReturn(problemData2);
-        Mockito.when(problemManager.getProblemData(problem3.getDataId())).thenThrow(PortableException.of("S-03-001"));
+        Mockito.when(problemManager.getProblemData(problem3.getDataId())).thenThrow(PortableErrors.of("S-03-001"));
         Mockito.when(userManager.getAccountById(otherUserId)).thenReturn(Optional.of(inUser));
 
         ContestAdminDetailResponse retVal = contestService.getContestAdminData(MOCKED_CONTEST_ID);

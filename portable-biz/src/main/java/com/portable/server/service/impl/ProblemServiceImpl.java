@@ -11,7 +11,8 @@ import java.util.stream.Collectors;
 
 import javax.annotation.Resource;
 
-import com.portable.server.exception.PortableException;
+import com.portable.server.exception.PortableErrors;
+import com.portable.server.exception.PortableRuntimeException;
 import com.portable.server.manager.ContestManager;
 import com.portable.server.manager.ProblemManager;
 import com.portable.server.manager.SolutionManager;
@@ -36,7 +37,6 @@ import com.portable.server.model.solution.SolutionData;
 import com.portable.server.model.user.NormalUserData;
 import com.portable.server.model.user.User;
 import com.portable.server.service.ProblemService;
-import com.portable.server.support.FileSupport;
 import com.portable.server.support.JudgeSupport;
 import com.portable.server.type.JudgeCodeType;
 import com.portable.server.type.PermissionType;
@@ -82,9 +82,6 @@ public class ProblemServiceImpl implements ProblemService {
 
     @Resource
     private ContestManager contestManager;
-
-    @Resource
-    private FileSupport fileSupport;
 
     @Resource
     private JudgeSupport judgeSupport;
@@ -157,28 +154,28 @@ public class ProblemServiceImpl implements ProblemService {
     public String showTestInput(ProblemNameRequest problemNameRequest) {
         ProblemPackage problemPackage = getForViewProblemTest(problemNameRequest.getId());
         problemPackage.getProblemData().findTest(problemNameRequest.getName());
-        return StreamUtils.read(fileSupport.getTestInput(problemNameRequest.getId(), problemNameRequest.getName()), maxTestShowLen);
+        return StreamUtils.read(problemManager.getTestInput(problemNameRequest.getId(), problemNameRequest.getName()), maxTestShowLen);
     }
 
     @Override
     public String showTestOutput(ProblemNameRequest problemNameRequest) {
         ProblemPackage problemPackage = getForViewProblemTest(problemNameRequest.getId());
         problemPackage.getProblemData().findTest(problemNameRequest.getName());
-        return StreamUtils.read(fileSupport.getTestOutput(problemNameRequest.getId(), problemNameRequest.getName()), maxTestShowLen);
+        return StreamUtils.read(problemManager.getTestOutput(problemNameRequest.getId(), problemNameRequest.getName()), maxTestShowLen);
     }
 
     @Override
     public void downloadTestInput(ProblemNameRequest problemNameRequest, OutputStream outputStream) {
         ProblemPackage problemPackage = getForViewProblemTest(problemNameRequest.getId());
         problemPackage.getProblemData().findTest(problemNameRequest.getName());
-        StreamUtils.copy(fileSupport.getTestInput(problemNameRequest.getId(), problemNameRequest.getName()), outputStream);
+        StreamUtils.copy(problemManager.getTestInput(problemNameRequest.getId(), problemNameRequest.getName()), outputStream);
     }
 
     @Override
     public void downloadTestOutput(ProblemNameRequest problemNameRequest, OutputStream outputStream) {
         ProblemPackage problemPackage = getForViewProblemTest(problemNameRequest.getId());
         problemPackage.getProblemData().findTest(problemNameRequest.getName());
-        StreamUtils.copy(fileSupport.getTestOutput(problemNameRequest.getId(), problemNameRequest.getName()), outputStream);
+        StreamUtils.copy(problemManager.getTestOutput(problemNameRequest.getId(), problemNameRequest.getName()), outputStream);
     }
 
     @Override
@@ -192,7 +189,7 @@ public class ProblemServiceImpl implements ProblemService {
         problemManager.insertProblemData(problemData);
         problem.setDataId(problemData.getId());
         problemManager.insertProblem(problem);
-        fileSupport.createProblem(problem.getId());
+        problemManager.createProblem(problem.getId());
 
         return problem;
     }
@@ -214,13 +211,13 @@ public class ProblemServiceImpl implements ProblemService {
         if (!Objects.equals(problemPackage.getProblem().getAccessType(), problemSettingRequest.getAccessType())) {
             // 从公开转私有 => 拒绝
             if (ProblemAccessType.PRIVATE.equals(problemSettingRequest.getAccessType())) {
-                throw PortableException.of("A-04-015");
+                throw PortableErrors.of("A-04-015");
             }
             // 其他任何转换 => 不允许在比赛期间发生
             if (problemPackage.getProblemData().getContestId() != null) {
                 Contest contest = problemPackage.getContest();
                 if (!contest.isEnd()) {
-                    throw PortableException.of("A-04-014", problemPackage.getProblemData().getContestId());
+                    throw PortableErrors.of("A-04-014", problemPackage.getProblemData().getContestId());
                 }
             }
         }
@@ -264,7 +261,7 @@ public class ProblemServiceImpl implements ProblemService {
         if (!problemPackage.getProblemData().getTestName().contains(problemTestRequest.getName())) {
             problemPackage.getProblemData().getTestName().add(problemTestRequest.getName());
         }
-        fileSupport.saveTestInput(problemTestRequest.getId(), problemTestRequest.getName(), problemTestRequest.getInputStream());
+        problemManager.saveTestInput(problemTestRequest.getId(), problemTestRequest.getName(), problemTestRequest.getInputStream());
         if (problemPackage.getProblem().getStatusType().getTreated()) {
             problemPackage.getProblemData().nextVersion();
         }
@@ -283,7 +280,7 @@ public class ProblemServiceImpl implements ProblemService {
         problemPackage.getProblemData().findTest(problemNameRequest.getName());
         problemPackage.getProblemData().getTestName().remove(problemNameRequest.getName());
 
-        fileSupport.removeTest(problemNameRequest.getId(), problemNameRequest.getName());
+        problemManager.removeTest(problemNameRequest.getId(), problemNameRequest.getName());
 
         if (ProblemStatusType.NORMAL.equals(problemPackage.getProblem().getStatusType())) {
             problemPackage.getProblemData().nextVersion();
@@ -333,7 +330,7 @@ public class ProblemServiceImpl implements ProblemService {
         try {
             ProblemData.StdCode stdCode = problemPackage.getProblemData().findStdCode(problemStdCodeRequest.getCodeName());
             problemStdCodeRequest.toStdCode(stdCode);
-        } catch (PortableException exception) {
+        } catch (PortableRuntimeException exception) {
             ProblemData.StdCode stdCode = ProblemData.StdCode.builder()
                     .name(problemStdCodeRequest.getCodeName())
                     .code(problemStdCodeRequest.getCode())
@@ -396,10 +393,10 @@ public class ProblemServiceImpl implements ProblemService {
             // 校验是否满足能够 treat 的条件
             ProblemData.StdCode stdCode = problemPackage.getProblemData().getStdCode();
             if (stdCode.getCode() == null || stdCode.getLanguageType() == null) {
-                throw PortableException.of("A-04-009");
+                throw PortableErrors.of("A-04-009");
             }
             if (problemPackage.getProblemData().getTestName().isEmpty()) {
-                throw PortableException.of("A-04-010");
+                throw PortableErrors.of("A-04-010");
             }
 
             judgeSupport.removeProblemJudge(id);
@@ -412,7 +409,7 @@ public class ProblemServiceImpl implements ProblemService {
     public Long submit(SubmitSolutionRequest submitSolutionRequest) {
         ProblemPackage problemPackage = getForViewProblem(submitSolutionRequest.getProblemId());
         if (!ProblemStatusType.NORMAL.equals(problemPackage.getProblem().getStatusType())) {
-            throw PortableException.of("A-05-004", problemPackage.getProblem().getStatusType());
+            throw PortableErrors.of("A-05-004", problemPackage.getProblem().getStatusType());
         }
         UserContext userContext = UserContext.ctx();
 
@@ -445,7 +442,7 @@ public class ProblemServiceImpl implements ProblemService {
         if (accessType.getViewProblem()) {
             return problemPackage;
         }
-        throw PortableException.of("A-02-004", id);
+        throw PortableErrors.of("A-02-004", id);
     }
 
     private ProblemPackage getForViewProblemTest(Long id) {
@@ -455,7 +452,7 @@ public class ProblemServiceImpl implements ProblemService {
         if (accessType.getEditProblem() || viewAndShare) {
             return problemPackage;
         }
-        throw PortableException.of("A-02-006");
+        throw PortableErrors.of("A-02-006");
     }
 
     private ProblemPackage getForFullAccessProblem(Long id) {
@@ -464,20 +461,20 @@ public class ProblemServiceImpl implements ProblemService {
         if (accessType.getEditProblem()) {
             return problemPackage;
         }
-        throw PortableException.of("A-02-005", id);
+        throw PortableErrors.of("A-02-005", id);
     }
 
     private ProblemPackage getForEditProblem(Long id) {
         ProblemPackage problemPackage = getForFullAccessProblem(id);
         if (problemPackage.getProblem().getStatusType().getOnTreatedOrCheck()) {
-            throw PortableException.of("A-04-007");
+            throw PortableErrors.of("A-04-007");
         }
         return problemPackage;
     }
 
     private ProblemPackage getProblemPackage(Long id) {
         Problem problem = problemManager.getProblemById(id)
-                .orElseThrow(PortableException.from("A-04-001", id));
+                .orElseThrow(PortableErrors.from("A-04-001", id));
         ProblemData problemData = problemManager.getProblemData(problem.getDataId());
         Contest contest = contestManager.getContestById(problemData.getContestId()).orElse(null);
         return ProblemPackage.builder()

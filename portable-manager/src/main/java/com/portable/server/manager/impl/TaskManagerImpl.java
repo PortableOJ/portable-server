@@ -4,10 +4,10 @@ import java.util.Optional;
 
 import javax.annotation.Resource;
 
-import com.portable.server.exception.PortableException;
+import com.portable.server.exception.PortableErrors;
 import com.portable.server.manager.TaskManager;
 import com.portable.server.model.task.AbstractTask;
-import com.portable.server.persistent.PriorityQueueHelper;
+import com.portable.server.struct.PriorityQueueHelper;
 import com.portable.server.type.TaskType;
 
 /**
@@ -30,6 +30,6 @@ public class TaskManagerImpl implements TaskManager {
 
     @Override
     public void removeTask(Long taskBizId, TaskType taskType) {
-        throw PortableException.of("S-00-000");
+        throw PortableErrors.of("S-00-000");
     }
 }

@@ -17,7 +17,7 @@
     <dependencies>
         <dependency>
             <groupId>com.portable</groupId>
-            <artifactId>portable-manager</artifactId>
+            <artifactId>portable-internal</artifactId>
         </dependency>
         <dependency>
             <groupId>org.projectlombok</groupId>

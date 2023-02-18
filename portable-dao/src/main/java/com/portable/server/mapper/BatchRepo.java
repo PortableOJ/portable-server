@@ -6,6 +6,8 @@ import com.portable.server.model.batch.Batch;
 import com.portable.server.type.BatchStatusType;
 
 import org.apache.ibatis.annotations.Param;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.springframework.stereotype.Repository;
 
 /**
@@ -20,7 +22,7 @@ public interface BatchRepo {
      * @param ownerId 拥有者 ID
      * @return 总数量
      */
-    Integer countBatchListByOwnerId(@Param("ownerId") Long ownerId);
+    @NotNull Integer countBatchListByOwnerId(@NotNull @Param("ownerId") Long ownerId);
 
     /**
      * 分页获取批量用户的信息
@@ -30,9 +32,9 @@ public interface BatchRepo {
      * @param offset   偏移量
      * @return 批量用户信息列表
      */
-    List<Batch> selectBatchByPage(@Param("ownerId") Long ownerId,
-                                  @Param("pageSize") Integer pageSize,
-                                  @Param("offset") Integer offset);
+    @NotNull List<Batch> selectBatchByPage(@NotNull @Param("ownerId") Long ownerId,
+                                           @NotNull @Param("pageSize") Integer pageSize,
+                                           @NotNull @Param("offset") Integer offset);
 
     /**
      * 基于批量用户 id 查找批量用户
@@ -40,7 +42,7 @@ public interface BatchRepo {
      * @param id 批量用户 ID
      * @return 批量用户
      */
-    Batch selectBatchById(@Param("id") Long id);
+    @Nullable Batch selectBatchById(@NotNull @Param("id") Long id);
 
     /**
      * 基于公共前缀查找批量用户
@@ -48,14 +50,14 @@ public interface BatchRepo {
      * @param prefix 前缀
      * @return 批量用户信息
      */
-    Batch selectBatchByPrefix(@Param("prefix") String prefix);
+    @Nullable Batch selectBatchByPrefix(@NotNull @Param("prefix") String prefix);
 
     /**
      * 新增一个批量用户
      *
      * @param batch 批量用户信息
      */
-    void insertBatch(Batch batch);
+    void insertBatch(@NotNull Batch batch);
 
     /**
      * 更新批量用户状态
@@ -63,7 +65,7 @@ public interface BatchRepo {
      * @param id        用户 ID
      * @param newStatus 新状态
      */
-    void updateBatchStatus(@Param("id") Long id, @Param("newStatus") BatchStatusType newStatus);
+    void updateBatchStatus(@NotNull @Param("id") Long id, @NotNull @Param("newStatus") BatchStatusType newStatus);
 
     /**
      * 更新批量用户绑定至的比赛
@@ -71,7 +73,7 @@ public interface BatchRepo {
      * @param id         用户 ID
      * @param newContest 新比赛
      */
-    void updateBatchContest(@Param("id") Long id, @Param("newContest") Long newContest);
+    void updateBatchContest(@NotNull @Param("id") Long id, @NotNull @Param("newContest") Long newContest);
 
     /**
      * 修改批量用户组的 IP 锁状态
@@ -79,5 +81,5 @@ public interface BatchRepo {
      * @param id     用户组 ID
      * @param ipLock 新的锁状态
      */
-    void updateBatchIpLock(@Param("id") Long id, @Param("ipLock") Boolean ipLock);
+    void updateBatchIpLock(@NotNull @Param("id") Long id, @NotNull @Param("ipLock") Boolean ipLock);
 }

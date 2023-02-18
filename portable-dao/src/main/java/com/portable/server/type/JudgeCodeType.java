@@ -3,7 +3,7 @@ package com.portable.server.type;
 import java.io.InputStream;
 
 import com.portable.server.exception.ExceptionTextType;
-import com.portable.server.exception.PortableException;
+import com.portable.server.exception.PortableErrors;
 
 import lombok.Getter;
 
@@ -36,7 +36,7 @@ public enum JudgeCodeType implements ExceptionTextType {
 
     public InputStream getCode() {
         if (this == DIY) {
-            throw PortableException.of("S-01-006");
+            throw PortableErrors.of("S-01-006");
         }
         return this.getClass().getResourceAsStream(String.format("/judge/%s.cpp", this.name()));
     }

@@ -1,11 +1,11 @@
 package com.portable.server.model.response.contest;
 
+import java.util.Date;
+
 import com.portable.server.model.contest.Contest;
 import com.portable.server.type.ContestAccessType;
-import com.portable.server.util.UserContext;
-import lombok.Data;
 
-import java.util.Date;
+import lombok.Data;
 
 /**
  * @author shiroha

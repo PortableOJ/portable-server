@@ -2,7 +2,6 @@ package com.portable.server.manager;
 
 import java.io.InputStream;
 
-import com.portable.server.exception.PortableException;
 import com.portable.server.model.fs.FileData;
 import com.portable.server.type.FileStoreType;
 
@@ -22,7 +21,6 @@ public interface ImageManager {
      * @param name        文件名
      * @param contentType 文件类型
      * @return 图片的 id
-     * @throws PortableException 文件类型不匹配则抛出
      */
     @NotNull
     String uploadImage(InputStream inputStream, String name, String contentType);
@@ -35,7 +33,6 @@ public interface ImageManager {
      * @param name        文件名
      * @param contentType 文件类型
      * @return 新图片的 id
-     * @throws PortableException 文件类型不匹配则抛出
      */
     @NotNull
     String replaceImage(String removeId, InputStream inputStream, String name, String contentType);
@@ -46,7 +43,6 @@ public interface ImageManager {
      * @param id   文件的 id
      * @param type 文件的类型
      * @return 文件信息
-     * @throws PortableException 文件类型不匹配则抛出
      */
     @NotNull
     FileData getImage(String id, FileStoreType type);

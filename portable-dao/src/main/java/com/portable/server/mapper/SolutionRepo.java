@@ -7,6 +7,8 @@ import com.portable.server.type.SolutionStatusType;
 import com.portable.server.type.SolutionType;
 
 import org.apache.ibatis.annotations.Param;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.springframework.stereotype.Repository;
 
 /**
@@ -25,11 +27,11 @@ public interface SolutionRepo {
      * @param statusType   状态，若为 null，则为请求所有的
      * @return 此提交类型的总数量
      */
-    Integer countSolution(@Param("solutionType") SolutionType solutionType,
-                          @Param("userId") Long userId,
-                          @Param("contestId") Long contestId,
-                          @Param("problemId") Long problemId,
-                          @Param("statusType") SolutionStatusType statusType);
+    @NotNull Integer countSolution(@Nullable @Param("solutionType") SolutionType solutionType,
+                                   @Nullable @Param("userId") Long userId,
+                                   @Nullable @Param("contestId") Long contestId,
+                                   @Nullable @Param("problemId") Long problemId,
+                                   @Nullable @Param("statusType") SolutionStatusType statusType);
 
     /**
      * 根据提交类型，分页获取提交信息
@@ -45,15 +47,15 @@ public interface SolutionRepo {
      * @param afterId      后续情况，表示只需要此值之后发生的新的提交，若为 null，则忽略
      * @return 提交列表
      */
-    List<Solution> selectSolutionByPage(@Param("pageSize") Integer pageSize,
-                                        @Param("offset") Integer offset,
-                                        @Param("solutionType") SolutionType solutionType,
-                                        @Param("userId") Long userId,
-                                        @Param("contestId") Long contestId,
-                                        @Param("problemId") Long problemId,
-                                        @Param("statusType") List<SolutionStatusType> statusType,
-                                        @Param("beforeId") Long beforeId,
-                                        @Param("afterId") Long afterId);
+    @NotNull List<Solution> selectSolutionByPage(@NotNull @Param("pageSize") Integer pageSize,
+                                                 @NotNull @Param("offset") Integer offset,
+                                                 @Nullable @Param("solutionType") SolutionType solutionType,
+                                                 @Nullable @Param("userId") Long userId,
+                                                 @Nullable @Param("contestId") Long contestId,
+                                                 @Nullable @Param("problemId") Long problemId,
+                                                 @Nullable @Param("statusType") List<SolutionStatusType> statusType,
+                                                 @Nullable @Param("beforeId") Long beforeId,
+                                                 @Nullable @Param("afterId") Long afterId);
 
     /**
      * 过滤不是此用户的提交
@@ -62,8 +64,8 @@ public interface SolutionRepo {
      * @param userId 用户 ID，表示不是此用户的提交
      * @return 提交列表
      */
-    List<Solution> selectNotUserSolution(@Param("num") Integer num,
-                                         @Param("userId") Long userId);
+    @NotNull List<Solution> selectNotUserSolution(@NotNull @Param("num") Integer num,
+                                                  @NotNull @Param("userId") Long userId);
 
     /**
      * 根据提交的 id 获取提交信息
@@ -71,7 +73,7 @@ public interface SolutionRepo {
      * @param id 提交 id
      * @return 提交信息
      */
-    Solution selectSolutionById(@Param("id") Long id);
+    @Nullable Solution selectSolutionById(@NotNull @Param("id") Long id);
 
     /**
      * 获取用户在公开提交中的最后一次提交
@@ -80,7 +82,7 @@ public interface SolutionRepo {
      * @param problemId 题目 id
      * @return 用户的最后一次提交
      */
-    Solution selectLastSolutionByUserIdAndProblemId(@Param("userId") Long userId, @Param("problemId") Long problemId);
+    @Nullable Solution selectLastSolutionByUserIdAndProblemId(@NotNull @Param("userId") Long userId, @NotNull @Param("problemId") Long problemId);
 
     /**
      * 获取用户在比赛中的最后一次提交信息
@@ -90,14 +92,14 @@ public interface SolutionRepo {
      * @param contestId 比赛 id
      * @return 用户在对应比赛中的最后一次提交信息
      */
-    Solution selectLastSolutionByUserIdAndProblemIdAndContestId(@Param("userId") Long userId, @Param("problemId") Long problemId, @Param("contestId") Long contestId);
+    @Nullable Solution selectLastSolutionByUserIdAndProblemIdAndContestId(@NotNull @Param("userId") Long userId, @NotNull @Param("problemId") Long problemId, @NotNull @Param("contestId") Long contestId);
 
     /**
      * 新增一个提交
      *
      * @param solution 提交值
      */
-    void insertSolution(Solution solution);
+    void insertSolution(@NotNull Solution solution);
 
     /**
      * 更新提交的状态
@@ -105,7 +107,7 @@ public interface SolutionRepo {
      * @param id         提交的 id
      * @param statusType 提交的新状态
      */
-    void updateStatus(@Param("id") Long id, @Param("statusType") SolutionStatusType statusType);
+    void updateStatus(@NotNull @Param("id") Long id, @NotNull @Param("statusType") SolutionStatusType statusType);
 
     /**
      * 更新提交的状态
@@ -115,7 +117,7 @@ public interface SolutionRepo {
      * @param timeCost   提交的新耗时（自动取历史最大）
      * @param memoryCost 提交的新内存消耗（自动取历史最大）
      */
-    void updateCostAndStatus(@Param("id") Long id, @Param("statusType") SolutionStatusType statusType, @Param("timeCost") Integer timeCost, @Param("memoryCost") Integer memoryCost);
+    void updateCostAndStatus(@NotNull @Param("id") Long id, @NotNull @Param("statusType") SolutionStatusType statusType, @NotNull @Param("timeCost") Integer timeCost, @NotNull @Param("memoryCost") Integer memoryCost);
 
     /**
      * 将所有给定状态全部转为指定状态
@@ -123,5 +125,5 @@ public interface SolutionRepo {
      * @param fromStatus 给定状态
      * @param toStatus   指定状态
      */
-    void updateAllStatus(@Param("fromStatus") List<SolutionStatusType> fromStatus, @Param("toStatus") SolutionStatusType toStatus);
+    void updateAllStatus(@NotNull @Param("fromStatus") List<SolutionStatusType> fromStatus, @NotNull @Param("toStatus") SolutionStatusType toStatus);
 }

@@ -12,7 +12,7 @@ import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
-import com.portable.server.exception.PortableException;
+import com.portable.server.exception.PortableErrors;
 import com.portable.server.model.contest.BaseContestData;
 import com.portable.server.model.contest.BatchContestData;
 import com.portable.server.model.contest.Contest;
@@ -162,7 +162,7 @@ public class ContestContentRequest {
                 batchContestData.setBatchId(this.batchId);
                 break;
             default:
-                throw PortableException.of("A-08-001", this.accessType);
+                throw PortableErrors.of("A-08-001", this.accessType);
         }
     }
 
@@ -190,7 +190,7 @@ public class ContestContentRequest {
             String deleteProblemList = problemDataMap.keySet().stream()
                     .map(String::valueOf)
                     .collect(Collectors.joining(", "));
-            throw PortableException.of("A-08-009", deleteProblemList);
+            throw PortableErrors.of("A-08-009", deleteProblemList);
         }
         contestData.setProblemList(newProblemList);
     }

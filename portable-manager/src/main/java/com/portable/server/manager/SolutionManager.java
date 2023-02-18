@@ -5,7 +5,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
 
-import com.portable.server.exception.PortableException;
 import com.portable.server.model.problem.ProblemData;
 import com.portable.server.model.solution.Solution;
 import com.portable.server.model.solution.SolutionData;
@@ -166,7 +165,6 @@ public interface SolutionManager {
      *
      * @param dataId 提交的数据 ID
      * @return 提交的内容
-     * @throws PortableException 不存在此提交时抛出错误
      */
     @NotNull
     SolutionData getSolutionData(String dataId);

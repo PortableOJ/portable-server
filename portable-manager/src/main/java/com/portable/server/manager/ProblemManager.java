@@ -1,12 +1,12 @@
 package com.portable.server.manager;
 
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
 
-import com.portable.server.exception.PortableException;
 import com.portable.server.model.problem.Problem;
 import com.portable.server.model.problem.ProblemData;
 import com.portable.server.type.JudgeCodeType;
@@ -202,7 +202,6 @@ public interface ProblemManager {
      *
      * @param dataId 题目数据 ID
      * @return 题目数据
-     * @throws PortableException ID 不存在则抛出
      */
     @NotNull
     ProblemData getProblemData(String dataId);
@@ -220,4 +219,77 @@ public interface ProblemManager {
      * @param problemData 题目数据
      */
     void updateProblemData(ProblemData problemData);
+
+    /// region problem 的文件操作
+
+    /**
+     * 创建问题的目录
+     *
+     * @param problemId 问题 ID
+     */
+    void createProblem(@NotNull Long problemId);
+
+    /**
+     * 获取测试输入的文件流
+     *
+     * @param problemId 题目 ID
+     * @param testName  测试数据名称
+     * @return 测试数据输入流
+     */
+    InputStream getTestInput(Long problemId, String testName);
+
+    /**
+     * 获取测试输出的文件流
+     *
+     * @param problemId 题目 ID
+     * @param testName  测试数据名称
+     * @return 测试数据输出流
+     */
+    InputStream getTestOutput(Long problemId, String testName);
+
+    /**
+     * 保存测试输入文件流
+     *
+     * @param problemId   题目 ID
+     * @param testName    测试数据名称
+     * @param inputStream 输入流
+     */
+    void saveTestInput(Long problemId, String testName, InputStream inputStream);
+
+    /**
+     * 保存测试输出文件流
+     *
+     * @param problemId   题目 ID
+     * @param testName    测试数据名称
+     * @param inputStream 输入流
+     */
+    void saveTestOutput(Long problemId, String testName, InputStream inputStream);
+
+    /**
+     * 创建一个新的测试输出文件
+     *
+     * @param problemId 题目 ID
+     * @param testName  测试数据名称
+     * @param value     开头的字符串
+     */
+    void createTestOutput(Long problemId, String testName, byte[] value);
+
+    /**
+     * 创建一个新的测试输出文件
+     *
+     * @param problemId 题目 ID
+     * @param testName  测试数据名称
+     * @param value     新增加的字符串
+     */
+    void appendTestOutput(Long problemId, String testName, byte[] value);
+
+    /**
+     * 删除测试文件，包括输入输出
+     *
+     * @param problemId 题目 ID
+     * @param testName  测试数据名称
+     */
+    void removeTest(Long problemId, String testName);
+
+    /// endregion
 }

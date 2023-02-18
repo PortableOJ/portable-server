@@ -6,7 +6,6 @@ import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
 
-import com.portable.server.exception.PortableException;
 import com.portable.server.model.user.BaseUserData;
 import com.portable.server.model.user.BatchUserData;
 import com.portable.server.model.user.NormalUserData;
@@ -153,7 +152,6 @@ public interface UserManager {
      *
      * @param dataId 用户的数据 id
      * @return 用户数据
-     * @throws PortableException ID 不存在时则抛出
      */
     @NotNull
     NormalUserData getNormalUserDataById(String dataId);
@@ -163,7 +161,6 @@ public interface UserManager {
      *
      * @param dataId 用户的数据 id
      * @return 用户数据
-     * @throws PortableException ID 不存在时则抛出
      */
     @NotNull
     BatchUserData getBatchUserDataById(String dataId);

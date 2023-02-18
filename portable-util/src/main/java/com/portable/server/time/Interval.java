@@ -17,6 +17,10 @@ public class Interval {
      */
     private Long time;
 
+    public static Interval ofMillisecond(Integer millisecond) {
+        return ofMillisecond(millisecond * Constant.MILLISECOND);
+    }
+
     public static Interval ofMillisecond(Long millisecond) {
         return Interval.builder()
                 .time(millisecond)

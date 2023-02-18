@@ -6,7 +6,7 @@ import java.util.stream.Collectors;
 
 import javax.annotation.Resource;
 
-import com.portable.server.exception.PortableException;
+import com.portable.server.exception.PortableErrors;
 import com.portable.server.manager.ProblemManager;
 import com.portable.server.manager.SolutionManager;
 import com.portable.server.manager.UserManager;
@@ -45,10 +45,10 @@ public class SolutionServiceImpl implements SolutionService {
     @Override
     public PageResponse<SolutionListResponse, Void> getPublicStatus(PageRequest<SolutionListQueryRequest> pageRequest) {
         SolutionListQueryRequest queryRequest = pageRequest.getQueryData();
-        // 当提供了 userhandle 的时候，若用户不存在，则抛出错误，若为空值，则当作不设置条件
+        // 当提供了 user handle 的时候，若用户不存在，则抛出错误，若为空值，则当作不设置条件
         Long userId = null;
         if (Strings.isNotBlank(queryRequest.getUserHandle())) {
-            userId = userManager.changeHandleToUserId(queryRequest.getUserHandle()).orElseThrow(PortableException.from("A-01-001"));
+            userId = userManager.changeHandleToUserId(queryRequest.getUserHandle()).orElseThrow(PortableErrors.from("A-01-001"));
         }
         Integer solutionCount = solutionManager.countSolution(
                 SolutionType.PUBLIC, userId, null,
@@ -76,15 +76,15 @@ public class SolutionServiceImpl implements SolutionService {
     @Override
     public SolutionDetailResponse getSolution(Long id) {
         Solution solution = solutionManager.selectSolutionById(id)
-                .orElseThrow(PortableException.from("A-05-001", id));
+                .orElseThrow(PortableErrors.from("A-05-001", id));
         if (!SolutionType.PUBLIC.equals(solution.getSolutionType())) {
-            throw PortableException.of("A-05-002");
+            throw PortableErrors.of("A-05-002");
         }
         UserContext userContext = UserContext.ctx();
         boolean isOwner = Objects.equals(solution.getUserId(), userContext.getId());
         boolean hasPermission = UserContext.ctx().getPermissionTypeSet().contains(PermissionType.VIEW_PUBLIC_SOLUTION);
         if (!isOwner && !hasPermission) {
-            throw PortableException.of("A-05-003");
+            throw PortableErrors.of("A-05-003");
         }
         SolutionData solutionData = solutionManager.getSolutionData(solution.getDataId());
         User user = userManager.getAccountById(solution.getUserId()).orElse(null);

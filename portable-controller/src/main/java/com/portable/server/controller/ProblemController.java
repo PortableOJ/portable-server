@@ -12,7 +12,6 @@ import javax.validation.constraints.Pattern;
 import com.portable.server.annotation.CheckCaptcha;
 import com.portable.server.annotation.NeedLogin;
 import com.portable.server.annotation.PermissionRequirement;
-import com.portable.server.exception.PortableException;
 import com.portable.server.model.problem.Problem;
 import com.portable.server.model.request.IdRequest;
 import com.portable.server.model.request.PageRequest;
@@ -122,7 +121,7 @@ public class ProblemController {
                     response.getOutputStream()
             );
         } catch (IOException e) {
-            throw PortableException.of("S-01-002");
+            throw PortableErrors.of("S-01-002");
         }
     }
 
@@ -140,7 +139,7 @@ public class ProblemController {
                     response.getOutputStream()
             );
         } catch (IOException e) {
-            throw PortableException.of("S-01-002");
+            throw PortableErrors.of("S-01-002");
         }
     }
 
@@ -191,7 +190,7 @@ public class ProblemController {
                             .build()
             );
         } catch (IOException e) {
-            throw PortableException.of("A-04-005");
+            throw PortableErrors.of("A-04-005");
         }
         return Response.ofOk();
     }
@@ -261,7 +260,7 @@ public class ProblemController {
         try {
             problemService.downloadStdCode(id, httpServletResponse.getOutputStream());
         } catch (IOException e) {
-            throw PortableException.of("S-01-002");
+            throw PortableErrors.of("S-01-002");
         }
     }
 
@@ -277,7 +276,7 @@ public class ProblemController {
                             .build(),
                     httpServletResponse.getOutputStream());
         } catch (IOException e) {
-            throw PortableException.of("S-01-002");
+            throw PortableErrors.of("S-01-002");
         }
     }
 

@@ -6,7 +6,7 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import com.portable.server.exception.PortableException;
+import com.portable.server.exception.PortableErrors;
 import com.portable.server.model.contest.BaseContestData;
 import com.portable.server.model.contest.BatchContestData;
 import com.portable.server.model.contest.Contest;
@@ -84,7 +84,7 @@ public class ContestAdminDetailResponse extends ContestDetailResponse {
                 this.batchId = batchContestData.getBatchId();
                 break;
             default:
-                throw PortableException.of("A-08-001", contest.getAccessType());
+                throw PortableErrors.of("A-08-001", contest.getAccessType());
         }
         this.problemLock = problemLock;
         this.problemRealId = contestData.getProblemList().stream()

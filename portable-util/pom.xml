@@ -44,5 +44,9 @@
             <groupId>org.ostermiller</groupId>
             <artifactId>utils</artifactId>
         </dependency>
+        <dependency>
+            <groupId>org.jetbrains</groupId>
+            <artifactId>annotations</artifactId>
+        </dependency>
     </dependencies>
 </project>

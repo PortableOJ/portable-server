@@ -4,16 +4,9 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Objects;
-import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.ExecutionException;
-import java.util.concurrent.TimeUnit;
 
-import javax.annotation.PostConstruct;
-import javax.annotation.Resource;
-
-import com.portable.server.exception.PortableException;
-import com.portable.server.helper.RedisValueHelper;
 import com.portable.server.model.batch.Batch;
 import com.portable.server.model.user.NormalUserData;
 import com.portable.server.model.user.User;
@@ -22,20 +15,13 @@ import com.portable.server.type.ContestVisitType;
 import com.portable.server.type.OrganizationType;
 import com.portable.server.type.PermissionType;
 
-import com.google.common.cache.CacheBuilder;
-import com.google.common.cache.CacheLoader;
-import com.google.common.cache.LoadingCache;
 import lombok.Data;
-import lombok.NonNull;
 
 /**
  * @author shiroha
  */
 @Data
 public class UserContext {
-
-    @Resource
-    private RedisValueHelper redisValueHelper;
 
     /// region 用户信息
 
@@ -94,16 +80,6 @@ public class UserContext {
     private static final ThreadLocal<UserContext> LOCAL;
 
     /**
-     * 缓存的登陆过的用户信息
-     */
-    private static final LoadingCache<Long, UserContext> USER_CACHE;
-
-    /**
-     * 用户信息使用的 redis 缓存
-     */
-    private static RedisValueHelper staticRedisValueHelper;
-
-    /**
      * 用户信息一级缓存容量
      */
     private static final Integer USER_CONTEXT_CACHE_SIZE = 500;
@@ -127,21 +103,6 @@ public class UserContext {
 
     static {
         LOCAL = ThreadLocal.withInitial(UserContext::new);
-        USER_CACHE = CacheBuilder.newBuilder()
-                .maximumSize(USER_CONTEXT_CACHE_SIZE)
-                .expireAfterAccess(USER_CONTEXT_EXPIRE_AFTER_ACCESS, TimeUnit.SECONDS)
-                .build(new CacheLoader<Long, UserContext>() {
-                    @Override
-                    public UserContext load(@NonNull Long aLong) {
-                        Optional<UserContext> optionalUserContext = staticRedisValueHelper.get(USER_CONTEST_CACHE_PREFIX, aLong.toString(), UserContext.class);
-                        return optionalUserContext.orElseGet(UserContext::getNullUser);
-                    }
-                });
-    }
-
-    @PostConstruct
-    public void init() {
-        UserContext.staticRedisValueHelper = this.redisValueHelper;
     }
 
     public static UserContext ctx() {
@@ -168,7 +129,7 @@ public class UserContext {
 
     public static void set(User user) {
         if (Objects.isNull(user)) {
-            throw PortableException.of("A-02-001");
+            throw PortableErrors.of("A-02-001");
         }
 
         UserContext userContext = ctx();
@@ -181,7 +142,7 @@ public class UserContext {
 
     public static void set(NormalUserData normalUserData) {
         if (normalUserData == null) {
-            throw PortableException.of("A-02-001");
+            throw PortableErrors.of("A-02-001");
         }
 
         UserContext userContext = ctx();
@@ -192,7 +153,7 @@ public class UserContext {
 
     public static void set(Batch batch) {
         if (batch == null) {
-            throw PortableException.of("A-02-001");
+            throw PortableErrors.of("A-02-001");
         }
 
         UserContext userContext = ctx();

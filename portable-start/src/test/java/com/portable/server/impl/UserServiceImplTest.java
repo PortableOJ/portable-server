@@ -10,9 +10,9 @@ import java.util.stream.Collectors;
 
 import com.portable.server.encryption.BCryptEncoder;
 import com.portable.server.exception.PortableException;
-import com.portable.server.manager.impl.prod.BatchManagerImpl;
-import com.portable.server.manager.impl.prod.GridFsManagerImpl;
-import com.portable.server.manager.impl.prod.UserManagerImpl;
+import com.portable.server.manager.impl.BatchManagerImpl;
+import com.portable.server.manager.impl.ImageManagerImpl;
+import com.portable.server.manager.impl.UserManagerImpl;
 import com.portable.server.model.batch.Batch;
 import com.portable.server.model.request.user.LoginRequest;
 import com.portable.server.model.request.user.RegisterRequest;
@@ -59,7 +59,7 @@ class UserServiceImplTest {
     private BatchManagerImpl batchManager;
 
     @Mock
-    private GridFsManagerImpl gridFsManager;
+    private ImageManagerImpl gridFsManager;
 
     private static final String MOCKED_ROOT_NAME = MockedValueMaker.mString();
     private static final String MOCKED_ROOT_PASSWORD = MockedValueMaker.mString();
@@ -258,7 +258,7 @@ class UserServiceImplTest {
 
         Mockito.when(userManager.getAccountByHandle(MOCKED_HANDLE)).thenReturn(Optional.of(user));
         bCryptEncoderMockedStatic.when(() -> BCryptEncoder.match(MOCKED_INPUT_PASSWORD, MOCKED_ROOT_PASSWORD_ENCODED)).thenReturn(true);
-        Mockito.when(userManager.getNormalUserDataById(MOCKED_MONGO_ID)).thenThrow(PortableException.of("S-02-001"));
+        Mockito.when(userManager.getNormalUserDataById(MOCKED_MONGO_ID)).thenThrow(PortableErrors.of("S-02-001"));
 
         // DO
         try {
@@ -338,7 +338,7 @@ class UserServiceImplTest {
 
         Mockito.when(userManager.getAccountByHandle(MOCKED_HANDLE)).thenReturn(Optional.of(user));
         bCryptEncoderMockedStatic.when(() -> BCryptEncoder.match(MOCKED_INPUT_PASSWORD, MOCKED_ROOT_PASSWORD_ENCODED)).thenReturn(true);
-        Mockito.when(userManager.getBatchUserDataById(MOCKED_MONGO_ID)).thenThrow(PortableException.of("S-02-001"));
+        Mockito.when(userManager.getBatchUserDataById(MOCKED_MONGO_ID)).thenThrow(PortableErrors.of("S-02-001"));
 
         // DO
         try {
@@ -691,7 +691,7 @@ class UserServiceImplTest {
         user.setType(AccountType.LOCKED_NORMAL);
 
         Mockito.when(userManager.getAccountByHandle(MOCKED_HANDLE)).thenReturn(Optional.of(user));
-        Mockito.when(userManager.getNormalUserDataById(MOCKED_MONGO_ID)).thenThrow(PortableException.of("S-02-001"));
+        Mockito.when(userManager.getNormalUserDataById(MOCKED_MONGO_ID)).thenThrow(PortableErrors.of("S-02-001"));
 
         try {
             userService.getUserInfo(MOCKED_HANDLE);
@@ -729,7 +729,7 @@ class UserServiceImplTest {
         user.setType(AccountType.NORMAL);
 
         Mockito.when(userManager.getAccountByHandle(MOCKED_HANDLE)).thenReturn(Optional.of(user));
-        Mockito.when(userManager.getNormalUserDataById(MOCKED_MONGO_ID)).thenThrow(PortableException.of("S-02-001"));
+        Mockito.when(userManager.getNormalUserDataById(MOCKED_MONGO_ID)).thenThrow(PortableErrors.of("S-02-001"));
 
         try {
             userService.getUserInfo(MOCKED_HANDLE);
@@ -767,7 +767,7 @@ class UserServiceImplTest {
         user.setType(AccountType.BATCH);
 
         Mockito.when(userManager.getAccountByHandle(MOCKED_HANDLE)).thenReturn(Optional.of(user));
-        Mockito.when(userManager.getBatchUserDataById(MOCKED_MONGO_ID)).thenThrow(PortableException.of("S-02-001"));
+        Mockito.when(userManager.getBatchUserDataById(MOCKED_MONGO_ID)).thenThrow(PortableErrors.of("S-02-001"));
 
         try {
             userService.getUserInfo(MOCKED_HANDLE);
@@ -849,7 +849,7 @@ class UserServiceImplTest {
         user.setType(AccountType.BATCH);
 
         Mockito.when(userManager.getAccountByHandle(MOCKED_HANDLE)).thenReturn(Optional.of(user));
-        Mockito.when(userManager.getBatchUserDataById(MOCKED_MONGO_ID)).thenThrow(PortableException.of("S-02-001"));
+        Mockito.when(userManager.getBatchUserDataById(MOCKED_MONGO_ID)).thenThrow(PortableErrors.of("S-02-001"));
 
         try {
             userService.getBatchUserInfo(MOCKED_HANDLE);
@@ -953,7 +953,7 @@ class UserServiceImplTest {
     void testChangeOrganizationWithNoUserData() {
         user.setType(AccountType.LOCKED_NORMAL);
         Mockito.when(userManager.getAccountByHandle(MOCKED_HANDLE)).thenReturn(Optional.of(user));
-        Mockito.when(userManager.getNormalUserDataById(MOCKED_MONGO_ID)).thenThrow(PortableException.of("S-02-001"));
+        Mockito.when(userManager.getNormalUserDataById(MOCKED_MONGO_ID)).thenThrow(PortableErrors.of("S-02-001"));
 
         try {
             userService.changeOrganization(MOCKED_HANDLE, OrganizationType.STUDENT);
@@ -1027,7 +1027,7 @@ class UserServiceImplTest {
     void testAddPermissionWithNoUserData() {
         user.setType(AccountType.LOCKED_NORMAL);
         Mockito.when(userManager.getAccountByHandle(MOCKED_HANDLE)).thenReturn(Optional.of(user));
-        Mockito.when(userManager.getNormalUserDataById(MOCKED_MONGO_ID)).thenThrow(PortableException.of("S-02-001"));
+        Mockito.when(userManager.getNormalUserDataById(MOCKED_MONGO_ID)).thenThrow(PortableErrors.of("S-02-001"));
 
         try {
             userService.addPermission(MOCKED_HANDLE, PermissionType.GRANT);
@@ -1121,7 +1121,7 @@ class UserServiceImplTest {
     void testRemovePermissionWithNoUserData() {
         user.setType(AccountType.LOCKED_NORMAL);
         Mockito.when(userManager.getAccountByHandle(MOCKED_HANDLE)).thenReturn(Optional.of(user));
-        Mockito.when(userManager.getNormalUserDataById(MOCKED_MONGO_ID)).thenThrow(PortableException.of("S-02-001"));
+        Mockito.when(userManager.getNormalUserDataById(MOCKED_MONGO_ID)).thenThrow(PortableErrors.of("S-02-001"));
 
         try {
             userService.removePermission(MOCKED_HANDLE, PermissionType.GRANT);
@@ -1208,7 +1208,7 @@ class UserServiceImplTest {
         userContext.setType(AccountType.NORMAL);
         userContext.setDataId(MOCKED_MONGO_ID);
         userContextMockedStatic.when(UserContext::ctx).thenReturn(userContext);
-        Mockito.when(userManager.getNormalUserDataById(MOCKED_MONGO_ID)).thenThrow(PortableException.of("S-02-001"));
+        Mockito.when(userManager.getNormalUserDataById(MOCKED_MONGO_ID)).thenThrow(PortableErrors.of("S-02-001"));
 
         InputStream inputStream = Mockito.mock(InputStream.class);
 
@@ -1232,7 +1232,7 @@ class UserServiceImplTest {
         userContextMockedStatic.when(UserContext::ctx).thenReturn(userContext);
         Mockito.when(userManager.getNormalUserDataById(MOCKED_MONGO_ID)).thenReturn(normalUserData);
         imageUtilsMockedStatic.when(() -> ImageUtils.cut(inputStream, 1, 2, 3, 4)).thenReturn(cutInputStream);
-        Mockito.when(gridFsManager.uploadAvatar(MOCKED_IP, cutInputStream, MOCKED_HANDLE, MOCKED_MONGO_ID)).thenReturn(MOCKED_OTHER_IP);
+        Mockito.when(gridFsManager.replaceImage(MOCKED_IP, cutInputStream, MOCKED_HANDLE, MOCKED_MONGO_ID)).thenReturn(MOCKED_OTHER_IP);
 
         String fileId = userService.uploadAvatar(inputStream, MOCKED_HANDLE, MOCKED_MONGO_ID, 1, 2, 3, 4);
 
@@ -1369,7 +1369,7 @@ class UserServiceImplTest {
         user.setType(AccountType.BATCH);
 
         Mockito.when(userManager.getAccountByHandle(MOCKED_HANDLE)).thenReturn(Optional.of(user));
-        Mockito.when(userManager.getBatchUserDataById(MOCKED_MONGO_ID)).thenThrow(PortableException.of("S-02-001"));
+        Mockito.when(userManager.getBatchUserDataById(MOCKED_MONGO_ID)).thenThrow(PortableErrors.of("S-02-001"));
 
         try {
             userService.clearBatchUserIpList(MOCKED_HANDLE);

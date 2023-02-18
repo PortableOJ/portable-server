@@ -1,12 +1,12 @@
 package com.portable.server.controller;
 
-import com.portable.server.exception.PortableException;
+import javax.servlet.http.HttpServletRequest;
+
 import com.portable.server.util.ExceptionConstant;
+
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
-
-import javax.servlet.http.HttpServletRequest;
 
 /**
  * @author shiroha
@@ -39,6 +39,6 @@ public class ExceptionController {
             RequestMethod.TRACE
     })
     public void notFound(HttpServletRequest request) throws Exception {
-        throw PortableException.of("S-01-001", request);
+        throw PortableErrors.of("S-01-001", request);
     }
 }

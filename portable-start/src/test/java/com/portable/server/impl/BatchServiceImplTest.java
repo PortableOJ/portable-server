@@ -7,9 +7,9 @@ import java.util.stream.IntStream;
 
 import com.portable.server.encryption.BCryptEncoder;
 import com.portable.server.exception.PortableException;
-import com.portable.server.manager.impl.prod.BatchManagerImpl;
-import com.portable.server.manager.impl.prod.ContestManagerImpl;
-import com.portable.server.manager.impl.prod.UserManagerImpl;
+import com.portable.server.manager.impl.BatchManagerImpl;
+import com.portable.server.manager.impl.ContestManagerImpl;
+import com.portable.server.manager.impl.UserManagerImpl;
 import com.portable.server.model.batch.Batch;
 import com.portable.server.model.contest.Contest;
 import com.portable.server.model.request.PageRequest;

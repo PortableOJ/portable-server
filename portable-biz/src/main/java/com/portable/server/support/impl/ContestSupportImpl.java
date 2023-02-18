@@ -16,8 +16,6 @@ import java.util.stream.IntStream;
 import javax.annotation.Resource;
 
 import com.portable.server.exception.PortableException;
-import com.portable.server.helper.RedisHashHelper;
-import com.portable.server.helper.RedisListHelper;
 import com.portable.server.manager.ContestManager;
 import com.portable.server.manager.SolutionManager;
 import com.portable.server.model.contest.BaseContestData;
@@ -164,7 +162,7 @@ public class ContestSupportImpl implements ContestSupport {
                 }
             }
         } catch (InterruptedException ignore) {
-            throw PortableException.of("S-00-000");
+            throw PortableErrors.of("S-00-000");
         }
     }
 
@@ -189,10 +187,10 @@ public class ContestSupportImpl implements ContestSupport {
 
     private void makeRank(Long contestId) {
         Contest contest = contestManager.getContestById(contestId)
-                .orElseThrow(PortableException.from("A-08-002", contestId));
+                .orElseThrow(PortableErrors.from("A-08-002", contestId));
         BaseContestData contestData = contestManager.getBaseContestDataById(contest.getDataId(), contest.getAccessType());
         if (contestData == null) {
-            throw PortableException.of("S-07-002");
+            throw PortableErrors.of("S-07-002");
         }
         // 删除之前记录的通过数量
         contestData.getProblemList().forEach(BaseContestData.ContestProblemData::init);

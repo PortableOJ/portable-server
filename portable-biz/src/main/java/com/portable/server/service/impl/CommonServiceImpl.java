@@ -12,12 +12,11 @@ import java.util.Map;
 import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
 
-import com.portable.server.exception.PortableException;
+import com.portable.server.exception.PortableErrors;
+import com.portable.server.internal.CaptchaInternalService;
 import com.portable.server.service.CommonService;
-import com.portable.server.support.CaptchaSupport;
 import com.portable.server.util.DateTimeUtils;
 
-import com.alibaba.fastjson.JSONObject;
 import org.springframework.stereotype.Component;
 
 /**
@@ -35,10 +34,10 @@ public class CommonServiceImpl implements CommonService {
      */
     private String version;
 
-    private Map<String, Map<String, JSONObject>> enumDescMap;
+    private Map<String, Map<String, Map<String, Object>>> enumDescMap;
 
     @Resource
-    private CaptchaSupport captchaSupport;
+    private CaptchaInternalService captchaInternalService;
 
     @PostConstruct
     public void init() {
@@ -59,7 +58,7 @@ public class CommonServiceImpl implements CommonService {
     }
 
     @Override
-    public Map<String, JSONObject> getEnumDesc(String name) {
+    public Map<String, Map<String, Object>> getEnumDesc(String name) {
         if (enumDescMap.containsKey(name)) {
             return enumDescMap.get(name);
         }
@@ -71,22 +70,22 @@ public class CommonServiceImpl implements CommonService {
                 if (invokeValue instanceof Object[]) {
                     Object[] enums = (Object[]) invokeValue;
                     Field[] fields = clazz.getDeclaredFields();
-                    Map<String, JSONObject> result = new HashMap<>(enums.length);
+                    Map<String, Map<String, Object>> result = new HashMap<>(enums.length);
 
                     for (Field field : fields) {
                         field.setAccessible(true);
                     }
 
                     for (Object e : enums) {
-                        JSONObject jsonObject = new JSONObject();
+                        Map<String, Object> enumValue = new HashMap<>(fields.length);
                         for (Field field : fields) {
                             if (field.isEnumConstant() || field.isSynthetic()) {
                                 continue;
                             }
                             Object o = field.get(e);
-                            jsonObject.put(field.getName(), o);
+                            enumValue.put(field.getName(), o);
                         }
-                        result.put(e.toString(), jsonObject);
+                        result.put(e.toString(), enumValue);
                     }
 
                     for (Field field : fields) {
@@ -100,11 +99,11 @@ public class CommonServiceImpl implements CommonService {
             }
         } catch (ClassNotFoundException | NoSuchMethodException | InvocationTargetException | IllegalAccessException ignore) {
         }
-        throw PortableException.of("A-06-001", name);
+        throw PortableErrors.of("A-06-001", name);
     }
 
     @Override
     public String getCaptcha(OutputStream outputStream) {
-        return captchaSupport.getCaptcha(outputStream);
+        return captchaInternalService.getCaptcha(outputStream);
     }
 }

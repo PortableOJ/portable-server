@@ -1,16 +1,5 @@
 package com.portable.server.socket;
 
-import com.portable.server.constant.Constant;
-import com.portable.server.socket.annotation.EpollMethod;
-import com.portable.server.socket.annotation.EpollParam;
-import com.portable.server.socket.model.MethodDescribe;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.ApplicationContext;
-import org.springframework.stereotype.Component;
-
-import javax.annotation.PostConstruct;
-import javax.annotation.Resource;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
@@ -20,6 +9,15 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+
+import com.portable.server.constant.Constant;
+import com.portable.server.socket.annotation.EpollMethod;
+import com.portable.server.socket.annotation.EpollParam;
+import com.portable.server.socket.model.MethodDescribe;
+
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
 
 /**
  * @author shiroha
@@ -34,9 +32,6 @@ public class EpollManager {
     private static final ThreadLocal<String> ADDRESS_THREAD_LOCAL;
 
     private static Thread runner;
-
-    @Resource
-    private ApplicationContext applicationContext;
 
     @Value("${portable.socket.port}")
     private Integer socketPort;
@@ -53,7 +48,6 @@ public class EpollManager {
         return ADDRESS_THREAD_LOCAL.get();
     }
 
-    @PostConstruct
     public void init() {
         registerMethod = new HashMap<>(0);
         closeMethod = new ArrayList<>();
@@ -80,7 +74,14 @@ public class EpollManager {
     }
 
     public void scan(Class<?> clazz) {
-        Object target = applicationContext.getBean(clazz);
+//        Object target = applicationContext.getBean(clazz);
+        Object target;
+        try {
+            target = clazz.getDeclaredConstructor().newInstance();
+        } catch (InvocationTargetException | NoSuchMethodException | InstantiationException |
+                 IllegalAccessException e) {
+            throw new RuntimeException(e);
+        }
         Method[] methods = clazz.getMethods();
         for (Method method : methods) {
             EpollMethod epollMethod = method.getAnnotation(EpollMethod.class);

@@ -1,17 +1,19 @@
 package com.portable.server.interceptor;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
+
 import com.portable.server.annotation.CheckCaptcha;
+import com.portable.server.exception.PortableErrors;
 import com.portable.server.exception.PortableException;
 import com.portable.server.util.RequestSessionConstant;
 import com.portable.server.util.UserContext;
+
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.servlet.HandlerInterceptor;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
 
 /**
  * @author shiroha
@@ -38,7 +40,7 @@ public class CaptchaInterceptor implements HandlerInterceptor {
         if (timeIn || methodRequirement.value() < 0) {
             String captchaValue = request.getHeader(RequestSessionConstant.CAPTCHA);
             if (captchaAnswer == null || captchaValue == null) {
-                throw PortableException.of("W-00-001");
+                throw PortableErrors.of("W-00-001");
             }
             if (!captchaAnswer.equalsIgnoreCase(captchaValue)) {
                 throw PortableException.of("A-00-002");

@@ -3,7 +3,6 @@ package com.portable.server.service;
 import java.io.OutputStream;
 import java.util.List;
 
-import com.portable.server.exception.PortableException;
 import com.portable.server.model.problem.Problem;
 import com.portable.server.model.request.PageRequest;
 import com.portable.server.model.request.problem.ProblemCodeRequest;
@@ -50,7 +49,6 @@ public interface ProblemService {
      *
      * @param id 题目 ID
      * @return 题目详情内容
-     * @throws PortableException 遇到意外情况抛出错误
      */
     ProblemDetailResponse getProblem(Long id);
 
@@ -59,7 +57,6 @@ public interface ProblemService {
      *
      * @param id 题目 ID
      * @return 题目测试数据的
-     * @throws PortableException 遇到意外情况抛出错误
      */
     List<String> getProblemTestList(Long id);
 
@@ -69,7 +66,6 @@ public interface ProblemService {
      *
      * @param problemNameRequest 题目的 ID 以及测试的名称
      * @return 题目输入文件的预览
-     * @throws PortableException 遇到意外情况抛出错误
      */
     String showTestInput(ProblemNameRequest problemNameRequest);
 
@@ -78,7 +74,6 @@ public interface ProblemService {
      *
      * @param problemNameRequest 题目的 ID 以及测试的名称
      * @return 题目输出文件的预览
-     * @throws PortableException 遇到意外情况抛出错误
      */
     String showTestOutput(ProblemNameRequest problemNameRequest);
 
@@ -87,7 +82,6 @@ public interface ProblemService {
      *
      * @param problemNameRequest 题目的 ID 以及测试的名称
      * @param outputStream       需要写入的文件流
-     * @throws PortableException 遇到意外情况抛出错误
      */
     void downloadTestInput(ProblemNameRequest problemNameRequest, OutputStream outputStream);
 
@@ -96,7 +90,6 @@ public interface ProblemService {
      *
      * @param problemNameRequest 题目的 ID 以及测试的名称
      * @param outputStream       需要写入的文件流
-     * @throws PortableException 遇到意外情况抛出错误
      */
     void downloadTestOutput(ProblemNameRequest problemNameRequest, OutputStream outputStream);
 
@@ -105,7 +98,6 @@ public interface ProblemService {
      *
      * @param problemContentRequest 题目内容
      * @return 创建后的题目内容的简单参数，主要是 ID
-     * @throws PortableException 遇到意外情况抛出错误
      */
     Problem newProblem(ProblemContentRequest problemContentRequest);
 
@@ -113,7 +105,6 @@ public interface ProblemService {
      * 更新题目内容（需要权限 {@link com.portable.server.type.PermissionType#CREATE_AND_EDIT_PROBLEM}）
      *
      * @param problemContentRequest 题目内容
-     * @throws PortableException 遇到意外情况抛出错误
      */
     void updateProblemContent(ProblemContentRequest problemContentRequest);
 
@@ -121,7 +112,6 @@ public interface ProblemService {
      * 修改题目配置（需要权限 {@link com.portable.server.type.PermissionType#CREATE_AND_EDIT_PROBLEM}）
      *
      * @param problemSettingRequest 题目的设置
-     * @throws PortableException 遇到意外情况抛出错误
      */
     void updateProblemSetting(ProblemSettingRequest problemSettingRequest);
 
@@ -129,7 +119,6 @@ public interface ProblemService {
      * 修改题目的 judge 配置（需要权限 {@link com.portable.server.type.PermissionType#CREATE_AND_EDIT_PROBLEM}）
      *
      * @param problemJudgeRequest 题目的 judge 配置
-     * @throws PortableException 遇到意外情况抛出错误
      */
     void updateProblemJudge(ProblemJudgeRequest problemJudgeRequest);
 
@@ -137,7 +126,6 @@ public interface ProblemService {
      * 上传题目的 Test 输入数据（需要权限 {@link com.portable.server.type.PermissionType#CREATE_AND_EDIT_PROBLEM}）
      *
      * @param problemTestRequest 需要添加新的测试数据
-     * @throws PortableException 遇到意外情况抛出错误
      */
     void addProblemTest(ProblemTestRequest problemTestRequest);
 
@@ -145,7 +133,6 @@ public interface ProblemService {
      * 删除题目的 Test 数据（需要权限 {@link com.portable.server.type.PermissionType#CREATE_AND_EDIT_PROBLEM}）
      *
      * @param problemNameRequest 需要删除的测试数据名
-     * @throws PortableException 遇到意外情况抛出错误
      */
     void removeProblemTest(ProblemNameRequest problemNameRequest);
 
@@ -154,7 +141,6 @@ public interface ProblemService {
      *
      * @param id 题目的 ID
      * @return 标准代码和测试代码以及其期望结果和实际结果
-     * @throws PortableException 遇到意外情况抛出错误
      */
     ProblemStdTestCodeResponse getProblemStdTestCode(Long id);
 
@@ -162,7 +148,6 @@ public interface ProblemService {
      * 变更标准代码（需要权限 {@link com.portable.server.type.PermissionType#CREATE_AND_EDIT_PROBLEM}）
      *
      * @param problemCodeRequest 标准代码的内容
-     * @throws PortableException 遇到意外情况抛出错误
      */
     void updateProblemStdCode(ProblemCodeRequest problemCodeRequest);
 
@@ -170,7 +155,6 @@ public interface ProblemService {
      * 上传测试代码（需要权限 {@link com.portable.server.type.PermissionType#CREATE_AND_EDIT_PROBLEM}）
      *
      * @param problemStdCodeRequest 测试代码的内容
-     * @throws PortableException 遇到意外情况抛出错误
      */
     void addProblemTestCode(ProblemCodeRequest problemStdCodeRequest);
 
@@ -178,7 +162,6 @@ public interface ProblemService {
      * 删除测试代码（需要权限 {@link com.portable.server.type.PermissionType#CREATE_AND_EDIT_PROBLEM}）
      *
      * @param problemNameRequest 需要删除的测试代码名
-     * @throws PortableException 遇到意外情况抛出错误
      */
     void removeProblemTestCode(ProblemNameRequest problemNameRequest);
 
@@ -187,7 +170,6 @@ public interface ProblemService {
      *
      * @param id 问题 ID
      * @return 代码内容
-     * @throws PortableException 遇到意外情况抛出错误
      */
     String showStdCode(Long id);
 
@@ -196,7 +178,6 @@ public interface ProblemService {
      *
      * @param problemNameRequest 需要预览的测试数据
      * @return 代码内容
-     * @throws PortableException 遇到意外情况抛出错误
      */
     String showTestCode(ProblemNameRequest problemNameRequest);
 
@@ -205,7 +186,6 @@ public interface ProblemService {
      *
      * @param id 题目的 ID
      * @param outputStream 输出流
-     * @throws PortableException 遇到意外情况抛出错误
      */
     void downloadStdCode(Long id, OutputStream outputStream);
 
@@ -214,14 +194,12 @@ public interface ProblemService {
      *
      * @param problemNameRequest 需要预览的测试代码信息
      * @param outputStream 输出流
-     * @throws PortableException 遇到意外情况抛出错误
      */
     void downloadTestCode(ProblemNameRequest problemNameRequest, OutputStream outputStream);
 
     /**
      * 执行处理校验
      * @param id 题目的 ID
-     * @throws PortableException 遇到意外情况抛出错误
      */
     void treatAndCheckProblem(Long id);
 
@@ -229,7 +207,6 @@ public interface ProblemService {
      * 提交代码
      * @param submitSolutionRequest 提交的代码信息
      * @return 提交的内容
-     * @throws PortableException 出现非法提交或不存在对应题目则抛出错误
      */
     Long submit(SubmitSolutionRequest submitSolutionRequest);
 }

@@ -2,7 +2,6 @@ package com.portable.server.service;
 
 import java.io.InputStream;
 
-import com.portable.server.exception.PortableException;
 import com.portable.server.model.request.user.LoginRequest;
 import com.portable.server.model.request.user.RegisterRequest;
 import com.portable.server.model.request.user.UpdatePasswordRequest;
@@ -25,7 +24,6 @@ public interface UserService {
      * @param loginRequest 登陆信息
      * @param ip           本次登录的 IP
      * @return 用户的信息
-     * @throws PortableException 遇到意外情况抛出错误
      */
     BaseUserInfoResponse login(LoginRequest loginRequest, String ip);
 
@@ -34,7 +32,6 @@ public interface UserService {
      *
      * @param registerRequest 注册信息
      * @return 注册成功的用户信息
-     * @throws PortableException 遇到意外情况抛出错误
      */
     NormalUserInfoResponse register(RegisterRequest registerRequest);
 
@@ -42,7 +39,6 @@ public interface UserService {
      * 获取当前登录的用户
      *
      * @return 用户信息
-     * @throws PortableException 不存在则抛出错误
      */
     BaseUserInfoResponse check();
 
@@ -51,7 +47,6 @@ public interface UserService {
      *
      * @param handle 用户的 handle
      * @return 用户信息
-     * @throws PortableException 不存在则抛出错误
      */
     BaseUserInfoResponse getUserInfo(String handle);
 
@@ -60,7 +55,6 @@ public interface UserService {
      *
      * @param handle 用户的 handle
      * @return 用户信息
-     * @throws PortableException 不存在则抛出错误
      */
     BatchAdminUserInfoResponse getBatchUserInfo(String handle);
 
@@ -69,7 +63,6 @@ public interface UserService {
      *
      * @param targetHandle    被修改的用户
      * @param newOrganization 被修改至的组织
-     * @throws PortableException 遇到意外情况抛出错误
      */
     void changeOrganization(String targetHandle, OrganizationType newOrganization);
 
@@ -78,7 +71,6 @@ public interface UserService {
      *
      * @param targetHandle  目标用户
      * @param newPermission 新增加的权限
-     * @throws PortableException 遇到意外情况抛出错误
      */
     void addPermission(String targetHandle, PermissionType newPermission);
 
@@ -87,7 +79,6 @@ public interface UserService {
      *
      * @param targetHandle 目标用户
      * @param permission   移除的权限
-     * @throws PortableException 遇到意外情况抛出错误
      */
     void removePermission(String targetHandle, PermissionType permission);
 
@@ -102,7 +93,6 @@ public interface UserService {
      * @param width       宽度
      * @param height      长度
      * @return 返回新的头像 id
-     * @throws PortableException 类型不匹配则抛出
      */
     String uploadAvatar(InputStream inputStream,
                         String name,
@@ -116,7 +106,6 @@ public interface UserService {
      * 更新用户的密码
      *
      * @param updatePasswordRequest 密码
-     * @throws PortableException 密码错误则抛出
      */
     void updatePassword(UpdatePasswordRequest updatePasswordRequest);
 
@@ -125,7 +114,6 @@ public interface UserService {
      *
      * @param handle      用户昵称
      * @param newPassword 用户密码
-     * @throws PortableException 密码错误则抛出
      */
     void resetPassword(String handle, String newPassword);
 
@@ -133,7 +121,6 @@ public interface UserService {
      * 清理批量用户的 IP 记录（这会导致之前的 IP 记录被清理）
      *
      * @param handle 用户的 handle
-     * @throws PortableException 用户不是批量用户时抛出
      */
     void clearBatchUserIpList(String handle);
 }

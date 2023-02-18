@@ -1,9 +1,20 @@
 package com.portable.server.adivce;
 
+import java.util.Arrays;
+import java.util.List;
+import java.util.Set;
+
+import javax.annotation.Resource;
+import javax.servlet.http.HttpServletRequest;
+import javax.validation.ConstraintViolation;
+import javax.validation.ConstraintViolationException;
+
 import com.portable.server.exception.ExceptionTextType;
-import com.portable.server.exception.PortableException;
+import com.portable.server.exception.PortableErrors;
+import com.portable.server.exception.PortableRuntimeException;
 import com.portable.server.model.response.Response;
 import com.portable.server.util.UserContext;
+
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.MessageSource;
 import org.springframework.context.i18n.LocaleContextHolder;
@@ -14,14 +25,6 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
-
-import javax.annotation.Resource;
-import javax.servlet.http.HttpServletRequest;
-import javax.validation.ConstraintViolation;
-import javax.validation.ConstraintViolationException;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Set;
 
 /**
  * @author shiroha
@@ -44,14 +47,14 @@ public class ExceptionAdvice {
         return String.format(msg, textObjects);
     }
 
-    private Response<Void> getResponse(PortableException e) {
+    private Response<Void> getResponse(PortableRuntimeException e) {
         return Response.ofFail(e.getCode(), getMessage(e.getCode(), e.getObjects()));
     }
 
     @Order(1)
     @ResponseBody
-    @ExceptionHandler(value = PortableException.class)
-    public Response<Void> exceptionPortableHandler(HttpServletRequest httpServletRequest, PortableException e) {
+    @ExceptionHandler(value = PortableRuntimeException.class)
+    public Response<Void> exceptionPortableHandler(HttpServletRequest httpServletRequest, PortableRuntimeException e) {
         Response<Void> response = getResponse(e);
         logInfo(response.getMsg(), httpServletRequest);
         return response;
@@ -90,7 +93,7 @@ public class ExceptionAdvice {
     @ExceptionHandler(value = HttpMessageNotReadableException.class)
     public Response<Void> exceptionHttpMessageNotReadableHandler(HttpServletRequest httpServletRequest, HttpMessageNotReadableException e) {
         logInfo(e.getClass().getName(), httpServletRequest);
-        return getResponse(PortableException.userInputNullException());
+        return getResponse(PortableErrors.USER_INPUT_NULL.of());
     }
 
     @Order(3)
@@ -99,7 +102,7 @@ public class ExceptionAdvice {
     public Response<Void> exceptionSupperHandler(HttpServletRequest httpServletRequest, Exception e) {
         e.printStackTrace();
         logInfo(e.getClass().getName(), httpServletRequest);
-        return getResponse(PortableException.systemDefaultException());
+        return getResponse(PortableErrors.SYSTEM_CODE.of());
     }
 
     private void logInfo(String msg, HttpServletRequest httpServletRequest) {

@@ -7,6 +7,8 @@ import com.portable.server.model.contest.Contest;
 import com.portable.server.type.ContestAccessType;
 
 import org.apache.ibatis.annotations.Param;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.springframework.stereotype.Repository;
 
 /**
@@ -20,7 +22,7 @@ public interface ContestRepo {
      *
      * @return 总共的比赛数目
      */
-    Integer getAllContestNumber();
+    @NotNull Integer getAllContestNumber();
 
     /**
      * 根据分页获取比赛列表
@@ -29,7 +31,8 @@ public interface ContestRepo {
      * @param offset   偏移量
      * @return 比赛列表
      */
-    List<Contest> getContestByPage(@Param("pageSize") Integer pageSize, @Param("offset") Integer offset);
+    @NotNull List<Contest> getContestByPage(@NotNull @Param("pageSize") Integer pageSize,
+                                            @NotNull @Param("offset") Integer offset);
 
     /**
      * 根据 id 获取比赛信息
@@ -37,14 +40,14 @@ public interface ContestRepo {
      * @param id 比赛 id
      * @return 比赛信息
      */
-    Contest getContestById(Long id);
+    @Nullable Contest getContestById(@NotNull Long id);
 
     /**
      * 创建一个新的比赛
      *
      * @param contest 比赛的信息
      */
-    void insertContest(Contest contest);
+    void insertContest(@NotNull Contest contest);
 
     /**
      * 更新比赛的所有者
@@ -52,7 +55,7 @@ public interface ContestRepo {
      * @param id       比赛的 id
      * @param newOwner 新的拥有者
      */
-    void updateOwner(@Param("id") Long id, @Param("newOwner") Long newOwner);
+    void updateOwner(@NotNull @Param("id") Long id, @NotNull @Param("newOwner") Long newOwner);
 
     /**
      * 更新比赛开始时间
@@ -60,7 +63,7 @@ public interface ContestRepo {
      * @param id           比赛的 id
      * @param newStartTime 比赛的新开始时间
      */
-    void updateStartTime(@Param("id") Long id, @Param("newStartTime") Date newStartTime);
+    void updateStartTime(@NotNull @Param("id") Long id, @NotNull @Param("newStartTime") Date newStartTime);
 
     /**
      * 更新比赛的持续时间
@@ -68,7 +71,7 @@ public interface ContestRepo {
      * @param id          比赛的 id
      * @param newDuration 比赛的新的持续时间
      */
-    void updateDuration(@Param("id") Long id, @Param("newDuration") Integer newDuration);
+    void updateDuration(@NotNull @Param("id") Long id, @NotNull @Param("newDuration") Integer newDuration);
 
     /**
      * 更新比赛的访问权限
@@ -76,7 +79,7 @@ public interface ContestRepo {
      * @param id            比赛的 id
      * @param newAccessType 比赛的新的访问权限
      */
-    void updateAccessType(@Param("id") Long id, @Param("newAccessType") ContestAccessType newAccessType);
+    void updateAccessType(@NotNull @Param("id") Long id, @NotNull @Param("newAccessType") ContestAccessType newAccessType);
 
     /**
      * 更新比赛的标题
@@ -84,5 +87,5 @@ public interface ContestRepo {
      * @param id    比赛的 id
      * @param title 比赛的标题
      */
-    void updateTitle(@Param("id") Long id, @Param("title") String title);
+    void updateTitle(@NotNull @Param("id") Long id, @NotNull @Param("title") String title);
 }

@@ -3,19 +3,15 @@ package com.portable.server.controller;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.nio.charset.StandardCharsets;
-import java.util.List;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletResponse;
 
 import com.portable.server.annotation.NeedLogin;
 import com.portable.server.annotation.PermissionRequirement;
-import com.portable.server.model.judge.entity.JudgeContainer;
-import com.portable.server.model.judge.entity.UpdateJudgeContainer;
-import com.portable.server.model.redis.ServiceVerifyCode;
 import com.portable.server.model.request.IdRequest;
 import com.portable.server.model.response.Response;
-import com.portable.server.service.JudgeService;
+import com.portable.server.service.JudgeMaintenanceService;
 import com.portable.server.type.PermissionType;
 
 import org.springframework.validation.annotation.Validated;
@@ -34,18 +30,18 @@ import org.springframework.web.bind.annotation.RestController;
 public class JudgeController {
 
     @Resource
-    private JudgeService judgeService;
+    private JudgeMaintenanceService judgeMaintenanceService;
 
     @NeedLogin(normal = true)
     @GetMapping("/serverCode")
     @PermissionRequirement(PermissionType.MANAGER_JUDGE)
     public Response<ServiceVerifyCode> getServerCode() {
-        return Response.ofOk(judgeService.getServiceCode());
+        return Response.ofOk(judgeMaintenanceService.getServiceCode());
     }
 
     @GetMapping("/initCode")
     public void getServerCodeFirst(HttpServletResponse response) {
-        String code = judgeService.getTheServiceCodeFirstTime();
+        String code = judgeMaintenanceService.getTheServiceCodeFirstTime();
         try {
             if (code != null) {
                 OutputStream outputStream = response.getOutputStream();
@@ -61,14 +57,14 @@ public class JudgeController {
     @GetMapping("/judgeList")
     @PermissionRequirement(PermissionType.MANAGER_JUDGE)
     public Response<List<JudgeContainer>> getJudgeContainerList() {
-        return Response.ofOk(judgeService.getJudgeContainerList());
+        return Response.ofOk(judgeMaintenanceService.getJudgeContainerList());
     }
 
     @NeedLogin(normal = true)
     @PostMapping("/updateJudge")
     @PermissionRequirement(PermissionType.MANAGER_JUDGE)
     public Response<Void> updateJudgeContainer(@Validated @RequestBody UpdateJudgeContainer updateJudgeContainer) {
-        judgeService.updateJudgeContainer(updateJudgeContainer);
+        judgeMaintenanceService.updateJudgeContainer(updateJudgeContainer);
         return Response.ofOk();
     }
 
@@ -76,7 +72,7 @@ public class JudgeController {
     @PostMapping("/killJudge")
     @PermissionRequirement(PermissionType.MANAGER_JUDGE)
     public Response<Void> killJudge(@Validated @RequestBody IdRequest idRequest) {
-        judgeService.killJudge(idRequest.getId());
+        judgeMaintenanceService.killJudge(idRequest.getId());
         return Response.ofOk();
     }
 
@@ -84,7 +80,7 @@ public class JudgeController {
     @PostMapping("/killTest")
     @PermissionRequirement(PermissionType.MANAGER_JUDGE)
     public Response<Void> killTest(@Validated @RequestBody IdRequest idRequest) {
-        judgeService.killTest(idRequest.getId());
+        judgeMaintenanceService.killTest(idRequest.getId());
         return Response.ofOk();
     }
 }

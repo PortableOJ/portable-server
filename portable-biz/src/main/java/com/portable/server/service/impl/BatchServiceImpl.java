@@ -10,7 +10,7 @@ import java.util.stream.IntStream;
 import javax.annotation.Resource;
 
 import com.portable.server.encryption.BCryptEncoder;
-import com.portable.server.exception.PortableException;
+import com.portable.server.exception.PortableErrors;
 import com.portable.server.manager.BatchManager;
 import com.portable.server.manager.ContestManager;
 import com.portable.server.manager.UserManager;
@@ -85,7 +85,7 @@ public class BatchServiceImpl implements BatchService {
         synchronized (this) {
             Optional<Batch> batchOptional = batchManager.selectBatchByPrefix(request.getPrefix());
             if (batchOptional.isPresent()) {
-                throw PortableException.of("A-10-001", request.getPrefix());
+                throw PortableErrors.of("A-10-001", request.getPrefix());
             }
             batch = batchManager.newBatch();
             request.toBatch(batch);
@@ -143,9 +143,9 @@ public class BatchServiceImpl implements BatchService {
 
     private Batch getBatchData(Long id) {
         Batch batch = batchManager.selectBatchById(id)
-                .orElseThrow(PortableException.from("A-10-006", id));
+                .orElseThrow(PortableErrors.from("A-10-006", id));
         if (!Objects.equals(batch.getOwner(), UserContext.ctx().getId())) {
-            throw PortableException.of("A-10-002");
+            throw PortableErrors.of("A-10-002");
         }
         return batch;
     }

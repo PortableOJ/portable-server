@@ -12,9 +12,9 @@ import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
 
 import com.portable.server.encryption.BCryptEncoder;
-import com.portable.server.exception.PortableException;
+import com.portable.server.exception.PortableErrors;
 import com.portable.server.manager.BatchManager;
-import com.portable.server.manager.GridFsManager;
+import com.portable.server.manager.ImageManager;
 import com.portable.server.manager.UserManager;
 import com.portable.server.model.batch.Batch;
 import com.portable.server.model.request.user.LoginRequest;
@@ -39,6 +39,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.experimental.Delegate;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -56,7 +57,7 @@ public class UserServiceImpl implements UserService {
     private BatchManager batchManager;
 
     @Resource
-    private GridFsManager gridFsManager;
+    private ImageManager imageManager;
 
     @Value("${ROOT_NAME}")
     private String rootName;
@@ -73,16 +74,19 @@ public class UserServiceImpl implements UserService {
         /**
          * 用户信息
          */
+        @Delegate
         private User user;
 
         /**
          * 用户属性
          */
+        @Delegate
         private BatchUserData userData;
 
         /**
          * 批量用户的信息
          */
+        @Delegate
         private Batch batch;
     }
 
@@ -111,9 +115,9 @@ public class UserServiceImpl implements UserService {
     @Override
     public BaseUserInfoResponse login(LoginRequest loginRequest, String ip) {
         User user = userManager.getAccountByHandle(loginRequest.getHandle())
-                .orElseThrow(PortableException.from("A-01-001"));
+                .orElseThrow(PortableErrors.from("A-01-001"));
         if (!BCryptEncoder.match(loginRequest.getPassword(), user.getPassword())) {
-            throw PortableException.of("A-01-002");
+            throw PortableErrors.of("A-01-002");
         }
         switch (user.getType()) {
             case LOCKED_NORMAL:
@@ -128,15 +132,15 @@ public class UserServiceImpl implements UserService {
             case BATCH:
                 BatchUserData batchUserData = userManager.getBatchUserDataById(user.getDataId());
                 Batch batch = batchManager.selectBatchById(batchUserData.getBatchId())
-                        .orElseThrow(PortableException.from("A-10-006", batchUserData.getBatchId()));
+                        .orElseThrow(PortableErrors.from("A-10-006", batchUserData.getBatchId()));
                 if (!BatchStatusType.NORMAL.equals(batch.getStatus())) {
-                    throw PortableException.of("A-01-013");
+                    throw PortableErrors.of("A-01-013");
                 }
                 Boolean isUpdateIp = batchUserData.addIpRecord(ip);
                 if (isUpdateIp) {
                     // 首先得是锁定着的，其次必须要不是第一个 IP
                     if (batch.getIpLock() && batchUserData.getIpList().size() > 1) {
-                        throw PortableException.of("A-01-012");
+                        throw PortableErrors.of("A-01-012");
                     } else {
                         userManager.updateUserData(batchUserData);
                     }
@@ -145,7 +149,7 @@ public class UserServiceImpl implements UserService {
                 UserContext.set(batch);
                 return BatchUserInfoResponse.of(user, batch, false);
             default:
-                throw PortableException.of("S-02-002", user.getType());
+                throw PortableErrors.of("S-02-002", user.getType());
         }
     }
 
@@ -153,7 +157,7 @@ public class UserServiceImpl implements UserService {
     public synchronized NormalUserInfoResponse register(RegisterRequest registerRequest) {
         Optional<User> userOptional = userManager.getAccountByHandle(registerRequest.getHandle());
         if (userOptional.isPresent()) {
-            throw PortableException.of("A-01-003");
+            throw PortableErrors.of("A-01-003");
         }
 
         NormalUserData normalUserData = userManager.newNormalUserData();
@@ -178,14 +182,14 @@ public class UserServiceImpl implements UserService {
             return null;
         }
         User user = userManager.getAccountById(userContext.getId())
-                .orElseThrow(PortableException.from("A-01-001"));
+                .orElseThrow(PortableErrors.from("A-01-001"));
         return getUserBasicInfoResponse(user);
     }
 
     @Override
     public BaseUserInfoResponse getUserInfo(String handle) {
         User user = userManager.getAccountByHandle(handle)
-                .orElseThrow(PortableException.from("A-01-001"));
+                .orElseThrow(PortableErrors.from("A-01-001"));
         return getUserBasicInfoResponse(user);
     }
 
@@ -206,7 +210,7 @@ public class UserServiceImpl implements UserService {
     public void addPermission(String targetHandle, PermissionType newPermission) {
         NormalUserData targetUserData = organizationCheck(targetHandle);
         if (!UserContext.ctx().getPermissionTypeSet().contains(newPermission)) {
-            throw PortableException.of("A-02-007", newPermission);
+            throw PortableErrors.of("A-02-007", newPermission);
         }
         if (targetUserData.getPermissionTypeSet() == null) {
             targetUserData.setPermissionTypeSet(new HashSet<>());
@@ -219,7 +223,7 @@ public class UserServiceImpl implements UserService {
     public void removePermission(String targetHandle, PermissionType permission) {
         NormalUserData targetUserData = organizationCheck(targetHandle);
         if (!UserContext.ctx().getPermissionTypeSet().contains(permission)) {
-            throw PortableException.of("A-02-007", permission);
+            throw PortableErrors.of("A-02-007", permission);
         }
         targetUserData.getPermissionTypeSet().remove(permission);
         userManager.updateUserData(targetUserData);
@@ -235,11 +239,11 @@ public class UserServiceImpl implements UserService {
                                Integer height) {
         UserContext userContext = UserContext.ctx();
         if (!userContext.getType().getIsNormal()) {
-            throw PortableException.of("A-02-008", UserContext.ctx().getType());
+            throw PortableErrors.of("A-02-008", UserContext.ctx().getType());
         }
         NormalUserData normalUserData = userManager.getNormalUserDataById(userContext.getDataId());
         InputStream avatarStream = ImageUtils.cut(inputStream, left, top, width, height);
-        String fileId = gridFsManager.uploadAvatar(normalUserData.getAvatar(), avatarStream, name, contentType);
+        String fileId = imageManager.replaceImage(normalUserData.getAvatar(), avatarStream, name, contentType);
         normalUserData.setAvatar(fileId);
         userManager.updateUserData(normalUserData);
         return fileId;
@@ -249,12 +253,12 @@ public class UserServiceImpl implements UserService {
     public void updatePassword(UpdatePasswordRequest updatePasswordRequest) {
         UserContext userContext = UserContext.ctx();
         if (!userContext.getType().getIsNormal()) {
-            throw PortableException.of("A-01-011");
+            throw PortableErrors.of("A-01-011");
         }
         User user = userManager.getAccountById(userContext.getId())
-                .orElseThrow(PortableException.from("A-01-001"));
+                .orElseThrow(PortableErrors.from("A-01-001"));
         if (!BCryptEncoder.match(updatePasswordRequest.getOldPassword(), user.getPassword())) {
-            throw PortableException.of("A-01-002");
+            throw PortableErrors.of("A-01-002");
         }
         userManager.updatePassword(user.getId(), BCryptEncoder.encoder(updatePasswordRequest.getNewPassword()));
     }
@@ -262,7 +266,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public void resetPassword(String handle, String newPassword) {
         organizationCheck(handle);
-        Long userId = userManager.changeHandleToUserId(handle).orElseThrow(PortableException.from("A-01-001"));
+        Long userId = userManager.changeHandleToUserId(handle).orElseThrow(PortableErrors.from("A-01-001"));
         userManager.updatePassword(userId, BCryptEncoder.encoder(newPassword));
     }
 
@@ -276,13 +280,13 @@ public class UserServiceImpl implements UserService {
     @NotNull
     private NormalUserData organizationCheck(String handle) {
         User user = userManager.getAccountByHandle(handle)
-                .orElseThrow(PortableException.from("A-01-001"));
+                .orElseThrow(PortableErrors.from("A-01-001"));
         if (!user.getType().getIsNormal()) {
-            throw PortableException.of("A-02-003");
+            throw PortableErrors.of("A-02-003");
         }
         NormalUserData targetUserData = userManager.getNormalUserDataById(user.getDataId());
         if (!UserContext.ctx().getOrganization().isDominate(targetUserData.getOrganization())) {
-            throw PortableException.of("A-03-001",
+            throw PortableErrors.of("A-03-001",
                     user.getHandle(),
                     targetUserData.getOrganization(),
                     UserContext.ctx().getOrganization());
@@ -300,24 +304,24 @@ public class UserServiceImpl implements UserService {
                 BatchUserData batchUserData = userManager.getBatchUserDataById(user.getDataId());
 
                 Batch batch = batchManager.selectBatchById(batchUserData.getBatchId())
-                        .orElseThrow(PortableException.from("A-10-006", batchUserData.getBatchId()));
+                        .orElseThrow(PortableErrors.from("A-10-006", batchUserData.getBatchId()));
                 return BatchUserInfoResponse.of(user, batch, Objects.equals(UserContext.ctx().getId(), batch.getOwner()));
             default:
-                throw PortableException.of("S-02-002", user.getType());
+                throw PortableErrors.of("S-02-002", user.getType());
         }
     }
 
     private BatchUserPackage checkBatchUser(String handle) {
-        User user = userManager.getAccountByHandle(handle).orElseThrow(PortableException.from("A-01-001"));
+        User user = userManager.getAccountByHandle(handle).orElseThrow(PortableErrors.from("A-01-001"));
         if (!AccountType.BATCH.equals(user.getType())) {
-            throw PortableException.of("A-01-014");
+            throw PortableErrors.of("A-01-014");
         }
         BatchUserData batchUserData = userManager.getBatchUserDataById(user.getDataId());
         Batch batch = batchManager.selectBatchById(batchUserData.getBatchId())
-                .orElseThrow(PortableException.from("A-10-006", batchUserData.getBatchId()));
+                .orElseThrow(PortableErrors.from("A-10-006", batchUserData.getBatchId()));
         // 校验是否是自己的
         if (!Objects.equals(UserContext.ctx().getId(), batch.getOwner())) {
-            throw PortableException.of("A-10-002");
+            throw PortableErrors.of("A-10-002");
         }
         return BatchUserPackage.builder()
                 .user(user)

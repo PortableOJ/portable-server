@@ -6,7 +6,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 
-import com.portable.server.exception.PortableException;
+import com.portable.server.exception.PortableErrors;
 import com.portable.server.model.contest.BaseContestData;
 import com.portable.server.model.contest.BatchContestData;
 import com.portable.server.model.contest.Contest;
@@ -45,7 +45,6 @@ public interface ContestManager {
      *
      * @param accessType 比赛类型
      * @return 实体信息
-     * @throws PortableException 不存在此类型的比赛时候抛出
      */
     @NotNull
     default BaseContestData newContestData(ContestAccessType accessType) {
@@ -86,7 +85,7 @@ public interface ContestManager {
                         .batchId(null)
                         .build();
             default:
-                throw PortableException.of("A-08-001", accessType);
+                throw PortableErrors.of("A-08-001", accessType);
         }
     }
 
@@ -169,7 +168,6 @@ public interface ContestManager {
      * @param datId      比赛的 id
      * @param accessType 比赛类型
      * @return 比赛信息
-     * @throws PortableException 比赛类型错误则抛出
      */
     default BaseContestData getBaseContestDataById(String datId, ContestAccessType accessType) {
         switch (accessType) {
@@ -182,7 +180,7 @@ public interface ContestManager {
             case BATCH:
                 return getBatchContestDataById(datId);
             default:
-                throw PortableException.of("A-08-001", accessType);
+                throw PortableErrors.of("A-08-001", accessType);
         }
     }
 
@@ -191,7 +189,6 @@ public interface ContestManager {
      *
      * @param datId 比赛的 id
      * @return 比赛信息
-     * @throws PortableException 不存在则抛出
      */
     PublicContestData getPublicContestDataById(String datId);
 
@@ -200,7 +197,6 @@ public interface ContestManager {
      *
      * @param datId 比赛的 id
      * @return 比赛信息
-     * @throws PortableException 不存在则抛出
      */
     PasswordContestData getPasswordContestDataById(String datId);
 
@@ -209,7 +205,6 @@ public interface ContestManager {
      *
      * @param datId 比赛的 id
      * @return 比赛信息
-     * @throws PortableException 不存在则抛出
      */
     PrivateContestData getPrivateContestDataById(String datId);
 
@@ -218,7 +213,6 @@ public interface ContestManager {
      *
      * @param datId 比赛的 id
      * @return 比赛信息
-     * @throws PortableException 不存在则抛出
      */
     BatchContestData getBatchContestDataById(String datId);
 

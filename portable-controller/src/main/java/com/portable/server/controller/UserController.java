@@ -12,7 +12,6 @@ import javax.validation.constraints.NotNull;
 import com.portable.server.annotation.CheckCaptcha;
 import com.portable.server.annotation.NeedLogin;
 import com.portable.server.annotation.PermissionRequirement;
-import com.portable.server.exception.PortableException;
 import com.portable.server.model.request.NameRequest;
 import com.portable.server.model.request.user.LoginRequest;
 import com.portable.server.model.request.user.OrganizationChangeRequest;
@@ -126,7 +125,7 @@ public class UserController {
                                          @NotNull(message = "A-00-001") Integer width,
                                          @NotNull(message = "A-00-001") Integer height) {
         if (IMAGE_FILE_MAX_SIZE.compareTo(fileData.getSize()) < 0) {
-            throw PortableException.of("A-09-002", IMAGE_FILE_MAX_SIZE);
+            throw PortableErrors.of("A-09-002", IMAGE_FILE_MAX_SIZE);
         }
         try {
             return Response.ofOk(
@@ -136,7 +135,7 @@ public class UserController {
                             left, top, width, height)
             );
         } catch (IOException e) {
-            throw PortableException.of("S-01-003");
+            throw PortableErrors.of("S-01-003");
         }
     }
 

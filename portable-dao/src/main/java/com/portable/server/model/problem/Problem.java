@@ -1,6 +1,5 @@
 package com.portable.server.model.problem;
 
-import com.portable.server.exception.PortableException;
 import com.portable.server.model.BaseEntity;
 import com.portable.server.type.ProblemAccessType;
 import com.portable.server.type.ProblemStatusType;
@@ -58,7 +57,6 @@ public class Problem extends BaseEntity<Long> {
 
     /**
      * 进入未检查态
-     * @throws PortableException 出错则返回
      */
     public void toUncheck() {
         this.statusType = this.statusType.toUncheck();
@@ -66,7 +64,6 @@ public class Problem extends BaseEntity<Long> {
 
     /**
      * 进入未处理态
-     * @throws PortableException 出错则返回
      */
     public void toUntreated() {
         this.statusType = this.statusType.toUntreated();

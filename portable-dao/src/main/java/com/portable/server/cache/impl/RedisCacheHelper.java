@@ -79,8 +79,9 @@ public class RedisCacheHelper<K> implements CacheKvHelper<K>, CacheRalHelper<K>,
         throw PortableErrors.of("B-03-001", "暂不支持");
     }
 
+    @SafeVarargs
     @Override
-    public <T> void pushBack(K key, T... values) {
+    public final <T> void pushBack(K key, T... values) {
         throw PortableErrors.of("B-03-001", "暂不支持");
     }
 

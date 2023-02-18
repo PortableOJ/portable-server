@@ -2,16 +2,14 @@ package com.portable.server.impl;
 
 import java.io.IOException;
 import java.io.OutputStream;
-import java.util.Map;
 
 import com.portable.server.exception.PortableException;
+import com.portable.server.internal.CaptchaInternalService;
 import com.portable.server.service.impl.CommonServiceImpl;
-import com.portable.server.support.impl.CaptchaSupportImpl;
 import com.portable.server.test.MockedValueMaker;
 import com.portable.server.util.StreamUtils;
 
 import com.Ostermiller.util.CircularByteBuffer;
-import com.alibaba.fastjson.JSONObject;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -29,7 +27,7 @@ class CommonServiceImplTest {
     private CommonServiceImpl commonService;
 
     @Mock
-    private CaptchaSupportImpl captchaSupport;
+    private CaptchaInternalService captchaInternalService;
 
     @BeforeEach
     void setUp() {
@@ -66,7 +64,7 @@ class CommonServiceImplTest {
     void getCaptcha() throws IOException {
         String MOCKED_CAPTCHA_VALUE = MockedValueMaker.mString();
         String MOCKED_CAPTCHA_BUFFER = MockedValueMaker.mString();
-        Mockito.when(captchaSupport.getCaptcha(Mockito.any())).thenAnswer(invocationOnMock -> {
+        Mockito.when(captchaInternalService.getCaptcha(Mockito.any())).thenAnswer(invocationOnMock -> {
             OutputStream outputStream = invocationOnMock.getArgument(0);
             outputStream.write(MOCKED_CAPTCHA_BUFFER.getBytes());
             return MOCKED_CAPTCHA_VALUE;

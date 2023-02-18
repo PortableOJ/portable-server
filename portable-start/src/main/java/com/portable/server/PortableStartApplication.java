@@ -1,5 +1,7 @@
 package com.portable.server;
 
+import com.portable.server.banner.PortableBanner;
+
 import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -14,7 +16,11 @@ import org.springframework.boot.web.servlet.ServletComponentScan;
 public class PortableStartApplication {
 
     public static void main(String[] args) {
-        SpringApplication.run(PortableStartApplication.class, args);
+        SpringApplication springApplication = new SpringApplication(PortableStartApplication.class);
+        // 设置自定义 Banner
+        springApplication.setBanner(new PortableBanner());
+        // 启动 Spring Boot
+        springApplication.run(args);
     }
 
 }

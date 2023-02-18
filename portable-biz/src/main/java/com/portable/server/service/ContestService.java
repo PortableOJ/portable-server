@@ -1,6 +1,5 @@
 package com.portable.server.service;
 
-import com.portable.server.exception.PortableException;
 import com.portable.server.model.request.PageRequest;
 import com.portable.server.model.request.contest.ContestAddProblem;
 import com.portable.server.model.request.contest.ContestAuth;
@@ -36,14 +35,12 @@ public interface ContestService {
      *
      * @param contestAuth 验证信息
      * @return 访问权限
-     * @throws PortableException 比赛 id 错误或者密码错误时抛出
      */
     ContestVisitType authorizeContest(ContestAuth contestAuth);
 
     /**
      * 获取比赛的简介
      * @param contestId 比赛的 id
-     * @throws PortableException 比赛不存在或者无权访问则抛出错误
      * @return 比赛的详情
      */
     ContestInfoResponse getContestInfo(Long contestId);
@@ -51,7 +48,6 @@ public interface ContestService {
     /**
      * 获取比赛的详情
      * @param contestId 比赛的 id
-     * @throws PortableException 比赛不存在或者无权访问则抛出错误
      * @return 比赛的详情
      */
     ContestDetailResponse getContestData(Long contestId);
@@ -60,7 +56,6 @@ public interface ContestService {
      * 获取比赛的管理员级别信息
      * @param contestId 比赛的 id
      * @return 比赛的详情
-     * @throws PortableException 没有权限或者没有此比赛时抛出
      */
     ContestAdminDetailResponse getContestAdminData(Long contestId);
 
@@ -69,7 +64,6 @@ public interface ContestService {
      * @param contestId 比赛 id
      * @param problemIndex 题目序号
      * @return 比赛的详情
-     * @throws PortableException 没有权限或没有此比赛时抛出
      */
     ProblemDetailResponse getContestProblem(Long contestId, Integer problemIndex);
 
@@ -78,7 +72,6 @@ public interface ContestService {
      * @param contestId 比赛的 id
      * @param pageRequest 提交的过滤条件
      * @return 比赛的提交列表
-     * @throws PortableException 没有权限或没有此比赛时抛出
      */
     PageResponse<SolutionListResponse, Void> getContestStatusList(Long contestId, PageRequest<SolutionListQueryRequest> pageRequest);
 
@@ -86,7 +79,6 @@ public interface ContestService {
      * 查看比赛中的提交信息
      * @param solutionId 提交信息
      * @return 提交详情
-     * @throws PortableException 没有权限或没有此比赛时抛出
      */
     SolutionDetailResponse getContestSolution(Long solutionId);
 
@@ -95,7 +87,6 @@ public interface ContestService {
      * @param contestId 比赛的 id
      * @param pageRequest 提交的过滤条件
      * @return 比赛的提交列表
-     * @throws PortableException 没有权限或没有此比赛时抛出
      */
     PageResponse<SolutionListResponse, Void> getContestTestStatusList(Long contestId, PageRequest<SolutionListQueryRequest> pageRequest);
 
@@ -103,7 +94,6 @@ public interface ContestService {
      * 查看比赛中的<span color="red">测试</span>提交信息
      * @param solutionId 提交信息
      * @return 提交详情
-     * @throws PortableException 没有权限或没有此比赛时抛出
      */
     SolutionDetailResponse getContestTestSolution(Long solutionId);
 
@@ -113,7 +103,6 @@ public interface ContestService {
      * @param contestId   比赛 id
      * @param pageRequest 比赛榜单过滤条件
      * @return 比赛榜单
-     * @throws PortableException 创建比赛榜单出错时抛出
      */
     PageResponse<ContestRankListResponse, ContestRankListResponse> getContestRank(Long contestId, PageRequest<ContestRankPageRequest> pageRequest);
 
@@ -121,7 +110,6 @@ public interface ContestService {
      * 提交代码
      * @param submitSolutionRequest 提交信息
      * @return 提交的 id
-     * @throws PortableException 没有权限或没有此比赛时抛出
      */
     Long submit(SubmitSolutionRequest submitSolutionRequest);
 
@@ -129,7 +117,6 @@ public interface ContestService {
      * 创建比赛
      * @param contestContentRequest 比赛的创建信息
      * @return 比赛创建后的 id
-     * @throws PortableException 没有权限或没有此比赛时抛出
      */
     Long createContest(ContestContentRequest contestContentRequest);
 
@@ -137,7 +124,6 @@ public interface ContestService {
      * 更新比赛的信息
      *
      * @param contestContentRequest 比赛的更新后信息
-     * @throws PortableException 无权或者数据非法则抛出
      */
     void updateContest(ContestContentRequest contestContentRequest);
 
@@ -145,7 +131,6 @@ public interface ContestService {
      * 比赛合作出题人新增题目
      *
      * @param contestAddProblem 比赛增加的题目
-     * @throws PortableException 无权或者数据非法则抛出
      */
     void addContestProblem(ContestAddProblem contestAddProblem);
 }

@@ -6,10 +6,10 @@ import java.util.*;
 import java.util.stream.IntStream;
 
 import com.portable.server.exception.PortableException;
-import com.portable.server.manager.impl.prod.ContestManagerImpl;
-import com.portable.server.manager.impl.prod.ProblemManagerImpl;
-import com.portable.server.manager.impl.prod.SolutionManagerImpl;
-import com.portable.server.manager.impl.prod.UserManagerImpl;
+import com.portable.server.manager.impl.ContestManagerImpl;
+import com.portable.server.manager.impl.ProblemManagerImpl;
+import com.portable.server.manager.impl.SolutionManagerImpl;
+import com.portable.server.manager.impl.UserManagerImpl;
 import com.portable.server.model.contest.Contest;
 import com.portable.server.model.problem.Problem;
 import com.portable.server.model.problem.ProblemData;
@@ -30,7 +30,6 @@ import com.portable.server.model.solution.SolutionData;
 import com.portable.server.model.user.NormalUserData;
 import com.portable.server.model.user.User;
 import com.portable.server.service.impl.ProblemServiceImpl;
-import com.portable.server.support.impl.FileSupportImpl;
 import com.portable.server.support.impl.JudgeSupportImpl;
 import com.portable.server.test.MockedValueMaker;
 import com.portable.server.test.UserContextBuilder;
@@ -314,7 +313,7 @@ public class ProblemServiceImplTest {
     @Test
     void testGetProblemWithNoProblemData() {
         Mockito.when(problemManager.getProblemById(MOCKED_PROBLEM_ID)).thenReturn(Optional.of(problem));
-        Mockito.when(problemManager.getProblemData(MOCKED_PROBLEM_MONGO_ID)).thenThrow(PortableException.of("S-03-001"));
+        Mockito.when(problemManager.getProblemData(MOCKED_PROBLEM_MONGO_ID)).thenThrow(PortableErrors.of("S-03-001"));
 
         try {
             problemService.getProblem(MOCKED_PROBLEM_ID);

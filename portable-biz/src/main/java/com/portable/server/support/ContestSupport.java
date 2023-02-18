@@ -2,7 +2,6 @@ package com.portable.server.support;
 
 import java.util.List;
 
-import com.portable.server.exception.PortableException;
 import com.portable.server.model.contest.ContestRankItem;
 
 /**
@@ -21,7 +20,6 @@ public interface ContestSupport {
      * 验证比赛的 rank 数据
      *
      * @param contestId 比赛 id
-     * @throws PortableException 比赛不存在或者生成出错则抛出
      */
     void ensureRank(Long contestId);
 
